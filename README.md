@@ -1,2 +1,3 @@
-# tcr
-TCR utility
+# TCR utility
+
+TCR utility experiment, written in Go
