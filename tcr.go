@@ -10,3 +10,5 @@ func main() {
 	trace.Warning("Hello, world.")
 	trace.Error("Hello, world.")
 }
+
+// TODO CLI using Cobra: https://dzone.com/articles/how-to-create-a-cli-in-go-in-few-minutes
