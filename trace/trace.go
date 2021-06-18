@@ -11,6 +11,9 @@ import (
 const (
 	linePrefix = "[TCR]"
 
+	// Default terminal width if current terminal is not recognized
+	terminalDefaultWidth = 80
+
 	colorReset  = 0
 	colorRed    = 31
 	colorYellow = 33
@@ -39,29 +42,24 @@ func Error(message string) {
 }
 
 func HorizontalLine() {
-	termColumns, err := getTermColumns()
-	if err {
-		termColumns = 40 // Default width
+	termWidth := getTermColumns()
+	prefixWidth := len(linePrefix) + 1
+	lineWidth := termWidth - prefixWidth - 1
+	if lineWidth < 0 {
+		lineWidth = 0
 	}
-
-	prefixSize := len(linePrefix) + 1
-	repeated := termColumns - prefixSize
-	horizontalLine := strings.Repeat("-", repeated)
+	horizontalLine := strings.Repeat("-", lineWidth)
 	Info(horizontalLine)
-	message := fmt.Sprintf("Width: %v", termColumns)
-	Info(message)
 }
 
-func getTermColumns() (int, bool) {
-	termColumns, err := cols()
-	return termColumns, err
-}
-
-func cols() (int, bool) {
-	output, err := sh.Command("tput", "cols").Output()
-	cols, err := strconv.Atoi(strings.TrimSpace(string(output)))
-	if err != nil {
-		return 0, true
+func getTermColumns() int {
+	output, err1 := sh.Command("tput", "cols").Output()
+	if err1 != nil {
+		return terminalDefaultWidth
 	}
-	return cols, false
+	termColumns, err2 := strconv.Atoi(strings.TrimSpace(string(output)))
+	if err2 != nil {
+		return terminalDefaultWidth
+	}
+	return termColumns
 }
