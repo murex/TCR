@@ -11,33 +11,32 @@ import (
 const (
 	linePrefix = "[TCR]"
 
+	horizontalLineCharacter = "-"
+
 	// Default terminal width if current terminal is not recognized
 	terminalDefaultWidth = 80
 
-	colorReset  = 0
-	colorRed    = 31
-	colorYellow = 33
-	colorCyan   = 36
+	ansiColorReset  = 0
+	ansiColorRed    = 31
+	ansiColorYellow = 33
+	ansiColorCyan   = 36
 )
 
 func printColoredLine(message string, colorCode int) {
-	colored := fmt.Sprintf("\x1b[%dm%s %s\x1b[%dm", colorCode, linePrefix, message, colorReset)
+	colored := fmt.Sprintf("\x1b[%dm%s %s\x1b[%dm", colorCode, linePrefix, message, ansiColorReset)
 	fmt.Println(colored)
 }
 
 func Info(message string) {
-	// 36 = Cyan
-	printColoredLine(message, colorCyan)
+	printColoredLine(message, ansiColorCyan)
 }
 
 func Warning(message string) {
-	// 33 = Yellow
-	printColoredLine(message, colorYellow)
+	printColoredLine(message, ansiColorYellow)
 }
 
 func Error(message string) {
-	// 31 = Red
-	printColoredLine(message, colorRed)
+	printColoredLine(message, ansiColorRed)
 	os.Exit(1)
 }
 
@@ -48,7 +47,7 @@ func HorizontalLine() {
 	if lineWidth < 0 {
 		lineWidth = 0
 	}
-	horizontalLine := strings.Repeat("-", lineWidth)
+	horizontalLine := strings.Repeat(horizontalLineCharacter, lineWidth)
 	Info(horizontalLine)
 }
 
