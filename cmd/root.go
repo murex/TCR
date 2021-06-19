@@ -20,15 +20,18 @@ var rootCmd = &cobra.Command{
 This application is a tool to practice TCR.
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: hook up real application here
+		// TODO hook up real application here
+		
+		// TODO Try https://github.com/eiannone/keyboard for keyboard input
 		trace.HorizontalLine()
 		trace.Info("This is an information trace")
 		trace.Warning("This is a warning trace")
+		//trace.Error("This is an error trace")
 
 		var toolchainTrace = fmt.Sprintf("Toolchain = %v", toolchain)
-		trace.Info(toolchainTrace)//trace.Error("This is an error trace")
+		trace.Info(toolchainTrace)
 		var autoPushTrace = fmt.Sprintf("Auto-Push = %v", autoPush)
-		trace.Info(autoPushTrace)//trace.Error("This is an error trace")
+		trace.Info(autoPushTrace)
 	},
 }
 
