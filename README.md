@@ -1,3 +1,6 @@
+[![Go](https://github.com/mengdaming/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/go.yml)
+[![Add contributors](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml)
+
 # TCR utility
 
 TCR utility experiment, written in Go
