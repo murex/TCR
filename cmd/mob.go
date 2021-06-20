@@ -9,8 +9,7 @@ import (
 var mobCmd = &cobra.Command{
 	Use:   "mob",
 	Short: "Run TCR in mob mode",
-	Long: `
-When used in "mob" mode, TCR ensures that any commit
+	Long: `When used in "mob" mode, TCR ensures that any commit
 is shared with other participants through calling git push-pull.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		trace.Info("Running in mob mode")

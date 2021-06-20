@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/eiannone/keyboard"
 	"github.com/mengdaming/tcr/trace"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
+	"unicode"
 )
 
 var cfgFile string
@@ -31,6 +33,11 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		trace.Info(toolchainTrace)
 		var autoPushTrace = fmt.Sprintf("Auto-Push = %v", autoPush)
 		trace.Info(autoPushTrace)
+
+		// Experiments on keystrokes capture
+		//exampleBlockingGetKey()
+		exampleKeyStrokeUsingChannel()
+
 	},
 }
 
@@ -76,5 +83,58 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+// Experiments
+
+func exampleBlockingGetKey() {
+	if err := keyboard.Open(); err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = keyboard.Close()
+	}()
+
+	//fmt.Println("Press ESC to quit")
+	fmt.Println("Press Ctrl-C to quit")
+	for {
+		char, key, err := keyboard.GetKey()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("You pressed: rune %q, key %X\r\n", char, key)
+		if key == keyboard.KeyCtrlC {
+			break
+		}
+	}
+}
+
+func exampleKeyStrokeUsingChannel() {
+	keysEvents, err := keyboard.GetKeys(10)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = keyboard.Close()
+	}()
+
+	//fmt.Println("Press ESC to quit")
+	fmt.Println("Press ESC, Ctrl-C or Q to quit")
+	for {
+		event := <-keysEvents
+		if event.Err != nil {
+			panic(event.Err)
+		}
+		fmt.Printf("You pressed: rune %q, key %X\r\n", event.Rune, event.Key)
+		if event.Key == keyboard.KeyEsc {
+			break
+		}
+		if event.Key == keyboard.KeyCtrlC {
+			break
+		}
+		if event.Key == 0 && unicode.ToLower(event.Rune) == 'q' {
+			break
+		}
 	}
 }
