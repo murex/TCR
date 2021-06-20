@@ -1,9 +1,17 @@
 [![Go](https://github.com/mengdaming/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/go.yml)
 [![Add contributors](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml)
 
-# TCR utility
+# TCR (Test && Commit || Revert) utility
 
 TCR utility experiment, written in Go
+
+## TODO
+
+- [x] Try https://pkg.go.dev/github.com/spf13/cobra
+- [ ] Try https://github.com/eiannone/keyboard
+- [ ] Try https://pkg.go.dev/github.com/gokyle/fswatch
+- [ ] Try https://pkg.go.dev/golang.org/x/exp/inotify
+- [ ] Try https://pkg.go.dev/golang.org/x/term
 
 ## Contributors
 

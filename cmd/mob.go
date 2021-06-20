@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/mengdaming/tcr/trace"
-
 	"github.com/spf13/cobra"
 )
 
