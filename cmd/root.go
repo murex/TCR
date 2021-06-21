@@ -1,14 +1,21 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/eiannone/keyboard"
+	"github.com/daspoet/gowinkey"
 	"github.com/mengdaming/tcr/trace"
 	"github.com/mitchellh/go-homedir"
+	"github.com/pkg/term"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tj/go-terminput"
+	"golang.org/x/crypto/ssh/terminal"
+	"io"
+	"io/ioutil"
+	"log"
 	"os"
-	"unicode"
+	"strings"
 )
 
 var cfgFile string
@@ -36,7 +43,12 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 
 		// Experiments on keystrokes capture
 		//exampleBlockingGetKey()
-		exampleKeyStrokeUsingChannel()
+		//exampleKeyStrokeUsingChannel()
+		//tryTermInput()
+		//tryGoWinKey()
+		//tryTerm()
+		//tryTermNoEof()
+		tryScanner()
 
 	},
 }
@@ -88,53 +100,89 @@ func initConfig() {
 
 // Experiments
 
-func exampleBlockingGetKey() {
-	if err := keyboard.Open(); err != nil {
-		panic(err)
-	}
-	defer func() {
-		_ = keyboard.Close()
-	}()
-
-	//fmt.Println("Press ESC to quit")
-	fmt.Println("Press Ctrl-C to quit")
-	for {
-		char, key, err := keyboard.GetKey()
-		if err != nil {
-			panic(err)
-		}
-		fmt.Printf("You pressed: rune %q, key %X\r\n", char, key)
-		if key == keyboard.KeyCtrlC {
-			break
-		}
+func tryTerm() {
+	if ! terminal.IsTerminal(0) {
+		b, _ := ioutil.ReadAll(os.Stdin)
+		fmt.Println(string(b))
+	} else {
+		fmt.Println("no piped data")
 	}
 }
 
-func exampleKeyStrokeUsingChannel() {
-	keysEvents, err := keyboard.GetKeys(10)
+func tryTermNoEof() {
+	r := strings.NewReader("some io.Reader stream to be read\n")
+
+	buf := make([]byte, 1)
+	if _, err := io.ReadAtLeast(os.Stdin, buf, 1); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s\n", buf)
+
+	// buffer smaller than minimal read size.
+	shortBuf := make([]byte, 3)
+	if _, err := io.ReadAtLeast(r, shortBuf, 1); err != nil {
+		fmt.Println("error:", err)
+	}
+
+	// minimal read size bigger than io.Reader stream
+	longBuf := make([]byte, 64)
+	if _, err := io.ReadAtLeast(r, longBuf, 1); err != nil {
+		fmt.Println("error:", err)
+	}
+
+}
+
+
+func tryTermInput() {
+	t, err := term.Open("/dev/tty")
 	if err != nil {
-		panic(err)
+		log.Fatalf("error: %s\n", err)
 	}
-	defer func() {
-		_ = keyboard.Close()
-	}()
 
-	//fmt.Println("Press ESC to quit")
-	fmt.Println("Press ESC, Ctrl-C or Q to quit")
+	t.SetRaw()
+	defer t.Restore()
+
+	fmt.Printf("Type something, use 'q' to exit.\r\n")
+
 	for {
-		event := <-keysEvents
-		if event.Err != nil {
-			panic(event.Err)
+		e, err := terminput.Read(t)
+		if err != nil {
+			log.Fatalf("error: %s\n", err)
 		}
-		fmt.Printf("You pressed: rune %q, key %X\r\n", event.Rune, event.Key)
-		if event.Key == keyboard.KeyEsc {
+
+		if e.Key() == terminput.KeyEscape || e.Rune() == 'q' {
 			break
 		}
-		if event.Key == keyboard.KeyCtrlC {
-			break
-		}
-		if event.Key == 0 && unicode.ToLower(event.Rune) == 'q' {
-			break
+
+		fmt.Printf("%s — shift=%v ctrl=%v alt=%v meta=%v\r\n", e.String(), e.Shift(), e.Ctrl(), e.Alt(), e.Meta())
+	}
+}
+
+func tryGoWinKey() {
+	events, _ := gowinkey.ListenSelective(gowinkey.VK_W, gowinkey.VK_A, gowinkey.VK_S, gowinkey.VK_D)
+
+//	timer := time.AfterFunc(time.Second * 5, stopFn)
+//	defer timer.Stop()
+
+
+	for e := range events {
+		switch e.Type {
+		case gowinkey.KeyPressed:
+			fmt.Println("pressed", e)
+		case gowinkey.KeyReleased:
+			fmt.Println("released", e)
 		}
 	}
 }
+
+func tryScanner() {
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		fmt.Println("You typed:", scanner.Text())
+	}
+
+	if scanner.Err() != nil {
+		// handle error
+	}
+}
+
