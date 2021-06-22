@@ -50,7 +50,7 @@ func tryTermInput() {
 			log.Fatalf("error: %s\n", err)
 		}
 
-		if e.Key() == terminput.KeyEscape || unicode.Lower(e.Rune()) == 'q' {
+		if e.Key() == terminput.KeyEscape || unicode.ToLower(e.Rune()) == 'q' {
 			break
 		}
 
