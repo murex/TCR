@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/daspoet/gowinkey"
+	"github.com/janmir/go-winput"
 	"github.com/mengdaming/tcr/trace"
+	"github.com/vence722/inputhook"
 	"golang.org/x/crypto/ssh/terminal"
 	"io"
 	"io/ioutil"
@@ -18,8 +20,10 @@ func KeyboardSandbox() {
 	trace.HorizontalLine()
 	trace.Info("Experimenting with keyboard input (Windows OS)")
 
-	tryGoWinKey()
-	//tryScanner()
+	//tryGoWinKey()
+	//tryGoWinput()
+	//tryReadRune()
+	tryInputHook()
 
 }
 
@@ -80,5 +84,35 @@ func tryScanner() {
 	if scanner.Err() != nil {
 		// handle error
 	}
+}
+
+func tryGoWinput() {
+	input := winput.New()
+	input.Type("Hello from Winput!")
+	ok := input.HotKey(winput.HotKeySelectAll)
+	message := fmt.Sprintf("Type status: %v", ok)
+	trace.Info(message)
+}
+
+func tryReadRune() {
+	reader := bufio.NewReader(os.Stdin)
+	char, _, err := reader.ReadRune()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// prints the unicode code point of the character
+	fmt.Println("Result: ", char)
+}
+
+func tryInputHook() {
+	inputhook.HookKeyboard(hookCallback)
+	ch := make(chan bool)
+	<-ch
+}
+
+func hookCallback(keyEvent int, keyCode int) {
+	fmt.Println("keyEvent:", keyEvent)
+	fmt.Println("keyCode:", keyCode)
 }
 

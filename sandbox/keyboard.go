@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"unicode"
 )
 
 func KeyboardSandbox() {
@@ -49,7 +50,7 @@ func tryTermInput() {
 			log.Fatalf("error: %s\n", err)
 		}
 
-		if e.Key() == terminput.KeyEscape || e.Rune() == 'q' {
+		if e.Key() == terminput.KeyEscape || unicode.Lower(e.Rune()) == 'q' {
 			break
 		}
 
