@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/trace"
 	"github.com/spf13/cobra"
 )
@@ -15,8 +16,7 @@ It never pushes or pulls to a remote repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		trace.Info("Running in solo mode")
 		trace.HorizontalLine()
-		// TODO Hook up application call here
-		trace.Warning("Still need to hook up real code here")
+		tcr.Start()
 	},
 }
 

@@ -23,7 +23,8 @@ func KeyboardSandbox() {
 	//tryGoWinKey()
 	//tryGoWinput()
 	//tryReadRune()
-	tryInputHook()
+	//tryInputHook()
+	tryBufioScanner()
 
 }
 
@@ -114,5 +115,12 @@ func tryInputHook() {
 func hookCallback(keyEvent int, keyCode int) {
 	fmt.Println("keyEvent:", keyEvent)
 	fmt.Println("keyCode:", keyCode)
+}
+
+func tryBufioScanner() {
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
 }
 
