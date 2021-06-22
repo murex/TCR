@@ -18,7 +18,7 @@ func KeyboardSandbox() {
 		trace.HorizontalLine()
 		trace.Info("Experimenting with keyboard input (non-Windows OS)")
 
-		tryScanner()
+		tryTermInput()
 
 }
 
