@@ -1,21 +1,15 @@
 package cmd
 
 import (
-	"bufio"
-	"fmt"
-	"github.com/daspoet/gowinkey"
+	"github.com/mengdaming/tcr/sandbox"
 	"github.com/mengdaming/tcr/trace"
+
 	"github.com/mitchellh/go-homedir"
-	"github.com/pkg/term"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tj/go-terminput"
-	"golang.org/x/crypto/ssh/terminal"
-	"io"
-	"io/ioutil"
-	"log"
+
+	"fmt"
 	"os"
-	"strings"
 )
 
 var cfgFile string
@@ -32,24 +26,14 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		// TODO hook up real application here
 
 		trace.HorizontalLine()
-		trace.Info("This is an information trace")
-		trace.Warning("This is a warning trace")
-		//trace.Error("This is an error trace")
+		trace.Info("Command Line Options")
 
 		var toolchainTrace = fmt.Sprintf("Toolchain = %v", toolchain)
 		trace.Info(toolchainTrace)
 		var autoPushTrace = fmt.Sprintf("Auto-Push = %v", autoPush)
 		trace.Info(autoPushTrace)
 
-		// Experiments on keystrokes capture
-		//exampleBlockingGetKey()
-		//exampleKeyStrokeUsingChannel()
-		//tryTermInput()
-		//tryGoWinKey()
-		//tryTerm()
-		//tryTermNoEof()
-		tryScanner()
-
+		sandbox.KeyboardSandbox()
 	},
 }
 
@@ -97,92 +81,3 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }
-
-// Experiments
-
-func tryTerm() {
-	if ! terminal.IsTerminal(0) {
-		b, _ := ioutil.ReadAll(os.Stdin)
-		fmt.Println(string(b))
-	} else {
-		fmt.Println("no piped data")
-	}
-}
-
-func tryTermNoEof() {
-	r := strings.NewReader("some io.Reader stream to be read\n")
-
-	buf := make([]byte, 1)
-	if _, err := io.ReadAtLeast(os.Stdin, buf, 1); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s\n", buf)
-
-	// buffer smaller than minimal read size.
-	shortBuf := make([]byte, 3)
-	if _, err := io.ReadAtLeast(r, shortBuf, 1); err != nil {
-		fmt.Println("error:", err)
-	}
-
-	// minimal read size bigger than io.Reader stream
-	longBuf := make([]byte, 64)
-	if _, err := io.ReadAtLeast(r, longBuf, 1); err != nil {
-		fmt.Println("error:", err)
-	}
-
-}
-
-
-func tryTermInput() {
-	t, err := term.Open("/dev/tty")
-	if err != nil {
-		log.Fatalf("error: %s\n", err)
-	}
-
-	t.SetRaw()
-	defer t.Restore()
-
-	fmt.Printf("Type something, use 'q' to exit.\r\n")
-
-	for {
-		e, err := terminput.Read(t)
-		if err != nil {
-			log.Fatalf("error: %s\n", err)
-		}
-
-		if e.Key() == terminput.KeyEscape || e.Rune() == 'q' {
-			break
-		}
-
-		fmt.Printf("%s — shift=%v ctrl=%v alt=%v meta=%v\r\n", e.String(), e.Shift(), e.Ctrl(), e.Alt(), e.Meta())
-	}
-}
-
-func tryGoWinKey() {
-	events, _ := gowinkey.ListenSelective(gowinkey.VK_W, gowinkey.VK_A, gowinkey.VK_S, gowinkey.VK_D)
-
-//	timer := time.AfterFunc(time.Second * 5, stopFn)
-//	defer timer.Stop()
-
-
-	for e := range events {
-		switch e.Type {
-		case gowinkey.KeyPressed:
-			fmt.Println("pressed", e)
-		case gowinkey.KeyReleased:
-			fmt.Println("released", e)
-		}
-	}
-}
-
-func tryScanner() {
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		fmt.Println("You typed:", scanner.Text())
-	}
-
-	if scanner.Err() != nil {
-		// handle error
-	}
-}
-
