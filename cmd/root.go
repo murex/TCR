@@ -24,6 +24,8 @@ This application is a tool to practice TCR.
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO hook up real application here
+		trace.HorizontalLine()
+		trace.Info("Running in default mode (sandbox)")
 
 		trace.HorizontalLine()
 		trace.Info("Command Line Options")
