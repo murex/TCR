@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/beevik/ntp v0.3.0 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
+	github.com/containerd/console v1.0.2 // indirect
 	github.com/daspoet/gowinkey v0.0.1 // indirect
 	github.com/janmir/go-mailgun v0.0.0-20190125044204-a6e592090a64 // indirect
 	github.com/janmir/go-util v0.0.0-20190817040753-0200b518ef34 // indirect
@@ -21,6 +22,7 @@ require (
 	github.com/vence722/inputhook v0.0.0-20161229153353-d5d96bf92384 // indirect
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
+	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/text v0.3.6 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )

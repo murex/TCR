@@ -3,15 +3,18 @@ package sandbox
 import (
 	"bufio"
 	"fmt"
+	"github.com/containerd/console"
 	"github.com/daspoet/gowinkey"
 	"github.com/janmir/go-winput"
 	"github.com/mengdaming/tcr/trace"
 	"github.com/vence722/inputhook"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -24,7 +27,10 @@ func KeyboardSandbox() {
 	//tryGoWinput()
 	//tryReadRune()
 	//tryInputHook()
-	tryBufioScanner()
+	//tryBufioScanner()
+	//tryWithMakeRaw()
+	//tryConsole()
+	tryGetTermDimWithSttyCommand()
 
 }
 
@@ -122,5 +128,56 @@ func tryBufioScanner() {
 	for scanner.Scan() {
 		fmt.Println(scanner.Text())
 	}
+}
+
+func tryWithMakeRaw() {
+	// fd 0 is stdin
+	var state, err = term.MakeRaw(0)
+	if err != nil {
+		log.Fatalln("setting stdin to raw:", err)
+	}
+	defer func() {
+		if err := term.Restore(0, state); err != nil {
+			log.Println("warning, failed to restore terminal:", err)
+		}
+	}()
+
+	in := bufio.NewReader(os.Stdin)
+	for {
+		r, _, err := in.ReadRune()
+		if err != nil {
+			log.Println("stdin:", err)
+			break
+		}
+		fmt.Printf("read rune %q\r\n", r)
+		if r == 'q' {
+			break
+		}
+	}
+}
+
+func tryConsole() {
+	current := console.Current()
+	defer current.Reset()
+
+	if err := current.SetRaw(); err != nil {
+	}
+	ws, _ := current.Size()
+	current.Resize(ws)
+
+}
+
+func tryGetTermDimWithSttyCommand() () {
+	cmd := exec.Command("stty", "size")
+	cmd.Stdin = os.Stdin
+	var termDim []byte
+	var err error
+	if termDim, err = cmd.Output(); err != nil {
+		return
+	}
+	var width, height int
+	_,_ = fmt.Sscan(string(termDim), &height, &width)
+	fmt.Println("Height", height, "Width", width)
+	return
 }
 
