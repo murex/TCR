@@ -6,11 +6,13 @@ import (
 	"runtime"
 )
 
-var osToolbox OSToolbox
-var language Language
-var toolchain string
-var autoPush bool
-var gitWorkingBranch string
+var (
+	osToolbox        OSToolbox
+	language         Language
+	toolchain        string
+	autoPush         bool
+	gitWorkingBranch string
+)
 
 func Start(t string, ap bool) {
 	toolchain = t
@@ -24,23 +26,28 @@ func Start(t string, ap bool) {
 func whatShallWeDo() {
 	printTraceHeader()
 	// TODO
+	trace.HorizontalLine()
+	trace.Info("What shall we do?")
+	trace.Info("\tD -> Driver mode")
+	trace.Info("\tN -> Navigator mode")
+	trace.Info("\tQ -> Quit")
+
 }
 
 func printTraceHeader() {
 	trace.HorizontalLine()
 
-	th1 := fmt.Sprintf("Language=%v, Toolchain=%v", language.name(), language.toolchain())
+	th1 := fmt.Sprintf("Language=%v, Toolchain=%v",
+		language.name(), language.toolchain())
 	trace.Info(th1)
 
-	var autoPushStr string
+	autoPushStr := "disabled"
 	if autoPush {
 		autoPushStr = "enabled"
-	} else {
-		autoPushStr = "disabled"
 	}
-	th2 := fmt.Sprintf("Running on git branch \"%v\" with auto-push %v", gitWorkingBranch, autoPushStr)
+	th2 := fmt.Sprintf("Running on git branch \"%v\" with auto-push %v",
+		gitWorkingBranch, autoPushStr)
 	trace.Info(th2)
-
 }
 
 func detectGitWorkingBranch() {
@@ -49,7 +56,7 @@ func detectGitWorkingBranch() {
 }
 
 func detectKataLanguage() {
-	// TODO Add language detection. Hardcoding java for now
+	// TODO Add language detection. Hard-coding java for now
 	language = JavaLanguage{}
 }
 
