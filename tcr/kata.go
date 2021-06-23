@@ -3,7 +3,7 @@ package tcr
 import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 type Kata struct {
@@ -18,5 +18,5 @@ func BaseDir() string {
 }
 
 func ScriptDir() string {
-	return path.Join(BaseDir(), "tcr")
+	return filepath.Join(BaseDir(), "tcr")
 }

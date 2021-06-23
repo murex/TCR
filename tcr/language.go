@@ -1,6 +1,8 @@
 package tcr
 
-import "path"
+import (
+	"path/filepath"
+)
 
 type Language interface {
 	name() string
@@ -29,13 +31,13 @@ func (Language JavaLanguage) workDir() string {
 
 func (Language JavaLanguage) srcDirs() []string {
 	return []string{
-		path.Join(BaseDir(), "src", "main"),
+		filepath.Join(BaseDir(), "src", "main"),
 	}
 }
 
 func (Language JavaLanguage) testDirs() []string {
 	return []string{
-		path.Join(BaseDir(), "src", "test"),
+		filepath.Join(BaseDir(), "src", "test"),
 	}
 }
 
@@ -53,18 +55,18 @@ func (Language CppLanguage) toolchain() string {
 }
 
 func (Language CppLanguage) workDir() string {
-	return path.Join(BaseDir(), "build")
+	return filepath.Join(BaseDir(), "build")
 }
 
 func (Language CppLanguage) srcDirs() []string {
 	return []string{
-		path.Join(BaseDir(), "src"),
-		path.Join(BaseDir(), "include"),
+		filepath.Join(BaseDir(), "src"),
+		filepath.Join(BaseDir(), "include"),
 	}
 }
 
 func (Language CppLanguage) testDirs() []string {
 	return []string{
-		path.Join(BaseDir(), "test"),
+		filepath.Join(BaseDir(), "test"),
 	}
 }

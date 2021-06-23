@@ -1,8 +1,10 @@
 package tcr
 
-import "path"
+import (
+	"path/filepath"
+)
 
-type OsToolbox interface {
+type OSToolbox interface {
 	fsWatchCommand() string
 	cmakeBinPath() string
 	cmakeCommand() string
@@ -14,20 +16,20 @@ type OsToolbox interface {
 type MacOSToolbox struct {
 }
 
-func (OsToolbox MacOSToolbox) fsWatchCommand() string {
+func (osToolbox MacOSToolbox) fsWatchCommand() string {
 	return "fswatch -1 -r"
 }
 
-func (OsToolbox MacOSToolbox) cmakeBinPath() string {
+func (osToolbox MacOSToolbox) cmakeBinPath() string {
 	return "./cmake/cmake-macos-universal/CMake.app/Contents/bin"
 }
 
-func (OsToolbox MacOSToolbox) cmakeCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "cmake")
+func (osToolbox MacOSToolbox) cmakeCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "cmake")
 }
 
-func (OsToolbox MacOSToolbox) ctestCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "ctest")
+func (osToolbox MacOSToolbox) ctestCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "ctest")
 }
 
 // ========================================================================
@@ -35,20 +37,20 @@ func (OsToolbox MacOSToolbox) ctestCommand() string {
 type LinuxToolbox struct {
 }
 
-func (OsToolbox LinuxToolbox) fsWatchCommand() string {
+func (osToolbox LinuxToolbox) fsWatchCommand() string {
 	return "inotifywait -r -e modify"
 }
 
-func (OsToolbox LinuxToolbox) cmakeBinPath() string {
+func (osToolbox LinuxToolbox) cmakeBinPath() string {
 	return "./cmake/cmake-LinuxToolbox-x86_64/bin"
 }
 
-func (OsToolbox LinuxToolbox) cmakeCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "cmake")
+func (osToolbox LinuxToolbox) cmakeCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "cmake")
 }
 
-func (OsToolbox LinuxToolbox) ctestCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "ctest")
+func (osToolbox LinuxToolbox) ctestCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "ctest")
 }
 
 // ========================================================================
@@ -56,18 +58,18 @@ func (OsToolbox LinuxToolbox) ctestCommand() string {
 type WindowsToolbox struct {
 }
 
-func (OsToolbox WindowsToolbox) fsWatchCommand() string {
-	return path.Join(ScriptDir(), "inotify-win.exe") + " -r -e modify"
+func (osToolbox WindowsToolbox) fsWatchCommand() string {
+	return filepath.Join(ScriptDir(), "inotify-win.exe") + " -r -e modify"
 }
 
-func (OsToolbox WindowsToolbox) cmakeBinPath() string {
+func (osToolbox WindowsToolbox) cmakeBinPath() string {
 	return "./cmake/cmake-win64-x64/bin"
 }
 
-func (OsToolbox WindowsToolbox) cmakeCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "cmake.exe")
+func (osToolbox WindowsToolbox) cmakeCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "cmake.exe")
 }
 
-func (OsToolbox WindowsToolbox) ctestCommand() string {
-	return path.Join(OsToolbox.cmakeBinPath(), "ctest.exe")
+func (osToolbox WindowsToolbox) ctestCommand() string {
+	return filepath.Join(osToolbox.cmakeBinPath(), "ctest.exe")
 }
