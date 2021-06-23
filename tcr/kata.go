@@ -10,11 +10,11 @@ type Kata struct {
 }
 
 func BaseDir() string {
-	path, err := os.Executable()
+	baseDir, err := os.Executable()
 	if err != nil {
 		trace.Error(err.Error())
 	}
-	return path
+	return baseDir
 }
 
 func ScriptDir() string {
