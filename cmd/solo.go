@@ -16,7 +16,7 @@ It never pushes or pulls to a remote repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		trace.HorizontalLine()
 		trace.Info("Running in solo mode")
-		tcr.Start()
+		tcr.Start(toolchain, autoPush)
 	},
 }
 

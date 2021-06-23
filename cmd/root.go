@@ -52,13 +52,13 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tcr.yaml)")
+	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tcr.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().StringVarP(&toolchain, "toolchain", "t",
+	rootCmd.PersistentFlags().StringVarP(&toolchain, "toolchain", "t",
 		"maven", "indicate the toolchain to be used by TCR")
-	rootCmd.Flags().BoolVarP(&autoPush, "auto-push", "p", false, "Enable git push after every commit")
+	rootCmd.PersistentFlags().BoolVarP(&autoPush, "auto-push", "p", false, "Enable git push after every commit")
 }
 
 // initConfig reads in config file and ENV variables if set.
