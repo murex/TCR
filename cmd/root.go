@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/mengdaming/tcr/sandbox"
 	"github.com/mengdaming/tcr/trace"
 
 	"github.com/mitchellh/go-homedir"
@@ -25,7 +24,7 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO hook up real application here
 		trace.HorizontalLine()
-		trace.Info("Running in default mode (sandbox)")
+		trace.Info("Running in default mode")
 
 		trace.HorizontalLine()
 		trace.Info("Command Line Options")
@@ -34,8 +33,6 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		trace.Info(toolchainTrace)
 		var autoPushTrace = fmt.Sprintf("Auto-Push = %v", autoPush)
 		trace.Info(autoPushTrace)
-
-		sandbox.KeyboardSandbox()
 	},
 }
 
