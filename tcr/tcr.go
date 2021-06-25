@@ -36,26 +36,51 @@ func whatShallWeDo() {
 }
 
 func runAsDriver() {
-	trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
-	pull()
-	for {
-		watchFileSystem()
-		tcr()
-	}
+	loopWithInterrupt(
+		func() {
+			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
+			pull()
+		},
+		func() {
+			watchFileSystem()
+			tcr()
+		},
+		func() {
+			trace.Info("Leaving Driver mode")
+		},
+	)
 }
 
 func runAsNavigator() {
+	loopWithInterrupt(
+		func() {
+			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
+		},
+		func() {
+			pull()
+		},
+		func() {
+			trace.Info("Leaving Navigator mode")
+		},
+	)
+}
+
+func loopWithInterrupt(
+	preLoopAction func(),
+	inLoopAction func(),
+	afterLoopAction func()) {
+
 	c1, cancel := context.WithCancel(context.Background())
 
 	exitCh := make(chan struct{})
 	go func(ctx context.Context) {
-		trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
+		preLoopAction()
 		for {
-			pull()
+			inLoopAction()
 
 			select {
 			case <-ctx.Done():
-				trace.Info("Leaving Navigator mode")
+				afterLoopAction()
 				exitCh <- struct{}{}
 				return
 			default:
@@ -63,6 +88,7 @@ func runAsNavigator() {
 		}
 	}(c1)
 
+	// For handling Ctrl-C interruption
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt)
 	go func() {
