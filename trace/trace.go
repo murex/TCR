@@ -27,15 +27,18 @@ func printColoredLine(message string, colorCode int) {
 	fmt.Println(colored)
 }
 
-func Info(message string) {
+func Info(a ...interface{}) {
+	message := fmt.Sprint(a)
 	printColoredLine(message, ansiColorCyan)
 }
 
-func Warning(message string) {
+func Warning(a ...interface{}) {
+	message := fmt.Sprint(a)
 	printColoredLine(message, ansiColorYellow)
 }
 
-func Error(message string) {
+func Error(a ...interface{}) {
+	message := fmt.Sprint(a)
 	printColoredLine(message, ansiColorRed)
 	os.Exit(1)
 }

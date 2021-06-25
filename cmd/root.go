@@ -27,12 +27,9 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		trace.Info("Running in default mode")
 
 		trace.HorizontalLine()
-		trace.Info("Command Line Options")
-
-		var toolchainTrace = fmt.Sprintf("Toolchain = %v", toolchain)
-		trace.Info(toolchainTrace)
-		var autoPushTrace = fmt.Sprintf("Auto-Push = %v", autoPush)
-		trace.Info(autoPushTrace)
+		trace.Info("Command Line Options:")
+		trace.Info("Toolchain", toolchain)
+		trace.Info("Auto-Push", autoPush)
 	},
 }
 

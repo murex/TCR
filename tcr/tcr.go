@@ -1,7 +1,6 @@
 package tcr
 
 import (
-	"fmt"
 	"github.com/mengdaming/tcr/trace"
 	"runtime"
 )
@@ -31,23 +30,22 @@ func whatShallWeDo() {
 	trace.Info("\tD -> Driver mode")
 	trace.Info("\tN -> Navigator mode")
 	trace.Info("\tQ -> Quit")
-
 }
 
 func printTraceHeader() {
 	trace.HorizontalLine()
 
-	th1 := fmt.Sprintf("Language=%v, Toolchain=%v",
-		language.name(), language.toolchain())
-	trace.Info(th1)
+	trace.Info(
+		"Language:", language.name(),
+		"Toolchain:", language.toolchain())
 
 	autoPushStr := "disabled"
 	if autoPush {
 		autoPushStr = "enabled"
 	}
-	th2 := fmt.Sprintf("Running on git branch \"%v\" with auto-push %v",
-		gitWorkingBranch, autoPushStr)
-	trace.Info(th2)
+	trace.Info(
+		"Running on git branch", gitWorkingBranch,
+		"with auto-push", autoPushStr)
 }
 
 func detectGitWorkingBranch() {
@@ -69,7 +67,6 @@ func initOSToolbox() {
 	case "windows":
 		osToolbox = WindowsToolbox{}
 	default:
-		message := fmt.Sprintf("OS %v is currently not supported", runtime.GOOS)
-		trace.Error(message)
+		trace.Error("OS", runtime.GOOS, "is currently not supported")
 	}
 }
