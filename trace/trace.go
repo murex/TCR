@@ -28,17 +28,17 @@ func printColoredLine(message string, colorCode int) {
 }
 
 func Info(a ...interface{}) {
-	message := fmt.Sprint(a)
+	message := fmt.Sprint(a...)
 	printColoredLine(message, ansiColorCyan)
 }
 
 func Warning(a ...interface{}) {
-	message := fmt.Sprint(a)
+	message := fmt.Sprint(a...)
 	printColoredLine(message, ansiColorYellow)
 }
 
 func Error(a ...interface{}) {
-	message := fmt.Sprint(a)
+	message := fmt.Sprint(a...)
 	printColoredLine(message, ansiColorRed)
 	os.Exit(1)
 }

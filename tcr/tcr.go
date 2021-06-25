@@ -36,16 +36,16 @@ func printTraceHeader() {
 	trace.HorizontalLine()
 
 	trace.Info(
-		"Language:", language.name(),
-		"Toolchain:", language.toolchain())
+		"Language=", language.name(),
+		", Toolchain=", language.toolchain())
 
 	autoPushStr := "disabled"
 	if autoPush {
 		autoPushStr = "enabled"
 	}
 	trace.Info(
-		"Running on git branch", gitWorkingBranch,
-		"with auto-push", autoPushStr)
+		"Running on git branch \"", gitWorkingBranch,
+		"\" with auto-push ", autoPushStr)
 }
 
 func detectGitWorkingBranch() {
@@ -67,6 +67,6 @@ func initOSToolbox() {
 	case "windows":
 		osToolbox = WindowsToolbox{}
 	default:
-		trace.Error("OS", runtime.GOOS, "is currently not supported")
+		trace.Error("OS ", runtime.GOOS, " is currently not supported")
 	}
 }

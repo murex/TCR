@@ -28,8 +28,8 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 
 		trace.HorizontalLine()
 		trace.Info("Command Line Options:")
-		trace.Info("Toolchain", toolchain)
-		trace.Info("Auto-Push", autoPush)
+		trace.Info("- Toolchain: ", toolchain)
+		trace.Info("- Auto-Push: ", autoPush)
 	},
 }
 

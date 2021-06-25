@@ -97,7 +97,7 @@ func tryGoWinput() {
 	input := winput.New()
 	input.Type("Hello from Winput!")
 	ok := input.HotKey(winput.HotKeySelectAll)
-	trace.Info("Type status", ok)
+	trace.Info("Type status: ", ok)
 }
 
 func tryReadRune() {
