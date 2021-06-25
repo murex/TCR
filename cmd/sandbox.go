@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/mengdaming/tcr/sandbox"
 	"github.com/mengdaming/tcr/trace"
 
 	"github.com/spf13/cobra"
@@ -15,6 +16,7 @@ Used to experiment with new functionalities or modules.
 Don't use unless you know what you're doing!`,
 	Run: func(cmd *cobra.Command, args []string) {
 		trace.Info("Running in sandbox mode")
+		sandbox.ConsoleSandbox()
 	},
 }
 

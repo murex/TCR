@@ -23,7 +23,7 @@ func KeyboardSandbox() {
 	trace.HorizontalLine()
 	trace.Info("Experimenting with keyboard input (Windows OS)")
 
-	//tryGoWinKey()
+	tryGoWinKey()
 	//tryGoWinput()
 	//tryReadRune()
 	//tryInputHook()
