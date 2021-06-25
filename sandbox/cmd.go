@@ -3,16 +3,27 @@ package sandbox
 import (
 	"fmt"
 	"github.com/go-cmd/cmd"
+	"log"
+	"os"
+	"os/exec"
 	"time"
 )
 
 func CmdSandbox() {
-	tryGoCmdAsync()
+	//tryGoCmdAsync()
+	tryLookPath()
 }
 
 func tryGoCmdAsync() {
+	path, err := os.Getwd()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(path)
+
 	// Start a long-running process, capture stdout and stderr
-	findCmd := cmd.NewCmd("find", ".", "-name", "\\*.go")
+//	findCmd := cmd.NewCmd("find", ".", "-name", "\\*.go")
+	findCmd := cmd.NewCmd("ls", "-a")
 	statusChan := findCmd.Start() // non-blocking
 
 	ticker := time.NewTicker(2 * time.Second)
@@ -47,4 +58,14 @@ func tryGoCmdAsync() {
 	// Block waiting for command to exit, be stopped, or be killed
 	finalStatus := <-statusChan
 	fmt.Println("Final Status:", finalStatus)
+}
+
+func tryLookPath() {
+	command := "ls"
+	goExecPath, err := exec.LookPath(command)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	} else {
+		fmt.Println(command, "executable:", goExecPath)
+	}
 }
