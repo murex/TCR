@@ -1,22 +1,37 @@
 package tcr
 
-import "github.com/daspoet/gowinkey"
+import (
+	"bytes"
+	"github.com/mengdaming/tcr/stty"
+	"github.com/mengdaming/tcr/trace"
+	"os"
+)
+
+var initialSttyState bytes.Buffer
 
 func mainMenu() {
 	printOptionsMenu()
-	keyboardEvents, _ := gowinkey.Listen()
 
-	for event := range keyboardEvents {
-		if event.Type == gowinkey.KeyPressed {
-			switch event.VirtualKey {
-			case gowinkey.VK_D:
-				runAsDriver()
-			case gowinkey.VK_N:
-				runAsNavigator()
-			case gowinkey.VK_Q:
-				quit()
-			}
-			printOptionsMenu()
+	initialSttyState = stty.SetRaw()
+	defer stty.Restore(&initialSttyState)
+
+	b := make([]byte, 1)
+	for {
+		_, err := os.Stdin.Read(b)
+		if err != nil {
+			trace.Warning(err)
 		}
+		//trace.Info("Read character: ", b)
+
+		switch b[0] {
+		case 'd', 'D':
+			runAsDriver()
+		case 'n', 'N':
+			runAsNavigator()
+		case 'q', 'Q':
+			stty.Restore(&initialSttyState)
+			quit()
+		}
+		printOptionsMenu()
 	}
 }
