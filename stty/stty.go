@@ -18,14 +18,16 @@ func setStty(state *bytes.Buffer) (err error) {
 	cmd := exec.Command("stty", state.String())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
+	//trace.Info("Command: ", cmd)
 	return cmd.Run()
 }
 
 func SetRaw() bytes.Buffer {
 	var initialState bytes.Buffer
 	err := readStty(&initialState)
+	//trace.Info(initialState.String())
 	if err != nil {
-		trace.Error(err)
+		trace.Error("stty -g: ", err)
 	}
 
 	cbreakErr := setStty(bytes.NewBufferString("cbreak"))
@@ -35,16 +37,17 @@ func SetRaw() bytes.Buffer {
 
 	echoErr := setStty(bytes.NewBufferString("-echo"))
 	if echoErr != nil {
-		trace.Error("stty -echo: ", cbreakErr)
+		trace.Error("stty -echo: ", echoErr)
 	}
 
 	return initialState
 }
 
-func Restore(state *bytes.Buffer) {
+//func Restore(state *bytes.Buffer) {
+func Restore() {
 	//trace.Info("Restoring stty initial state")
-	err := setStty(state)
-	if err != nil {
-		trace.Error(err)
-	}
+	_ = setStty(bytes.NewBufferString("-cbreak"))
+	_ = setStty(bytes.NewBufferString("echo"))
 }
+
+

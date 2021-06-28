@@ -1,21 +1,18 @@
-//+build !windows
-
 package tcr
 
 import (
-	"bytes"
 	"github.com/mengdaming/tcr/stty"
 	"github.com/mengdaming/tcr/trace"
 	"os"
 )
 
-var initialSttyState bytes.Buffer
+//var initialSttyState bytes.Buffer
 
 func mainMenu() {
 	printOptionsMenu()
 
-	initialSttyState = stty.SetRaw()
-	defer stty.Restore(&initialSttyState)
+	_ = stty.SetRaw()
+	defer stty.Restore()
 
 	b := make([]byte, 1)
 	for {
@@ -31,7 +28,7 @@ func mainMenu() {
 		case 'n', 'N':
 			runAsNavigator()
 		case 'q', 'Q':
-			stty.Restore(&initialSttyState)
+			stty.Restore()
 			quit()
 		}
 		printOptionsMenu()
