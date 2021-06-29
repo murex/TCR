@@ -1,11 +1,11 @@
 package tcr
 
 import (
+	"github.com/go-git/go-git/v5"
 	"github.com/mengdaming/tcr/trace"
 	"golang.org/x/net/context"
 	"os"
 	"os/signal"
-	"runtime"
 	"time"
 )
 
@@ -31,7 +31,8 @@ func Start(m WorkMode, t string, ap bool) {
 	autoPush = ap
 	mode = m
 
-	initOSToolbox()
+	osToolbox = initOSToolbox()
+
 	detectKataLanguage()
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
@@ -42,8 +43,13 @@ func Start(m WorkMode, t string, ap bool) {
 	printTCRHeader()
 	switch mode {
 	case Solo:
+		// When running TCR in solo mode, there's no
+		// selection menu: we directly enter driver mode
 		runAsDriver()
 	case Mob:
+		// When running TCR in mob mode, every participant
+		// is given the possibility to switch between
+		// driver and navigator modes
 		mobMainMenu()
 	}
 }
@@ -148,7 +154,7 @@ func tcr() {
 func build() error {
 	trace.Info("Launching Build")
 
-	// TODO
+	// TODO Rewrite in Go
 	time.Sleep(1 * time.Second)
 	//build_rc=0
 	//case "${TOOLCHAIN}" in
@@ -178,7 +184,7 @@ func build() error {
 func test() error {
 	trace.Info("Running Tests")
 
-	// TODO
+	// TODO Rewrite in Go
 	time.Sleep(1 * time.Second)
 	//test_rc=0
 	//case ${TOOLCHAIN} in
@@ -262,9 +268,30 @@ func printTCRHeader() {
 }
 
 func detectGitWorkingBranch() {
-	// TODO Hardcoded for now
+	// TODO Hardcoded as main branch and existing on origin for now
+	dir, err := os.Getwd()
+	if err != nil {
+		trace.Error("os.Getwd(): ", err)
+	}
 
+	repo, err := git.PlainOpen(dir)
+	if err != nil {
+		trace.Error("git.PlainOpen(): ", err)
+	}
+
+	//iter, err := repo.Branches()
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	h, err := repo.Head()
+	if err != nil {
+		trace.Error("repo.Head(): ", err)
+	}
 	// TODO GIT_WORKING_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+	trace.Info("Git Working Branch: ", h.Name().Short())
+	//trace.Info("Git Exists on origin: ", h.Name().IsRemote())
+
 	// TODO GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=$(git branch -r | grep -c "origin/${GIT_WORKING_BRANCH}" || [ $? = 1 ])
 	gitWorkingBranch = "main"
 	gitWorkingBranchExistsOnOrigin = true
@@ -275,15 +302,3 @@ func detectKataLanguage() {
 	language = JavaLanguage{}
 }
 
-func initOSToolbox() {
-	switch runtime.GOOS {
-	case "darwin":
-		osToolbox = MacOSToolbox{}
-	case "linux":
-		osToolbox = LinuxToolbox{}
-	case "windows":
-		osToolbox = WindowsToolbox{}
-	default:
-		trace.Error("OS ", runtime.GOOS, " is currently not supported")
-	}
-}
