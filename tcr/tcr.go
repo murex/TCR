@@ -247,7 +247,7 @@ func detectGitWorkingBranch() {
 	// TODO GIT_WORKING_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 	// TODO GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=$(git branch -r | grep -c "origin/${GIT_WORKING_BRANCH}" || [ $? = 1 ])
 	gitWorkingBranch = "main"
-	gitWorkingBranchExistsOnOrigin = false
+	gitWorkingBranchExistsOnOrigin = true
 }
 
 func detectKataLanguage() {
