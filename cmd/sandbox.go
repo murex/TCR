@@ -10,6 +10,7 @@ import (
 // sandboxCmd represents the sandbox command
 var sandboxCmd = &cobra.Command{
 	Use:   "sandbox",
+	Hidden: true,
 	Short: "Sandbox mode",
 	Long: `
 Used to experiment with new functionalities or modules.
