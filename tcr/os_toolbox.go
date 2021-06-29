@@ -1,7 +1,9 @@
 package tcr
 
 import (
+	"github.com/mengdaming/tcr/trace"
 	"path/filepath"
+	"runtime"
 )
 
 type OSToolbox interface {
@@ -72,4 +74,19 @@ func (osToolbox WindowsToolbox) cmakeCommand() string {
 
 func (osToolbox WindowsToolbox) ctestCommand() string {
 	return filepath.Join(osToolbox.cmakeBinPath(), "ctest.exe")
+}
+
+func initOSToolbox() OSToolbox {
+	toolbox := osToolbox
+	switch runtime.GOOS {
+	case "darwin":
+		toolbox = MacOSToolbox{}
+	case "linux":
+		toolbox = LinuxToolbox{}
+	case "windows":
+		toolbox = WindowsToolbox{}
+	default:
+		trace.Error("OS ", runtime.GOOS, " is currently not supported")
+	}
+	return toolbox
 }
