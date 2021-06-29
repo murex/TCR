@@ -20,7 +20,6 @@ func mainMenu() {
 		if err != nil {
 			trace.Warning("Something went wrong while reading from stdin: ", err)
 		}
-		//trace.Info("Read character: ", keyboardInput)
 
 		switch keyboardInput[0] {
 		case 'd', 'D':
