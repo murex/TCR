@@ -14,15 +14,15 @@ func mainMenu() {
 	_ = stty.SetRaw()
 	defer stty.Restore()
 
-	b := make([]byte, 1)
+	keyboardInput := make([]byte, 1)
 	for {
-		_, err := os.Stdin.Read(b)
+		_, err := os.Stdin.Read(keyboardInput)
 		if err != nil {
-			trace.Warning(err)
+			trace.Warning("Something went wrong while reading from stdin: ", err)
 		}
-		//trace.Info("Read character: ", b)
+		//trace.Info("Read character: ", keyboardInput)
 
-		switch b[0] {
+		switch keyboardInput[0] {
 		case 'd', 'D':
 			runAsDriver()
 		case 'n', 'N':
@@ -30,6 +30,9 @@ func mainMenu() {
 		case 'q', 'Q':
 			stty.Restore()
 			quit()
+		default:
+			trace.Warning("No action is mapped to shortcut '",
+				string(keyboardInput), "'" )
 		}
 		printOptionsMenu()
 	}

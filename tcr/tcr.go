@@ -38,6 +38,7 @@ func whatShallWeDo() {
 func runAsDriver() {
 	loopWithInterrupt(
 		func() {
+			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
 			pull()
 		},
@@ -54,6 +55,7 @@ func runAsDriver() {
 func runAsNavigator() {
 	loopWithInterrupt(
 		func() {
+			trace.HorizontalLine()
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
 		func() {
@@ -148,7 +150,7 @@ func build() error {
 }
 
 func test() error {
-	trace.Info( "Running Tests")
+	trace.Info("Running Tests")
 
 	// TODO
 	time.Sleep(1 * time.Second)
