@@ -45,6 +45,11 @@ func SetRaw() bytes.Buffer {
 
 //func Restore(state *bytes.Buffer) {
 func Restore() {
+	// For some unknown reason restoring previous stty state
+	// fails on WSL, while working correctly on Windows git bash
+	// Still need to test it on MacOS and on a non-WSL Linux box
+	// Until then we set back echo and -cbreak instead of
+	// restoring the previous state
 	//trace.Info("Restoring stty initial state")
 	_ = setStty(bytes.NewBufferString("-cbreak"))
 	_ = setStty(bytes.NewBufferString("echo"))
