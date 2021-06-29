@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/mengdaming/tcr/trace"
+	"github.com/mengdaming/tcr/tcr"
 	"github.com/spf13/cobra"
 )
 
@@ -13,10 +13,7 @@ var mobCmd = &cobra.Command{
 When used in "mob" mode, TCR ensures that any commit
 is shared with other participants through calling git push-pull.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		trace.HorizontalLine()
-		trace.Info("Running in mob mode")
-		// TODO Hook up application call here
-		trace.Warning("Still need to hook up real code here")
+		tcr.Start(tcr.Mob, toolchain, true)
 	},
 }
 

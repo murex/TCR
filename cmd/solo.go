@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/mengdaming/tcr/tcr"
-	"github.com/mengdaming/tcr/trace"
 	"github.com/spf13/cobra"
 )
 
@@ -14,9 +13,7 @@ var soloCmd = &cobra.Command{
 When used in "solo" mode, TCR only commits changes locally.
 It never pushes or pulls to a remote repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		trace.HorizontalLine()
-		trace.Info("Running in solo mode")
-		tcr.Start(toolchain, autoPush)
+		tcr.Start(tcr.Solo, toolchain, false)
 	},
 }
 

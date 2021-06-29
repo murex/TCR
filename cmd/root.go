@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/trace"
 
 	"github.com/mitchellh/go-homedir"
@@ -19,18 +20,20 @@ var rootCmd = &cobra.Command{
 	Use:   "tcr",
 	Short: "TCR (Test && Commit || Revert)",
 	Long: `
-This application is a tool to practice TCR.
+This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO hook up real application here
-		trace.HorizontalLine()
-		trace.Info("Running in default mode")
-
-		trace.HorizontalLine()
-		trace.Info("Command Line Options:")
-		trace.Info("- Toolchain: ", toolchain)
-		trace.Info("- Auto-Push: ", autoPush)
+		//printCommandLineOptionValues()
+		trace.Info("Default running mode: " + tcr.Solo)
+		tcr.Start(tcr.Mob, toolchain, autoPush)
 	},
+}
+
+func printCommandLineOptionValues() {
+	trace.HorizontalLine()
+	trace.Info("Command Line Options:")
+	trace.Info("- Toolchain: ", toolchain)
+	trace.Info("- Auto-Push: ", autoPush)
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -50,9 +53,17 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.PersistentFlags().StringVarP(&toolchain, "toolchain", "t",
-		"maven", "indicate the toolchain to be used by TCR")
-	rootCmd.PersistentFlags().BoolVarP(&autoPush, "auto-push", "p", false, "Enable git push after every commit")
+	rootCmd.PersistentFlags().StringVarP(&toolchain,
+		"toolchain",
+		"t",
+		"maven",
+		"indicate the toolchain to be used by TCR")
+
+	rootCmd.Flags().BoolVarP(&autoPush,
+		"auto-push",
+		"p",
+		false,
+		"Enable git push after every commit")
 }
 
 // initConfig reads in config file and ENV variables if set.

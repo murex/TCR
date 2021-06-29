@@ -6,9 +6,8 @@ import (
 	"os"
 )
 
-//var initialSttyState bytes.Buffer
 
-func mainMenu() {
+func mobMainMenu() {
 	printOptionsMenu()
 
 	_ = stty.SetRaw()
@@ -26,6 +25,9 @@ func mainMenu() {
 			runAsDriver()
 		case 'n', 'N':
 			runAsNavigator()
+		case 'p', 'P':
+			toggleAutoPush()
+			printTCRHeader()
 		case 'q', 'Q':
 			stty.Restore()
 			quit()
@@ -36,3 +38,13 @@ func mainMenu() {
 		printOptionsMenu()
 	}
 }
+
+func printOptionsMenu() {
+	trace.HorizontalLine()
+	trace.Info("What shall we do?")
+	trace.Info("\tD -> Driver mode")
+	trace.Info("\tN -> Navigator mode")
+	trace.Info("\tP -> Turn on/off git auto-push")
+	trace.Info("\tQ -> Quit")
+}
+

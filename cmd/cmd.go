@@ -10,7 +10,7 @@ import (
 // cmdCmd represents the cmd command
 var cmdCmd = &cobra.Command{
 	Use:   "cmd",
-	Short: "A brief description of your command",
+	Short: "Sandbox Command Mode",
 	Long: `
 Used to experiment with command-related functionalities or modules.
 Don't use unless you know what you're doing!`,

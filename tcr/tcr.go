@@ -9,7 +9,15 @@ import (
 	"time"
 )
 
+type WorkMode string
+
+const (
+	Solo = "solo"
+	Mob  = "mob"
+)
+
 var (
+	mode                           WorkMode
 	osToolbox                      OSToolbox
 	language                       Language
 	toolchain                      string
@@ -18,21 +26,39 @@ var (
 	gitWorkingBranchExistsOnOrigin bool
 )
 
-func Start(t string, ap bool) {
+func Start(m WorkMode, t string, ap bool) {
 	toolchain = t
 	autoPush = ap
+	mode = m
+
 	initOSToolbox()
 	detectKataLanguage()
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
 	detectGitWorkingBranch()
-	whatShallWeDo()
+
+	printRunningMode(mode)
+	printTCRHeader()
+	switch mode {
+	case Solo:
+		runAsDriver()
+	case Mob:
+		mobMainMenu()
+	}
 }
 
-func whatShallWeDo() {
-	printTCRHeader()
-	mainMenu()
+func printRunningMode(mode WorkMode) {
+	trace.HorizontalLine()
+	trace.Info("Running in ", mode, " mode")
+}
+
+func toggleAutoPush() {
+	if autoPush {
+		autoPush = false
+	} else {
+		autoPush  = true
+	}
 }
 
 func runAsDriver() {
@@ -217,14 +243,6 @@ func watchFileSystem() {
 	trace.Info("Going to sleep until something interesting happens")
 	time.Sleep(1 * time.Second)
 	// TODO ${FS_WATCH_CMD} ${SRC_DIRS} ${TEST_DIRS}
-}
-
-func printOptionsMenu() {
-	trace.HorizontalLine()
-	trace.Info("What shall we do?")
-	trace.Info("\tD -> Driver mode")
-	trace.Info("\tN -> Navigator mode")
-	trace.Info("\tQ -> Quit")
 }
 
 func printTCRHeader() {
