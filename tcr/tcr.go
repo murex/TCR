@@ -1,7 +1,6 @@
 package tcr
 
 import (
-	"github.com/go-git/go-git/v5"
 	"github.com/mengdaming/tcr/trace"
 	"golang.org/x/net/context"
 	"os"
@@ -22,8 +21,6 @@ var (
 	language                       Language
 	toolchain                      string
 	autoPush                       bool
-	gitWorkingBranch               string
-	gitWorkingBranchExistsOnOrigin bool
 )
 
 func Start(m WorkMode, t string, ap bool) {
@@ -226,25 +223,6 @@ func revert() {
 	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
 }
 
-func push() {
-	trace.Info("Pushing changes to origin/", gitWorkingBranch)
-	time.Sleep(1 * time.Second)
-	// TODO Call to git push --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
-	// TODO [ ${git_rc} -eq 0 ] && GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=1
-	// TODO	return ${git_rc}
-}
-
-func pull() {
-	if gitWorkingBranchExistsOnOrigin {
-		trace.Info("Pulling latest changes from origin/", gitWorkingBranch)
-		time.Sleep(1 * time.Second)
-		// TODO Call to git pull --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
-	} else {
-		trace.Info("Working locally on branch ", gitWorkingBranch)
-		time.Sleep(1 * time.Second)
-	}
-}
-
 func watchFileSystem() {
 	trace.Info("Going to sleep until something interesting happens")
 	time.Sleep(1 * time.Second)
@@ -265,36 +243,6 @@ func printTCRHeader() {
 	trace.Info(
 		"Running on git branch \"", gitWorkingBranch,
 		"\" with auto-push ", autoPushStr)
-}
-
-func detectGitWorkingBranch() {
-	// TODO Hardcoded as main branch and existing on origin for now
-	dir, err := os.Getwd()
-	if err != nil {
-		trace.Error("os.Getwd(): ", err)
-	}
-
-	repo, err := git.PlainOpen(dir)
-	if err != nil {
-		trace.Error("git.PlainOpen(): ", err)
-	}
-
-	//iter, err := repo.Branches()
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	h, err := repo.Head()
-	if err != nil {
-		trace.Error("repo.Head(): ", err)
-	}
-	// TODO GIT_WORKING_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-	trace.Info("Git Working Branch: ", h.Name().Short())
-	//trace.Info("Git Exists on origin: ", h.Name().IsRemote())
-
-	// TODO GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=$(git branch -r | grep -c "origin/${GIT_WORKING_BRANCH}" || [ $? = 1 ])
-	gitWorkingBranch = "main"
-	gitWorkingBranchExistsOnOrigin = true
 }
 
 func detectKataLanguage() {
