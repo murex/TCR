@@ -8,6 +8,7 @@ require (
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/containerd/console v1.0.2
 	github.com/daspoet/gowinkey v0.0.1
+	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-cmd/cmd v1.3.0
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/janmir/go-mailgun v0.0.0-20190125044204-a6e592090a64 // indirect
@@ -26,4 +27,5 @@ require (
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
 	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b
+	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637
 )

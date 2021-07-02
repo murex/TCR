@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/go-cmd/cmd"
 	"golang.org/x/net/context"
+	"gopkg.in/tomb.v2"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -14,7 +16,8 @@ import (
 func CmdSandbox() {
 	//tryGoCmdAsync()
 	//tryLookPath()
-	tryContext()
+	//tryContext()
+	tryTombV2()
 }
 
 func tryGoCmdAsync() {
@@ -105,4 +108,38 @@ func tryContext() {
 		}
 	}()
 	<-exitCh
+}
+
+// ------------------------------------------------
+
+func tryTombV2() {
+	var t tomb.Tomb
+	t.Go(func() error {
+		for {
+			time.Sleep(2 * time.Second)
+			select {
+			case <-t.Dying():
+				fmt.Println("terminate the goroutine")
+				return nil
+			default:
+				r, err := http.Get("https://mcorbin.fr")
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Printf("%d\n", r.StatusCode)
+			}
+		}
+	})
+	t.Go(func() error {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt)
+		s := <-sig
+		fmt.Printf("received signal %s\n", s)
+		t.Kill(nil)
+		return nil
+	})
+	err := t.Wait()
+	if err != nil {
+		fmt.Println(err)
+	}
 }

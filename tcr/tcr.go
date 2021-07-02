@@ -2,7 +2,7 @@ package tcr
 
 import (
 	"github.com/mengdaming/tcr/trace"
-	"golang.org/x/net/context"
+	"gopkg.in/tomb.v2"
 	"os"
 	"os/signal"
 	"time"
@@ -16,11 +16,11 @@ const (
 )
 
 var (
-	mode                           WorkMode
-	osToolbox                      OSToolbox
-	language                       Language
-	toolchain                      string
-	autoPush                       bool
+	mode      WorkMode
+	osToolbox OSToolbox
+	language  Language
+	toolchain string
+	autoPush  bool
 )
 
 func Start(m WorkMode, t string, ap bool) {
@@ -60,76 +60,82 @@ func toggleAutoPush() {
 	if autoPush {
 		autoPush = false
 	} else {
-		autoPush  = true
+		autoPush = true
 	}
 }
 
 func runAsDriver() {
-	loopWithInterrupt(
+	loopWithTomb(
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
 			pull()
 		},
-		func() {
-			watchFileSystem()
-			tcr()
+		func(interrupt<- chan bool) {
+			if watchFileSystem(interrupt) {
+				tcr()
+			}
 		},
 		func() {
-			trace.Info("Leaving Driver mode")
+			trace.Info("Exiting Driver mode")
 		},
 	)
 }
 
 func runAsNavigator() {
-	loopWithInterrupt(
+	loopWithTomb(
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
-		func() {
+		func(interrupt<- chan bool) {
 			pull()
 		},
 		func() {
-			trace.Info("Leaving Navigator mode")
+			trace.Info("Exiting Navigator mode")
 		},
 	)
 }
 
-func loopWithInterrupt(
+func loopWithTomb(
 	preLoopAction func(),
-	inLoopAction func(),
+	inLoopAction func(interrupt<- chan bool),
 	afterLoopAction func()) {
 
-	c1, cancel := context.WithCancel(context.Background())
+	// watch for interruption requests
+	interrupt := make(chan bool)
 
-	exitCh := make(chan struct{})
-	go func(ctx context.Context) {
+	var t tomb.Tomb
+
+	// The goroutine doing the work
+	t.Go(func() error {
 		preLoopAction()
 		for {
-			inLoopAction()
-
 			select {
-			case <-ctx.Done():
+			case <-t.Dying():
 				afterLoopAction()
-				exitCh <- struct{}{}
-				return
+				return nil
 			default:
+				inLoopAction(interrupt)
 			}
 		}
-	}(c1)
+	})
 
-	// For handling Ctrl-C interruption
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh, os.Interrupt)
-	go func() {
-		select {
-		case <-signalCh:
-			cancel()
-			return
-		}
-	}()
-	<-exitCh
+	// The goroutine watching for Ctrl-C
+	t.Go(func() error {
+		sig := make(chan os.Signal, 1)
+		signal.Notify(sig, os.Interrupt)
+		<-sig
+		//trace.Warning("OK, let's stop here")
+		interrupt <- true
+		t.Kill(nil)
+		return nil
+	})
+
+	err := t.Wait()
+	if err != nil {
+		trace.Error("t.Wait(): ", err)
+	}
 }
 
 func quit() {
@@ -223,12 +229,6 @@ func revert() {
 	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
 }
 
-func watchFileSystem() {
-	trace.Info("Going to sleep until something interesting happens")
-	time.Sleep(1 * time.Second)
-	// TODO ${FS_WATCH_CMD} ${SRC_DIRS} ${TEST_DIRS}
-}
-
 func printTCRHeader() {
 	trace.HorizontalLine()
 
@@ -249,4 +249,3 @@ func detectKataLanguage() {
 	// TODO Add language detection. Hard-coding java for now
 	language = JavaLanguage{}
 }
-
