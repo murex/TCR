@@ -5,13 +5,20 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func watchFileSystem(interrupt <-chan bool) bool {
 	trace.Info("Going to sleep until something interesting happens")
 	// TODO ${FS_WATCH_CMD} ${SRC_DIRS} ${TEST_DIRS}
-	return watchRecursive([]string{"C:\\Users\\dmenanteau\\git\\mengdaming\\tcr\\sandbox"}, interrupt)
-//	return watchRecursive(language.srcDirs(), interrupt)
+	switch runtime.GOOS {
+	case "windows":
+		return watchRecursive([]string{"C:\\Users\\dmenanteau\\git\\mengdaming\\tcr\\sandbox"}, interrupt)
+	default:
+		return watchRecursive([]string{"/Users/damien/git/mengdaming/tcr/sandbox"}, interrupt)
+	}
+	//
+	//	return watchRecursive(language.srcDirs(), interrupt)
 }
 
 var watcher *fsnotify.Watcher
@@ -21,12 +28,13 @@ func watchRecursive(dirs []string, interrupt <-chan bool) bool {
 	// The file watcher
 	watcher, _ = fsnotify.NewWatcher()
 	defer func(watcher *fsnotify.Watcher) {
-		err := watcher.Close(); if err != nil {
+		err := watcher.Close()
+		if err != nil {
 			trace.Error("watcher.Close(): ", err)
 		}
 	}(watcher)
 
-	// Indicates if changes were detected on relevant files
+	// Used to indicate if changes were detected on relevant files
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
@@ -47,12 +55,10 @@ func watchRecursive(dirs []string, interrupt <-chan bool) bool {
 					return
 				}
 				//trace.Info("Event:", event)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					// TODO add a filter to watch only for relevant files
-					trace.Info("-> ", event.Name)
-					changesDetected <- true
-					return
-				}
+				// TODO add a filter to watch only for relevant files changes
+				trace.Info("-> ", event.Name)
+				changesDetected <- true
+				return
 			case err, ok := <-watcher.Errors:
 				trace.Warning("Watcher error: ", err)
 				if !ok {
@@ -87,6 +93,5 @@ func watchDir(path string, fi os.FileInfo, err error) error {
 		}
 		return err
 	}
-
 	return nil
 }

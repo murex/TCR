@@ -71,7 +71,7 @@ func runAsDriver() {
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
 			pull()
 		},
-		func(interrupt<- chan bool) {
+		func(interrupt <-chan bool) {
 			if watchFileSystem(interrupt) {
 				tcr()
 			}
@@ -88,7 +88,7 @@ func runAsNavigator() {
 			trace.HorizontalLine()
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
-		func(interrupt<- chan bool) {
+		func(interrupt <-chan bool) {
 			pull()
 		},
 		func() {
@@ -99,7 +99,7 @@ func runAsNavigator() {
 
 func loopWithTomb(
 	preLoopAction func(),
-	inLoopAction func(interrupt<- chan bool),
+	inLoopAction func(interrupt <-chan bool),
 	afterLoopAction func()) {
 
 	// watch for interruption requests
@@ -115,6 +115,9 @@ func loopWithTomb(
 			case <-t.Dying():
 				afterLoopAction()
 				return nil
+			case <-interrupt:
+				afterLoopAction()
+				return nil
 			default:
 				inLoopAction(interrupt)
 			}
@@ -125,8 +128,9 @@ func loopWithTomb(
 	t.Go(func() error {
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, os.Interrupt)
+		//signal.Notify(sig, syscall.SIGTERM)
 		<-sig
-		//trace.Warning("OK, let's stop here")
+		trace.Warning("OK, let's stop here")
 		interrupt <- true
 		t.Kill(nil)
 		return nil
