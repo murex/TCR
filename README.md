@@ -5,7 +5,7 @@
 
 TCR utility experiment, written in Go
 
-## Command Line Nocumentation
+## Command Line Documentation
 
 Available [here](./doc/tcr.md)
 
