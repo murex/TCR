@@ -5,13 +5,17 @@
 
 TCR utility experiment, written in Go
 
+## Command Line Nocumentation
+
+Available [here](./doc/tcr.md)
+
 ## TODO
 
 - [x] Try https://pkg.go.dev/github.com/spf13/cobra
-- [ ] Try https://github.com/eiannone/keyboard
-- [ ] Try https://pkg.go.dev/github.com/gokyle/fswatch
-- [ ] Try https://pkg.go.dev/golang.org/x/exp/inotify
-- [ ] Try https://pkg.go.dev/golang.org/x/term
+- [x] Try https://github.com/eiannone/keyboard
+- [x] Try https://pkg.go.dev/github.com/gokyle/fswatch
+- [x] Try https://pkg.go.dev/golang.org/x/exp/inotify
+- [x] Try https://pkg.go.dev/golang.org/x/term
 
 ## Contributors
 
