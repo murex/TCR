@@ -5,20 +5,11 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
-	"runtime"
 )
 
-func watchFileSystem(interrupt <-chan bool) bool {
+func watchFileSystem(dirList []string, interrupt <-chan bool) bool {
 	trace.Info("Going to sleep until something interesting happens")
-	// TODO ${FS_WATCH_CMD} ${SRC_DIRS} ${TEST_DIRS}
-	switch runtime.GOOS {
-	case "windows":
-		return watchRecursive([]string{"C:\\Users\\dmenanteau\\git\\mengdaming\\tcr\\sandbox"}, interrupt)
-	default:
-		return watchRecursive([]string{"/Users/damien/git/mengdaming/tcr/sandbox"}, interrupt)
-	}
-	//
-	//	return watchRecursive(language.srcDirs(), interrupt)
+	return watchRecursive(dirList, interrupt)
 }
 
 var watcher *fsnotify.Watcher
