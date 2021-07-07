@@ -10,6 +10,7 @@ require (
 	github.com/daspoet/gowinkey v0.0.1
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-cmd/cmd v1.3.0
+	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/janmir/go-mailgun v0.0.0-20190125044204-a6e592090a64 // indirect
 	github.com/janmir/go-util v0.0.0-20190817040753-0200b518ef34 // indirect

@@ -5,6 +5,7 @@ import (
 	"gopkg.in/tomb.v2"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"time"
 )
 
@@ -32,11 +33,12 @@ func Start(b string, m WorkMode, t string, ap bool) {
 
 	osToolbox = initOSToolbox()
 
+	baseDir = changeDir(baseDir)
 	language = detectKataLanguage(baseDir)
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
-	detectGitWorkingBranch()
+	detectGitWorkingBranch(baseDir)
 
 	printRunningMode(mode)
 	printTCRHeader()
@@ -74,7 +76,7 @@ func runAsDriver() {
 			pull()
 		},
 		func(interrupt <-chan bool) {
-			if watchFileSystem(interrupt) {
+			if watchFileSystem(dirsToWatch(baseDir, language), interrupt) {
 				tcr()
 			}
 		},
@@ -252,6 +254,33 @@ func printTCRHeader() {
 }
 
 func detectKataLanguage(baseDir string) Language {
-	// TODO Add language detection. Hard-coding java for now
-	return JavaLanguage{}
+	dir := filepath.Base(baseDir)
+	switch dir {
+	case "java":
+		return JavaLanguage{}
+	case "cpp":
+		return CppLanguage{}
+	default:
+		trace.Error("Unrecognized language: ", dir)
+	}
+	return nil
+}
+
+func changeDir(baseDir string) string {
+	_, err := os.Stat(baseDir)
+	switch {
+	case os.IsNotExist(err):
+		trace.Error("Directory ", baseDir, " does not exist")
+	case os.IsPermission(err):
+		trace.Error("Can't access directory ", baseDir)
+	}
+
+	err = os.Chdir(baseDir)
+	if err != nil {
+		trace.Error("Cannot change directory to ", baseDir)
+	}
+
+	getwd, _ := os.Getwd()
+	trace.Info("Current Working Directory: ", getwd)
+	return getwd
 }
