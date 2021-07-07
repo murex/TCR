@@ -1,12 +1,15 @@
 package tcr
 
 import (
+	"errors"
 	"fmt"
+	"github.com/go-git/go-billy/v5/helper/chroot"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/storer"
+	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/mengdaming/tcr/trace"
-	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -20,17 +23,17 @@ var (
 	gitWorkingBranchExistsOnRemote bool
 )
 
-func detectGitWorkingBranch() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		trace.Error("os.Getwd(): ", err)
+func detectGitWorkingBranch(dir string) {
+	gitOptions := git.PlainOpenOptions{
+		DetectDotGit:          true,
+		EnableDotGitCommonDir: false,
 	}
-	//trace.Info("Current Working Directory: ", cwd)
-
-	repo, err := git.PlainOpen(cwd)
+	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
 	if err != nil {
 		trace.Error("git.PlainOpen(): ", err)
 	}
+	r, _ := root(repo)
+	trace.Info("Repository Root: ", filepath.Dir(r))
 
 	head, err := repo.Head()
 	if err != nil {
@@ -70,6 +73,22 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 	return storer.NewReferenceFilteredIter(func(ref *plumbing.Reference) bool {
 		return ref.Name().IsRemote() && ref.Type() != plumbing.SymbolicReference
 	}, refs), nil
+}
+
+func root(r *git.Repository) (string, error) {
+	// Try to grab the repository Storer
+	s, ok := r.Storer.(*filesystem.Storage)
+	if !ok {
+		return "", errors.New("repository storage is not filesystem.Storage")
+	}
+
+	// Try to get the underlying billy.Filesystem
+	fs, ok := s.Filesystem().(*chroot.ChrootHelper)
+	if !ok {
+		return "", errors.New("filesystem is not chroot.ChrootHelper")
+	}
+
+	return fs.Root(), nil
 }
 
 func push() {
