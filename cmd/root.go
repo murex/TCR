@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/trace"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -12,9 +13,11 @@ import (
 	"os"
 )
 
+// Command Line Options placeholders
 var cfgFile string
 var toolchain string
 var autoPush bool
+var baseDir string
 
 var rootCmd = &cobra.Command{
 	Use:   "tcr",
@@ -23,17 +26,19 @@ var rootCmd = &cobra.Command{
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//printCommandLineOptionValues()
+		//printCommandLineOptionValues(args)
 		trace.Info("Default running mode: " + tcr.Solo)
-		tcr.Start(tcr.Mob, toolchain, autoPush)
+		tcr.Start(baseDir, tcr.Mob, toolchain, autoPush)
 	},
 }
 
-func printCommandLineOptionValues() {
+func printCommandLineOptionValues(args []string) {
 	trace.HorizontalLine()
 	trace.Info("Command Line Options:")
+	trace.Info("- BaseDir: ", baseDir)
 	trace.Info("- Toolchain: ", toolchain)
 	trace.Info("- Auto-Push: ", autoPush)
+	trace.Info("- Arguments: ", strings.Join(args, " / "))
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -57,7 +62,14 @@ func init() {
 		"toolchain",
 		"t",
 		"maven",
-		"indicate the toolchain to be used by TCR")
+		"Indicate the toolchain to be used by TCR")
+
+	rootCmd.PersistentFlags().StringVarP(&baseDir,
+		"base-dir",
+		"b",
+		".",
+		"Indicate the base directory from which TCR is running")
+
 
 	rootCmd.Flags().BoolVarP(&autoPush,
 		"auto-push",

@@ -16,6 +16,7 @@ const (
 )
 
 var (
+	baseDir   string
 	mode      WorkMode
 	osToolbox OSToolbox
 	language  Language
@@ -23,14 +24,15 @@ var (
 	autoPush  bool
 )
 
-func Start(m WorkMode, t string, ap bool) {
+func Start(b string, m WorkMode, t string, ap bool) {
+	baseDir = b
+	mode = m
 	toolchain = t
 	autoPush = ap
-	mode = m
 
 	osToolbox = initOSToolbox()
 
-	detectKataLanguage()
+	language = detectKataLanguage(baseDir)
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
@@ -249,7 +251,7 @@ func printTCRHeader() {
 		"\" with auto-push ", autoPushStr)
 }
 
-func detectKataLanguage() {
+func detectKataLanguage(baseDir string) Language {
 	// TODO Add language detection. Hard-coding java for now
-	language = JavaLanguage{}
+	return JavaLanguage{}
 }
