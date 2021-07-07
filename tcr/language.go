@@ -31,13 +31,13 @@ func (Language JavaLanguage) workDir() string {
 
 func (Language JavaLanguage) srcDirs() []string {
 	return []string{
-		filepath.Join(BaseDir(), "src", "main"),
+		filepath.Join("src", "main"),
 	}
 }
 
 func (Language JavaLanguage) testDirs() []string {
 	return []string{
-		filepath.Join(BaseDir(), "src", "test"),
+		filepath.Join("src", "test"),
 	}
 }
 
@@ -55,18 +55,29 @@ func (Language CppLanguage) toolchain() string {
 }
 
 func (Language CppLanguage) workDir() string {
-	return filepath.Join(BaseDir(), "build")
+	return filepath.Join("build")
 }
 
 func (Language CppLanguage) srcDirs() []string {
 	return []string{
-		filepath.Join(BaseDir(), "src"),
-		filepath.Join(BaseDir(), "include"),
+		filepath.Join("src"),
+		filepath.Join("include"),
 	}
 }
 
 func (Language CppLanguage) testDirs() []string {
 	return []string{
-		filepath.Join(BaseDir(), "test"),
+		filepath.Join("test"),
 	}
+}
+
+// ========================================================================
+
+func dirsToWatch(baseDir string, lang Language) []string {
+	dirList := append(lang.srcDirs(), lang.testDirs()...)
+	for i := 0; i < len(dirList); i++ {
+		dirList[i] = filepath.Join(baseDir, dirList[i])
+	}
+	//trace.Info(dirList)
+	return dirList
 }
