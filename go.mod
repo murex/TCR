@@ -15,6 +15,7 @@ require (
 	github.com/janmir/go-util v0.0.0-20190817040753-0200b518ef34 // indirect
 	github.com/janmir/go-win32 v0.0.0-20190124040814-a627541aba52 // indirect
 	github.com/janmir/go-winput v0.0.0-20181213023706-1fe051a276de
+	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/pkg/term v1.1.0

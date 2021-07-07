@@ -3,6 +3,7 @@ package trace
 import (
 	"fmt"
 	"github.com/codeskyblue/go-sh"
+	"github.com/logrusorgru/aurora"
 	"os"
 	"strconv"
 	"strings"
@@ -14,32 +15,29 @@ const (
 	horizontalLineCharacter = "-"
 
 	// Default terminal width if current terminal is not recognized
-	terminalDefaultWidth = 80
-
-	ansiColorReset  = 0
-	ansiColorRed    = 31
-	ansiColorYellow = 33
-	ansiColorCyan   = 36
+	defaultTerminalWidth = 80
 )
 
-func printColoredLine(message string, colorCode int) {
-	colored := fmt.Sprintf("\x1b[%dm%s %s\x1b[%dm", colorCode, linePrefix, message, ansiColorReset)
-	fmt.Println(colored)
+var (
+	colorizer = aurora.NewAurora(true)
+)
+
+func printColoredLine(fgColor aurora.Color, message string) {
+	fmt.Println(
+		colorizer.Colorize(linePrefix, fgColor),
+		colorizer.Colorize(message, fgColor))
 }
 
 func Info(a ...interface{}) {
-	message := fmt.Sprint(a...)
-	printColoredLine(message, ansiColorCyan)
+	printColoredLine(aurora.CyanFg, fmt.Sprint(a...))
 }
 
 func Warning(a ...interface{}) {
-	message := fmt.Sprint(a...)
-	printColoredLine(message, ansiColorYellow)
+	printColoredLine(aurora.YellowFg, fmt.Sprint(a...))
 }
 
 func Error(a ...interface{}) {
-	message := fmt.Sprint(a...)
-	printColoredLine(message, ansiColorRed)
+	printColoredLine(aurora.RedFg, fmt.Sprint(a...))
 	os.Exit(1)
 }
 
@@ -55,13 +53,14 @@ func HorizontalLine() {
 }
 
 func getTermColumns() int {
-	output, err1 := sh.Command("tput", "cols").Output()
-	if err1 != nil {
-		return terminalDefaultWidth
+	output, err := sh.Command("tput", "cols").Output()
+	if err != nil {
+		return defaultTerminalWidth
 	}
-	termColumns, err2 := strconv.Atoi(strings.TrimSpace(string(output)))
-	if err2 != nil {
-		return terminalDefaultWidth
+
+	termColumns, err := strconv.Atoi(strings.TrimSpace(string(output)))
+	if err != nil {
+		return defaultTerminalWidth
 	}
 	return termColumns
 }
