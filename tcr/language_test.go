@@ -45,6 +45,11 @@ func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", CppLanguage{}))
 }
 
+func Test_dirs_to_watch_should_contain_both_src_and_test_dirs(t *testing.T) {
+	var expected = append(FakeLanguage{}.srcDirs(), FakeLanguage{}.testDirs()...)
+	assert.Equal(t, expected, dirsToWatch("", FakeLanguage{}))
+}
+
 func Test_dirs_to_watch_should_have_absolute_path(t *testing.T) {
 	baseDir, _ := os.Getwd()
 	var expected = []string{
