@@ -42,7 +42,7 @@ func Error(a ...interface{}) {
 }
 
 func HorizontalLine() {
-	termWidth := getTermColumns()
+	termWidth := getTerminalColumns()
 	prefixWidth := len(linePrefix) + 1
 	lineWidth := termWidth - prefixWidth - 1
 	if lineWidth < 0 {
@@ -52,15 +52,15 @@ func HorizontalLine() {
 	Info(horizontalLine)
 }
 
-func getTermColumns() int {
+func getTerminalColumns() int {
 	output, err := sh.Command("tput", "cols").Output()
 	if err != nil {
 		return defaultTerminalWidth
 	}
 
-	termColumns, err := strconv.Atoi(strings.TrimSpace(string(output)))
+	columns, err := strconv.Atoi(strings.TrimSpace(string(output)))
 	if err != nil {
 		return defaultTerminalWidth
 	}
-	return termColumns
+	return columns
 }
