@@ -45,7 +45,7 @@ func watchRecursive(dirs []string, interrupt <-chan bool) bool {
 					changesDetected <- false
 					return
 				}
-				//trace.Info("Event:", event)
+				trace.Info("Event:", event)
 				// TODO add a filter to watch only for relevant files changes
 				trace.Info("-> ", event.Name)
 				changesDetected <- true
