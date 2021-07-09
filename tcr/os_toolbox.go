@@ -7,7 +7,6 @@ import (
 )
 
 type OSToolbox interface {
-	fsWatchCommand() string
 	cmakeBinPath() string
 	cmakeCommand() string
 	ctestCommand() string
@@ -16,10 +15,6 @@ type OSToolbox interface {
 // ========================================================================
 
 type MacOSToolbox struct {
-}
-
-func (osToolbox MacOSToolbox) fsWatchCommand() string {
-	return "fswatch -1 -r"
 }
 
 func (osToolbox MacOSToolbox) cmakeBinPath() string {
@@ -39,10 +34,6 @@ func (osToolbox MacOSToolbox) ctestCommand() string {
 type LinuxToolbox struct {
 }
 
-func (osToolbox LinuxToolbox) fsWatchCommand() string {
-	return "inotifywait -r -e modify"
-}
-
 func (osToolbox LinuxToolbox) cmakeBinPath() string {
 	return "./cmake/cmake-LinuxToolbox-x86_64/bin"
 }
@@ -58,10 +49,6 @@ func (osToolbox LinuxToolbox) ctestCommand() string {
 // ========================================================================
 
 type WindowsToolbox struct {
-}
-
-func (osToolbox WindowsToolbox) fsWatchCommand() string {
-	return filepath.Join(ScriptDir(), "inotify-win.exe") + " -r -e modify"
 }
 
 func (osToolbox WindowsToolbox) cmakeBinPath() string {
