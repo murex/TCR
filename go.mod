@@ -22,6 +22,7 @@ require (
 	github.com/pkg/term v1.1.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.0
+	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tj/go-terminput v1.0.0
 	github.com/vence722/inputhook v0.0.0-20161229153353-d5d96bf92384
 	go.uber.org/goleak v1.1.10 // indirect

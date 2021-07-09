@@ -7,7 +7,6 @@ import (
 type Language interface {
 	name() string
 	toolchain() string
-	workDir() string
 	srcDirs() []string
 	testDirs() []string
 }
@@ -23,10 +22,6 @@ func (Language JavaLanguage) name() string {
 
 func (Language JavaLanguage) toolchain() string {
 	return "gradle"
-}
-
-func (Language JavaLanguage) workDir() string {
-	return BaseDir()
 }
 
 func (Language JavaLanguage) srcDirs() []string {
@@ -52,10 +47,6 @@ func (Language CppLanguage) name() string {
 
 func (Language CppLanguage) toolchain() string {
 	return "cmake"
-}
-
-func (Language CppLanguage) workDir() string {
-	return filepath.Join("build")
 }
 
 func (Language CppLanguage) srcDirs() []string {
