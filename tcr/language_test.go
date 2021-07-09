@@ -19,16 +19,16 @@ func (Language FakeLanguage) toolchain() string {
 }
 
 func (Language FakeLanguage) srcDirs() []string {
-	return []string{ "src" }
+	return []string{"src"}
 }
 
 func (Language FakeLanguage) testDirs() []string {
-	return []string{ "test" }
+	return []string{"test"}
 }
 
 // --------------------------------------------------------------------------
 
-func Test_DirsToWatch_Java(t *testing.T) {
+func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	var expected = []string{
 		filepath.Join("src", "main"),
 		filepath.Join("src", "test"),
@@ -36,7 +36,7 @@ func Test_DirsToWatch_Java(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", JavaLanguage{}))
 }
 
-func Test_DirsToWatch_Cpp(t *testing.T) {
+func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	var expected = []string{
 		filepath.Join("src"),
 		filepath.Join("include"),
@@ -45,11 +45,11 @@ func Test_DirsToWatch_Cpp(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", CppLanguage{}))
 }
 
-func Test_DirsToWatch_PrependsBaseDirToAll(t *testing.T) {
+func Test_dirs_to_watch_should_have_absolute_path(t *testing.T) {
 	baseDir, _ := os.Getwd()
 	var expected = []string{
-		filepath.Join(baseDir, "src"),
-		filepath.Join(baseDir, "test"),
+		filepath.Join(baseDir, FakeLanguage{}.srcDirs()[0]),
+		filepath.Join(baseDir, FakeLanguage{}.testDirs()[0]),
 	}
 	assert.Equal(t, expected, dirsToWatch(baseDir, FakeLanguage{}))
 }

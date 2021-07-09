@@ -16,21 +16,21 @@ type Language interface {
 type JavaLanguage struct {
 }
 
-func (Language JavaLanguage) name() string {
+func (language JavaLanguage) name() string {
 	return "java"
 }
 
-func (Language JavaLanguage) toolchain() string {
+func (language JavaLanguage) toolchain() string {
 	return "gradle"
 }
 
-func (Language JavaLanguage) srcDirs() []string {
+func (language JavaLanguage) srcDirs() []string {
 	return []string{
 		filepath.Join("src", "main"),
 	}
 }
 
-func (Language JavaLanguage) testDirs() []string {
+func (language JavaLanguage) testDirs() []string {
 	return []string{
 		filepath.Join("src", "test"),
 	}
@@ -41,22 +41,22 @@ func (Language JavaLanguage) testDirs() []string {
 type CppLanguage struct {
 }
 
-func (Language CppLanguage) name() string {
+func (language CppLanguage) name() string {
 	return "cpp"
 }
 
-func (Language CppLanguage) toolchain() string {
+func (language CppLanguage) toolchain() string {
 	return "cmake"
 }
 
-func (Language CppLanguage) srcDirs() []string {
+func (language CppLanguage) srcDirs() []string {
 	return []string{
 		filepath.Join("src"),
 		filepath.Join("include"),
 	}
 }
 
-func (Language CppLanguage) testDirs() []string {
+func (language CppLanguage) testDirs() []string {
 	return []string{
 		filepath.Join("test"),
 	}
