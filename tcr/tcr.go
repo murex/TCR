@@ -21,14 +21,14 @@ var (
 	mode      WorkMode
 	osToolbox OSToolbox
 	language  Language
-	toolchain string
+	toolchain Toolchain
 	autoPush  bool
 )
 
 func Start(b string, m WorkMode, t string, ap bool) {
 	baseDir = b
 	mode = m
-	toolchain = t
+	toolchain = NewToolchain(t)
 	autoPush = ap
 
 	osToolbox = initOSToolbox()

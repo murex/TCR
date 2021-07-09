@@ -19,7 +19,9 @@ const (
 )
 
 var (
-	colorizer = aurora.NewAurora(true)
+	colorizer      = aurora.NewAurora(true)
+	exitFunction   = os.Exit
+	exitReturnCode = 0
 )
 
 func printColoredLine(fgColor aurora.Color, message string) {
@@ -38,7 +40,7 @@ func Warning(a ...interface{}) {
 
 func Error(a ...interface{}) {
 	printColoredLine(aurora.RedFg, fmt.Sprint(a...))
-	os.Exit(1)
+	exitFunction(1)
 }
 
 func HorizontalLine() {
@@ -63,4 +65,20 @@ func getTerminalColumns() int {
 		return defaultTerminalWidth
 	}
 	return columns
+}
+
+// --------------------------------------------------------------------------
+// For testability purpose: When running in test mode, we bypass the os.Exit()
+// call, so that we can check the return code if needed
+// These functions should not be used when running in production mode
+
+func SetTestMode() {
+	Warning("Running in test mode")
+	exitFunction = func(rc int) {
+		exitReturnCode = rc
+	}
+}
+
+func GetExitReturnCode() int {
+	return exitReturnCode
 }
