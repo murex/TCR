@@ -38,7 +38,7 @@ func Test_gradle_toolchain_name(t *testing.T) {
 }
 
 func Test_gradle_toolchain_build_command_name(t *testing.T) {
-	assert.Equal(t, "./gradlew", GradleToolchain{}.buildCommandName())
+	assert.Equal(t, "gradlew", GradleToolchain{}.buildCommandName())
 }
 
 func Test_gradle_toolchain_build_command_args(t *testing.T) {

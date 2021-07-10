@@ -3,6 +3,8 @@ package tcr
 import (
 	"github.com/codeskyblue/go-sh"
 	"github.com/mengdaming/tcr/trace"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -29,8 +31,11 @@ func NewToolchain(name string) Toolchain {
 }
 
 func runBuild(toolchain Toolchain) error {
+	wd, _ := os.Getwd()
+	buildCommandPath := filepath.Join(wd, toolchain.buildCommandName())
+	//trace.Info(buildCommandPath)
 	output, err := sh.Command(
-		toolchain.buildCommandName(),
+		buildCommandPath,
 		toolchain.buildCommandArgs()).Output()
 	if output != nil {
 		trace.Transparent(string(output))
@@ -61,7 +66,7 @@ func (toolchain GradleToolchain) runTests() error {
 }
 
 func (toolchain GradleToolchain) buildCommandName() string {
-	return "./gradlew"
+	return "gradlew"
 }
 
 
