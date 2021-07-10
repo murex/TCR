@@ -11,11 +11,25 @@ Available [here](./doc/tcr.md)
 
 ## TODO
 
-- [x] Try https://pkg.go.dev/github.com/spf13/cobra
-- [x] Try https://github.com/eiannone/keyboard
-- [x] Try https://pkg.go.dev/github.com/gokyle/fswatch
-- [x] Try https://pkg.go.dev/golang.org/x/exp/inotify
-- [x] Try https://pkg.go.dev/golang.org/x/term
+### Base version
+
+- [ ] Gradle toolchain
+- [ ] Maven toolchain
+- [ ] CMake toolchain
+- [ ] Java language
+- [ ] C++  language
+
+### Other features & ideas
+
+- [ ] Timer integration
+- [ ] Connection with video sharing tool
+- [ ] GUI - local application
+- [ ] GUI - Web interface
+- [ ] Multi-user sessions
+- [ ] Cmake wrapper
+- [ ] Intelligent toolchain management (pre-installed, wrapper)  
+- [ ] Golang language
+- [ ] Kotlin language
 
 ## Contributors
 
