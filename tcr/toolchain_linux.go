@@ -1,7 +1,5 @@
 package tcr
 
 func (toolchain CmakeToolchain) buildCommandName() string {
-	// TODO OS-Specific command path
-	return "cmake"
+	return filepath.Join("cmake", "cmake-Linux-x86_64", "bin", "cmake")
 }
-
