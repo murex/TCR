@@ -43,6 +43,10 @@ func Error(a ...interface{}) {
 	exitFunction(1)
 }
 
+func Transparent(a ...interface{}) {
+	fmt.Println(a...)
+}
+
 func HorizontalLine() {
 	termWidth := getTerminalColumns()
 	prefixWidth := len(linePrefix) + 1
