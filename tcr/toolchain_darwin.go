@@ -1,6 +1,8 @@
 package tcr
 
+import "path/filepath"
+
 func (toolchain CmakeToolchain) buildCommandName() string {
-	// TODO OS-Specific command path
-	return "cmake"
+	return filepath.Join("cmake", "cmake-macos-universal",
+		"CMake.app", "Contents", "bin", "cmake")
 }
