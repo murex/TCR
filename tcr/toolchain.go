@@ -1,9 +1,18 @@
 package tcr
 
 import (
+	"github.com/codeskyblue/go-sh"
 	"github.com/mengdaming/tcr/trace"
 	"time"
 )
+
+type Toolchain interface {
+	name() string
+	runBuild() error
+	runTests() error
+	buildCommandName() string
+	buildCommandArgs() []string
+}
 
 func NewToolchain(name string) Toolchain {
 	// TODO add maven
@@ -19,13 +28,20 @@ func NewToolchain(name string) Toolchain {
 	return nil
 }
 
-// ========================================================================
-
-type Toolchain interface {
-	name() string
-	runBuild() error
-	runTests() error
+func runBuild(toolchain Toolchain) error {
+	output, err := sh.Command(
+		toolchain.buildCommandName(),
+		toolchain.buildCommandArgs()).Output()
+	if output != nil {
+		trace.Info(string(output))
+	}
+	if err != nil {
+		trace.Warning(err)
+	}
+	return err
 }
+
+// ========================================================================
 
 type GradleToolchain struct {
 }
@@ -35,9 +51,7 @@ func (toolchain GradleToolchain) name() string {
 }
 
 func (toolchain GradleToolchain) runBuild() error {
-	// TODO Call gradle build
-	time.Sleep(1 * time.Second)
-	return nil
+	return runBuild(toolchain)
 }
 
 func (toolchain GradleToolchain) runTests() error {
@@ -50,11 +64,12 @@ func (toolchain GradleToolchain) buildCommandName() string {
 	return "./gradlew"
 }
 
-// ========================================================================
 
 func (toolchain GradleToolchain) buildCommandArgs() []string {
 	return []string{"-x", "test"}
 }
+
+// ========================================================================
 
 type CmakeToolchain struct{}
 
@@ -63,9 +78,7 @@ func (toolchain CmakeToolchain) name() string {
 }
 
 func (toolchain CmakeToolchain) runBuild() error {
-	// TODO Call cmake build
-	time.Sleep(1 * time.Second)
-	return nil
+	return runBuild(toolchain)
 }
 
 func (toolchain CmakeToolchain) runTests() error {

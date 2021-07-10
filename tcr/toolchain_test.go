@@ -33,6 +33,11 @@ func Test_gradle_toolchain_build_command_args(t *testing.T) {
 	assert.Equal(t, []string{"-x", "test"}, GradleToolchain{}.buildCommandArgs())
 }
 
+func Test_gradle_toolchain_returns_non_0_when_build_fails(t *testing.T) {
+	// TODO How to setup failing/successful test environments?
+	assert.NotZero(t, GradleToolchain{}.runBuild())
+}
+
 // --------------------------------------------------------------------------
 
 func Test_cmake_toolchain_creation(t *testing.T) {
