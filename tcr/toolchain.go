@@ -33,7 +33,7 @@ func runBuild(toolchain Toolchain) error {
 		toolchain.buildCommandName(),
 		toolchain.buildCommandArgs()).Output()
 	if output != nil {
-		trace.Info(string(output))
+		trace.Transparent(string(output))
 	}
 	if err != nil {
 		trace.Warning(err)
@@ -41,7 +41,7 @@ func runBuild(toolchain Toolchain) error {
 	return err
 }
 
-// ========================================================================
+// Gradle ========================================================================
 
 type GradleToolchain struct {
 }
@@ -66,10 +66,10 @@ func (toolchain GradleToolchain) buildCommandName() string {
 
 
 func (toolchain GradleToolchain) buildCommandArgs() []string {
-	return []string{"-x", "test"}
+	return []string{"build", "-x", "test"}
 }
 
-// ========================================================================
+// Cmake ========================================================================
 
 type CmakeToolchain struct{}
 
@@ -82,7 +82,7 @@ func (toolchain CmakeToolchain) runBuild() error {
 }
 
 func (toolchain CmakeToolchain) runTests() error {
-	// TODO Call cmake build
+	// TODO Call cmake test
 	time.Sleep(1 * time.Second)
 	return nil
 }
@@ -90,3 +90,7 @@ func (toolchain CmakeToolchain) runTests() error {
 func (toolchain CmakeToolchain) buildCommandArgs() []string {
 	return []string{"--build", ".", "--config", "Debug"}
 }
+
+// Maven ========================================================================
+
+// TODO Add maven toolchain
