@@ -2,9 +2,11 @@ package tcr
 
 import (
 	"github.com/mengdaming/tcr/trace"
+	"time"
 )
 
 func NewToolchain(name string) Toolchain {
+	// TODO add maven
 	switch name {
 	case GradleToolchain{}.name():
 		return GradleToolchain{}
@@ -33,12 +35,14 @@ func (toolchain GradleToolchain) name() string {
 }
 
 func (toolchain GradleToolchain) runBuild() error {
-	// TODO
+	// TODO Call gradle build
+	time.Sleep(1 * time.Second)
 	return nil
 }
 
 func (toolchain GradleToolchain) runTests() error {
-	// TODO
+	// TODO Call gradle test
+	time.Sleep(1 * time.Second)
 	return nil
 }
 
@@ -59,12 +63,14 @@ func (toolchain CmakeToolchain) name() string {
 }
 
 func (toolchain CmakeToolchain) runBuild() error {
-	// TODO
+	// TODO Call cmake build
+	time.Sleep(1 * time.Second)
 	return nil
 }
 
 func (toolchain CmakeToolchain) runTests() error {
-	// TODO
+	// TODO Call cmake build
+	time.Sleep(1 * time.Second)
 	return nil
 }
 

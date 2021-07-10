@@ -28,9 +28,9 @@ var (
 func Start(b string, m WorkMode, t string, ap bool) {
 	baseDir = b
 	mode = m
-	toolchain = NewToolchain(t)
 	autoPush = ap
 
+	toolchain = NewToolchain(t)
 	osToolbox = initOSToolbox()
 
 	baseDir = changeDir(baseDir)
@@ -165,31 +165,12 @@ func tcr() {
 func build() error {
 	trace.Info("Launching Build")
 
-	// TODO Rewrite in Go
-	time.Sleep(1 * time.Second)
-	//build_rc=0
-	//case "${TOOLCHAIN}" in
-	//gradle)
-	//./gradlew build -x test
-	//build_rc=$?
-	//;;
-	//maven)
-	//./mvnw test-compile
-	//build_rc=$?
-	//;;
-	//cmake)
-	//${CMAKE_CMD} --build . --config Debug
-	//build_rc=$?
-	//;;
-	//*)
-	//tcr_error "Toolchain ${TOOLCHAIN} is not supported"
-	//;;
-	//esac
-	//
-	//[ $build_rc -ne 0 ] && tcr_warning "There are build errors! I can't go any further"
-	//return $build_rc
+	err := toolchain.runBuild()
+	if err != nil {
+		trace.Warning("There are build errors! I can't go any further")
+	}
 
-	return nil
+	return err
 }
 
 func test() error {
