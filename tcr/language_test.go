@@ -26,7 +26,7 @@ func (Language FakeLanguage) testDirs() []string {
 	return []string{"test"}
 }
 
-// --------------------------------------------------------------------------
+// Java --------------------------------------------------------------------------
 
 func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	var expected = []string{
@@ -36,6 +36,8 @@ func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", JavaLanguage{}))
 }
 
+// C++ --------------------------------------------------------------------------
+
 func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	var expected = []string{
 		filepath.Join("src"),
@@ -44,6 +46,8 @@ func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	}
 	assert.Equal(t, expected, dirsToWatch("", CppLanguage{}))
 }
+
+// Any language -----------------------------------------------------------------
 
 func Test_dirs_to_watch_should_contain_both_src_and_test_dirs(t *testing.T) {
 	var expected = append(FakeLanguage{}.srcDirs(), FakeLanguage{}.testDirs()...)
