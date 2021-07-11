@@ -13,11 +13,15 @@ Available [here](./doc/tcr.md)
 
 ### Base version
 
-- [ ] Gradle toolchain
-- [ ] Maven toolchain
+- [x] Gradle toolchain
+- [x] Maven toolchain
 - [ ] CMake toolchain
-- [ ] Java language
+- [x] Java language
 - [ ] C++  language
+- [ ] Git pull integration
+- [ ] Git push integration
+- [ ] Git commit integration
+- [ ] Git checkout integration
 
 ### Other features & ideas
 

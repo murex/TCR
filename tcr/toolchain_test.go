@@ -22,12 +22,12 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 	_ = os.Chdir(initialDir)
 }
 
-// Gradle --------------------------------------------------------------------------
-
 func Test_unrecognized_toolchain_name(t *testing.T) {
 	assert.Zero(t, NewToolchain("dummy"))
 	assert.NotZero(t, trace.GetExitReturnCode())
 }
+
+// Gradle --------------------------------------------------------------------------
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
 	assert.Equal(t, GradleToolchain{}, NewToolchain("gradle"))
@@ -78,6 +78,60 @@ func Test_gradle_toolchain_returns_ok_when_tests_pass(t *testing.T) {
 	runFromDir(t,"../test/kata/java",
 		func(t *testing.T) {
 			assert.Zero(t, GradleToolchain{}.runTests())
+		})
+}
+
+// Maven --------------------------------------------------------------------------
+
+func Test_maven_toolchain_initialization(t *testing.T) {
+	assert.Equal(t, MavenToolchain{}, NewToolchain("maven"))
+}
+
+func Test_maven_toolchain_name(t *testing.T) {
+	assert.Equal(t, "maven", MavenToolchain{}.name())
+}
+
+func Test_maven_toolchain_build_command_name(t *testing.T) {
+	assert.Equal(t, "mvnw", MavenToolchain{}.buildCommandName())
+}
+
+func Test_maven_toolchain_build_command_args(t *testing.T) {
+	assert.Equal(t, []string{"test-compile"}, MavenToolchain{}.buildCommandArgs())
+}
+
+func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
+	runFromDir(t,"../test/kata",
+		func(t *testing.T) {
+			assert.NotZero(t, MavenToolchain{}.runBuild())
+		})
+}
+
+func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	runFromDir(t,"../test/kata/java",
+		func(t *testing.T) {
+			assert.Zero(t, MavenToolchain{}.runBuild())
+		})
+}
+
+func Test_maven_toolchain_test_command_name(t *testing.T) {
+	assert.Equal(t, "mvnw", MavenToolchain{}.testCommandName())
+}
+
+func Test_maven_toolchain_test_command_args(t *testing.T) {
+	assert.Equal(t, []string{"test"}, MavenToolchain{}.testCommandArgs())
+}
+
+func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	runFromDir(t,"../test/kata",
+		func(t *testing.T) {
+			assert.NotZero(t, MavenToolchain{}.runTests())
+		})
+}
+
+func Test_maven_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	runFromDir(t,"../test/kata/java",
+		func(t *testing.T) {
+			assert.Zero(t, MavenToolchain{}.runTests())
 		})
 }
 

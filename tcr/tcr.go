@@ -200,7 +200,7 @@ func printTCRHeader() {
 
 	trace.Info(
 		"Language=", language.name(),
-		", Toolchain=", language.toolchain())
+		", Toolchain=", toolchain.name())
 
 	autoPushStr := "disabled"
 	if autoPush {

@@ -18,10 +18,11 @@ type Toolchain interface {
 }
 
 func NewToolchain(name string) Toolchain {
-	// TODO add maven
 	switch name {
 	case GradleToolchain{}.name():
 		return GradleToolchain{}
+	case MavenToolchain{}.name():
+		return MavenToolchain{}
 	case CmakeToolchain{}.name():
 		return CmakeToolchain{}
 	default:
@@ -122,4 +123,33 @@ func (toolchain CmakeToolchain) testCommandArgs() []string {
 
 // Maven ========================================================================
 
-// TODO Add maven toolchain
+type MavenToolchain struct {
+}
+
+func (toolchain MavenToolchain) name() string {
+	return "maven"
+}
+
+func (toolchain MavenToolchain) runBuild() error {
+	return runBuild(toolchain)
+}
+
+func (toolchain MavenToolchain) runTests() error {
+	return runTests(toolchain)
+}
+
+func (toolchain MavenToolchain) buildCommandName() string {
+	return "mvnw"
+}
+
+func (toolchain MavenToolchain) buildCommandArgs() []string {
+	return []string{"test-compile"}
+}
+
+func (toolchain MavenToolchain) testCommandName() string {
+	return "mvnw"
+}
+
+func (toolchain MavenToolchain) testCommandArgs() []string {
+	return []string{"test"}
+}
