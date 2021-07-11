@@ -2,6 +2,13 @@
 # Cross-platform builds
 /build/
 
+# Test kata generated files
+/test/kata/java/.gradle/
+/test/kata/java/.mvn/
+/test/kata/java/build/
+/test/kata/java/target/
+/test/kata/cpp/build/
+
 # Created by https://www.toptal.com/developers/gitignore/api/go,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,intellij
 
@@ -132,5 +139,4 @@ fabric.properties
 .idea/codestream.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/go,intellij
-/test/kata/java/.gradle/
-/test/kata/java/build/
+
