@@ -59,6 +59,28 @@ func Test_gradle_toolchain_returns_ok_when_build_passes(t *testing.T) {
 		})
 }
 
+func Test_gradle_toolchain_test_command_name(t *testing.T) {
+	assert.Equal(t, "gradlew", GradleToolchain{}.testCommandName())
+}
+
+func Test_gradle_toolchain_test_command_args(t *testing.T) {
+	assert.Equal(t, []string{"test"}, GradleToolchain{}.testCommandArgs())
+}
+
+func Test_gradle_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	runFromDir(t,"../test/kata",
+		func(t *testing.T) {
+			assert.NotZero(t, GradleToolchain{}.runTests())
+		})
+}
+
+func Test_gradle_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	runFromDir(t,"../test/kata/java",
+		func(t *testing.T) {
+			assert.Zero(t, GradleToolchain{}.runTests())
+		})
+}
+
 // CMake -------------------------------------------------------------------------
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
@@ -88,5 +110,27 @@ func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
 	runFromDir(t,"../test/kata/cpp",
 		func(t *testing.T) {
 			assert.Zero(t, CmakeToolchain{}.runBuild())
+		})
+}
+
+func Test_cmake_toolchain_test_command_args(t *testing.T) {
+	assert.Equal(t, []string{
+		"--output-on-failure",
+		"-C", "Debug",
+	}, CmakeToolchain{}.testCommandArgs())
+}
+
+func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	runFromDir(t,"../test/kata",
+		func(t *testing.T) {
+			assert.NotZero(t, CmakeToolchain{}.runTests())
+		})
+}
+
+// TODO Figure out a way to provide a cmake wrapper
+func test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	runFromDir(t,"../test/kata/cpp",
+		func(t *testing.T) {
+			assert.Zero(t, CmakeToolchain{}.runTests())
 		})
 }

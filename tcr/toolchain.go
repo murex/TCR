@@ -5,7 +5,6 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 type Toolchain interface {
@@ -14,6 +13,8 @@ type Toolchain interface {
 	runTests() error
 	buildCommandName() string
 	buildCommandArgs() []string
+	testCommandName() string
+	testCommandArgs() []string
 }
 
 func NewToolchain(name string) Toolchain {
@@ -46,6 +47,22 @@ func runBuild(toolchain Toolchain) error {
 	return err
 }
 
+func runTests(toolchain Toolchain) error {
+	wd, _ := os.Getwd()
+	testCommandPath := filepath.Join(wd, toolchain.testCommandName())
+	//trace.Info(testCommandPath)
+	output, err := sh.Command(
+		testCommandPath,
+		toolchain.testCommandArgs()).Output()
+	if output != nil {
+		trace.Transparent(string(output))
+	}
+	if err != nil {
+		trace.Warning(err)
+	}
+	return err
+}
+
 // Gradle ========================================================================
 
 type GradleToolchain struct {
@@ -60,18 +77,23 @@ func (toolchain GradleToolchain) runBuild() error {
 }
 
 func (toolchain GradleToolchain) runTests() error {
-	// TODO Call gradle test
-	time.Sleep(1 * time.Second)
-	return nil
+	return runTests(toolchain)
 }
 
 func (toolchain GradleToolchain) buildCommandName() string {
 	return "gradlew"
 }
 
-
 func (toolchain GradleToolchain) buildCommandArgs() []string {
 	return []string{"build", "-x", "test"}
+}
+
+func (toolchain GradleToolchain) testCommandName() string {
+	return "gradlew"
+}
+
+func (toolchain GradleToolchain) testCommandArgs() []string {
+	return []string{"test"}
 }
 
 // Cmake ========================================================================
@@ -87,13 +109,15 @@ func (toolchain CmakeToolchain) runBuild() error {
 }
 
 func (toolchain CmakeToolchain) runTests() error {
-	// TODO Call cmake test
-	time.Sleep(1 * time.Second)
-	return nil
+	return runTests(toolchain)
 }
 
 func (toolchain CmakeToolchain) buildCommandArgs() []string {
 	return []string{"--build", ".", "--config", "Debug"}
+}
+
+func (toolchain CmakeToolchain) testCommandArgs() []string {
+	return []string{"--output-on-failure", "-C", "Debug"}
 }
 
 // Maven ========================================================================

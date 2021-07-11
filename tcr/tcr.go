@@ -164,43 +164,20 @@ func tcr() {
 
 func build() error {
 	trace.Info("Launching Build")
-
 	err := toolchain.runBuild()
 	if err != nil {
 		trace.Warning("There are build errors! I can't go any further")
 	}
-
 	return err
 }
 
 func test() error {
 	trace.Info("Running Tests")
-
-	// TODO Rewrite in Go
-	time.Sleep(1 * time.Second)
-	//test_rc=0
-	//case ${TOOLCHAIN} in
-	//gradle)
-	//./gradlew test
-	//test_rc=$?
-	//;;
-	//maven)
-	//./mvnw test
-	//test_rc=$?
-	//;;
-	//cmake)
-	//${CTEST_CMD} --output-on-failure -C Debug
-	//test_rc=$?
-	//;;
-	//*)
-	//tcr_error "Toolchain ${TOOLCHAIN} is not supported"
-	//;;
-	//esac
-	//
-	//[ $test_rc -ne 0 ] && tcr_warning "Some tests are failing! That's unfortunate"
-	//return $test_rc
-
-	return nil
+	err := toolchain.runTests()
+	if err != nil {
+		trace.Warning("Some tests are failing! That's unfortunate")
+	}
+	return err
 }
 
 func commit() {
