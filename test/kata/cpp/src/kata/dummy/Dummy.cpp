@@ -4,7 +4,6 @@
 namespace kata {
 namespace dummy {
 
-// TODO Replace with a method more relevant for the kata
 int doSomething()
 {
    return 42;
