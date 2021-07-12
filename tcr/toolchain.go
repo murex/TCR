@@ -15,6 +15,7 @@ type Toolchain interface {
 	buildCommandArgs() []string
 	testCommandName() string
 	testCommandArgs() []string
+	supports(language Language) bool
 }
 
 func NewToolchain(name string) Toolchain {
@@ -26,7 +27,6 @@ func NewToolchain(name string) Toolchain {
 	case CmakeToolchain{}.name():
 		return CmakeToolchain{}
 	default:
-		// TODO check toolchain / language compatibility
 		trace.Error("Toolchain \"", name, "\" not supported")
 	}
 	return nil
@@ -97,6 +97,10 @@ func (toolchain GradleToolchain) testCommandArgs() []string {
 	return []string{"test"}
 }
 
+func (toolchain GradleToolchain) supports(language Language) bool {
+	return language == JavaLanguage{}
+}
+
 // Cmake ========================================================================
 
 type CmakeToolchain struct{}
@@ -119,6 +123,10 @@ func (toolchain CmakeToolchain) buildCommandArgs() []string {
 
 func (toolchain CmakeToolchain) testCommandArgs() []string {
 	return []string{"--output-on-failure", "-C", "Debug"}
+}
+
+func (toolchain CmakeToolchain) supports(language Language) bool {
+	return language == CppLanguage{}
 }
 
 // Maven ========================================================================
@@ -152,4 +160,8 @@ func (toolchain MavenToolchain) testCommandName() string {
 
 func (toolchain MavenToolchain) testCommandArgs() []string {
 	return []string{"test"}
+}
+
+func (toolchain MavenToolchain) supports(language Language) bool {
+	return language == JavaLanguage{}
 }

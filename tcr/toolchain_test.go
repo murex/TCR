@@ -46,14 +46,14 @@ func Test_gradle_toolchain_build_command_args(t *testing.T) {
 }
 
 func Test_gradle_toolchain_returns_error_when_build_fails(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, GradleToolchain{}.runBuild())
 		})
 }
 
 func Test_gradle_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	runFromDir(t,"../test/kata/java",
+	runFromDir(t, "../test/kata/java",
 		func(t *testing.T) {
 			assert.Zero(t, GradleToolchain{}.runBuild())
 		})
@@ -68,17 +68,25 @@ func Test_gradle_toolchain_test_command_args(t *testing.T) {
 }
 
 func Test_gradle_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, GradleToolchain{}.runTests())
 		})
 }
 
 func Test_gradle_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	runFromDir(t,"../test/kata/java",
+	runFromDir(t, "../test/kata/java",
 		func(t *testing.T) {
 			assert.Zero(t, GradleToolchain{}.runTests())
 		})
+}
+
+func Test_gradle_toolchain_supports_java(t *testing.T) {
+	assert.True(t, GradleToolchain{}.supports(JavaLanguage{}))
+}
+
+func Test_gradle_toolchain_does_not_support_cpp(t *testing.T) {
+	assert.False(t, GradleToolchain{}.supports(CppLanguage{}))
 }
 
 // Maven --------------------------------------------------------------------------
@@ -100,14 +108,14 @@ func Test_maven_toolchain_build_command_args(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, MavenToolchain{}.runBuild())
 		})
 }
 
 func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	runFromDir(t,"../test/kata/java",
+	runFromDir(t, "../test/kata/java",
 		func(t *testing.T) {
 			assert.Zero(t, MavenToolchain{}.runBuild())
 		})
@@ -122,17 +130,25 @@ func Test_maven_toolchain_test_command_args(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, MavenToolchain{}.runTests())
 		})
 }
 
 func Test_maven_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	runFromDir(t,"../test/kata/java",
+	runFromDir(t, "../test/kata/java",
 		func(t *testing.T) {
 			assert.Zero(t, MavenToolchain{}.runTests())
 		})
+}
+
+func Test_maven_toolchain_supports_java(t *testing.T) {
+	assert.True(t, MavenToolchain{}.supports(JavaLanguage{}))
+}
+
+func Test_maven_toolchain_does_not_support_cpp(t *testing.T) {
+	assert.False(t, MavenToolchain{}.supports(CppLanguage{}))
 }
 
 // CMake -------------------------------------------------------------------------
@@ -153,7 +169,7 @@ func Test_cmake_toolchain_build_command_args(t *testing.T) {
 }
 
 func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, CmakeToolchain{}.runBuild())
 		})
@@ -161,7 +177,7 @@ func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
 
 // TODO Figure out a way to provide a cmake wrapper
 func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	runFromDir(t,"../test/kata/cpp",
+	runFromDir(t, "../test/kata/cpp",
 		func(t *testing.T) {
 			assert.Zero(t, CmakeToolchain{}.runBuild())
 		})
@@ -175,7 +191,7 @@ func Test_cmake_toolchain_test_command_args(t *testing.T) {
 }
 
 func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	runFromDir(t,"../test/kata",
+	runFromDir(t, "../test/kata",
 		func(t *testing.T) {
 			assert.NotZero(t, CmakeToolchain{}.runTests())
 		})
@@ -183,8 +199,16 @@ func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
 
 // TODO Figure out a way to provide a cmake wrapper
 func test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	runFromDir(t,"../test/kata/cpp",
+	runFromDir(t, "../test/kata/cpp",
 		func(t *testing.T) {
 			assert.Zero(t, CmakeToolchain{}.runTests())
 		})
+}
+
+func Test_cmake_toolchain_supports_cpp(t *testing.T) {
+	assert.True(t, CmakeToolchain{}.supports(CppLanguage{}))
+}
+
+func Test_cmake_toolchain_does_not_support_java(t *testing.T) {
+	assert.False(t, CmakeToolchain{}.supports(JavaLanguage{}))
 }

@@ -37,6 +37,7 @@ func Start(b string, m WorkMode, t string, ap bool) {
 
 	baseDir = changeDir(baseDir)
 	language = detectKataLanguage(baseDir)
+	checkToolchainAndLanguageCompatibility(toolchain, language)
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
@@ -54,6 +55,13 @@ func Start(b string, m WorkMode, t string, ap bool) {
 		// is given the possibility to switch between
 		// driver and navigator modes
 		mobMainMenu()
+	}
+}
+
+func checkToolchainAndLanguageCompatibility(toolchain Toolchain, language Language) {
+	if !toolchain.supports(language) {
+		trace.Error("Toolchain ", toolchain.name(),
+			" does not support language ", language.name())
 	}
 }
 

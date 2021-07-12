@@ -18,7 +18,7 @@ Available [here](./doc/tcr.md)
 - [ ] CMake toolchain
 - [x] Java language
 - [ ] C++  language
-- [ ] Git pull integration
+- [x] Git pull integration
 - [ ] Git push integration
 - [ ] Git commit integration
 - [ ] Git checkout integration
