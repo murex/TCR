@@ -14,6 +14,8 @@ type WorkMode string
 const (
 	Solo = "solo"
 	Mob  = "mob"
+
+	GitPollingPeriod = 1 * time.Second
 )
 
 var (
@@ -94,6 +96,7 @@ func runAsNavigator() {
 		},
 		func(interrupt <-chan bool) {
 			pull()
+			time.Sleep(GitPollingPeriod)
 		},
 		func() {
 			trace.Info("Exiting Navigator mode")
