@@ -32,12 +32,12 @@ func Start(b string, m WorkMode, t string, ap bool) {
 	mode = m
 	autoPush = ap
 
-	toolchain = NewToolchain(t)
+	baseDir = changeDir(baseDir)
+	language = detectLanguage(baseDir)
+	toolchain = NewToolchain(t, language)
+	checkToolchainAndLanguageCompatibility(toolchain, language)
 	osToolbox = initOSToolbox()
 
-	baseDir = changeDir(baseDir)
-	language = detectKataLanguage(baseDir)
-	checkToolchainAndLanguageCompatibility(toolchain, language)
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
@@ -55,13 +55,6 @@ func Start(b string, m WorkMode, t string, ap bool) {
 		// is given the possibility to switch between
 		// driver and navigator modes
 		mobMainMenu()
-	}
-}
-
-func checkToolchainAndLanguageCompatibility(toolchain Toolchain, language Language) {
-	if !toolchain.supports(language) {
-		trace.Error("Toolchain ", toolchain.name(),
-			" does not support language ", language.name())
 	}
 }
 
@@ -222,7 +215,7 @@ func printTCRHeader() {
 		"\" with auto-push ", autoPushStr)
 }
 
-func detectKataLanguage(baseDir string) Language {
+func detectLanguage(baseDir string) Language {
 	dir := filepath.Base(baseDir)
 	switch dir {
 	case "java":

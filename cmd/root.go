@@ -61,7 +61,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&toolchain,
 		"toolchain",
 		"t",
-		"gradle",
+		"",
 		"Indicate the toolchain to be used by TCR")
 
 	rootCmd.PersistentFlags().StringVarP(&baseDir,

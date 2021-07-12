@@ -23,14 +23,24 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	assert.Zero(t, NewToolchain("dummy"))
+	assert.Zero(t, NewToolchain("dummy", nil))
 	assert.NotZero(t, trace.GetExitReturnCode())
+}
+
+// Default toolchain for each language ---------------------------------------------
+
+func Test_default_toolchain_for_java(t *testing.T) {
+	assert.Equal(t, GradleToolchain{}, defaultToolchain(JavaLanguage{}))
+}
+
+func Test_default_toolchain_for_cpp(t *testing.T) {
+	assert.Equal(t, CmakeToolchain{}, defaultToolchain(CppLanguage{}))
 }
 
 // Gradle --------------------------------------------------------------------------
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, NewToolchain("gradle"))
+	assert.Equal(t, GradleToolchain{}, NewToolchain("gradle", JavaLanguage{}))
 }
 
 func Test_gradle_toolchain_name(t *testing.T) {
@@ -92,7 +102,7 @@ func Test_gradle_toolchain_does_not_support_cpp(t *testing.T) {
 // Maven --------------------------------------------------------------------------
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, MavenToolchain{}, NewToolchain("maven"))
+	assert.Equal(t, MavenToolchain{}, NewToolchain("maven", JavaLanguage{}))
 }
 
 func Test_maven_toolchain_name(t *testing.T) {
@@ -154,7 +164,7 @@ func Test_maven_toolchain_does_not_support_cpp(t *testing.T) {
 // CMake -------------------------------------------------------------------------
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, NewToolchain("cmake"))
+	assert.Equal(t, CmakeToolchain{}, NewToolchain("cmake", CppLanguage{}))
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {
