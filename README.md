@@ -25,7 +25,7 @@ Available [here](./doc/tcr.md)
 
 ### Other features & ideas
 
-- [ ] Timer integration
+- [ ] Mob Timer integration
 - [ ] Connection with video sharing tool
 - [ ] GUI - local application
 - [ ] GUI - Web interface
@@ -34,6 +34,8 @@ Available [here](./doc/tcr.md)
 - [ ] Intelligent toolchain management (pre-installed, wrapper)  
 - [ ] Golang language
 - [ ] Kotlin language
+- [ ] CLI option for setting git polling frequency
+- [ ] Keyboard shortcuts for increasing/decreasing git polling frequency
 
 ## Contributors
 
