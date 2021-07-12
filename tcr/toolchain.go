@@ -19,19 +19,25 @@ type Toolchain interface {
 }
 
 func NewToolchain(name string, language Language) Toolchain {
+	var toolchain Toolchain = nil
 	switch name {
 	case GradleToolchain{}.name():
-		return GradleToolchain{}
+		toolchain = GradleToolchain{}
 	case MavenToolchain{}.name():
-		return MavenToolchain{}
+		toolchain = MavenToolchain{}
 	case CmakeToolchain{}.name():
-		return CmakeToolchain{}
+		toolchain = CmakeToolchain{}
 	case "":
-		return defaultToolchain(language)
+		toolchain = defaultToolchain(language)
 	default:
 		trace.Error("Toolchain \"", name, "\" not supported")
+		return nil
 	}
-	return nil
+
+	if !verifyCompatibility(toolchain, language) {
+		return nil
+	}
+	return toolchain
 }
 
 func defaultToolchain(language Language) Toolchain {
@@ -46,11 +52,13 @@ func defaultToolchain(language Language) Toolchain {
 	return nil
 }
 
-func checkToolchainAndLanguageCompatibility(toolchain Toolchain, language Language) {
+func verifyCompatibility(toolchain Toolchain, language Language) bool {
 	if !toolchain.supports(language) {
 		trace.Error("Toolchain ", toolchain.name(),
 			" does not support language ", language.name())
+		return false
 	}
+	return true
 }
 
 func runBuild(toolchain Toolchain) error {

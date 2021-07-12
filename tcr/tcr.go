@@ -21,22 +21,18 @@ const (
 var (
 	baseDir   string
 	mode      WorkMode
-	osToolbox OSToolbox
 	language  Language
 	toolchain Toolchain
 	autoPush  bool
 )
 
 func Start(b string, m WorkMode, t string, ap bool) {
-	baseDir = b
 	mode = m
 	autoPush = ap
 
-	baseDir = changeDir(baseDir)
+	baseDir = changeDir(b)
 	language = detectLanguage(baseDir)
 	toolchain = NewToolchain(t, language)
-	checkToolchainAndLanguageCompatibility(toolchain, language)
-	osToolbox = initOSToolbox()
 
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
