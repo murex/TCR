@@ -9,6 +9,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/mengdaming/tcr/trace"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -44,7 +45,7 @@ func detectGitWorkingBranch(dir string) {
 	trace.Info("Git Working Branch: ", gitWorkingBranch)
 
 	gitWorkingBranchExistsOnRemote = isBranchOnRemote(repo, gitWorkingBranch, GitRemoteName)
-	trace.Info("Git Branch exists on ", GitRemoteName,": ", gitWorkingBranchExistsOnRemote)
+	trace.Info("Git Branch exists on ", GitRemoteName, ": ", gitWorkingBranchExistsOnRemote)
 }
 
 func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
@@ -102,10 +103,41 @@ func push() {
 func pull() {
 	if gitWorkingBranchExistsOnRemote {
 		trace.Info("Pulling latest changes from origin/", gitWorkingBranch)
-		time.Sleep(1 * time.Second)
-		// TODO Call to git pull --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
+
+		dir, _ := os.Getwd()
+		gitOptions := git.PlainOpenOptions{
+			DetectDotGit:          true,
+			EnableDotGitCommonDir: false,
+		}
+		repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+		if err != nil {
+			trace.Error("git.PlainOpen(): ", err)
+		}
+
+		worktree, err := repo.Worktree()
+		if err != nil {
+			trace.Error("repo.Worktree(): ", err)
+		}
+
+		err = worktree.Pull(&git.PullOptions{
+			RemoteName:        GitRemoteName,
+			ReferenceName:     plumbing.ReferenceName(gitWorkingBranch),
+			SingleBranch:      true,
+			RecurseSubmodules: git.NoRecurseSubmodules},
+		)
+
+		printLastCommit(repo)
 	} else {
 		trace.Info("Working locally on branch ", gitWorkingBranch)
-		time.Sleep(1 * time.Second)
 	}
+}
+
+func printLastCommit(repo *git.Repository) {
+	// Print the latest commit that was just pulled
+	head, err := repo.Head()
+	if err != nil {
+		trace.Error("repo.Head(): ", err)
+	}
+	commit, err := repo.CommitObject(head.Hash())
+	trace.Transparent(commit)
 }
