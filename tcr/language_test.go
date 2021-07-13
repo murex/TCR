@@ -12,20 +12,24 @@ import (
 type FakeLanguage struct {
 }
 
-func (Language FakeLanguage) name() string {
+func (language FakeLanguage) name() string {
 	return "fake"
 }
 
-func (Language FakeLanguage) toolchain() string {
+func (language FakeLanguage) toolchain() string {
 	return "fake"
 }
 
-func (Language FakeLanguage) srcDirs() []string {
+func (language FakeLanguage) srcDirs() []string {
 	return []string{"src"}
 }
 
-func (Language FakeLanguage) testDirs() []string {
+func (language FakeLanguage) testDirs() []string {
 	return []string{"test"}
+}
+
+func (language FakeLanguage) matchesSrcFile(filename string) bool {
+	return true
 }
 
 func Test_dirs_to_watch_should_contain_both_src_and_test_dirs(t *testing.T) {
@@ -74,6 +78,7 @@ var (
 		{"Dummy.JAVA", true},
 		{"/dummy/Dummy.java", true},
 		{"Dummy.java~", false},
+		{"Dummy.java.swp", false},
 
 		{"", false},
 		{"dummy", false},
@@ -107,36 +112,43 @@ var (
 		{"Dummy.CPP", true},
 		{"/dummy/Dummy.cpp", true},
 		{"Dummy.cpp~", false},
+		{"Dummy.cpp.swp", false},
 
 		{"Dummy.hpp", true},
 		{"Dummy.HPP", true},
 		{"/dummy/Dummy.hpp", true},
 		{"Dummy.hpp~", false},
+		{"Dummy.hpp.swp", false},
 
 		{"Dummy.cc", true},
 		{"Dummy.CC", true},
 		{"/dummy/Dummy.cc", true},
 		{"Dummy.cc~", false},
+		{"Dummy.cc.swp", false},
 
 		{"Dummy.hh", true},
 		{"Dummy.HH", true},
 		{"/dummy/Dummy.hh", true},
 		{"Dummy.hh~", false},
+		{"Dummy.hh.swp", false},
 
 		{"Dummy.c", true},
 		{"Dummy.C", true},
 		{"/dummy/Dummy.c", true},
 		{"Dummy.c~", false},
+		{"Dummy.c.swp", false},
 
 		{"Dummy.h", true},
 		{"Dummy.H", true},
 		{"/dummy/Dummy.h", true},
 		{"Dummy.h~", false},
+		{"Dummy.h.swp", false},
 
 		{"", false},
 		{"dummy", false},
 		{"Dummy.java", false},
 		{"Dummy.sh", false},
+		{"Dummy.swp", false},
 	}
 )
 
