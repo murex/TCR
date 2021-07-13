@@ -36,6 +36,44 @@ func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", JavaLanguage{}))
 }
 
+func Test_filenames_recognized_as_java_src(t *testing.T) {
+	params := []struct {
+		filename string
+		expected bool
+	}{
+		{"Dummy.java", true},
+		{"Dummy.JAVA", true},
+		{"Dummy.java~", false},
+		{"", false},
+		{"Dummy.cpp", false},
+		{"Dummy.sh", false},
+	}
+	matchingFunction := JavaLanguage{}.matchesSrcFile
+
+	for i := range params {
+		assert.Equal(t, params[i].expected, matchingFunction(params[i].filename))
+	}
+}
+
+func Test_filenames_recognized_as_java_test_src(t *testing.T) {
+	params := []struct {
+		filename string
+		expected bool
+	}{
+		{"Dummy.java", true},
+		{"Dummy.JAVA", true},
+		{"Dummy.java~", false},
+		{"", false},
+		{"Dummy.cpp", false},
+		{"Dummy.sh", false},
+	}
+	matchingFunction := JavaLanguage{}.matchesTestFile
+
+	for i := range params {
+		assert.Equal(t, params[i].expected, matchingFunction(params[i].filename))
+	}
+}
+
 // C++ --------------------------------------------------------------------------
 
 func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {

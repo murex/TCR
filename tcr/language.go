@@ -2,6 +2,7 @@ package tcr
 
 import (
 	"path/filepath"
+	"strings"
 )
 
 type Language interface {
@@ -33,6 +34,26 @@ func (language JavaLanguage) srcDirs() []string {
 func (language JavaLanguage) testDirs() []string {
 	return []string{
 		filepath.Join("src", "test"),
+	}
+}
+
+func (language JavaLanguage) matchesSrcFile(filename string) bool {
+	extension := filepath.Ext(filename)
+	switch strings.ToLower(extension) {
+	case ".java":
+		return true
+	default:
+		return false
+	}
+}
+
+func (language JavaLanguage) matchesTestFile(filename string) bool {
+	extension := filepath.Ext(filename)
+	switch strings.ToLower(extension) {
+	case ".java":
+		return true
+	default:
+		return false
 	}
 }
 
