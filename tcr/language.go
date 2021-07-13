@@ -10,6 +10,7 @@ type Language interface {
 	toolchain() string
 	srcDirs() []string
 	testDirs() []string
+	matchesSrcFile(filename string) bool
 }
 
 // ========================================================================

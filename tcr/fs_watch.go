@@ -7,14 +7,22 @@ import (
 	"path/filepath"
 )
 
-func watchFileSystem(dirList []string, interrupt <-chan bool) bool {
+func watchFileSystem(
+	dirList []string,
+	filenameMatcher func(filename string) bool,
+	interrupt <-chan bool,
+) bool {
 	trace.Info("Going to sleep until something interesting happens")
-	return watchRecursive(dirList, interrupt)
+	return watchRecursive(dirList, filenameMatcher, interrupt)
 }
 
 var watcher *fsnotify.Watcher
 
-func watchRecursive(dirs []string, interrupt <-chan bool) bool {
+func watchRecursive(
+	dirList []string,
+	filenameMatcher func(filename string) bool,
+	interrupt <-chan bool,
+) bool {
 
 	// The file watcher
 	watcher, _ = fsnotify.NewWatcher()
@@ -29,7 +37,8 @@ func watchRecursive(dirs []string, interrupt <-chan bool) bool {
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
-	for _, dir := range dirs {
+	for _, dir := range dirList {
+		trace.Transparent("- Watching ", dir)
 		if err := filepath.Walk(dir, watchDir); err != nil {
 			trace.Error("filepath.Walk(", dir, "): ", err)
 		}
@@ -45,10 +54,14 @@ func watchRecursive(dirs []string, interrupt <-chan bool) bool {
 					changesDetected <- false
 					return
 				}
-				trace.Info("Event:", event)
-				// TODO add a filter to watch only for relevant files changes
-				trace.Info("-> ", event.Name)
-				changesDetected <- true
+				//trace.Info("Event:", event)
+				if filenameMatcher(event.Name) {
+					trace.Transparent("-> ", event.Name)
+					changesDetected <- true
+				} else {
+					trace.Transparent("File change ignored: ", event.Name)
+					changesDetected <- false
+				}
 				return
 			case err, ok := <-watcher.Errors:
 				trace.Warning("Watcher error: ", err)
@@ -77,7 +90,6 @@ func watchDir(path string, fi os.FileInfo, err error) error {
 	// since fsnotify can watch all the files in a directory, watchers only need
 	// to be added to each nested directory
 	if fi.Mode().IsDir() {
-		trace.Info("- Watching ", path)
 		err = watcher.Add(path)
 		if err != nil {
 			trace.Error("watcher.Add(", path, "): ", err)
