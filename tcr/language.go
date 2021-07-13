@@ -48,13 +48,8 @@ func (language JavaLanguage) matchesSrcFile(filename string) bool {
 }
 
 func (language JavaLanguage) matchesTestFile(filename string) bool {
-	extension := filepath.Ext(filename)
-	switch strings.ToLower(extension) {
-	case ".java":
-		return true
-	default:
-		return false
-	}
+	// In Java, source and test files have identical naming conventions
+	return language.matchesSrcFile(filename)
 }
 
 // ========================================================================
@@ -81,6 +76,25 @@ func (language CppLanguage) testDirs() []string {
 	return []string{
 		filepath.Join("test"),
 	}
+}
+
+func (language CppLanguage) matchesSrcFile(filename string) bool {
+	extension := filepath.Ext(filename)
+	switch strings.ToLower(extension) {
+	case ".cpp", ".hpp":
+		return true
+	case ".c", ".h":
+		return true
+	case ".cc", ".hh":
+		return true
+	default:
+		return false
+	}
+}
+
+func (language CppLanguage) matchesTestFile(filename string) bool {
+	// In C++, source and test files have identical naming conventions
+	return language.matchesSrcFile(filename)
 }
 
 // ========================================================================
