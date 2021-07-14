@@ -41,6 +41,7 @@ func Start(b string, m WorkMode, t string, ap bool) {
 
 	printRunningMode(mode)
 	printTCRHeader()
+
 	switch mode {
 	case Solo:
 		// When running TCR in solo mode, there's no
@@ -68,14 +69,14 @@ func toggleAutoPush() {
 }
 
 func runAsDriver() {
-	loopWithTomb(
+	runInLoop(
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
 			pull()
 		},
 		func(interrupt <-chan bool) {
-			if watchFileSystem(dirsToWatch(baseDir, language), language.isSrcFile, interrupt) {
+			if waitForChanges(interrupt) {
 				tcr()
 			}
 		},
@@ -86,7 +87,7 @@ func runAsDriver() {
 }
 
 func runAsNavigator() {
-	loopWithTomb(
+	runInLoop(
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
@@ -101,7 +102,7 @@ func runAsNavigator() {
 	)
 }
 
-func loopWithTomb(
+func runInLoop(
 	preLoopAction func(),
 	inLoopAction func(interrupt <-chan bool),
 	afterLoopAction func()) {
@@ -241,4 +242,12 @@ func changeDir(baseDir string) string {
 	getwd, _ := os.Getwd()
 	trace.Info("Current Working Directory: ", getwd)
 	return getwd
+}
+
+func waitForChanges(interrupt <-chan bool) bool {
+	trace.Info("Going to sleep until something interesting happens")
+	return WatchRecursive(
+		dirsToWatch(baseDir, language),
+		language.isSrcFile,
+		interrupt)
 }

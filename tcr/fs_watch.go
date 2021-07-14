@@ -7,18 +7,9 @@ import (
 	"path/filepath"
 )
 
-func watchFileSystem(
-	dirList []string,
-	filenameMatcher func(filename string) bool,
-	interrupt <-chan bool,
-) bool {
-	trace.Info("Going to sleep until something interesting happens")
-	return watchRecursive(dirList, filenameMatcher, interrupt)
-}
-
 var watcher *fsnotify.Watcher
 
-func watchRecursive(
+func WatchRecursive(
 	dirList []string,
 	filenameMatcher func(filename string) bool,
 	interrupt <-chan bool,
@@ -33,7 +24,7 @@ func watchRecursive(
 		}
 	}(watcher)
 
-	// Used to indicate if changes were detected on relevant files
+	// Used to notify if changes were detected on relevant files
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
@@ -70,7 +61,6 @@ func watchRecursive(
 					return
 				}
 			case <-interrupt:
-				//trace.Info("Ok, I stop watching")
 				changesDetected <- false
 				return
 			}
