@@ -10,7 +10,7 @@ type Language interface {
 	toolchain() string
 	srcDirs() []string
 	testDirs() []string
-	matchesSrcFile(filename string) bool
+	isSrcFile(filename string) bool
 }
 
 // ========================================================================
@@ -38,7 +38,7 @@ func (language JavaLanguage) testDirs() []string {
 	}
 }
 
-func (language JavaLanguage) matchesSrcFile(filename string) bool {
+func (language JavaLanguage) isSrcFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch strings.ToLower(extension) {
 	case ".java":
@@ -46,11 +46,6 @@ func (language JavaLanguage) matchesSrcFile(filename string) bool {
 	default:
 		return false
 	}
-}
-
-func (language JavaLanguage) matchesTestFile(filename string) bool {
-	// In Java, source and test files have identical naming conventions
-	return language.matchesSrcFile(filename)
 }
 
 // ========================================================================
@@ -79,7 +74,7 @@ func (language CppLanguage) testDirs() []string {
 	}
 }
 
-func (language CppLanguage) matchesSrcFile(filename string) bool {
+func (language CppLanguage) isSrcFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch strings.ToLower(extension) {
 	case ".cpp", ".hpp":
@@ -91,11 +86,6 @@ func (language CppLanguage) matchesSrcFile(filename string) bool {
 	default:
 		return false
 	}
-}
-
-func (language CppLanguage) matchesTestFile(filename string) bool {
-	// In C++, source and test files have identical naming conventions
-	return language.matchesSrcFile(filename)
 }
 
 // ========================================================================

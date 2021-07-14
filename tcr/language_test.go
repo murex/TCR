@@ -28,7 +28,7 @@ func (language FakeLanguage) testDirs() []string {
 	return []string{"test"}
 }
 
-func (language FakeLanguage) matchesSrcFile(filename string) bool {
+func (language FakeLanguage) isSrcFile(_ string) bool {
 	return true
 }
 
@@ -47,17 +47,13 @@ func Test_dirs_to_watch_should_have_absolute_path(t *testing.T) {
 }
 
 type filenameMatching struct {
-	filename    string
-	shouldMatch bool
+	filename string
+	match    bool
 }
 
-func assertFilenames(t *testing.T,
-	params []filenameMatching,
-	matchingFunction func(filename string) bool) {
-
+func assertFilenames(t *testing.T, params []filenameMatching, language Language) {
 	for i := range params {
-		assert.Equal(t, params[i].shouldMatch,
-			matchingFunction(params[i].filename),
+		assert.Equal(t, params[i].match, language.isSrcFile(params[i].filename),
 			"Filename: %v", params[i].filename)
 	}
 }
@@ -72,8 +68,8 @@ func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", JavaLanguage{}))
 }
 
-var (
-	javaFilenames = []filenameMatching{
+func Test_filenames_recognized_as_java_src(t *testing.T) {
+	expected := []filenameMatching{
 		{"Dummy.java", true},
 		{"Dummy.JAVA", true},
 		{"/dummy/Dummy.java", true},
@@ -85,14 +81,7 @@ var (
 		{"Dummy.cpp", false},
 		{"Dummy.sh", false},
 	}
-)
-
-func Test_filenames_recognized_as_java_src(t *testing.T) {
-	assertFilenames(t, javaFilenames, JavaLanguage{}.matchesSrcFile)
-}
-
-func Test_filenames_recognized_as_java_test_src(t *testing.T) {
-	assertFilenames(t, javaFilenames, JavaLanguage{}.matchesTestFile)
+	assertFilenames(t, expected, JavaLanguage{})
 }
 
 // C++ --------------------------------------------------------------------------
@@ -106,8 +95,8 @@ func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	assert.Equal(t, expected, dirsToWatch("", CppLanguage{}))
 }
 
-var (
-	cppFilenames = []filenameMatching{
+func Test_filenames_recognized_as_cpp_src(t *testing.T) {
+	expected := []filenameMatching{
 		{"Dummy.cpp", true},
 		{"Dummy.CPP", true},
 		{"/dummy/Dummy.cpp", true},
@@ -150,12 +139,5 @@ var (
 		{"Dummy.sh", false},
 		{"Dummy.swp", false},
 	}
-)
-
-func Test_filenames_recognized_as_cpp_src(t *testing.T) {
-	assertFilenames(t, cppFilenames, CppLanguage{}.matchesSrcFile)
-}
-
-func Test_filenames_recognized_as_cpp_test_src(t *testing.T) {
-	assertFilenames(t, cppFilenames, CppLanguage{}.matchesTestFile)
+	assertFilenames(t, expected, CppLanguage{})
 }

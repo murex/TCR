@@ -75,7 +75,7 @@ func runAsDriver() {
 			pull()
 		},
 		func(interrupt <-chan bool) {
-			if watchFileSystem(dirsToWatch(baseDir, language), language.matchesSrcFile, interrupt) {
+			if watchFileSystem(dirsToWatch(baseDir, language), language.isSrcFile, interrupt) {
 				tcr()
 			}
 		},
