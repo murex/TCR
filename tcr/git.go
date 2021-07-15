@@ -160,8 +160,13 @@ func restore(dir string) {
 		trace.Error("repo.Worktree(): ", err)
 	}
 
+	headRef, err := repo.Head()
+	if err != nil {
+		trace.Error("repo.Head(): ", err)
+	}
+
 	err = worktree.Checkout(&git.CheckoutOptions{
-		Branch: plumbing.HEAD,
+		Hash: headRef.Hash(),
 		Create: false,
 		Force: true,
 		Keep:   false,
