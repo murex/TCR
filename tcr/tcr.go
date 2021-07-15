@@ -192,8 +192,9 @@ func commit() {
 
 func revert() {
 	trace.Warning("Reverting changes")
-	time.Sleep(1 * time.Second)
-	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
+	for _, dir := range language.srcDirs() {
+		restore(dir)
+	}
 }
 
 func printTCRHeader() {

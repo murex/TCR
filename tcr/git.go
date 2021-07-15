@@ -139,5 +139,33 @@ func printLastCommit(repo *git.Repository) {
 		trace.Error("repo.Head(): ", err)
 	}
 	commit, err := repo.CommitObject(head.Hash())
-	trace.Transparent(commit)
+	trace.Echo(commit)
+}
+
+func restore(dir string) {
+	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
+	trace.Info("Restoring ", dir)
+	//	dir, _ := os.Getwd()
+	gitOptions := git.PlainOpenOptions{
+		DetectDotGit:          true,
+		EnableDotGitCommonDir: false,
+	}
+	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+	if err != nil {
+		trace.Error("git.PlainOpen(): ", err)
+	}
+
+	worktree, err := repo.Worktree()
+	if err != nil {
+		trace.Error("repo.Worktree(): ", err)
+	}
+
+	err = worktree.Checkout(&git.CheckoutOptions{
+		Branch: plumbing.HEAD,
+		Create: false,
+		Keep:   false,
+	})
+	if err != nil {
+		trace.Error("worktree.Checkout(): ", err)
+	}
 }

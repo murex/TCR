@@ -69,7 +69,7 @@ func runBuild(toolchain Toolchain) error {
 		buildCommandPath,
 		toolchain.buildCommandArgs()).Output()
 	if output != nil {
-		trace.Transparent(string(output))
+		trace.Echo(string(output))
 	}
 	if err != nil {
 		trace.Warning(err)
@@ -87,7 +87,7 @@ func runTests(toolchain Toolchain) error {
 		testCommandPath,
 		toolchain.testCommandArgs()).Output()
 	if output != nil {
-		trace.Transparent(string(output))
+		trace.Echo(string(output))
 	}
 	if err != nil {
 		trace.Warning(err)

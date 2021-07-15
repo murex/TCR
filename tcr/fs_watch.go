@@ -29,7 +29,7 @@ func WatchRecursive(
 
 	// We recursively watch all subdirectories for all the provided directories
 	for _, dir := range dirList {
-		trace.Transparent("- Watching ", dir)
+		trace.Echo("- Watching ", dir)
 		if err := filepath.Walk(dir, watchDir); err != nil {
 			trace.Error("filepath.Walk(", dir, "): ", err)
 		}
@@ -47,10 +47,10 @@ func WatchRecursive(
 				}
 				//trace.Info("Event:", event)
 				if filenameMatcher(event.Name) {
-					trace.Transparent("-> ", event.Name)
+					trace.Echo("-> ", event.Name)
 					changesDetected <- true
 				} else {
-					trace.Transparent("File change ignored: ", event.Name)
+					trace.Echo("File change ignored: ", event.Name)
 					changesDetected <- false
 				}
 				return

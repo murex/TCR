@@ -43,7 +43,7 @@ func Error(a ...interface{}) {
 	exitFunction(1)
 }
 
-func Transparent(a ...interface{}) {
+func Echo(a ...interface{}) {
 	fmt.Println(a...)
 }
 
