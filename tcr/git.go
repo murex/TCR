@@ -163,6 +163,7 @@ func restore(dir string) {
 	err = worktree.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.HEAD,
 		Create: false,
+		Force: true,
 		Keep:   false,
 	})
 	if err != nil {
