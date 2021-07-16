@@ -31,7 +31,7 @@ func WatchRecursive(
 	for _, dir := range dirList {
 		trace.Echo("- Watching ", dir)
 		if err := filepath.Walk(dir, watchDir); err != nil {
-			trace.Error("filepath.Walk(", dir, "): ", err)
+			trace.Warning("filepath.Walk(", dir, "): ", err)
 		}
 	}
 
@@ -74,7 +74,7 @@ func WatchRecursive(
 func watchDir(path string, fi os.FileInfo, err error) error {
 
 	if err != nil {
-		trace.Warning("Something wrong with ", path)
+		//trace.Warning("Something wrong with ", path)
 		return err
 	}
 	// since fsnotify can watch all the files in a directory, watchers only need
