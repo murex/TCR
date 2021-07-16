@@ -3,6 +3,7 @@ package tcr
 import (
 	"errors"
 	"fmt"
+	"github.com/codeskyblue/go-sh"
 	"github.com/go-git/go-billy/v5/helper/chroot"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -143,35 +144,60 @@ func printLastCommit(repo *git.Repository) {
 }
 
 func restore(dir string) {
+	// Currently, go-git does not allow to checkout a subset of the
+	// files related to a branch or commit.
+	// There's a pending PR that should allow this, that we could use
+	// once it's merged and packaged into go-git.
+	// Cf. https://github.com/go-git/go-git/pull/343
+	// In the meantime, we use direct call to git checkout HEAD
+	// TODO When available, replace git call with go-git restore function
 	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
+
 	trace.Info("Restoring ", dir)
-	//	dir, _ := os.Getwd()
-	gitOptions := git.PlainOpenOptions{
-		DetectDotGit:          true,
-		EnableDotGitCommonDir: false,
-	}
-	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+
+	err := gitCommand([]string{"checkout", "HEAD", "--", dir})
 	if err != nil {
-		trace.Error("git.PlainOpen(): ", err)
+		trace.Error(err)
 	}
 
-	worktree, err := repo.Worktree()
-	if err != nil {
-		trace.Error("repo.Worktree(): ", err)
-	}
+	//gitOptions := git.PlainOpenOptions{
+	//	DetectDotGit:          true,
+	//	EnableDotGitCommonDir: false,
+	//}
+	//repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+	//if err != nil {
+	//	trace.Error("git.PlainOpen(): ", err)
+	//}
+	//
+	//worktree, err := repo.Worktree()
+	//if err != nil {
+	//	trace.Error("repo.Worktree(): ", err)
+	//}
+	//
+	//headRef, err := repo.Head()
+	//if err != nil {
+	//	trace.Error("repo.Head(): ", err)
+	//}
+	//
+	//err = worktree.Checkout(&git.CheckoutOptions{
+	//	Hash: headRef.Hash(),
+	//	Create: false,
+	//	Force: true,
+	//	Keep:   false,
+	//})
+	//if err != nil {
+	//	trace.Error("worktree.Checkout(): ", err)
+	//}
+}
 
-	headRef, err := repo.Head()
-	if err != nil {
-		trace.Error("repo.Head(): ", err)
+func gitCommand(params []string) error {
+	gitCommand := "git"
+	output, err := sh.Command(gitCommand, params).Output()
+	if output != nil {
+		trace.Echo(string(output))
 	}
-
-	err = worktree.Checkout(&git.CheckoutOptions{
-		Hash: headRef.Hash(),
-		Create: false,
-		Force: true,
-		Keep:   false,
-	})
 	if err != nil {
-		trace.Error("worktree.Checkout(): ", err)
+		trace.Warning(err)
 	}
+	return err
 }
