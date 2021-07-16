@@ -151,7 +151,6 @@ func restore(dir string) {
 	// Cf. https://github.com/go-git/go-git/pull/343
 	// In the meantime, we use direct call to git checkout HEAD
 	// TODO When available, replace git call with go-git restore function
-	// TODO Call to git checkout HEAD -- ${SRC_DIRS}
 
 	trace.Info("Restoring ", dir)
 
@@ -159,35 +158,6 @@ func restore(dir string) {
 	if err != nil {
 		trace.Error(err)
 	}
-
-	//gitOptions := git.PlainOpenOptions{
-	//	DetectDotGit:          true,
-	//	EnableDotGitCommonDir: false,
-	//}
-	//repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
-	//if err != nil {
-	//	trace.Error("git.PlainOpen(): ", err)
-	//}
-	//
-	//worktree, err := repo.Worktree()
-	//if err != nil {
-	//	trace.Error("repo.Worktree(): ", err)
-	//}
-	//
-	//headRef, err := repo.Head()
-	//if err != nil {
-	//	trace.Error("repo.Head(): ", err)
-	//}
-	//
-	//err = worktree.Checkout(&git.CheckoutOptions{
-	//	Hash: headRef.Hash(),
-	//	Create: false,
-	//	Force: true,
-	//	Keep:   false,
-	//})
-	//if err != nil {
-	//	trace.Error("worktree.Checkout(): ", err)
-	//}
 }
 
 func gitCommand(params []string) error {
