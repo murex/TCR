@@ -71,9 +71,9 @@ func runBuild(toolchain Toolchain) error {
 	if output != nil {
 		trace.Echo(string(output))
 	}
-	if err != nil {
-		trace.Warning(err)
-	}
+	//if err != nil {
+	//	trace.Warning(err)
+	//}
 	return err
 }
 
@@ -89,9 +89,9 @@ func runTests(toolchain Toolchain) error {
 	if output != nil {
 		trace.Echo(string(output))
 	}
-	if err != nil {
-		trace.Warning(err)
-	}
+	//if err != nil {
+	//	trace.Warning(err)
+	//}
 	return err
 }
 
