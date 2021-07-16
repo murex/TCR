@@ -193,7 +193,7 @@ func commit() {
 func revert() {
 	trace.Warning("Reverting changes")
 	for _, dir := range language.srcDirs() {
-		restore(dir)
+		restore(filepath.Join(baseDir, dir))
 	}
 }
 
