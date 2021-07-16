@@ -1,16 +1,29 @@
 package tcr
 
 import (
+	"github.com/mengdaming/tcr/trace"
 	"path/filepath"
 	"strings"
 )
 
 type Language interface {
-	name() string
-	toolchain() string
-	srcDirs() []string
-	testDirs() []string
-	isSrcFile(filename string) bool
+	Name() string
+	SrcDirs() []string
+	TestDirs() []string
+	IsSrcFile(filename string) bool
+}
+
+func DetectLanguage(baseDir string) Language {
+	dir := filepath.Base(baseDir)
+	switch dir {
+	case "java":
+		return JavaLanguage{}
+	case "cpp":
+		return CppLanguage{}
+	default:
+		trace.Error("Unrecognized language: ", dir)
+	}
+	return nil
 }
 
 // ========================================================================
@@ -18,27 +31,23 @@ type Language interface {
 type JavaLanguage struct {
 }
 
-func (language JavaLanguage) name() string {
+func (language JavaLanguage) Name() string {
 	return "java"
 }
 
-func (language JavaLanguage) toolchain() string {
-	return "gradle"
-}
-
-func (language JavaLanguage) srcDirs() []string {
+func (language JavaLanguage) SrcDirs() []string {
 	return []string{
 		filepath.Join("src", "main"),
 	}
 }
 
-func (language JavaLanguage) testDirs() []string {
+func (language JavaLanguage) TestDirs() []string {
 	return []string{
 		filepath.Join("src", "test"),
 	}
 }
 
-func (language JavaLanguage) isSrcFile(filename string) bool {
+func (language JavaLanguage) IsSrcFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch strings.ToLower(extension) {
 	case ".java":
@@ -53,28 +62,24 @@ func (language JavaLanguage) isSrcFile(filename string) bool {
 type CppLanguage struct {
 }
 
-func (language CppLanguage) name() string {
+func (language CppLanguage) Name() string {
 	return "cpp"
 }
 
-func (language CppLanguage) toolchain() string {
-	return "cmake"
-}
-
-func (language CppLanguage) srcDirs() []string {
+func (language CppLanguage) SrcDirs() []string {
 	return []string{
 		filepath.Join("src"),
 		filepath.Join("include"),
 	}
 }
 
-func (language CppLanguage) testDirs() []string {
+func (language CppLanguage) TestDirs() []string {
 	return []string{
 		filepath.Join("test"),
 	}
 }
 
-func (language CppLanguage) isSrcFile(filename string) bool {
+func (language CppLanguage) IsSrcFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch strings.ToLower(extension) {
 	case ".cpp", ".hpp":
@@ -90,8 +95,8 @@ func (language CppLanguage) isSrcFile(filename string) bool {
 
 // ========================================================================
 
-func dirsToWatch(baseDir string, lang Language) []string {
-	dirList := append(lang.srcDirs(), lang.testDirs()...)
+func DirsToWatch(baseDir string, lang Language) []string {
+	dirList := append(lang.SrcDirs(), lang.TestDirs()...)
 	for i := 0; i < len(dirList); i++ {
 		dirList[i] = filepath.Join(baseDir, dirList[i])
 	}

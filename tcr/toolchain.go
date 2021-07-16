@@ -47,15 +47,18 @@ func defaultToolchain(language Language) Toolchain {
 	case CppLanguage{}:
 		return CmakeToolchain{}
 	default:
-		trace.Error("No supported toolchain for language ", language.name())
+		trace.Error("No supported toolchain for language ", language.Name())
 	}
 	return nil
 }
 
 func verifyCompatibility(toolchain Toolchain, language Language) bool {
+	if toolchain == nil || language == nil {
+		return false
+	}
 	if !toolchain.supports(language) {
 		trace.Error("Toolchain ", toolchain.name(),
-			" does not support language ", language.name())
+			" does not support language ", language.Name())
 		return false
 	}
 	return true
@@ -71,9 +74,6 @@ func runBuild(toolchain Toolchain) error {
 	if output != nil {
 		trace.Echo(string(output))
 	}
-	//if err != nil {
-	//	trace.Warning(err)
-	//}
 	return err
 }
 
@@ -89,9 +89,6 @@ func runTests(toolchain Toolchain) error {
 	if output != nil {
 		trace.Echo(string(output))
 	}
-	//if err != nil {
-	//	trace.Warning(err)
-	//}
 	return err
 }
 
@@ -194,4 +191,3 @@ func (toolchain MavenToolchain) testCommandArgs() []string {
 func (toolchain MavenToolchain) supports(language Language) bool {
 	return language == JavaLanguage{}
 }
-

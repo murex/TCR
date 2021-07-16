@@ -27,14 +27,18 @@ func Test_unrecognized_toolchain_name(t *testing.T) {
 	assert.NotZero(t, trace.GetExitReturnCode())
 }
 
+func Test_language_with_no_toolchain(t *testing.T) {
+	assert.Zero(t, NewToolchain("", FakeLanguage{}))
+}
+
 // Default toolchain for each language ---------------------------------------------
 
 func Test_default_toolchain_for_java(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, defaultToolchain(JavaLanguage{}))
+	assert.Equal(t, GradleToolchain{}, NewToolchain("", JavaLanguage{}))
 }
 
 func Test_default_toolchain_for_cpp(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, defaultToolchain(CppLanguage{}))
+	assert.Equal(t, CmakeToolchain{}, NewToolchain("", CppLanguage{}))
 }
 
 // Gradle --------------------------------------------------------------------------
@@ -99,6 +103,11 @@ func Test_gradle_toolchain_does_not_support_cpp(t *testing.T) {
 	assert.False(t, GradleToolchain{}.supports(CppLanguage{}))
 }
 
+func Test_gradle_toolchain_language_compatibility(t *testing.T) {
+	assert.True(t, verifyCompatibility(GradleToolchain{}, JavaLanguage{}))
+	assert.False(t, verifyCompatibility(GradleToolchain{}, CppLanguage{}))
+}
+
 // Maven --------------------------------------------------------------------------
 
 func Test_maven_toolchain_initialization(t *testing.T) {
@@ -161,6 +170,11 @@ func Test_maven_toolchain_does_not_support_cpp(t *testing.T) {
 	assert.False(t, MavenToolchain{}.supports(CppLanguage{}))
 }
 
+func Test_maven_toolchain_language_compatibility(t *testing.T) {
+	assert.True(t, verifyCompatibility(MavenToolchain{}, JavaLanguage{}))
+	assert.False(t, verifyCompatibility(MavenToolchain{}, CppLanguage{}))
+}
+
 // CMake -------------------------------------------------------------------------
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
@@ -221,4 +235,9 @@ func Test_cmake_toolchain_supports_cpp(t *testing.T) {
 
 func Test_cmake_toolchain_does_not_support_java(t *testing.T) {
 	assert.False(t, CmakeToolchain{}.supports(JavaLanguage{}))
+}
+
+func Test_cmake_toolchain_language_compatibility(t *testing.T) {
+	assert.True(t, verifyCompatibility(CmakeToolchain{}, CppLanguage{}))
+	assert.False(t, verifyCompatibility(CmakeToolchain{}, JavaLanguage{}))
 }

@@ -12,38 +12,39 @@ import (
 type FakeLanguage struct {
 }
 
-func (language FakeLanguage) name() string {
+func (language FakeLanguage) Name() string {
 	return "fake"
 }
 
-func (language FakeLanguage) toolchain() string {
-	return "fake"
-}
-
-func (language FakeLanguage) srcDirs() []string {
+func (language FakeLanguage) SrcDirs() []string {
 	return []string{"src"}
 }
 
-func (language FakeLanguage) testDirs() []string {
+func (language FakeLanguage) TestDirs() []string {
 	return []string{"test"}
 }
 
-func (language FakeLanguage) isSrcFile(_ string) bool {
+func (language FakeLanguage) IsSrcFile(_ string) bool {
 	return true
 }
 
+func Test_does_not_detect_unknown_language(t *testing.T) {
+	dirPath := filepath.Join("dummy", "dummy")
+	assert.Zero(t, DetectLanguage(dirPath))
+}
+
 func Test_dirs_to_watch_should_contain_both_src_and_test_dirs(t *testing.T) {
-	var expected = append(FakeLanguage{}.srcDirs(), FakeLanguage{}.testDirs()...)
-	assert.Equal(t, expected, dirsToWatch("", FakeLanguage{}))
+	var expected = append(FakeLanguage{}.SrcDirs(), FakeLanguage{}.TestDirs()...)
+	assert.Equal(t, expected, DirsToWatch("", FakeLanguage{}))
 }
 
 func Test_dirs_to_watch_should_have_absolute_path(t *testing.T) {
 	baseDir, _ := os.Getwd()
 	var expected = []string{
-		filepath.Join(baseDir, FakeLanguage{}.srcDirs()[0]),
-		filepath.Join(baseDir, FakeLanguage{}.testDirs()[0]),
+		filepath.Join(baseDir, FakeLanguage{}.SrcDirs()[0]),
+		filepath.Join(baseDir, FakeLanguage{}.TestDirs()[0]),
 	}
-	assert.Equal(t, expected, dirsToWatch(baseDir, FakeLanguage{}))
+	assert.Equal(t, expected, DirsToWatch(baseDir, FakeLanguage{}))
 }
 
 type filenameMatching struct {
@@ -53,19 +54,28 @@ type filenameMatching struct {
 
 func assertFilenames(t *testing.T, params []filenameMatching, language Language) {
 	for i := range params {
-		assert.Equal(t, params[i].match, language.isSrcFile(params[i].filename),
+		assert.Equal(t, params[i].match, language.IsSrcFile(params[i].filename),
 			"Filename: %v", params[i].filename)
 	}
 }
 
 // Java --------------------------------------------------------------------------
 
+func Test_detect_java_language(t *testing.T) {
+	dirPath := filepath.Join("dummy", "java")
+	assert.Equal(t, JavaLanguage{}, DetectLanguage(dirPath))
+}
+
+func Test_java_language_name(t *testing.T) {
+	assert.Equal(t, "java", JavaLanguage{}.Name())
+}
+
 func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
 	var expected = []string{
 		filepath.Join("src", "main"),
 		filepath.Join("src", "test"),
 	}
-	assert.Equal(t, expected, dirsToWatch("", JavaLanguage{}))
+	assert.Equal(t, expected, DirsToWatch("", JavaLanguage{}))
 }
 
 func Test_filenames_recognized_as_java_src(t *testing.T) {
@@ -86,13 +96,22 @@ func Test_filenames_recognized_as_java_src(t *testing.T) {
 
 // C++ --------------------------------------------------------------------------
 
+func Test_detect_cpp_language(t *testing.T) {
+	dirPath := filepath.Join("dummy", "cpp")
+	assert.Equal(t, CppLanguage{}, DetectLanguage(dirPath))
+}
+
+func Test_cpp_language_name(t *testing.T) {
+	assert.Equal(t, "cpp", CppLanguage{}.Name())
+}
+
 func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
 	var expected = []string{
 		filepath.Join("src"),
 		filepath.Join("include"),
 		filepath.Join("test"),
 	}
-	assert.Equal(t, expected, dirsToWatch("", CppLanguage{}))
+	assert.Equal(t, expected, DirsToWatch("", CppLanguage{}))
 }
 
 func Test_filenames_recognized_as_cpp_src(t *testing.T) {
