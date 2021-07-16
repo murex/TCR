@@ -17,15 +17,28 @@ import (
 )
 
 const (
-	GitRemoteName = "origin"
+	DefaultRemoteName = "origin"
 )
 
-var (
-	gitWorkingBranch               string
-	gitWorkingBranchExistsOnRemote bool
-)
+type GitInterface interface {
+	WorkingBranch() string
+	Commit()
+	Restore(dir string)
+	Push()
+	Pull()
+}
 
-func detectGitWorkingBranch(dir string) {
+type GoGit struct {
+	remoteName                  string
+	workingBranch               string
+	workingBranchExistsOnRemote bool
+}
+
+func NewGoGit(dir string) GitInterface {
+	var goGit GoGit = GoGit{
+		remoteName: DefaultRemoteName,
+	}
+
 	gitOptions := git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
@@ -42,11 +55,14 @@ func detectGitWorkingBranch(dir string) {
 		trace.Error("repo.Head(): ", err)
 	}
 
-	gitWorkingBranch = head.Name().Short()
-	trace.Info("Git Working Branch: ", gitWorkingBranch)
+	goGit.workingBranch = head.Name().Short()
+	trace.Info("Git Working Branch: ", goGit.workingBranch)
 
-	gitWorkingBranchExistsOnRemote = isBranchOnRemote(repo, gitWorkingBranch, GitRemoteName)
-	trace.Info("Git Branch exists on ", GitRemoteName, ": ", gitWorkingBranchExistsOnRemote)
+	goGit.workingBranchExistsOnRemote = isBranchOnRemote(repo, goGit.workingBranch, goGit.remoteName)
+	trace.Info("Git Branch exists on ",
+		goGit.remoteName, ": ", goGit.workingBranchExistsOnRemote)
+
+	return goGit
 }
 
 func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
@@ -93,57 +109,16 @@ func root(r *git.Repository) (string, error) {
 	return fs.Root(), nil
 }
 
-func GitPush() {
-	trace.Info("Pushing changes to origin/", gitWorkingBranch)
+func (g GoGit) WorkingBranch() string {
+	return g.workingBranch
+}
+
+func (g GoGit) Commit() {
 	time.Sleep(1 * time.Second)
-	// TODO Call to git push --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
-	// TODO [ ${git_rc} -eq 0 ] && GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=1
-	// TODO	return ${git_rc}
+	// TODO Call to git commit -am TCR
 }
 
-func GitPull() {
-	if gitWorkingBranchExistsOnRemote {
-		trace.Info("Pulling latest changes from origin/", gitWorkingBranch)
-
-		dir, _ := os.Getwd()
-		gitOptions := git.PlainOpenOptions{
-			DetectDotGit:          true,
-			EnableDotGitCommonDir: false,
-		}
-		repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
-		if err != nil {
-			trace.Error("git.PlainOpen(): ", err)
-		}
-
-		worktree, err := repo.Worktree()
-		if err != nil {
-			trace.Error("repo.Worktree(): ", err)
-		}
-
-		err = worktree.Pull(&git.PullOptions{
-			RemoteName:        GitRemoteName,
-			ReferenceName:     plumbing.ReferenceName(gitWorkingBranch),
-			SingleBranch:      true,
-			RecurseSubmodules: git.NoRecurseSubmodules},
-		)
-
-		printLastCommit(repo)
-	} else {
-		trace.Info("Working locally on branch ", gitWorkingBranch)
-	}
-}
-
-func printLastCommit(repo *git.Repository) {
-	// Print the latest commit that was just pulled
-	head, err := repo.Head()
-	if err != nil {
-		trace.Error("repo.Head(): ", err)
-	}
-	commit, err := repo.CommitObject(head.Hash())
-	trace.Echo(commit)
-}
-
-func GitRestore(dir string) {
+func (g GoGit) Restore(dir string) {
 	// Currently, go-git does not allow to checkout a subset of the
 	// files related to a branch or commit.
 	// There's a pending PR that should allow this, that we could use
@@ -158,6 +133,58 @@ func GitRestore(dir string) {
 	if err != nil {
 		trace.Error(err)
 	}
+}
+
+func (g GoGit) Push() {
+	trace.Info("Pushing changes to origin/", g.workingBranch)
+	time.Sleep(1 * time.Second)
+	// TODO Call to git push --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
+	// TODO [ ${git_rc} -eq 0 ] && GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=1
+	// TODO	return ${git_rc}
+}
+
+func (g GoGit) Pull() {
+	if !g.workingBranchExistsOnRemote {
+		trace.Info("Working locally on branch ", g.workingBranch)
+		return
+	}
+
+	trace.Info("Pulling latest changes from ",
+		g.remoteName, "/", g.workingBranch)
+
+	dir, _ := os.Getwd()
+	gitOptions := git.PlainOpenOptions{
+		DetectDotGit:          true,
+		EnableDotGitCommonDir: false,
+	}
+	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+	if err != nil {
+		trace.Error("git.PlainOpen(): ", err)
+	}
+
+	worktree, err := repo.Worktree()
+	if err != nil {
+		trace.Error("repo.Worktree(): ", err)
+	}
+
+	err = worktree.Pull(&git.PullOptions{
+		RemoteName:        g.remoteName,
+		ReferenceName:     plumbing.ReferenceName(g.workingBranch),
+		SingleBranch:      true,
+		RecurseSubmodules: git.NoRecurseSubmodules},
+	)
+
+	printLastCommit(repo)
+}
+
+func printLastCommit(repo *git.Repository) {
+	// Print the latest commit that was just pulled
+	head, err := repo.Head()
+	if err != nil {
+		trace.Error("repo.Head(): ", err)
+	}
+	commit, err := repo.CommitObject(head.Hash())
+	trace.Echo(commit)
 }
 
 func gitCommand(params []string) error {

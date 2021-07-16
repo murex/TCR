@@ -21,6 +21,7 @@ const (
 var (
 	baseDir   string
 	mode      WorkMode
+	gitItf    GitInterface
 	language  Language
 	toolchain Toolchain
 	autoPush  bool
@@ -31,13 +32,13 @@ func Start(b string, m WorkMode, t string, ap bool) {
 	autoPush = ap
 
 	baseDir = changeDir(b)
-	language = detectLanguage(baseDir)
+	language = DetectLanguage(baseDir)
 	toolchain = NewToolchain(t, language)
 
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
 	//cd "${WORK_DIR}" || exit 1
-	detectGitWorkingBranch(baseDir)
+	gitItf = NewGoGit(baseDir)
 
 	printRunningMode(mode)
 	printTCRHeader()
@@ -73,7 +74,7 @@ func runAsDriver() {
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
-			GitPull()
+			gitItf.Pull()
 		},
 		func(interrupt <-chan bool) {
 			if waitForChanges(interrupt) {
@@ -93,7 +94,7 @@ func runAsNavigator() {
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
 		func(interrupt <-chan bool) {
-			GitPull()
+			gitItf.Pull()
 			time.Sleep(GitPollingPeriod)
 		},
 		func() {
@@ -182,18 +183,17 @@ func test() error {
 }
 
 func commit() {
-	trace.Info("Committing changes on branch ", gitWorkingBranch)
-	time.Sleep(1 * time.Second)
-	// TODO Call to git commit -am TCR
+	trace.Info("Committing changes on branch ", gitItf.WorkingBranch())
+	gitItf.Commit()
 	if autoPush {
-		GitPush()
+		gitItf.Push()
 	}
 }
 
 func revert() {
 	trace.Warning("Reverting changes")
-	for _, dir := range language.srcDirs() {
-		GitRestore(filepath.Join(baseDir, dir))
+	for _, dir := range language.SrcDirs() {
+		gitItf.Restore(filepath.Join(baseDir, dir))
 	}
 }
 
@@ -201,7 +201,7 @@ func printTCRHeader() {
 	trace.HorizontalLine()
 
 	trace.Info(
-		"Language=", language.name(),
+		"Language=", language.Name(),
 		", Toolchain=", toolchain.name())
 
 	autoPushStr := "disabled"
@@ -209,21 +209,8 @@ func printTCRHeader() {
 		autoPushStr = "enabled"
 	}
 	trace.Info(
-		"Running on git branch \"", gitWorkingBranch,
+		"Running on git branch \"", gitItf.WorkingBranch(),
 		"\" with auto-push ", autoPushStr)
-}
-
-func detectLanguage(baseDir string) Language {
-	dir := filepath.Base(baseDir)
-	switch dir {
-	case "java":
-		return JavaLanguage{}
-	case "cpp":
-		return CppLanguage{}
-	default:
-		trace.Error("Unrecognized language: ", dir)
-	}
-	return nil
 }
 
 func changeDir(baseDir string) string {
@@ -248,7 +235,7 @@ func changeDir(baseDir string) string {
 func waitForChanges(interrupt <-chan bool) bool {
 	trace.Info("Going to sleep until something interesting happens")
 	return WatchRecursive(
-		dirsToWatch(baseDir, language),
-		language.isSrcFile,
+		DirsToWatch(baseDir, language),
+		language.IsSrcFile,
 		interrupt)
 }
