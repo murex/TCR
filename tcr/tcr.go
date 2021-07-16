@@ -73,7 +73,7 @@ func runAsDriver() {
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
-			pull()
+			GitPull()
 		},
 		func(interrupt <-chan bool) {
 			if waitForChanges(interrupt) {
@@ -93,7 +93,7 @@ func runAsNavigator() {
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
 		func(interrupt <-chan bool) {
-			pull()
+			GitPull()
 			time.Sleep(GitPollingPeriod)
 		},
 		func() {
@@ -186,14 +186,14 @@ func commit() {
 	time.Sleep(1 * time.Second)
 	// TODO Call to git commit -am TCR
 	if autoPush {
-		push()
+		GitPush()
 	}
 }
 
 func revert() {
 	trace.Warning("Reverting changes")
 	for _, dir := range language.srcDirs() {
-		restore(filepath.Join(baseDir, dir))
+		GitRestore(filepath.Join(baseDir, dir))
 	}
 }
 

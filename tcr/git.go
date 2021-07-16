@@ -93,7 +93,7 @@ func root(r *git.Repository) (string, error) {
 	return fs.Root(), nil
 }
 
-func push() {
+func GitPush() {
 	trace.Info("Pushing changes to origin/", gitWorkingBranch)
 	time.Sleep(1 * time.Second)
 	// TODO Call to git push --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
@@ -101,7 +101,7 @@ func push() {
 	// TODO	return ${git_rc}
 }
 
-func pull() {
+func GitPull() {
 	if gitWorkingBranchExistsOnRemote {
 		trace.Info("Pulling latest changes from origin/", gitWorkingBranch)
 
@@ -143,7 +143,7 @@ func printLastCommit(repo *git.Repository) {
 	trace.Echo(commit)
 }
 
-func restore(dir string) {
+func GitRestore(dir string) {
 	// Currently, go-git does not allow to checkout a subset of the
 	// files related to a branch or commit.
 	// There's a pending PR that should allow this, that we could use
