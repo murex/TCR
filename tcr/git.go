@@ -10,14 +10,14 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/mengdaming/tcr/trace"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
 const (
-	DefaultRemoteName = "origin"
+	DefaultRemoteName    = "origin"
+	DefaultCommitMessage = "TCR"
 )
 
 type GitInterface interface {
@@ -29,26 +29,32 @@ type GitInterface interface {
 }
 
 type GoGit struct {
+	baseDir                     string
+	rootDir                     string
 	remoteName                  string
 	workingBranch               string
 	workingBranchExistsOnRemote bool
+	commitMessage               string
 }
 
 func NewGoGit(dir string) GitInterface {
-	var goGit GoGit = GoGit{
-		remoteName: DefaultRemoteName,
+	var goGit = GoGit{
+		baseDir:       dir,
+		remoteName:    DefaultRemoteName,
+		commitMessage: DefaultCommitMessage,
 	}
 
-	gitOptions := git.PlainOpenOptions{
+	plainOpenOptions := git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
 	}
-	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+	repo, err := git.PlainOpenWithOptions(goGit.baseDir, &plainOpenOptions)
 	if err != nil {
 		trace.Error("git.PlainOpen(): ", err)
 	}
-	r, _ := root(repo)
-	trace.Info("Repository Root: ", filepath.Dir(r))
+	r, _ := rootDir(repo)
+	goGit.rootDir = filepath.Dir(r)
+	trace.Info("Repository Root: ", goGit.rootDir)
 
 	head, err := repo.Head()
 	if err != nil {
@@ -93,7 +99,7 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 	}, refs), nil
 }
 
-func root(r *git.Repository) (string, error) {
+func rootDir(r *git.Repository) (string, error) {
 	// Try to grab the repository Storer
 	s, ok := r.Storer.(*filesystem.Storage)
 	if !ok {
@@ -114,8 +120,15 @@ func (g GoGit) WorkingBranch() string {
 }
 
 func (g GoGit) Commit() {
-	time.Sleep(1 * time.Second)
-	// TODO Call to git commit -am TCR
+	// go-git Add function does not use .gitignore contents
+	// when applied on a directory.
+	// Until this is implemented we rely instead on a direct
+	// git command call
+	// TODO When gitignore rules are implemented, use go-git.Commit()
+
+	// We ignore return code on purpose to prevent exiting
+	// when there is nothing to commit
+	_ = gitCommand([]string{"commit", "-am", g.commitMessage})
 }
 
 func (g GoGit) Restore(dir string) {
@@ -152,12 +165,11 @@ func (g GoGit) Pull() {
 	trace.Info("Pulling latest changes from ",
 		g.remoteName, "/", g.workingBranch)
 
-	dir, _ := os.Getwd()
 	gitOptions := git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
 	}
-	repo, err := git.PlainOpenWithOptions(dir, &gitOptions)
+	repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
 	if err != nil {
 		trace.Error("git.PlainOpen(): ", err)
 	}
@@ -178,7 +190,7 @@ func (g GoGit) Pull() {
 }
 
 func printLastCommit(repo *git.Repository) {
-	// Print the latest commit that was just pulled
+	// TODO Make the commit print look nicer
 	head, err := repo.Head()
 	if err != nil {
 		trace.Error("repo.Head(): ", err)
@@ -192,9 +204,6 @@ func gitCommand(params []string) error {
 	output, err := sh.Command(gitCommand, params).Output()
 	if output != nil {
 		trace.Echo(string(output))
-	}
-	if err != nil {
-		trace.Warning(err)
 	}
 	return err
 }
