@@ -134,7 +134,6 @@ func runInLoop(
 	t.Go(func() error {
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, os.Interrupt)
-		//signal.Notify(sig, syscall.SIGTERM)
 		<-sig
 		trace.Warning("OK, let's stop here")
 		interrupt <- true
