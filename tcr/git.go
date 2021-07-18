@@ -12,7 +12,6 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 const (
@@ -50,7 +49,7 @@ func NewGoGit(dir string) GitInterface {
 	}
 	repo, err := git.PlainOpenWithOptions(goGit.baseDir, &plainOpenOptions)
 	if err != nil {
-		trace.Error("git.PlainOpen(): ", err)
+		trace.Error("git.PlainOpenWithOptions(): ", err)
 	}
 	r, _ := rootDir(repo)
 	goGit.rootDir = filepath.Dir(r)
@@ -150,10 +149,47 @@ func (g GoGit) Restore(dir string) {
 
 func (g GoGit) Push() {
 	trace.Info("Pushing changes to origin/", g.workingBranch)
-	time.Sleep(1 * time.Second)
-	// TODO Call to git push --no-recurse-submodules origin "${GIT_WORKING_BRANCH}"
-	// TODO [ ${git_rc} -eq 0 ] && GIT_WORKING_BRANCH_EXISTS_ON_ORIGIN=1
-	// TODO	return ${git_rc}
+
+	// Solution below works but requires to provide username
+	// and password, which is not acceptable here. Until we
+	// find a way to reuse git credentials, we'll use a direct
+	// git command call instead
+	// TODO Look if there is a way to reuse git credentials
+
+	//gitOptions := git.PlainOpenOptions{
+	//	DetectDotGit:          true,
+	//	EnableDotGitCommonDir: false,
+	//}
+	//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
+	//if err != nil {
+	//	trace.Error("git.PlainOpenWithOptions(): ", err)
+	//}
+	//
+	//err = repo.Push(&git.PushOptions{
+	//	RemoteName: g.remoteName,
+	//	Auth: &http.BasicAuth{
+	//		Username: "xxx",
+	//		Password: "xxx",
+	//	},
+	//})
+	//if err != nil {
+	//	trace.Error("repo.Push(): ", err)
+	//} else {
+	//	g.workingBranchExistsOnRemote = isBranchOnRemote(
+	//		repo, g.workingBranch, g.remoteName)
+	//}
+
+	err := gitCommand([]string{
+		"push",
+		"--no-recurse-submodules",
+		g.remoteName,
+		g.workingBranch,
+	})
+	if err != nil {
+		trace.Error(err)
+	} else {
+		g.workingBranchExistsOnRemote = true
+	}
 }
 
 func (g GoGit) Pull() {
@@ -171,7 +207,7 @@ func (g GoGit) Pull() {
 	}
 	repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
 	if err != nil {
-		trace.Error("git.PlainOpen(): ", err)
+		trace.Error("git.PlainOpenWithOptions(): ", err)
 	}
 
 	worktree, err := repo.Worktree()
