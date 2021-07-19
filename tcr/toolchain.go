@@ -2,6 +2,7 @@ package tcr
 
 import (
 	"github.com/codeskyblue/go-sh"
+	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
@@ -15,10 +16,10 @@ type Toolchain interface {
 	buildCommandArgs() []string
 	testCommandName() string
 	testCommandArgs() []string
-	supports(language Language) bool
+	supports(lang language.Language) bool
 }
 
-func NewToolchain(name string, language Language) Toolchain {
+func NewToolchain(name string, lang language.Language) Toolchain {
 	var toolchain Toolchain = nil
 	switch name {
 	case GradleToolchain{}.name():
@@ -28,37 +29,37 @@ func NewToolchain(name string, language Language) Toolchain {
 	case CmakeToolchain{}.name():
 		toolchain = CmakeToolchain{}
 	case "":
-		toolchain = defaultToolchain(language)
+		toolchain = defaultToolchain(lang)
 	default:
 		trace.Error("Toolchain \"", name, "\" not supported")
 		return nil
 	}
 
-	if !verifyCompatibility(toolchain, language) {
+	if !verifyCompatibility(toolchain, lang) {
 		return nil
 	}
 	return toolchain
 }
 
-func defaultToolchain(language Language) Toolchain {
-	switch language {
-	case JavaLanguage{}:
+func defaultToolchain(lang language.Language) Toolchain {
+	switch lang {
+	case language.Java{}:
 		return GradleToolchain{}
-	case CppLanguage{}:
+	case language.Cpp{}:
 		return CmakeToolchain{}
 	default:
-		trace.Error("No supported toolchain for language ", language.Name())
+		trace.Error("No supported toolchain for language ", lang.Name())
 	}
 	return nil
 }
 
-func verifyCompatibility(toolchain Toolchain, language Language) bool {
-	if toolchain == nil || language == nil {
+func verifyCompatibility(toolchain Toolchain, lang language.Language) bool {
+	if toolchain == nil || lang == nil {
 		return false
 	}
-	if !toolchain.supports(language) {
+	if !toolchain.supports(lang) {
 		trace.Error("Toolchain ", toolchain.name(),
-			" does not support language ", language.Name())
+			" does not support language ", lang.Name())
 		return false
 	}
 	return true
@@ -125,8 +126,8 @@ func (toolchain GradleToolchain) testCommandArgs() []string {
 
 // Cmake ========================================================================
 
-func (toolchain GradleToolchain) supports(language Language) bool {
-	return language == JavaLanguage{}
+func (toolchain GradleToolchain) supports(lang language.Language) bool {
+	return lang == language.Java{}
 }
 
 type CmakeToolchain struct{}
@@ -153,8 +154,8 @@ func (toolchain CmakeToolchain) testCommandArgs() []string {
 
 // Maven ========================================================================
 
-func (toolchain CmakeToolchain) supports(language Language) bool {
-	return language == CppLanguage{}
+func (toolchain CmakeToolchain) supports(lang language.Language) bool {
+	return lang == language.Cpp{}
 }
 
 type MavenToolchain struct {
@@ -188,6 +189,6 @@ func (toolchain MavenToolchain) testCommandArgs() []string {
 	return []string{"test"}
 }
 
-func (toolchain MavenToolchain) supports(language Language) bool {
-	return language == JavaLanguage{}
+func (toolchain MavenToolchain) supports(lang language.Language) bool {
+	return lang == language.Java{}
 }

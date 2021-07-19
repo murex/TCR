@@ -1,6 +1,7 @@
 package tcr
 
 import (
+	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/trace"
 	"gopkg.in/tomb.v2"
 	"os"
@@ -22,7 +23,7 @@ var (
 	baseDir   string
 	mode      WorkMode
 	gitItf    GitInterface
-	language  Language
+	lang  language.Language
 	toolchain Toolchain
 	autoPush  bool
 )
@@ -32,8 +33,8 @@ func Start(b string, m WorkMode, t string, ap bool) {
 	autoPush = ap
 
 	baseDir = changeDir(b)
-	language = DetectLanguage(baseDir)
-	toolchain = NewToolchain(t, language)
+	lang = language.DetectLanguage(baseDir)
+	toolchain = NewToolchain(t, lang)
 
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
@@ -191,7 +192,7 @@ func commit() {
 
 func revert() {
 	trace.Warning("Reverting changes")
-	for _, dir := range language.SrcDirs() {
+	for _, dir := range lang.SrcDirs() {
 		gitItf.Restore(filepath.Join(baseDir, dir))
 	}
 }
@@ -200,7 +201,7 @@ func printTCRHeader() {
 	trace.HorizontalLine()
 
 	trace.Info(
-		"Language=", language.Name(),
+		"Language=", lang.Name(),
 		", Toolchain=", toolchain.name())
 
 	autoPushStr := "disabled"
@@ -234,7 +235,7 @@ func changeDir(baseDir string) string {
 func waitForChanges(interrupt <-chan bool) bool {
 	trace.Info("Going to sleep until something interesting happens")
 	return WatchRecursive(
-		DirsToWatch(baseDir, language),
-		language.IsSrcFile,
+		language.DirsToWatch(baseDir, lang),
+		lang.IsSrcFile,
 		interrupt)
 }
