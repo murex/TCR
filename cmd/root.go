@@ -3,8 +3,6 @@ package cmd
 import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/trace"
-	"strings"
-
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,19 +24,9 @@ var rootCmd = &cobra.Command{
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//printCommandLineOptionValues(args)
 		trace.Info("Default running mode: " + tcr.Solo)
 		tcr.Start(baseDir, tcr.Mob, toolchain, autoPush)
 	},
-}
-
-func printCommandLineOptionValues(args []string) {
-	trace.HorizontalLine()
-	trace.Info("Command Line Options:")
-	trace.Info("- BaseDir: ", baseDir)
-	trace.Info("- Toolchain: ", toolchain)
-	trace.Info("- Auto-Push: ", autoPush)
-	trace.Info("- Arguments: ", strings.Join(args, " / "))
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
