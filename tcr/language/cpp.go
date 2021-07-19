@@ -8,24 +8,24 @@ import (
 type Cpp struct {
 }
 
-func (language Cpp) Name() string {
+func (lang Cpp) Name() string {
 	return "cpp"
 }
 
-func (language Cpp) SrcDirs() []string {
+func (lang Cpp) SrcDirs() []string {
 	return []string{
 		filepath.Join("src"),
 		filepath.Join("include"),
 	}
 }
 
-func (language Cpp) TestDirs() []string {
+func (lang Cpp) TestDirs() []string {
 	return []string{
 		filepath.Join("test"),
 	}
 }
 
-func (language Cpp) IsSrcFile(filename string) bool {
+func (lang Cpp) IsSrcFile(filename string) bool {
 	extension := filepath.Ext(filename)
 	switch strings.ToLower(extension) {
 	case ".cpp", ".hpp":
