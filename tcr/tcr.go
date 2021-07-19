@@ -2,6 +2,7 @@ package tcr
 
 import (
 	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/tcr/toolchain"
 	"github.com/mengdaming/tcr/trace"
 	"gopkg.in/tomb.v2"
 	"os"
@@ -20,12 +21,12 @@ const (
 )
 
 var (
-	baseDir   string
-	mode      WorkMode
-	gitItf    GitInterface
-	lang  language.Language
-	toolchain Toolchain
-	autoPush  bool
+	baseDir  string
+	mode     WorkMode
+	gitItf   GitInterface
+	lang     language.Language
+	tchn     toolchain.Toolchain
+	autoPush bool
 )
 
 func Start(b string, m WorkMode, t string, ap bool) {
@@ -34,7 +35,7 @@ func Start(b string, m WorkMode, t string, ap bool) {
 
 	baseDir = changeDir(b)
 	lang = language.DetectLanguage(baseDir)
-	toolchain = NewToolchain(t, lang)
+	tchn = toolchain.NewToolchain(t, lang)
 
 	// TODO For C++ special case (build subdirectory)
 	//mkdir -p "${WORK_DIR}"
@@ -112,14 +113,14 @@ func runInLoop(
 	// watch for interruption requests
 	interrupt := make(chan bool)
 
-	var t tomb.Tomb
+	var tmb tomb.Tomb
 
 	// The goroutine doing the work
-	t.Go(func() error {
+	tmb.Go(func() error {
 		preLoopAction()
 		for {
 			select {
-			case <-t.Dying():
+			case <-tmb.Dying():
 				afterLoopAction()
 				return nil
 			case <-interrupt:
@@ -132,19 +133,19 @@ func runInLoop(
 	})
 
 	// The goroutine watching for Ctrl-C
-	t.Go(func() error {
+	tmb.Go(func() error {
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, os.Interrupt)
 		<-sig
 		trace.Warning("OK, let's stop here")
 		interrupt <- true
-		t.Kill(nil)
+		tmb.Kill(nil)
 		return nil
 	})
 
-	err := t.Wait()
+	err := tmb.Wait()
 	if err != nil {
-		trace.Error("t.Wait(): ", err)
+		trace.Error("tmb.Wait(): ", err)
 	}
 }
 
@@ -166,7 +167,7 @@ func tcr() {
 
 func build() error {
 	trace.Info("Launching Build")
-	err := toolchain.runBuild()
+	err := tchn.RunBuild()
 	if err != nil {
 		trace.Warning("There are build errors! I can't go any further")
 	}
@@ -175,7 +176,7 @@ func build() error {
 
 func test() error {
 	trace.Info("Running Tests")
-	err := toolchain.runTests()
+	err := tchn.RunTests()
 	if err != nil {
 		trace.Warning("Some tests are failing! That's unfortunate")
 	}
@@ -199,10 +200,7 @@ func revert() {
 
 func printTCRHeader() {
 	trace.HorizontalLine()
-
-	trace.Info(
-		"Language=", lang.Name(),
-		", Toolchain=", toolchain.name())
+	trace.Info("Language=", lang.Name(), ", Toolchain=", tchn.Name())
 
 	autoPushStr := "disabled"
 	if autoPush {
