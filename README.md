@@ -17,11 +17,11 @@ Available [here](./doc/tcr.md)
 - [x] Maven toolchain
 - [ ] CMake toolchain
 - [x] Java language
-- [ ] C++  language
+- [x] C++  language
 - [x] Git pull integration
-- [ ] Git push integration
-- [ ] Git commit integration
-- [ ] Git checkout integration
+- [x] Git push integration
+- [x] Git commit integration
+- [x] Git checkout integration
 
 ### Other features & ideas
 
