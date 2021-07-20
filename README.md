@@ -1,5 +1,5 @@
 [![Go](https://github.com/mengdaming/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/go.yml)
-[![CGO Cross Compiler](https://github.com/mengdaming/tcr/actions/workflows/xgo.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/xgo.yml)
+[![goreleaser](https://github.com/mengdaming/tcr/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/goreleaser.yml)
 [![Add contributors](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml)
 
 # TCR (Test && Commit || Revert) utility
