@@ -16,7 +16,7 @@ Available [here](./doc/tcr.md)
 
 - [x] Gradle toolchain
 - [x] Maven toolchain
-- [ ] CMake toolchain
+- [x] CMake toolchain
 - [x] Java language
 - [x] C++  language
 - [x] Git pull integration
@@ -26,6 +26,7 @@ Available [here](./doc/tcr.md)
 
 ### Other features & ideas
 
+- [x] Tool version
 - [ ] Mob Timer integration
 - [ ] Connection with video sharing tool
 - [ ] GUI - local application
