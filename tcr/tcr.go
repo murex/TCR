@@ -36,10 +36,6 @@ func Start(b string, m WorkMode, t string, ap bool) {
 	baseDir = changeDir(b)
 	lang = language.DetectLanguage(baseDir)
 	tchn = toolchain.NewToolchain(t, lang)
-
-	// TODO For C++ special case (build subdirectory)
-	//mkdir -p "${WORK_DIR}"
-	//cd "${WORK_DIR}" || exit 1
 	gitItf = NewGoGit(baseDir)
 
 	printRunningMode(mode)

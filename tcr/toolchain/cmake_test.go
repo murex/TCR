@@ -16,7 +16,7 @@ func Test_cmake_toolchain_name(t *testing.T) {
 
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
 	assert.Equal(t, []string{
-		"--build", ".",
+		"--build", "build",
 		"--config", "Debug",
 	}, CmakeToolchain{}.buildCommandArgs())
 }
@@ -39,7 +39,8 @@ func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
 	assert.Equal(t, []string{
 		"--output-on-failure",
-		"-C", "Debug",
+		"--test-dir", "build",
+		"--build-config", "Debug",
 	}, CmakeToolchain{}.testCommandArgs())
 }
 

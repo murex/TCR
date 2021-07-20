@@ -17,11 +17,12 @@ func (tchn CmakeToolchain) RunTests() error {
 }
 
 func (tchn CmakeToolchain) buildCommandArgs() []string {
-	return []string{"--build", ".", "--config", "Debug"}
+	return []string{"--build", "build", "--config", "Debug"}
 }
 
 func (tchn CmakeToolchain) testCommandArgs() []string {
-	return []string{"--output-on-failure", "-C", "Debug"}
+	// Important: This (--test-dir option) requires to use cmake 3.20 version or higher
+	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
 }
 
 func (tchn CmakeToolchain) supports(lang language.Language) bool {
