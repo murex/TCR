@@ -7,8 +7,13 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible
+	github.com/matryer/is v1.4.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/sergi/go-diff v1.2.0 // indirect
+	github.com/smartystreets/assertions v1.0.0 // indirect
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0
