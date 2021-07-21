@@ -5,6 +5,7 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 var watcher *fsnotify.Watcher
@@ -45,14 +46,25 @@ func WatchRecursive(
 					changesDetected <- false
 					return
 				}
+				// TODO Temporarily disabling filename filtering on Windows
 				//trace.Info("Event:", event)
-				if filenameMatcher(event.Name) {
+				if runtime.GOOS == "windows" {
+					// On Windows there seems to be one single event notification even when
+					// more than 1 file got changed. As a consequence filename
+					// filtering does not trigger the change when the file associated
+					// to the event is filtered out, which leads to unpredictable behaviour
 					trace.Echo("-> ", event.Name)
 					changesDetected <- true
 				} else {
-					trace.Echo("File change ignored: ", event.Name)
-					changesDetected <- false
+					if filenameMatcher(event.Name) {
+						trace.Echo("-> ", event.Name)
+						changesDetected <- true
+					} else {
+						trace.Echo("File change ignored: ", event.Name)
+						changesDetected <- false
+					}
 				}
+
 				return
 			case err, ok := <-watcher.Errors:
 				trace.Warning("Watcher error: ", err)
