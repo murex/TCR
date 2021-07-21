@@ -19,7 +19,7 @@ var baseDir string
 
 var rootCmd = &cobra.Command{
 	Use:   "tcr",
-	Version: "0.2.0",
+	Version: "0.2.1",
 	Short: "TCR (Test && Commit || Revert)",
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
