@@ -196,6 +196,7 @@ func revert() {
 
 func printTCRHeader() {
 	trace.HorizontalLine()
+	trace.Info("Working Directory: ", baseDir)
 	trace.Info("Language=", lang.Name(), ", Toolchain=", tchn.Name())
 
 	autoPushStr := "disabled"
@@ -222,7 +223,6 @@ func changeDir(baseDir string) string {
 	}
 
 	getwd, _ := os.Getwd()
-	trace.Info("Current Working Directory: ", getwd)
 	return getwd
 }
 

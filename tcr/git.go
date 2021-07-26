@@ -53,7 +53,7 @@ func NewGoGit(dir string) GitInterface {
 	}
 	r, _ := rootDir(repo)
 	goGit.rootDir = filepath.Dir(r)
-	trace.Info("Repository Root: ", goGit.rootDir)
+	//trace.Info("Repository Root: ", goGit.rootDir)
 
 	head, err := repo.Head()
 	if err != nil {
@@ -61,11 +61,11 @@ func NewGoGit(dir string) GitInterface {
 	}
 
 	goGit.workingBranch = head.Name().Short()
-	trace.Info("Git Working Branch: ", goGit.workingBranch)
+	//trace.Info("Git Working Branch: ", goGit.workingBranch)
 
 	goGit.workingBranchExistsOnRemote = isBranchOnRemote(repo, goGit.workingBranch, goGit.remoteName)
-	trace.Info("Git Branch exists on ",
-		goGit.remoteName, ": ", goGit.workingBranchExistsOnRemote)
+	//trace.Info("Git Branch exists on ",
+	//	goGit.remoteName, ": ", goGit.workingBranchExistsOnRemote)
 
 	return goGit
 }
