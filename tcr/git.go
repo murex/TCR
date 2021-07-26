@@ -201,38 +201,53 @@ func (g GoGit) Pull() {
 	trace.Info("Pulling latest changes from ",
 		g.remoteName, "/", g.workingBranch)
 
-	gitOptions := git.PlainOpenOptions{
-		DetectDotGit:          true,
-		EnableDotGitCommonDir: false,
-	}
-	repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
+	// Solution below works but requires to provide username
+	// and password, which is not acceptable here. Until we
+	// find a way to reuse git credentials, we'll use a direct
+	// git command call instead
+	// TODO Look if there is a way to reuse git credentials
+
+	//gitOptions := git.PlainOpenOptions{
+	//	DetectDotGit:          true,
+	//	EnableDotGitCommonDir: false,
+	//}
+	//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
+	//if err != nil {
+	//	trace.Error("git.PlainOpenWithOptions(): ", err)
+	//}
+	//
+	//worktree, err := repo.Worktree()
+	//if err != nil {
+	//	trace.Error("repo.Worktree(): ", err)
+	//}
+	//
+	//err = worktree.Pull(&git.PullOptions{
+	//	RemoteName:        g.remoteName,
+	//	ReferenceName:     plumbing.ReferenceName(g.workingBranch),
+	//	SingleBranch:      true,
+	//	RecurseSubmodules: git.NoRecurseSubmodules},
+	//)
+
+	//trace.Echo("From ", g.remoteName)
+	//trace.Echo(" * branch\t", g.workingBranch, " -> FETCH_HEAD")
+	//switch err {
+	//case git.NoErrAlreadyUpToDate:
+	//	trace.Echo("Already up to date.")
+	//case nil:
+	//	printLastCommit(repo)
+	//default:
+	//	trace.Warning("Pull(): ", err)
+	//}
+
+	err := gitCommand([]string{
+		"pull",
+		"--no-recurse-submodules",
+		g.remoteName,
+		g.workingBranch,
+	})
 	if err != nil {
-		trace.Error("git.PlainOpenWithOptions(): ", err)
+		trace.Error(err)
 	}
-
-	worktree, err := repo.Worktree()
-	if err != nil {
-		trace.Error("repo.Worktree(): ", err)
-	}
-
-	err = worktree.Pull(&git.PullOptions{
-		RemoteName:        g.remoteName,
-		ReferenceName:     plumbing.ReferenceName(g.workingBranch),
-		SingleBranch:      true,
-		RecurseSubmodules: git.NoRecurseSubmodules},
-	)
-
-	printLastCommit(repo)
-}
-
-func printLastCommit(repo *git.Repository) {
-	// TODO Make the commit print look nicer
-	head, err := repo.Head()
-	if err != nil {
-		trace.Error("repo.Head(): ", err)
-	}
-	commit, err := repo.CommitObject(head.Hash())
-	trace.Echo(commit)
 }
 
 func gitCommand(params []string) error {
