@@ -38,6 +38,7 @@ Available [here](./doc/tcr.md)
 - [ ] Kotlin language
 - [ ] CLI option for setting git polling frequency
 - [ ] Keyboard shortcuts for increasing/decreasing git polling frequency
+- [ ] TCR online (using and online code editor)
 
 ## Contributors
 
