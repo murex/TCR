@@ -5,10 +5,10 @@ import (
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"path/filepath"
-	"runtime"
 )
 
 var watcher *fsnotify.Watcher
+var matcher func(filename string) bool
 
 func WatchRecursive(
 	dirList []string,
@@ -25,13 +25,16 @@ func WatchRecursive(
 		}
 	}(watcher)
 
+	// The filename matcher ensures that we watch only interesting files
+	matcher = filenameMatcher
+
 	// Used to notify if changes were detected on relevant files
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
 	for _, dir := range dirList {
 		trace.Echo("- Watching ", dir)
-		if err := filepath.Walk(dir, watchDir); err != nil {
+		if err := filepath.Walk(dir, watchFile); err != nil {
 			trace.Warning("filepath.Walk(", dir, "): ", err)
 		}
 	}
@@ -40,38 +43,14 @@ func WatchRecursive(
 	go func() {
 		for {
 			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					trace.Warning("<-watcher.Events: ", event)
-					changesDetected <- false
-					return
-				}
-				// TODO Temporarily disabling filename filtering on Windows
-				//trace.Info("Event:", event)
-				if runtime.GOOS == "windows" {
-					// On Windows there seems to be one single event notification even when
-					// more than 1 file got changed. As a consequence filename
-					// filtering does not trigger the change when the file associated
-					// to the event is filtered out, which leads to unpredictable behaviour
-					trace.Echo("-> ", event.Name)
-					changesDetected <- true
-				} else {
-					if filenameMatcher(event.Name) {
-						trace.Echo("-> ", event.Name)
-						changesDetected <- true
-					} else {
-						trace.Echo("File change ignored: ", event.Name)
-						changesDetected <- false
-					}
-				}
-
+			case event := <-watcher.Events:
+				trace.Echo("-> ", event.Name)
+				changesDetected <- true
 				return
-			case err, ok := <-watcher.Errors:
+			case err := <-watcher.Errors:
 				trace.Warning("Watcher error: ", err)
-				if !ok {
-					changesDetected <- false
-					return
-				}
+				changesDetected <- false
+				return
 			case <-interrupt:
 				changesDetected <- false
 				return
@@ -82,16 +61,20 @@ func WatchRecursive(
 	return <-changesDetected
 }
 
-// watchDir gets run as a walk func, searching for directories to add watchers to
-func watchDir(path string, fi os.FileInfo, err error) error {
-
+// watchFile gets run as a walk func, searching for files to watch
+func watchFile(path string, fi os.FileInfo, err error) error {
 	if err != nil {
-		//trace.Warning("Something wrong with ", path)
+		trace.Warning("Something wrong with ", path)
 		return err
 	}
-	// since fsnotify can watch all the files in a directory, watchers only need
-	// to be added to each nested directory
-	if fi.Mode().IsDir() {
+
+	// We don't watch directories themselves
+	if fi.IsDir() {
+		return nil
+	}
+
+	// If the filename matches our filter, we add it to the watching list
+	if matcher(path) == true {
 		err = watcher.Add(path)
 		if err != nil {
 			trace.Error("watcher.Add(", path, "): ", err)
