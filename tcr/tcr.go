@@ -3,6 +3,7 @@ package tcr
 import (
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/tcr/toolchain"
+	"github.com/mengdaming/tcr/tcr/vcs"
 	"github.com/mengdaming/tcr/trace"
 	"gopkg.in/tomb.v2"
 	"os"
@@ -23,7 +24,7 @@ const (
 var (
 	baseDir  string
 	mode     WorkMode
-	gitItf   GitInterface
+	gitItf   vcs.GitInterface
 	lang     language.Language
 	tchn     toolchain.Toolchain
 	autoPush bool
@@ -36,7 +37,7 @@ func Start(b string, m WorkMode, t string, ap bool) {
 	baseDir = changeDir(b)
 	lang = language.DetectLanguage(baseDir)
 	tchn = toolchain.NewToolchain(t, lang)
-	gitItf = NewGoGit(baseDir)
+	gitItf = vcs.NewGoGit(baseDir)
 
 	printRunningMode(mode)
 	printTCRHeader()
