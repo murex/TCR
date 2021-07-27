@@ -1,8 +1,9 @@
 package stty
 
 import (
-	"bytes"
 	"github.com/mengdaming/tcr/trace"
+
+	"bytes"
 	"os"
 	"os/exec"
 )

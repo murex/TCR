@@ -1,6 +1,8 @@
 package toolchain
 
-import "github.com/mengdaming/tcr/tcr/language"
+import (
+	"github.com/mengdaming/tcr/tcr/language"
+)
 
 type MavenToolchain struct {
 }

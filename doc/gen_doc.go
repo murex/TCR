@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/mengdaming/tcr/cmd"
+
 	"github.com/spf13/cobra/doc"
 
 	"log"

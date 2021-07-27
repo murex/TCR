@@ -1,9 +1,11 @@
 package toolchain
 
 import (
-	"github.com/codeskyblue/go-sh"
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/trace"
+
+	"github.com/codeskyblue/go-sh"
+
 	"os"
 	"path/filepath"
 )

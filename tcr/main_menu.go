@@ -3,6 +3,7 @@ package tcr
 import (
 	"github.com/mengdaming/tcr/stty"
 	"github.com/mengdaming/tcr/trace"
+
 	"os"
 )
 

@@ -1,9 +1,11 @@
 package toolchain
 
 import (
+	"github.com/stretchr/testify/assert"
+
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/trace"
-	"github.com/stretchr/testify/assert"
+
 	"os"
 	"path/filepath"
 	"testing"
@@ -67,4 +69,3 @@ func Test_default_toolchain_for_java(t *testing.T) {
 func Test_default_toolchain_for_cpp(t *testing.T) {
 	assert.Equal(t, CmakeToolchain{}, NewToolchain("", language.Cpp{}))
 }
-
