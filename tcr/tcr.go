@@ -22,22 +22,21 @@ const (
 )
 
 var (
-	baseDir  string
-	mode     WorkMode
-	gitItf   vcs.GitInterface
-	lang     language.Language
-	tchn     toolchain.Toolchain
-	autoPush bool
+	baseDir string
+	mode    WorkMode
+	git     vcs.GitInterface
+	lang    language.Language
+	tchn    toolchain.Toolchain
 )
 
 func Start(b string, m WorkMode, t string, ap bool) {
 	mode = m
-	autoPush = ap
 
 	baseDir = changeDir(b)
 	lang = language.DetectLanguage(baseDir)
 	tchn = toolchain.NewToolchain(t, lang)
-	gitItf = vcs.NewGoGit(baseDir)
+	git = vcs.NewGitImpl(baseDir)
+	git.EnablePush(ap)
 
 	printRunningMode(mode)
 	printTCRHeader()
@@ -61,11 +60,7 @@ func printRunningMode(mode WorkMode) {
 }
 
 func toggleAutoPush() {
-	if autoPush {
-		autoPush = false
-	} else {
-		autoPush = true
-	}
+	git.EnablePush(!git.IsPushEnabled())
 }
 
 func runAsDriver() {
@@ -73,7 +68,7 @@ func runAsDriver() {
 		func() {
 			trace.HorizontalLine()
 			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
-			gitItf.Pull()
+			git.Pull()
 		},
 		func(interrupt <-chan bool) {
 			if waitForChanges(interrupt) {
@@ -93,7 +88,7 @@ func runAsNavigator() {
 			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
 		},
 		func(interrupt <-chan bool) {
-			gitItf.Pull()
+			git.Pull()
 			time.Sleep(GitPollingPeriod)
 		},
 		func() {
@@ -181,17 +176,15 @@ func test() error {
 }
 
 func commit() {
-	trace.Info("Committing changes on branch ", gitItf.WorkingBranch())
-	gitItf.Commit()
-	if autoPush {
-		gitItf.Push()
-	}
+	trace.Info("Committing changes on branch ", git.WorkingBranch())
+	git.Commit()
+	git.Push()
 }
 
 func revert() {
 	trace.Warning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
-		gitItf.Restore(filepath.Join(baseDir, dir))
+		git.Restore(filepath.Join(baseDir, dir))
 	}
 }
 
@@ -200,13 +193,13 @@ func printTCRHeader() {
 	trace.Info("Working Directory: ", baseDir)
 	trace.Info("Language=", lang.Name(), ", Toolchain=", tchn.Name())
 
-	autoPushStr := "disabled"
-	if autoPush {
-		autoPushStr = "enabled"
+	autoPush := "disabled"
+	if git.IsPushEnabled() {
+		autoPush = "enabled"
 	}
 	trace.Info(
-		"Running on git branch \"", gitItf.WorkingBranch(),
-		"\" with auto-push ", autoPushStr)
+		"Running on git branch \"", git.WorkingBranch(),
+		"\" with auto-push ", autoPush)
 }
 
 func changeDir(baseDir string) string {
