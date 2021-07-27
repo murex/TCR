@@ -17,27 +17,33 @@ type SourceTreeImpl struct {
 
 func NewSourceTreeImpl(dir string) SourceTree {
 	var st = SourceTreeImpl{}
-	st.changeDir(dir)
+	var err error
+	st.baseDir, err = st.changeDir(dir)
+	if err != nil {
+		return nil
+	}
 	return &st
 }
 
-func (st *SourceTreeImpl) changeDir(dir string) {
+func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
 	_, err := os.Stat(dir)
 	switch {
 	case os.IsNotExist(err):
 		trace.Error("Directory ", dir, " does not exist")
-		return
+		return "", err
 	case os.IsPermission(err):
 		trace.Error("Can't access directory ", dir)
-		return
+		return "", err
 	}
 
 	err = os.Chdir(dir)
 	if err != nil {
 		trace.Error("Failed to change directory to ", dir)
-		return
+		return "", err
 	}
-	st.baseDir, _ = os.Getwd()
+
+	wd, _ := os.Getwd()
+	return wd, nil
 }
 
 func (st *SourceTreeImpl) GetBaseDir() string {

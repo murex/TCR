@@ -28,6 +28,8 @@ func Test_git_enable_disable_push(t *testing.T) {
 	assert.Zero(t, git.IsPushEnabled())
 }
 
+// Working Branch
+
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
 	assert.Zero(t, NewGitImpl("/"))
 	assert.NotZero(t, trace.GetExitReturnCode())
