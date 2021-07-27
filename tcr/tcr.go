@@ -1,10 +1,12 @@
 package tcr
 
 import (
+	"github.com/mengdaming/tcr/tcr/filesystem"
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/tcr/toolchain"
 	"github.com/mengdaming/tcr/tcr/vcs"
 	"github.com/mengdaming/tcr/trace"
+
 	"gopkg.in/tomb.v2"
 	"os"
 	"os/signal"
@@ -22,20 +24,20 @@ const (
 )
 
 var (
-	baseDir string
-	mode    WorkMode
-	git     vcs.GitInterface
-	lang    language.Language
-	tchn    toolchain.Toolchain
+	mode       WorkMode
+	git        vcs.GitInterface
+	lang       language.Language
+	tchn       toolchain.Toolchain
+	sourceTree filesystem.SourceTree
 )
 
-func Start(b string, m WorkMode, t string, ap bool) {
+func Start(dir string, m WorkMode, t string, ap bool) {
 	mode = m
 
-	baseDir = changeDir(b)
-	lang = language.DetectLanguage(baseDir)
+	sourceTree = filesystem.NewSourceTreeImpl(dir)
+	lang = language.DetectLanguage(sourceTree.GetBaseDir())
 	tchn = toolchain.NewToolchain(t, lang)
-	git = vcs.NewGitImpl(baseDir)
+	git = vcs.NewGitImpl(sourceTree.GetBaseDir())
 	git.EnablePush(ap)
 
 	printRunningMode(mode)
@@ -184,13 +186,13 @@ func commit() {
 func revert() {
 	trace.Warning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
-		git.Restore(filepath.Join(baseDir, dir))
+		git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
 	}
 }
 
 func printTCRHeader() {
 	trace.HorizontalLine()
-	trace.Info("Working Directory: ", baseDir)
+	trace.Info("Working Directory: ", sourceTree.GetBaseDir())
 	trace.Info("Language=", lang.Name(), ", Toolchain=", tchn.Name())
 
 	autoPush := "disabled"
@@ -202,28 +204,10 @@ func printTCRHeader() {
 		"\" with auto-push ", autoPush)
 }
 
-func changeDir(baseDir string) string {
-	_, err := os.Stat(baseDir)
-	switch {
-	case os.IsNotExist(err):
-		trace.Error("Directory ", baseDir, " does not exist")
-	case os.IsPermission(err):
-		trace.Error("Can't access directory ", baseDir)
-	}
-
-	err = os.Chdir(baseDir)
-	if err != nil {
-		trace.Error("Cannot change directory to ", baseDir)
-	}
-
-	getwd, _ := os.Getwd()
-	return getwd
-}
-
 func waitForChanges(interrupt <-chan bool) bool {
 	trace.Info("Going to sleep until something interesting happens")
-	return WatchRecursive(
-		language.DirsToWatch(baseDir, lang),
+	return sourceTree.Watch(
+		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
 		lang.IsSrcFile,
 		interrupt)
 }

@@ -1,32 +1,66 @@
-package tcr
+package filesystem
 
 import (
-	"github.com/fsnotify/fsnotify"
 	"github.com/mengdaming/tcr/trace"
+
+	"github.com/fsnotify/fsnotify"
+
 	"os"
 	"path/filepath"
 )
 
-var watcher *fsnotify.Watcher
-var matcher func(filename string) bool
+type SourceTreeImpl struct {
+	baseDir string
+	watcher *fsnotify.Watcher
+	matcher func(filename string) bool
+}
 
-func WatchRecursive(
+func NewSourceTreeImpl(dir string) SourceTree {
+	var st = SourceTreeImpl{}
+	st.changeDir(dir)
+	return &st
+}
+
+func (st *SourceTreeImpl) changeDir(dir string) {
+	_, err := os.Stat(dir)
+	switch {
+	case os.IsNotExist(err):
+		trace.Error("Directory ", dir, " does not exist")
+		return
+	case os.IsPermission(err):
+		trace.Error("Can't access directory ", dir)
+		return
+	}
+
+	err = os.Chdir(dir)
+	if err != nil {
+		trace.Error("Failed to change directory to ", dir)
+		return
+	}
+	st.baseDir, _ = os.Getwd()
+}
+
+func (st *SourceTreeImpl) GetBaseDir() string {
+	return st.baseDir
+}
+
+func (st *SourceTreeImpl) Watch(
 	dirList []string,
 	filenameMatcher func(filename string) bool,
 	interrupt <-chan bool,
 ) bool {
 
 	// The file watcher
-	watcher, _ = fsnotify.NewWatcher()
+	st.watcher, _ = fsnotify.NewWatcher()
 	defer func(watcher *fsnotify.Watcher) {
 		err := watcher.Close()
 		if err != nil {
 			trace.Error("watcher.Close(): ", err)
 		}
-	}(watcher)
+	}(st.watcher)
 
 	// The filename matcher ensures that we watch only interesting files
-	matcher = filenameMatcher
+	st.matcher = filenameMatcher
 
 	// Used to notify if changes were detected on relevant files
 	changesDetected := make(chan bool)
@@ -34,7 +68,7 @@ func WatchRecursive(
 	// We recursively watch all subdirectories for all the provided directories
 	for _, dir := range dirList {
 		trace.Echo("- Watching ", dir)
-		if err := filepath.Walk(dir, watchFile); err != nil {
+		if err := filepath.Walk(dir, st.watchFile); err != nil {
 			trace.Warning("filepath.Walk(", dir, "): ", err)
 		}
 	}
@@ -43,11 +77,11 @@ func WatchRecursive(
 	go func() {
 		for {
 			select {
-			case event := <-watcher.Events:
+			case event := <-st.watcher.Events:
 				trace.Echo("-> ", event.Name)
 				changesDetected <- true
 				return
-			case err := <-watcher.Errors:
+			case err := <-st.watcher.Errors:
 				trace.Warning("Watcher error: ", err)
 				changesDetected <- false
 				return
@@ -62,7 +96,7 @@ func WatchRecursive(
 }
 
 // watchFile gets run as a walk func, searching for files to watch
-func watchFile(path string, fi os.FileInfo, err error) error {
+func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) error {
 	if err != nil {
 		trace.Warning("Something wrong with ", path)
 		return err
@@ -74,8 +108,8 @@ func watchFile(path string, fi os.FileInfo, err error) error {
 	}
 
 	// If the filename matches our filter, we add it to the watching list
-	if matcher(path) == true {
-		err = watcher.Add(path)
+	if st.matcher(path) == true {
+		err = st.watcher.Add(path)
 		if err != nil {
 			trace.Error("watcher.Add(", path, "): ", err)
 		}
