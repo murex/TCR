@@ -50,7 +50,7 @@ func defaultToolchain(lang language.Language) Toolchain {
 	case language.Cpp{}:
 		return CmakeToolchain{}
 	default:
-		trace.Error("No supported toolchain for language ", lang.Name())
+		trace.Error("No supported toolchain for ", lang.Name(), " language")
 	}
 	return nil
 }
@@ -60,8 +60,11 @@ func verifyCompatibility(toolchain Toolchain, lang language.Language) bool {
 		return false
 	}
 	if !toolchain.supports(lang) {
-		trace.Error("Toolchain ", toolchain.Name(),
-			" does not support language ", lang.Name())
+		trace.Error(
+			toolchain.Name(), " toolchain ",
+			" does not support ",
+			lang.Name(), " language",
+		)
 		return false
 	}
 	return true
@@ -70,7 +73,6 @@ func verifyCompatibility(toolchain Toolchain, lang language.Language) bool {
 func runBuild(toolchain Toolchain) error {
 	wd, _ := os.Getwd()
 	buildCommandPath := filepath.Join(wd, toolchain.buildCommandName())
-	//trace.Info(buildCommandPath)
 	output, err := sh.Command(
 		buildCommandPath,
 		toolchain.buildCommandArgs()).Output()
@@ -83,7 +85,6 @@ func runBuild(toolchain Toolchain) error {
 func runTests(tchn Toolchain) error {
 	wd, _ := os.Getwd()
 	testCommandPath := filepath.Join(wd, tchn.testCommandName())
-	//trace.Info(testCommandPath)
 	output, err := sh.Command(
 		testCommandPath,
 		tchn.testCommandArgs()).Output()
