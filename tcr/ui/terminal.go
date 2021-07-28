@@ -68,9 +68,39 @@ func (term *Terminal) WaitForAction() {
 
 		switch keyboardInput[0] {
 		case 'd', 'D':
-			engine.RunAsDriver()
+			// watch for interruption requests
+			interrupt := make(chan bool)
+			go engine.RunAsDriver(interrupt)
+			switch keyboardInput[0] {
+			case 'm', 'M':
+				term.Info("Hit M")
+				interrupt <- true
+			}
 		case 'n', 'N':
-			engine.RunAsNavigator()
+			// watch for interruption requests
+			interrupt := make(chan bool)
+			go engine.RunAsNavigator(interrupt)
+			for {
+				var done = false
+				_, err := os.Stdin.Read(keyboardInput)
+				if err != nil {
+					term.Warning("Something went wrong while reading from stdin: ", err)
+				}
+				switch keyboardInput[0] {
+				// 27 is for ESC key, at least on Windows
+				case 'm', 'M', 27:
+					term.Info("Hit M or ESC")
+					interrupt <- true
+					done = true
+				default:
+					term.Warning("Hit ", keyboardInput[0])
+				}
+				term.Info("aaa")
+				if done {
+					break
+				}
+			}
+			term.Info("bbb")
 		case 'p', 'P':
 			engine.ToggleAutoPush()
 			term.ShowSessionInfo()

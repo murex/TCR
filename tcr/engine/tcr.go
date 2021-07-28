@@ -10,7 +10,6 @@ import (
 	"gopkg.in/tomb.v2"
 
 	"os"
-	"os/signal"
 	"path/filepath"
 	"time"
 )
@@ -43,7 +42,8 @@ func Start(u tcr.UserInterface, params tcr.Params) {
 	case tcr.Solo:
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode
-		RunAsDriver()
+		// TODO Put back
+		//RunAsDriver()
 	case tcr.Mob:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
@@ -56,8 +56,9 @@ func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
-func RunAsDriver() {
+func RunAsDriver(interrupt <-chan bool) {
 	runInLoop(
+		interrupt,
 		func() {
 			ui.NotifyRoleStarting(tcr.DriverRole)
 			git.Pull()
@@ -73,8 +74,9 @@ func RunAsDriver() {
 	)
 }
 
-func RunAsNavigator() {
+func RunAsNavigator(interrupt <-chan bool) {
 	runInLoop(
+		interrupt,
 		func() {
 			ui.NotifyRoleStarting(tcr.NavigatorRole)
 		},
@@ -89,12 +91,13 @@ func RunAsNavigator() {
 }
 
 func runInLoop(
+	interrupt <-chan bool,
 	preLoopAction func(),
 	inLoopAction func(interrupt <-chan bool),
 	afterLoopAction func()) {
 
 	// watch for interruption requests
-	interrupt := make(chan bool)
+	//interrupt := make(chan bool)
 
 	var tmb tomb.Tomb
 
@@ -116,15 +119,15 @@ func runInLoop(
 	})
 
 	// The goroutine watching for Ctrl-C
-	tmb.Go(func() error {
-		sig := make(chan os.Signal, 1)
-		signal.Notify(sig, os.Interrupt)
-		<-sig
-		ui.Warning("OK, let's stop here")
-		interrupt <- true
-		tmb.Kill(nil)
-		return nil
-	})
+	//tmb.Go(func() error {
+	//	sig := make(chan os.Signal, 1)
+	//	signal.Notify(sig, os.Interrupt)
+	//	<-sig
+	//	ui.Warning("OK, let's stop here")
+	//	interrupt <- true
+	//	tmb.Kill(nil)
+	//	return nil
+	//})
 
 	err := tmb.Wait()
 	if err != nil {
