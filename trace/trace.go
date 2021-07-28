@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	linePrefix = "[TCR]"
+	defaultLinePrefix = ""
 
 	horizontalLineCharacter = "-"
 
@@ -22,7 +22,12 @@ var (
 	colorizer      = aurora.NewAurora(true)
 	exitFunction   = os.Exit
 	exitReturnCode = 0
+	linePrefix     = defaultLinePrefix
 )
+
+func SetLinePrefix(value string) {
+	linePrefix = value
+}
 
 func printColoredLine(fgColor aurora.Color, message string) {
 	fmt.Println(
