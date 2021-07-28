@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/mengdaming/tcr/tcr"
+	"github.com/mengdaming/tcr/tcr/engine"
+	"github.com/mengdaming/tcr/tcr/ui"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -12,23 +14,23 @@ import (
 )
 
 // Command Line Options placeholders
-var cfgFile string
-var toolchain string
-var autoPush bool
-var baseDir string
+
+var params tcr.Params
 
 var rootCmd = &cobra.Command{
-	Use:   "tcr",
+	Use:     "tcr",
 	Version: "0.2.1",
-	Short: "TCR (Test && Commit || Revert)",
+	Short:   "TCR (Test && Commit || Revert)",
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we run in mob mode by default
 		// so that the user can have access to the menu
-		//trace.Info("Default running mode: " + tcr.Mob)
-		tcr.Start(baseDir, tcr.Mob, toolchain, autoPush)
+		u := ui.NewTerminal()
+		params.Mode = tcr.Mob
+		params.PollingPeriod = tcr.DefaultPollingPeriod
+		engine.Start(u, params)
 	},
 }
 
@@ -45,24 +47,23 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tcr.yaml)")
+	//rootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.tcr.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.PersistentFlags().StringVarP(&toolchain,
+	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
 		"toolchain",
 		"t",
 		"",
 		"Indicate the toolchain to be used by TCR")
 
-	rootCmd.PersistentFlags().StringVarP(&baseDir,
+	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
 		"base-dir",
 		"b",
 		".",
 		"Indicate the base directory from which TCR is running")
 
-
-	rootCmd.Flags().BoolVarP(&autoPush,
+	rootCmd.Flags().BoolVarP(&params.AutoPush,
 		"auto-push",
 		"p",
 		false,
@@ -71,9 +72,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
+	if params.CfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(params.CfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()

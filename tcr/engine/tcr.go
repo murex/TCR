@@ -1,100 +1,89 @@
-package tcr
+package engine
 
 import (
+	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/filesystem"
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/tcr/toolchain"
 	"github.com/mengdaming/tcr/tcr/vcs"
-	"github.com/mengdaming/tcr/trace"
 
 	"gopkg.in/tomb.v2"
+
 	"os"
 	"os/signal"
 	"path/filepath"
 	"time"
 )
 
-type WorkMode string
-
-const (
-	Solo = "solo"
-	Mob  = "mob"
-
-	GitPollingPeriod = 1 * time.Second
-)
-
 var (
-	mode       WorkMode
-	git        vcs.GitInterface
-	lang       language.Language
-	tchn       toolchain.Toolchain
-	sourceTree filesystem.SourceTree
+	mode          tcr.WorkMode
+	ui            tcr.UserInterface
+	git           vcs.GitInterface
+	lang          language.Language
+	tchn          toolchain.Toolchain
+	sourceTree    filesystem.SourceTree
+	pollingPeriod time.Duration
 )
 
-func Start(dir string, m WorkMode, t string, ap bool) {
-	mode = m
+func Start(u tcr.UserInterface, params tcr.Params) {
+	ui = u
 
-	sourceTree = filesystem.NewSourceTreeImpl(dir)
+	mode = params.Mode
+	pollingPeriod = params.PollingPeriod
+	sourceTree = filesystem.NewSourceTreeImpl(params.BaseDir)
 	lang = language.DetectLanguage(sourceTree.GetBaseDir())
-	tchn = toolchain.NewToolchain(t, lang)
+	tchn = toolchain.NewToolchain(params.Toolchain, lang)
 	git = vcs.NewGitImpl(sourceTree.GetBaseDir())
-	git.EnablePush(ap)
+	git.EnablePush(params.AutoPush)
 
-	printRunningMode(mode)
-	printTCRHeader()
+	ui.ShowRunningMode(mode)
+	ui.ShowSessionInfo()
 
 	switch mode {
-	case Solo:
+	case tcr.Solo:
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode
-		runAsDriver()
-	case Mob:
+		RunAsDriver()
+	case tcr.Mob:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
 		// driver and navigator modes
-		mobMainMenu()
+		ui.WaitForAction()
 	}
 }
 
-func printRunningMode(mode WorkMode) {
-	trace.HorizontalLine()
-	trace.Info("Running in ", mode, " mode")
-}
-
-func toggleAutoPush() {
+func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
-func runAsDriver() {
+func RunAsDriver() {
 	runInLoop(
 		func() {
-			trace.HorizontalLine()
-			trace.Info("Entering Driver mode. Press CTRL-C to go back to the main menu")
+			ui.NotifyRoleStarting(tcr.DriverRole)
 			git.Pull()
 		},
 		func(interrupt <-chan bool) {
-			if waitForChanges(interrupt) {
-				tcr()
+			if waitForChange(interrupt) {
+				runTCR()
 			}
 		},
 		func() {
-			trace.Info("Exiting Driver mode")
+			ui.NotifyRoleEnding(tcr.DriverRole)
 		},
 	)
 }
 
-func runAsNavigator() {
+func RunAsNavigator() {
 	runInLoop(
 		func() {
-			trace.HorizontalLine()
-			trace.Info("Entering Navigator mode. Press CTRL-C to go back to the main menu")
+			ui.NotifyRoleStarting(tcr.NavigatorRole)
 		},
 		func(interrupt <-chan bool) {
 			git.Pull()
-			time.Sleep(GitPollingPeriod)
+			time.Sleep(pollingPeriod)
 		},
 		func() {
-			trace.Info("Exiting Navigator mode")
+			ui.NotifyRoleEnding(tcr.NavigatorRole)
 		},
 	)
 }
@@ -131,7 +120,7 @@ func runInLoop(
 		sig := make(chan os.Signal, 1)
 		signal.Notify(sig, os.Interrupt)
 		<-sig
-		trace.Warning("OK, let's stop here")
+		ui.Warning("OK, let's stop here")
 		interrupt <- true
 		tmb.Kill(nil)
 		return nil
@@ -139,16 +128,16 @@ func runInLoop(
 
 	err := tmb.Wait()
 	if err != nil {
-		trace.Error("tmb.Wait(): ", err)
+		ui.Error("tmb.Wait(): ", err)
 	}
 }
 
-func quit() {
-	trace.Info("That's All Folks!")
+func Quit() {
+	ui.Info("That's All Folks!")
 	os.Exit(0)
 }
 
-func tcr() {
+func runTCR() {
 	if build() != nil {
 		return
 	}
@@ -160,52 +149,48 @@ func tcr() {
 }
 
 func build() error {
-	trace.Info("Launching Build")
+	ui.Info("Launching Build")
 	err := tchn.RunBuild()
 	if err != nil {
-		trace.Warning("There are build errors! I can't go any further")
+		ui.Warning("There are build errors! I can't go any further")
 	}
 	return err
 }
 
 func test() error {
-	trace.Info("Running Tests")
+	ui.Info("Running Tests")
 	err := tchn.RunTests()
 	if err != nil {
-		trace.Warning("Some tests are failing! That's unfortunate")
+		ui.Warning("Some tests are failing! That's unfortunate")
 	}
 	return err
 }
 
 func commit() {
-	trace.Info("Committing changes on branch ", git.WorkingBranch())
+	ui.Info("Committing changes on branch ", git.WorkingBranch())
 	git.Commit()
 	git.Push()
 }
 
 func revert() {
-	trace.Warning("Reverting changes")
+	ui.Warning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
 		git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
 	}
 }
 
-func printTCRHeader() {
-	trace.HorizontalLine()
-	trace.Info("Working Directory: ", sourceTree.GetBaseDir())
-	trace.Info("Language=", lang.Name(), ", Toolchain=", tchn.Name())
+func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
+	d = sourceTree.GetBaseDir()
+	l = lang.Name()
+	t = tchn.Name()
+	ap = git.IsPushEnabled()
+	b = git.WorkingBranch()
 
-	autoPush := "disabled"
-	if git.IsPushEnabled() {
-		autoPush = "enabled"
-	}
-	trace.Info(
-		"Running on git branch \"", git.WorkingBranch(),
-		"\" with auto-push ", autoPush)
+	return d, l, t, ap, b
 }
 
-func waitForChanges(interrupt <-chan bool) bool {
-	trace.Info("Going to sleep until something interesting happens")
+func waitForChange(interrupt <-chan bool) bool {
+	ui.Info("Going to sleep until something interesting happens")
 	return sourceTree.Watch(
 		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
 		lang.IsSrcFile,

@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/mengdaming/tcr/tcr"
+	"github.com/mengdaming/tcr/tcr/engine"
+	"github.com/mengdaming/tcr/tcr/ui"
 
 	"github.com/spf13/cobra"
 )
@@ -14,7 +16,11 @@ var mobCmd = &cobra.Command{
 When used in "mob" mode, TCR ensures that any commit
 is shared with other participants through calling git push-pull.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		tcr.Start(baseDir, tcr.Mob, toolchain, true)
+		u := ui.NewTerminal()
+		params.Mode = tcr.Mob
+		params.AutoPush = true
+		params.PollingPeriod = tcr.DefaultPollingPeriod
+		engine.Start(u, params)
 	},
 }
 
