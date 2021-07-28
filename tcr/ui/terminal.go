@@ -13,7 +13,12 @@ import (
 type Terminal struct {
 }
 
+const (
+	tcrLinePrefix = "[TCR]"
+)
+
 func NewTerminal() tcr.UserInterface {
+	trace.SetLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
 	return &term
 }
