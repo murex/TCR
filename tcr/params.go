@@ -1,6 +1,9 @@
 package tcr
 
-import "time"
+import (
+	"github.com/mengdaming/tcr/tcr/role"
+	"time"
+)
 
 type Params struct {
 	CfgFile       string
@@ -13,14 +16,11 @@ type Params struct {
 
 type WorkMode string
 
-type Role string
+type Role role.Role
 
 const (
 	Solo = "solo"
 	Mob  = "mob"
-
-	DriverRole = "driver"
-	NavigatorRole = "navigator"
 
 	DefaultPollingPeriod = 2 * time.Second
 )

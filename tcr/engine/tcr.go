@@ -4,6 +4,7 @@ import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/filesystem"
 	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/tcr/toolchain"
 	"github.com/mengdaming/tcr/tcr/vcs"
 
@@ -60,7 +61,7 @@ func RunAsDriver(interrupt <-chan bool) {
 	runInLoop(
 		interrupt,
 		func() {
-			ui.NotifyRoleStarting(tcr.DriverRole)
+			ui.NotifyRoleStarting(role.Driver{})
 			git.Pull()
 		},
 		func(interrupt <-chan bool) {
@@ -69,7 +70,7 @@ func RunAsDriver(interrupt <-chan bool) {
 			}
 		},
 		func() {
-			ui.NotifyRoleEnding(tcr.DriverRole)
+			ui.NotifyRoleEnding(role.Driver{})
 		},
 	)
 }
@@ -78,56 +79,42 @@ func RunAsNavigator(interrupt <-chan bool) {
 	runInLoop(
 		interrupt,
 		func() {
-			ui.NotifyRoleStarting(tcr.NavigatorRole)
+			ui.NotifyRoleStarting(role.Navigator{})
 		},
 		func(interrupt <-chan bool) {
 			git.Pull()
 			time.Sleep(pollingPeriod)
 		},
 		func() {
-			ui.NotifyRoleEnding(tcr.NavigatorRole)
+			ui.NotifyRoleEnding(role.Navigator{})
 		},
 	)
 }
 
 func runInLoop(
-	interrupt <-chan bool,
-	preLoopAction func(),
-	inLoopAction func(interrupt <-chan bool),
-	afterLoopAction func()) {
-
-	// watch for interruption requests
-	//interrupt := make(chan bool)
+	shoot <-chan bool,
+	birth func(),
+	life func(interrupt <-chan bool),
+	death func()) {
 
 	var tmb tomb.Tomb
 
 	// The goroutine doing the work
 	tmb.Go(func() error {
-		preLoopAction()
+		birth()
 		for {
 			select {
 			case <-tmb.Dying():
-				afterLoopAction()
+				death()
 				return nil
-			case <-interrupt:
-				afterLoopAction()
+			case <-shoot:
+				death()
 				return nil
 			default:
-				inLoopAction(interrupt)
+				life(shoot)
 			}
 		}
 	})
-
-	// The goroutine watching for Ctrl-C
-	//tmb.Go(func() error {
-	//	sig := make(chan os.Signal, 1)
-	//	signal.Notify(sig, os.Interrupt)
-	//	<-sig
-	//	ui.Warning("OK, let's stop here")
-	//	interrupt <- true
-	//	tmb.Kill(nil)
-	//	return nil
-	//})
 
 	err := tmb.Wait()
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"github.com/mengdaming/tcr/stty"
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/engine"
+	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/trace"
 	"strings"
 
@@ -25,12 +26,12 @@ func NewTerminal() tcr.UserInterface {
 
 func (term *Terminal) NotifyRoleStarting(role tcr.Role) {
 	term.horizontalLine()
-	term.Info("Starting as a ", strings.Title(string(role)),
-		". Press CTRL-C to go back to the main menu")
+	term.Info("Starting as a ", strings.Title(role.Name()),
+		". Press ESC to return to the main menu")
 }
 
 func (term *Terminal) NotifyRoleEnding(role tcr.Role) {
-	term.Info("Leaving ", strings.Title(string(role)), " role")
+	term.Info("Leaving ", strings.Title(role.Name()), " role")
 }
 
 func (term *Terminal) Info(a ...interface{}) {
@@ -68,39 +69,9 @@ func (term *Terminal) WaitForAction() {
 
 		switch keyboardInput[0] {
 		case 'd', 'D':
-			// watch for interruption requests
-			interrupt := make(chan bool)
-			go engine.RunAsDriver(interrupt)
-			switch keyboardInput[0] {
-			case 'm', 'M':
-				term.Info("Hit M")
-				interrupt <- true
-			}
+			term.enterRoleMenu(role.Driver{})
 		case 'n', 'N':
-			// watch for interruption requests
-			interrupt := make(chan bool)
-			go engine.RunAsNavigator(interrupt)
-			for {
-				var done = false
-				_, err := os.Stdin.Read(keyboardInput)
-				if err != nil {
-					term.Warning("Something went wrong while reading from stdin: ", err)
-				}
-				switch keyboardInput[0] {
-				// 27 is for ESC key, at least on Windows
-				case 'm', 'M', 27:
-					term.Info("Hit M or ESC")
-					interrupt <- true
-					done = true
-				default:
-					term.Warning("Hit ", keyboardInput[0])
-				}
-				term.Info("aaa")
-				if done {
-					break
-				}
-			}
-			term.Info("bbb")
+			term.enterRoleMenu(role.Navigator{})
 		case 'p', 'P':
 			engine.ToggleAutoPush()
 			term.ShowSessionInfo()
@@ -112,6 +83,41 @@ func (term *Terminal) WaitForAction() {
 				string(keyboardInput), "'")
 		}
 		term.printOptionsMenu()
+	}
+}
+
+func (term *Terminal) enterRoleMenu(r role.Role) {
+
+	keyboardInput := make([]byte, 1)
+	interrupt := make(chan bool)
+
+	switch r {
+	case role.Navigator{}:
+		go engine.RunAsNavigator(interrupt)
+	case role.Driver{}:
+		go engine.RunAsDriver(interrupt)
+	default:
+		term.Warning("No action defined for role ", r.Name())
+	}
+
+	for {
+		var done = false
+		_, err := os.Stdin.Read(keyboardInput)
+		if err != nil {
+			term.Warning("Something went wrong while reading from stdin: ", err)
+		}
+		switch keyboardInput[0] {
+		// 27 is for ESC key, at least on Windows
+		case 27:
+			term.Warning("OK, heading back to the main menu")
+			interrupt <- true
+			done = true
+		default:
+			term.Warning("Key not recognized. Press ESC to return to the main menu")
+		}
+		if done {
+			break
+		}
 	}
 }
 
