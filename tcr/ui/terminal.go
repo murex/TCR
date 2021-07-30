@@ -6,9 +6,8 @@ import (
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/trace"
-	"strings"
-
 	"os"
+	"strings"
 )
 
 type Terminal struct {
@@ -17,12 +16,14 @@ type Terminal struct {
 const (
 	tcrLinePrefix = "[TCR]"
 
+	enterKey  = 0x0a
 	escapeKey = 0x1b
 )
 
 func NewTerminal() tcr.UserInterface {
 	trace.SetLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
+
 	return &term
 }
 
@@ -103,8 +104,7 @@ func (term *Terminal) startAs(r role.Role) {
 
 	// ...Until the user decides to stop and go back to the main menu
 	keyboardInput := make([]byte, 1)
-	for {
-		var stopRequested = false
+	for stopRequest := false; !stopRequest; {
 		_, err := os.Stdin.Read(keyboardInput)
 		if err != nil {
 			term.Warning("Something went wrong while reading from stdin: ", err)
@@ -112,13 +112,10 @@ func (term *Terminal) startAs(r role.Role) {
 		switch keyboardInput[0] {
 		case escapeKey:
 			term.Warning("OK, heading back to the main menu")
-			stopRequested = true
+			stopRequest = true
 			stopEngine <- true
 		default:
 			term.Warning("Key not recognized. Press ESC to return to the main menu")
-		}
-		if stopRequested {
-			break
 		}
 	}
 }
@@ -151,4 +148,34 @@ func (term *Terminal) ShowSessionInfo() {
 	term.Info(
 		"Running on git branch \"", b,
 		"\" with auto-push ", autoPush)
+}
+
+func (term *Terminal) Confirm(message string, defaultAnswer bool) bool {
+
+	_ = stty.SetRaw()
+	defer stty.Restore()
+
+	term.Warning(message)
+	term.Warning("Do you want to proceed? ", yesOrNoAdvice(defaultAnswer))
+
+	keyboardInput := make([]byte, 1)
+	for {
+		_, _ = os.Stdin.Read(keyboardInput)
+		switch keyboardInput[0] {
+		case 'y', 'Y':
+			return true
+		case 'n', 'N':
+			return false
+		case enterKey:
+			return defaultAnswer
+		}
+	}
+}
+
+func yesOrNoAdvice(defaultAnswer bool) string {
+	if defaultAnswer == true {
+		return "[Y/n]"
+	} else {
+		return "[y/N]"
+	}
 }

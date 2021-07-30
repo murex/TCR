@@ -7,6 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/go-vgo/robotgo v0.99.0 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d // indirect
 	github.com/kevinburke/ssh_config v1.1.0 // indirect

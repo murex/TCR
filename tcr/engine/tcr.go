@@ -38,18 +38,31 @@ func Start(u tcr.UserInterface, params tcr.Params) {
 
 	ui.ShowRunningMode(mode)
 	ui.ShowSessionInfo()
+	warnIfOnRootBranch(git.WorkingBranch())
 
 	switch mode {
 	case tcr.Solo:
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode
-		// TODO Put back
-		//RunAsDriver()
+		// TODO Put back -- should rely on UI which will handle interruption
+		//stopEngine := make(chan bool)
+		//RunAsDriver(stopEngine)
 	case tcr.Mob:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
 		// driver and navigator modes
 		ui.WaitForAction()
+	}
+}
+
+func warnIfOnRootBranch(branch string) {
+	for _, b := range []string{"main", "master"} {
+		if b == branch {
+			if !ui.Confirm("Running TCR on branch \""+branch+"\" is not recommended", false) {
+				Quit()
+			}
+			break
+		}
 	}
 }
 
@@ -63,9 +76,15 @@ func RunAsDriver(stopRequest <-chan bool) {
 			ui.NotifyRoleStarting(role.Driver{})
 			git.Pull()
 		},
-		func(interrupt <-chan bool) {
+		func(interrupt <-chan bool) bool {
 			if waitForChange(interrupt) {
+				// Some file changes were detected
 				runTCR()
+				return true
+			} else {
+				// If we enter here this means that the end of waitForChange
+				// was triggered by the user
+				return false
 			}
 		},
 		func() {
@@ -79,9 +98,15 @@ func RunAsNavigator(stopRequest <-chan bool) {
 		func() {
 			ui.NotifyRoleStarting(role.Navigator{})
 		},
-		func(interrupt <-chan bool) {
-			git.Pull()
-			time.Sleep(pollingPeriod)
+		func(interrupt <-chan bool) bool {
+			select {
+			case <-interrupt:
+				return false
+			default:
+				git.Pull()
+				time.Sleep(pollingPeriod)
+				return true
+			}
 		},
 		func() {
 			ui.NotifyRoleEnding(role.Navigator{})
@@ -91,7 +116,7 @@ func RunAsNavigator(stopRequest <-chan bool) {
 
 func fromBirthTillDeath(
 	birth func(),
-	life func(interrupt <-chan bool),
+	dailyLife func(interrupt <-chan bool) bool,
 	death func(),
 	shoot <-chan bool) {
 
@@ -100,18 +125,11 @@ func fromBirthTillDeath(
 	// The goroutine doing the work
 	tmb.Go(func() error {
 		birth()
-		for {
-			select {
-			case <-tmb.Dying():
-				death()
-				return nil
-			case <-shoot:
-				death()
-				return nil
-			default:
-				life(shoot)
-			}
+		for oneMoreDay := true; oneMoreDay; {
+			oneMoreDay = dailyLife(shoot)
 		}
+		death()
+		return nil
 	})
 
 	err := tmb.Wait()
@@ -120,9 +138,12 @@ func fromBirthTillDeath(
 	}
 }
 
-func Quit() {
-	ui.Info("That's All Folks!")
-	os.Exit(0)
+func waitForChange(interrupt <-chan bool) bool {
+	ui.Info("Going to sleep until something interesting happens")
+	return sourceTree.Watch(
+		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
+		lang.IsSrcFile,
+		interrupt)
 }
 
 func runTCR() {
@@ -177,10 +198,7 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	return d, l, t, ap, b
 }
 
-func waitForChange(interrupt <-chan bool) bool {
-	ui.Info("Going to sleep until something interesting happens")
-	return sourceTree.Watch(
-		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
-		lang.IsSrcFile,
-		interrupt)
+func Quit() {
+	ui.Info("That's All Folks!")
+	os.Exit(0)
 }

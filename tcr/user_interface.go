@@ -10,4 +10,5 @@ type UserInterface interface {
 	Warning(a ...interface{})
 	Error(a ...interface{})
 	Trace(a ...interface{})
+	Confirm(message string, def bool) bool
 }
