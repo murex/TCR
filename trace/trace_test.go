@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ansiReset    = "\x1b[0m"
+	ansiEscape   = "\x1b[0m"
 	ansiRedFg    = "\x1b[31m"
 	ansiYellowFg = "\x1b[33m"
 	ansiCyanFg   = "\x1b[36m"
@@ -46,7 +46,7 @@ func Test_info_function_formatting(t *testing.T) {
 	out := capturer.CaptureStdout(func() {
 		Info(msg)
 	})
-	expected := ansiCyanFg + prefix + ansiReset + " " + ansiCyanFg + msg + ansiReset + newline
+	expected := ansiCyanFg + prefix + ansiEscape + " " + ansiCyanFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }
 
@@ -57,7 +57,7 @@ func Test_warning_function_formatting(t *testing.T) {
 	out := capturer.CaptureStdout(func() {
 		Warning(msg)
 	})
-	expected := ansiYellowFg + prefix + ansiReset + " " + ansiYellowFg + msg + ansiReset + newline
+	expected := ansiYellowFg + prefix + ansiEscape + " " + ansiYellowFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }
 
@@ -68,6 +68,6 @@ func Test_error_function_formatting(t *testing.T) {
 	out := capturer.CaptureStdout(func() {
 		Error(msg)
 	})
-	expected := ansiRedFg + prefix + ansiReset + " " + ansiRedFg + msg + ansiReset + newline
+	expected := ansiRedFg + prefix + ansiEscape + " " + ansiRedFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }

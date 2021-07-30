@@ -16,6 +16,8 @@ type Terminal struct {
 
 const (
 	tcrLinePrefix = "[TCR]"
+
+	escapeKey = 0x1b
 )
 
 func NewTerminal() tcr.UserInterface {
@@ -69,9 +71,9 @@ func (term *Terminal) WaitForAction() {
 
 		switch keyboardInput[0] {
 		case 'd', 'D':
-			term.enterRoleMenu(role.Driver{})
+			term.startAs(role.Driver{})
 		case 'n', 'N':
-			term.enterRoleMenu(role.Navigator{})
+			term.startAs(role.Navigator{})
 		case 'p', 'P':
 			engine.ToggleAutoPush()
 			term.ShowSessionInfo()
@@ -86,36 +88,36 @@ func (term *Terminal) WaitForAction() {
 	}
 }
 
-func (term *Terminal) enterRoleMenu(r role.Role) {
+func (term *Terminal) startAs(r role.Role) {
 
-	keyboardInput := make([]byte, 1)
-	interrupt := make(chan bool)
-
+	// We ask TCR engine to start...
+	stopEngine := make(chan bool)
 	switch r {
 	case role.Navigator{}:
-		go engine.RunAsNavigator(interrupt)
+		go engine.RunAsNavigator(stopEngine)
 	case role.Driver{}:
-		go engine.RunAsDriver(interrupt)
+		go engine.RunAsDriver(stopEngine)
 	default:
 		term.Warning("No action defined for role ", r.Name())
 	}
 
+	// ...Until the user decides to stop and go back to the main menu
+	keyboardInput := make([]byte, 1)
 	for {
-		var done = false
+		var stopRequested = false
 		_, err := os.Stdin.Read(keyboardInput)
 		if err != nil {
 			term.Warning("Something went wrong while reading from stdin: ", err)
 		}
 		switch keyboardInput[0] {
-		// 27 is for ESC key, at least on Windows
-		case 27:
+		case escapeKey:
 			term.Warning("OK, heading back to the main menu")
-			interrupt <- true
-			done = true
+			stopRequested = true
+			stopEngine <- true
 		default:
 			term.Warning("Key not recognized. Press ESC to return to the main menu")
 		}
-		if done {
+		if stopRequested {
 			break
 		}
 	}
@@ -129,8 +131,8 @@ func (term *Terminal) ShowRunningMode(mode tcr.WorkMode) {
 func (term *Terminal) printOptionsMenu() {
 	term.horizontalLine()
 	term.Info("What shall we do?")
-	term.Info("\tD -> Driver role")
-	term.Info("\tN -> Navigator role")
+	term.Info("\tD -> ", strings.Title(role.Driver{}.Name()), " role")
+	term.Info("\tN -> ", strings.Title(role.Navigator{}.Name()), " role")
 	term.Info("\tP -> Turn on/off git auto-push")
 	term.Info("\tQ -> Quit")
 }

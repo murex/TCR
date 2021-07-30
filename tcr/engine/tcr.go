@@ -57,9 +57,8 @@ func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
-func RunAsDriver(interrupt <-chan bool) {
-	runInLoop(
-		interrupt,
+func RunAsDriver(stopRequest <-chan bool) {
+	fromBirthTillDeath(
 		func() {
 			ui.NotifyRoleStarting(role.Driver{})
 			git.Pull()
@@ -72,12 +71,11 @@ func RunAsDriver(interrupt <-chan bool) {
 		func() {
 			ui.NotifyRoleEnding(role.Driver{})
 		},
-	)
+		stopRequest)
 }
 
-func RunAsNavigator(interrupt <-chan bool) {
-	runInLoop(
-		interrupt,
+func RunAsNavigator(stopRequest <-chan bool) {
+	fromBirthTillDeath(
 		func() {
 			ui.NotifyRoleStarting(role.Navigator{})
 		},
@@ -88,14 +86,14 @@ func RunAsNavigator(interrupt <-chan bool) {
 		func() {
 			ui.NotifyRoleEnding(role.Navigator{})
 		},
-	)
+		stopRequest)
 }
 
-func runInLoop(
-	shoot <-chan bool,
+func fromBirthTillDeath(
 	birth func(),
 	life func(interrupt <-chan bool),
-	death func()) {
+	death func(),
+	shoot <-chan bool) {
 
 	var tmb tomb.Tomb
 
