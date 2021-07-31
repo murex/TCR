@@ -40,19 +40,7 @@ func Start(u tcr.UserInterface, params tcr.Params) {
 	ui.ShowSessionInfo()
 	warnIfOnRootBranch(git.WorkingBranch())
 
-	switch mode {
-	case tcr.Solo:
-		// When running TCR in solo mode, there's no
-		// selection menu: we directly enter driver mode
-		// TODO Put back -- should rely on UI which will handle interruption
-		//stopEngine := make(chan bool)
-		//RunAsDriver(stopEngine)
-	case tcr.Mob:
-		// When running TCR in mob mode, every participant
-		// is given the possibility to switch between
-		// driver and navigator modes
-		ui.WaitForAction()
-	}
+	ui.RunInMode(mode)
 }
 
 func warnIfOnRootBranch(branch string) {

@@ -27,14 +27,13 @@ func NewTerminal() tcr.UserInterface {
 	return &term
 }
 
-func (term *Terminal) NotifyRoleStarting(role tcr.Role) {
+func (term *Terminal) NotifyRoleStarting(r tcr.Role) {
 	term.horizontalLine()
-	term.Info("Starting as a ", strings.Title(role.Name()),
-		". Press ESC to return to the main menu")
+	term.Info("Starting as a ", strings.Title(r.Name()), ". Press ESC when done")
 }
 
-func (term *Terminal) NotifyRoleEnding(role tcr.Role) {
-	term.Info("Leaving ", strings.Title(role.Name()), " role")
+func (term *Terminal) NotifyRoleEnding(r tcr.Role) {
+	term.Info("Leaving ", strings.Title(r.Name()), " role")
 }
 
 func (term *Terminal) Info(a ...interface{}) {
@@ -57,11 +56,8 @@ func (term *Terminal) horizontalLine() {
 	trace.HorizontalLine()
 }
 
-func (term *Terminal) WaitForAction() {
+func (term *Terminal) mainMenu() {
 	term.printOptionsMenu()
-
-	_ = stty.SetRaw()
-	defer stty.Restore()
 
 	keyboardInput := make([]byte, 1)
 	for {
@@ -89,7 +85,7 @@ func (term *Terminal) WaitForAction() {
 	}
 }
 
-func (term *Terminal) startAs(r role.Role) {
+func (term *Terminal) startAs(r tcr.Role) {
 
 	// We ask TCR engine to start...
 	stopEngine := make(chan bool)
@@ -102,7 +98,7 @@ func (term *Terminal) startAs(r role.Role) {
 		term.Warning("No action defined for role ", r.Name())
 	}
 
-	// ...Until the user decides to stop and go back to the main menu
+	// ...Until the user decides to stop
 	keyboardInput := make([]byte, 1)
 	for stopRequest := false; !stopRequest; {
 		_, err := os.Stdin.Read(keyboardInput)
@@ -111,11 +107,11 @@ func (term *Terminal) startAs(r role.Role) {
 		}
 		switch keyboardInput[0] {
 		case escapeKey:
-			term.Warning("OK, heading back to the main menu")
+			term.Warning("OK, I heard you")
 			stopRequest = true
 			stopEngine <- true
 		default:
-			term.Warning("Key not recognized. Press ESC to return to the main menu")
+			term.Warning("Key not recognized. Press ESC to leave ", r.Name(), " role")
 		}
 	}
 }
@@ -179,3 +175,22 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 		return "[y/N]"
 	}
 }
+
+func (term *Terminal) RunInMode(mode tcr.WorkMode) {
+
+	_ = stty.SetRaw()
+	defer stty.Restore()
+
+	switch mode {
+	case tcr.Solo:
+		// When running TCR in solo mode, there's no
+		// selection menu: we directly enter driver mode
+		term.startAs(role.Driver{})
+	case tcr.Mob:
+		// When running TCR in mob mode, every participant
+		// is given the possibility to switch between
+		// driver and navigator modes
+		term.mainMenu()
+	}
+}
+

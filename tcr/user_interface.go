@@ -1,10 +1,10 @@
 package tcr
 
 type UserInterface interface {
-	WaitForAction()
+	RunInMode(mode WorkMode)
 	ShowRunningMode(mode WorkMode)
-	NotifyRoleStarting(role Role)
-	NotifyRoleEnding(role Role)
+	NotifyRoleStarting(r Role)
+	NotifyRoleEnding(r Role)
 	ShowSessionInfo()
 	Info(a ...interface{})
 	Warning(a ...interface{})
