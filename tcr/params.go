@@ -1,7 +1,7 @@
 package tcr
 
 import (
-	"github.com/mengdaming/tcr/tcr/role"
+	"github.com/mengdaming/tcr/tcr/runmode"
 	"time"
 )
 
@@ -10,17 +10,10 @@ type Params struct {
 	Toolchain     string
 	AutoPush      bool
 	BaseDir       string
-	Mode          WorkMode
+	Mode          runmode.RunMode
 	PollingPeriod time.Duration
 }
 
-type WorkMode string
-
-type Role role.Role
-
 const (
-	Solo = "solo"
-	Mob  = "mob"
-
 	DefaultPollingPeriod = 2 * time.Second
 )

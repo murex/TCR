@@ -1,10 +1,11 @@
-package ui
+package cli
 
 import (
 	"github.com/mengdaming/tcr/stty"
-	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/role"
+	"github.com/mengdaming/tcr/tcr/runmode"
+	"github.com/mengdaming/tcr/tcr/ui"
 	"github.com/mengdaming/tcr/trace"
 	"os"
 	"strings"
@@ -20,19 +21,19 @@ const (
 	escapeKey = 0x1b
 )
 
-func NewTerminal() tcr.UserInterface {
+func NewTerminal() ui.UserInterface {
 	trace.SetLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
 
 	return &term
 }
 
-func (term *Terminal) NotifyRoleStarting(r tcr.Role) {
+func (term *Terminal) NotifyRoleStarting(r role.Role) {
 	term.horizontalLine()
 	term.Info("Starting as a ", strings.Title(r.Name()), ". Press ESC when done")
 }
 
-func (term *Terminal) NotifyRoleEnding(r tcr.Role) {
+func (term *Terminal) NotifyRoleEnding(r role.Role) {
 	term.Info("Leaving ", strings.Title(r.Name()), " role")
 }
 
@@ -85,7 +86,7 @@ func (term *Terminal) mainMenu() {
 	}
 }
 
-func (term *Terminal) startAs(r tcr.Role) {
+func (term *Terminal) startAs(r role.Role) {
 
 	// We ask TCR engine to start...
 	stopEngine := make(chan bool)
@@ -116,9 +117,9 @@ func (term *Terminal) startAs(r tcr.Role) {
 	}
 }
 
-func (term *Terminal) ShowRunningMode(mode tcr.WorkMode) {
+func (term *Terminal) ShowRunningMode(mode runmode.RunMode) {
 	term.horizontalLine()
-	term.Info("Running in ", mode, " mode")
+	term.Info("Running in ", mode.Name(), " mode")
 }
 
 func (term *Terminal) printOptionsMenu() {
@@ -176,21 +177,23 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 	}
 }
 
-func (term *Terminal) RunInMode(mode tcr.WorkMode) {
+func (term *Terminal) RunInMode(mode runmode.RunMode) {
 
 	_ = stty.SetRaw()
 	defer stty.Restore()
 
 	switch mode {
-	case tcr.Solo:
+	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode
 		term.startAs(role.Driver{})
-	case tcr.Mob:
+	case runmode.Mob{}:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
 		// driver and navigator modes
 		term.mainMenu()
+	default:
+		term.Error("Unknown run mode: ", mode)
 	}
 }
 

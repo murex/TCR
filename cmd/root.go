@@ -3,7 +3,8 @@ package cmd
 import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/ui"
+	"github.com/mengdaming/tcr/tcr/runmode"
+	"github.com/mengdaming/tcr/tcr/ui/cli"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -27,8 +28,8 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we run in mob mode by default
 		// so that the user can have access to the menu
-		u := ui.NewTerminal()
-		params.Mode = tcr.Mob
+		u := cli.NewTerminal()
+		params.Mode = runmode.Mob{}
 		params.PollingPeriod = tcr.DefaultPollingPeriod
 		engine.Start(u, params)
 	},

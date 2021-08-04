@@ -5,19 +5,19 @@ import (
 	"github.com/mengdaming/tcr/tcr/filesystem"
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/tcr/role"
+	"github.com/mengdaming/tcr/tcr/runmode"
 	"github.com/mengdaming/tcr/tcr/toolchain"
+	"github.com/mengdaming/tcr/tcr/ui"
 	"github.com/mengdaming/tcr/tcr/vcs"
-
 	"gopkg.in/tomb.v2"
-
 	"os"
 	"path/filepath"
 	"time"
 )
 
 var (
-	mode          tcr.WorkMode
-	ui            tcr.UserInterface
+	mode          runmode.RunMode
+	uitf          ui.UserInterface
 	git           vcs.GitInterface
 	lang          language.Language
 	tchn          toolchain.Toolchain
@@ -25,8 +25,8 @@ var (
 	pollingPeriod time.Duration
 )
 
-func Start(u tcr.UserInterface, params tcr.Params) {
-	ui = u
+func Start(u ui.UserInterface, params tcr.Params) {
+	uitf = u
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod
@@ -36,17 +36,17 @@ func Start(u tcr.UserInterface, params tcr.Params) {
 	git = vcs.NewGitImpl(sourceTree.GetBaseDir())
 	git.EnablePush(params.AutoPush)
 
-	ui.ShowRunningMode(mode)
-	ui.ShowSessionInfo()
+	uitf.ShowRunningMode(mode)
+	uitf.ShowSessionInfo()
 	warnIfOnRootBranch(git.WorkingBranch())
 
-	ui.RunInMode(mode)
+	uitf.RunInMode(mode)
 }
 
 func warnIfOnRootBranch(branch string) {
 	for _, b := range []string{"main", "master"} {
 		if b == branch {
-			if !ui.Confirm("Running TCR on branch \""+branch+"\" is not recommended", false) {
+			if !uitf.Confirm("Running TCR on branch \""+branch+"\" is not recommended", false) {
 				Quit()
 			}
 			break
@@ -61,7 +61,7 @@ func ToggleAutoPush() {
 func RunAsDriver(stopRequest <-chan bool) {
 	fromBirthTillDeath(
 		func() {
-			ui.NotifyRoleStarting(role.Driver{})
+			uitf.NotifyRoleStarting(role.Driver{})
 			git.Pull()
 		},
 		func(interrupt <-chan bool) bool {
@@ -76,7 +76,7 @@ func RunAsDriver(stopRequest <-chan bool) {
 			}
 		},
 		func() {
-			ui.NotifyRoleEnding(role.Driver{})
+			uitf.NotifyRoleEnding(role.Driver{})
 		},
 		stopRequest)
 }
@@ -84,7 +84,7 @@ func RunAsDriver(stopRequest <-chan bool) {
 func RunAsNavigator(stopRequest <-chan bool) {
 	fromBirthTillDeath(
 		func() {
-			ui.NotifyRoleStarting(role.Navigator{})
+			uitf.NotifyRoleStarting(role.Navigator{})
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -97,7 +97,7 @@ func RunAsNavigator(stopRequest <-chan bool) {
 			}
 		},
 		func() {
-			ui.NotifyRoleEnding(role.Navigator{})
+			uitf.NotifyRoleEnding(role.Navigator{})
 		},
 		stopRequest)
 }
@@ -122,12 +122,12 @@ func fromBirthTillDeath(
 
 	err := tmb.Wait()
 	if err != nil {
-		ui.Error("tmb.Wait(): ", err)
+		uitf.Error("tmb.Wait(): ", err)
 	}
 }
 
 func waitForChange(interrupt <-chan bool) bool {
-	ui.Info("Going to sleep until something interesting happens")
+	uitf.Info("Going to sleep until something interesting happens")
 	return sourceTree.Watch(
 		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
 		lang.IsSrcFile,
@@ -146,31 +146,31 @@ func runTCR() {
 }
 
 func build() error {
-	ui.Info("Launching Build")
+	uitf.Info("Launching Build")
 	err := tchn.RunBuild()
 	if err != nil {
-		ui.Warning("There are build errors! I can't go any further")
+		uitf.Warning("There are build errors! I can't go any further")
 	}
 	return err
 }
 
 func test() error {
-	ui.Info("Running Tests")
+	uitf.Info("Running Tests")
 	err := tchn.RunTests()
 	if err != nil {
-		ui.Warning("Some tests are failing! That's unfortunate")
+		uitf.Warning("Some tests are failing! That's unfortunate")
 	}
 	return err
 }
 
 func commit() {
-	ui.Info("Committing changes on branch ", git.WorkingBranch())
+	uitf.Info("Committing changes on branch ", git.WorkingBranch())
 	git.Commit()
 	git.Push()
 }
 
 func revert() {
-	ui.Warning("Reverting changes")
+	uitf.Warning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
 		git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
 	}
@@ -187,6 +187,6 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 }
 
 func Quit() {
-	ui.Info("That's All Folks!")
+	uitf.Info("That's All Folks!")
 	os.Exit(0)
 }

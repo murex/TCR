@@ -3,7 +3,8 @@ package cmd
 import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/ui"
+	"github.com/mengdaming/tcr/tcr/runmode"
+	"github.com/mengdaming/tcr/tcr/ui/cli"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +17,8 @@ var soloCmd = &cobra.Command{
 When used in "solo" mode, TCR only commits changes locally.
 It never pushes or pulls to a remote repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		u := ui.NewTerminal()
-		params.Mode = tcr.Solo
+		u := cli.NewTerminal()
+		params.Mode = runmode.Solo{}
 		params.AutoPush = false
 		params.PollingPeriod = tcr.DefaultPollingPeriod
 		engine.Start(u, params)
@@ -26,14 +27,4 @@ It never pushes or pulls to a remote repository.`,
 
 func init() {
 	rootCmd.AddCommand(soloCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// soloCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// soloCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

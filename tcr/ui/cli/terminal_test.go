@@ -1,4 +1,4 @@
-package ui
+package cli
 
 import (
 	"github.com/mengdaming/tcr/trace"
