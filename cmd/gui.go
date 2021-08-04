@@ -4,20 +4,19 @@ import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/runmode"
-	"github.com/mengdaming/tcr/tcr/ui/cli"
+	"github.com/mengdaming/tcr/tcr/ui/gui"
 
 	"github.com/spf13/cobra"
 )
 
 // mobCmd represents the mob command
-var mobCmd = &cobra.Command{
-	Use:   "mob",
-	Short: "Run TCR in mob mode",
+var guiCmd = &cobra.Command{
+	Use:   "gui",
+	Short: "Launch TCR GUI",
 	Long: `
-When used in "mob" mode, TCR ensures that any commit
-is shared with other participants through calling git push-pull.`,
+Runs TCR application though a Graphical User Interface.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		u := cli.New()
+		u := gui.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = true
 		params.PollingPeriod = tcr.DefaultPollingPeriod
@@ -26,5 +25,5 @@ is shared with other participants through calling git push-pull.`,
 }
 
 func init() {
-	rootCmd.AddCommand(mobCmd)
+	rootCmd.AddCommand(guiCmd)
 }

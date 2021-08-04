@@ -3,6 +3,7 @@ module github.com/mengdaming/tcr
 go 1.16
 
 require (
+	fyne.io/fyne/v2 v2.0.3
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/go-git/go-billy/v5 v5.3.1

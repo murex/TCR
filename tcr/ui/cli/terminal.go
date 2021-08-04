@@ -15,16 +15,15 @@ type Terminal struct {
 }
 
 const (
-	tcrLinePrefix = "[TCR]"
+	linePrefix = "[TCR]"
 
 	enterKey  = 0x0a
 	escapeKey = 0x1b
 )
 
-func NewTerminal() ui.UserInterface {
-	trace.SetLinePrefix(tcrLinePrefix)
+func New() ui.UserInterface {
+	trace.SetLinePrefix(linePrefix)
 	var term = Terminal{}
-
 	return &term
 }
 

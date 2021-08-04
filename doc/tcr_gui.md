@@ -1,21 +1,20 @@
-## tcr solo
+## tcr gui
 
-Run TCR in solo mode
+Launch TCR GUI
 
 ### Synopsis
 
 
-When used in "solo" mode, TCR only commits changes locally.
-It never pushes or pulls to a remote repository.
+Runs TCR application though a Graphical User Interface.
 
 ```
-tcr solo [flags]
+tcr gui [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for solo
+  -h, --help   help for gui
 ```
 
 ### Options inherited from parent commands

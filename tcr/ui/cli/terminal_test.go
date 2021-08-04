@@ -49,7 +49,7 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	// Displayed info on stdout is useless for the test
 	os.Stdout = os.NewFile(0, os.DevNull)
 
-	term := NewTerminal()
+	term := New()
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
 }
 
