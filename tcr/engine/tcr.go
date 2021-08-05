@@ -30,10 +30,10 @@ func Start(u ui.UserInterface, params tcr.Params) {
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod
-	sourceTree = filesystem.NewSourceTreeImpl(params.BaseDir)
+	sourceTree = filesystem.New(params.BaseDir)
 	lang = language.DetectLanguage(sourceTree.GetBaseDir())
-	tchn = toolchain.NewToolchain(params.Toolchain, lang)
-	git = vcs.NewGitImpl(sourceTree.GetBaseDir())
+	tchn = toolchain.New(params.Toolchain, lang)
+	git = vcs.New(sourceTree.GetBaseDir())
 	git.EnablePush(params.AutoPush)
 
 	uitf.ShowRunningMode(mode)

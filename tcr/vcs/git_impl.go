@@ -24,8 +24,8 @@ type GitImpl struct {
 	pushEnabled                 bool
 }
 
-// NewGitImpl initializes the git implementation based on the provided directory from local clone
-func NewGitImpl(dir string) GitInterface {
+// New initializes the git implementation based on the provided directory from local clone
+func New(dir string) GitInterface {
 	var gitImpl = GitImpl{
 		baseDir:       dir,
 		remoteName:    DefaultRemoteName,

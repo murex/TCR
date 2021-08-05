@@ -21,7 +21,7 @@ type Toolchain interface {
 	supports(lang language.Language) bool
 }
 
-func NewToolchain(name string, lang language.Language) Toolchain {
+func New(name string, lang language.Language) Toolchain {
 	var toolchain Toolchain = nil
 	switch name {
 	case GradleToolchain{}.Name():

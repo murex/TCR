@@ -9,7 +9,7 @@ import (
 )
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, MavenToolchain{}, NewToolchain("maven", language.Java{}))
+	assert.Equal(t, MavenToolchain{}, New("maven", language.Java{}))
 }
 
 func Test_maven_toolchain_name(t *testing.T) {

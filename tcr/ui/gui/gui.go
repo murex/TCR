@@ -113,11 +113,11 @@ func (gui *GUI) initApp() {
 
 	// Session Information container
 
-	gui.directory = *widget.NewLabel("...")
-	gui.language = *widget.NewLabel("...")
-	gui.toolchain = *widget.NewLabel("...")
-	gui.branch = *widget.NewLabel("...")
-	gui.autoPush = *widget.NewLabel("...")
+	gui.directory = *widget.NewLabel("Directory")
+	gui.language = *widget.NewLabel("Language")
+	gui.toolchain = *widget.NewLabel("Toolchain")
+	gui.branch = *widget.NewLabel("Branch")
+	gui.autoPush = *widget.NewLabel("Auto-Push")
 	sessionInfo := container.NewVBox(
 		container.NewHBox(
 			&gui.directory,

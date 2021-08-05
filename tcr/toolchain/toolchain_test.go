@@ -54,18 +54,18 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	assert.Zero(t, NewToolchain("dummy", nil))
+	assert.Zero(t, New("dummy", nil))
 	assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_language_with_no_toolchain(t *testing.T) {
-	assert.Zero(t, NewToolchain("", FakeLanguage{}))
+	assert.Zero(t, New("", FakeLanguage{}))
 }
 
 func Test_default_toolchain_for_java(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, NewToolchain("", language.Java{}))
+	assert.Equal(t, GradleToolchain{}, New("", language.Java{}))
 }
 
 func Test_default_toolchain_for_cpp(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, NewToolchain("", language.Cpp{}))
+	assert.Equal(t, CmakeToolchain{}, New("", language.Cpp{}))
 }

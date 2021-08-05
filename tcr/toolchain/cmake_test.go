@@ -9,7 +9,7 @@ import (
 )
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, NewToolchain("cmake", language.Cpp{}))
+	assert.Equal(t, CmakeToolchain{}, New("cmake", language.Cpp{}))
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {

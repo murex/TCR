@@ -7,7 +7,7 @@ import (
 )
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, NewToolchain("gradle", language.Java{}))
+	assert.Equal(t, GradleToolchain{}, New("gradle", language.Java{}))
 }
 
 func Test_gradle_toolchain_name(t *testing.T) {

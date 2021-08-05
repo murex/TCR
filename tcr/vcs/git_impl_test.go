@@ -16,12 +16,12 @@ func TestMain(m *testing.M) {
 // push-enabling flag
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
-	git := NewGitImpl(".")
+	git := New(".")
 	assert.Zero(t, git.IsPushEnabled())
 }
 
 func Test_git_enable_disable_push(t *testing.T) {
-	git := NewGitImpl(".")
+	git := New(".")
 	git.EnablePush(true)
 	assert.NotZero(t, git.IsPushEnabled())
 	git.EnablePush(false)
@@ -31,11 +31,11 @@ func Test_git_enable_disable_push(t *testing.T) {
 // Working Branch
 
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
-	assert.Zero(t, NewGitImpl("/"))
+	assert.Zero(t, New("/"))
 	assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_can_retrieve_working_branch(t *testing.T) {
-	git := NewGitImpl(".")
+	git := New(".")
 	assert.NotZero(t, git.WorkingBranch())
 }

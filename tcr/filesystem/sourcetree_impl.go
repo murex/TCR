@@ -15,7 +15,7 @@ type SourceTreeImpl struct {
 	matcher func(filename string) bool
 }
 
-func NewSourceTreeImpl(dir string) SourceTree {
+func New(dir string) SourceTree {
 	var st = SourceTreeImpl{}
 	var err error
 	st.baseDir, err = st.changeDir(dir)
