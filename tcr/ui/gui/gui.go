@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/role"
@@ -106,9 +107,25 @@ func (gui *GUI) initApp() {
 	gui.win = gui.app.NewWindow("TCR")
 	gui.win.Resize(fyne.NewSize(400, 600))
 
-	top := canvas.NewText("top bar", color.White)
-	left := canvas.NewText("left", color.White)
-	right := canvas.NewText("right", color.White)
+	// Action Buttons container
+
+	actionBar := container.NewHBox(
+		widget.NewButtonWithIcon("Start", theme.MediaPlayIcon(), func() {
+			// TODO
+			trace.Warning("Start Pushed")
+		}),
+		widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
+			// TODO
+			trace.Warning("Stop Pushed")
+		}),
+	)
+
+
+	//top := canvas.NewText("top bar", color.White)
+
+
+	left := canvas.NewText("", color.White)
+	right := canvas.NewText("", color.White)
 	middle := canvas.NewText("middle", color.White)
 
 	// Session Information container
@@ -132,9 +149,9 @@ func (gui *GUI) initApp() {
 
 	// Top level container
 
-	content := container.New(layout.NewBorderLayout(top,
+	content := container.New(layout.NewBorderLayout(actionBar,
 		sessionInfo, left, right),
-		top, left, middle, right, sessionInfo)
+		actionBar, left, middle, right, sessionInfo)
 
 	gui.win.SetContent(content)
 }
