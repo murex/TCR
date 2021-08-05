@@ -26,6 +26,8 @@ type GUI struct {
 	toolchain widget.Label
 	branch    widget.Label
 	autoPush  widget.Label
+	startButton widget.Button
+	stopButton widget.Button
 }
 
 const (
@@ -102,6 +104,9 @@ func (gui *GUI) Confirm(message string, def bool) bool {
 	return term.Confirm(message, def)
 }
 
+// TODO move it as a gui field?
+var stopEngine = make(chan bool)
+
 func (gui *GUI) initApp() {
 	gui.app = app.New()
 	gui.win = gui.app.NewWindow("TCR")
@@ -109,20 +114,25 @@ func (gui *GUI) initApp() {
 
 	// Action Buttons container
 
+	gui.startButton = *widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
+		// TODO
+		trace.Warning("Start as Navigator Pushed")
+		gui.startButton.Disable()
+		gui.stopButton.Enable()
+
+		go engine.RunAsNavigator(stopEngine)
+	})
+	gui.stopButton = *widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
+		// TODO
+		trace.Warning("Stop Pushed")
+		gui.stopButton.Disable()
+		gui.startButton.Enable()
+		stopEngine <- true
+	})
 	actionBar := container.NewHBox(
-		widget.NewButtonWithIcon("Start", theme.MediaPlayIcon(), func() {
-			// TODO
-			trace.Warning("Start Pushed")
-		}),
-		widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
-			// TODO
-			trace.Warning("Stop Pushed")
-		}),
+		&gui.startButton,
+		&gui.stopButton,
 	)
-
-
-	//top := canvas.NewText("top bar", color.White)
-
 
 	left := canvas.NewText("", color.White)
 	right := canvas.NewText("", color.White)
