@@ -58,10 +58,8 @@ func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
-var stopEngine chan bool
-
 func RunAsDriver() {
-	stopEngine = make(chan bool)
+	//	shoot = make(chan bool)
 	fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
@@ -80,12 +78,11 @@ func RunAsDriver() {
 		},
 		func() {
 			uitf.NotifyRoleEnding(role.Driver{})
-		},
-		stopEngine)
+		})
 }
 
 func RunAsNavigator() {
-	stopEngine = make(chan bool)
+	//	shoot = make(chan bool)
 	fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Navigator{})
@@ -102,21 +99,22 @@ func RunAsNavigator() {
 		},
 		func() {
 			uitf.NotifyRoleEnding(role.Navigator{})
-		},
-		stopEngine)
+		})
 }
 
+var shoot chan bool
+
 func Stop() {
-	stopEngine <- true
+	shoot <- true
 }
 
 func fromBirthTillDeath(
 	birth func(),
 	dailyLife func(interrupt <-chan bool) bool,
 	death func(),
-	shoot <-chan bool) {
-
+) {
 	var tmb tomb.Tomb
+	shoot = make(chan bool)
 
 	// The goroutine doing the work
 	tmb.Go(func() error {
