@@ -16,22 +16,33 @@ import (
 	"github.com/mengdaming/tcr/tcr/ui/cli"
 	"github.com/mengdaming/tcr/trace"
 	"image/color"
+	"strings"
 )
 
 type GUI struct {
-	app       fyne.App
-	win       fyne.Window
-	directory widget.Label
-	language  widget.Label
-	toolchain widget.Label
-	branch    widget.Label
-	autoPush  widget.Label
-	startButton widget.Button
-	stopButton widget.Button
+	app                  fyne.App
+	win                  fyne.Window
+	directoryLabel       *widget.Label
+	languageLabel        *widget.Label
+	toolchainLabel       *widget.Label
+	branchLabel          *widget.Label
+	autoPushToggle       *widget.Check
+	startNavigatorButton *widget.Button
+	startDriverButton    *widget.Button
+	stopButton           *widget.Button
+	traceVBox            *fyne.Container
+	traceArea            *container.Scroll
 }
 
 const (
 	linePrefix = "[TCR-GUI]"
+)
+
+var (
+	redColor    = color.RGBA{R: 255, G: 0, B: 0}
+	cyanColor   = color.RGBA{R: 0, G: 139, B: 139}
+	yellowColor = color.RGBA{R: 255, G: 255, B: 0}
+	whiteColor  = color.RGBA{R: 255, G: 255, B: 255}
 )
 
 // TODO We re-route temporarily messages to the terminal
@@ -51,56 +62,62 @@ func (gui *GUI) RunInMode(mode runmode.RunMode) {
 }
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
-	// TODO Replace with GU-specific implementation
+	// TODO Replace with GUI-specific implementation
 	term.ShowRunningMode(mode)
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
-	// TODO Replace with GU-specific implementation
-	term.NotifyRoleStarting(r)
+	gui.Info("Starting as a ", strings.Title(r.Name()))
 }
 
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
-	// TODO Replace with GU-specific implementation
-	term.NotifyRoleEnding(r)
+	gui.Info("Leaving ", strings.Title(r.Name()), " role")
 }
 
 func (gui *GUI) ShowSessionInfo() {
 	d, l, t, ap, b := engine.GetSessionInfo()
 
-	gui.directory.Text = fmt.Sprintf("Directory: %v", d)
-	gui.language.Text = fmt.Sprintf("Language: %v", l)
-	gui.toolchain.Text = fmt.Sprintf("Toolchain: %v", t)
-	gui.branch.Text = fmt.Sprintf("Branch: %v", b)
-	if ap {
-		gui.autoPush.Text = "Auto-Push: enabled"
-	} else {
-		gui.autoPush.Text = "Auto-Push: disabled"
-	}
+	gui.directoryLabel.SetText(fmt.Sprintf("Directory: %v", d))
+	gui.languageLabel.SetText(fmt.Sprintf("Language: %v", l))
+	gui.toolchainLabel.SetText(fmt.Sprintf("Toolchain: %v", t))
+	gui.branchLabel.SetText(fmt.Sprintf("Branch: %v", b))
+	gui.autoPushToggle.SetChecked(ap)
 }
 
 func (gui *GUI) Info(a ...interface{}) {
-	// TODO Replace with GU-specific implementation
+	gui.appendTrace(cyanColor, a...)
+	// TODO Remove when all traces have been transferred to UI
 	term.Info(a...)
 }
 
+func (gui *GUI) appendTrace(color color.Color, a ...interface{}) {
+	gui.traceVBox.Add(canvas.NewText(fmt.Sprint(a...), color))
+	// The ScrollToTop() call below is some kind of workaround to ensure
+	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
+	gui.traceArea.ScrollToTop()
+	gui.traceArea.ScrollToBottom()
+}
+
 func (gui *GUI) Warning(a ...interface{}) {
-	// TODO Replace with GU-specific implementation
+	gui.appendTrace(yellowColor, a...)
+	// TODO Remove when all traces have been transferred to UI
 	term.Warning(a...)
 }
 
 func (gui *GUI) Error(a ...interface{}) {
-	// TODO Replace with GU-specific implementation
+	gui.appendTrace(redColor, a...)
+	// TODO Remove when all traces have been transferred to UI
 	term.Error(a...)
 }
 
 func (gui *GUI) Trace(a ...interface{}) {
-	// TODO Replace with GU-specific implementation
+	gui.appendTrace(whiteColor, a...)
+	// TODO Remove when all traces have been transferred to UI
 	term.Trace(a...)
 }
 
 func (gui *GUI) Confirm(message string, def bool) bool {
-	// TODO Replace with GU-specific implementation
+	// TODO Replace with GUI-specific implementation
 	return term.Confirm(message, def)
 }
 
@@ -109,59 +126,103 @@ var stopEngine = make(chan bool)
 
 func (gui *GUI) initApp() {
 	gui.app = app.New()
+	// TODO Add a TCR-Specific icon
+	gui.app.SetIcon(theme.FyneLogo())
 	gui.win = gui.app.NewWindow("TCR")
-	gui.win.Resize(fyne.NewSize(400, 600))
+	gui.win.Resize(fyne.NewSize(400, 800))
+
+	// TODO Refactor into smaller functions, one for each main area
 
 	// Action Buttons container
 
-	gui.startButton = *widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
-		// TODO
+	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver", theme.MediaPlayIcon(), func() {
+		// TODO Remove once everything works as expected
+		trace.Warning("Start as Driver Pushed")
+		gui.startDriverButton.Disable()
+		gui.startNavigatorButton.Disable()
+		gui.stopButton.Enable()
+
+		go engine.RunAsDriver(stopEngine)
+	})
+	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
+		// TODO Remove once everything works as expected
 		trace.Warning("Start as Navigator Pushed")
-		gui.startButton.Disable()
+		gui.startDriverButton.Disable()
+		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
 
 		go engine.RunAsNavigator(stopEngine)
 	})
-	gui.stopButton = *widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
-		// TODO
+	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
+		// TODO Remove once everything works as expected
 		trace.Warning("Stop Pushed")
 		gui.stopButton.Disable()
-		gui.startButton.Enable()
+		gui.startDriverButton.Enable()
+		gui.startNavigatorButton.Enable()
 		stopEngine <- true
 	})
 	actionBar := container.NewHBox(
-		&gui.startButton,
-		&gui.stopButton,
+		layout.NewSpacer(),
+		gui.startDriverButton,
+		gui.startNavigatorButton,
+		layout.NewSpacer(),
+		gui.stopButton,
+		layout.NewSpacer(),
 	)
 
-	left := canvas.NewText("", color.White)
-	right := canvas.NewText("", color.White)
-	middle := canvas.NewText("middle", color.White)
+	// Initial state
+
+	gui.startDriverButton.Enable()
+	gui.startNavigatorButton.Enable()
+	gui.stopButton.Disable()
+
+	// Trace container
+
+	gui.traceVBox = container.NewVBox(
+		widget.NewLabelWithStyle("Welcome to TCR!",
+			fyne.TextAlignLeading,
+			fyne.TextStyle{Bold: true},
+		))
+	gui.traceArea = container.NewVScroll(
+		gui.traceVBox,
+	)
 
 	// Session Information container
 
-	gui.directory = *widget.NewLabel("Directory")
-	gui.language = *widget.NewLabel("Language")
-	gui.toolchain = *widget.NewLabel("Toolchain")
-	gui.branch = *widget.NewLabel("Branch")
-	gui.autoPush = *widget.NewLabel("Auto-Push")
+	gui.directoryLabel = widget.NewLabel("Directory")
+	gui.languageLabel = widget.NewLabel("Language")
+	gui.toolchainLabel = widget.NewLabel("Toolchain")
+	gui.branchLabel = widget.NewLabel("Branch")
+	gui.autoPushToggle = widget.NewCheck("Auto-Push", func(checked bool) {
+		engine.ToggleAutoPush()
+		autoPushStr := "off"
+		if checked {
+			autoPushStr = "on"
+		}
+		gui.Info("Git auto-push is turned ", autoPushStr)
+	})
 	sessionInfo := container.NewVBox(
 		container.NewHBox(
-			&gui.directory,
+			gui.directoryLabel,
 		),
+		widget.NewSeparator(),
 		container.NewHBox(
-			&gui.language,
-			&gui.toolchain,
-			&gui.branch,
-			&gui.autoPush,
+			gui.languageLabel,
+			widget.NewSeparator(),
+			gui.toolchainLabel,
+			widget.NewSeparator(),
+			gui.branchLabel,
+			widget.NewSeparator(),
+			gui.autoPushToggle,
 		),
+		widget.NewSeparator(),
 	)
 
 	// Top level container
 
-	content := container.New(layout.NewBorderLayout(actionBar,
-		sessionInfo, left, right),
-		actionBar, left, middle, right, sessionInfo)
+	topLevel := container.New(layout.NewBorderLayout(
+		sessionInfo, actionBar, nil, nil),
+		sessionInfo, actionBar, gui.traceArea)
 
-	gui.win.SetContent(content)
+	gui.win.SetContent(topLevel)
 }
