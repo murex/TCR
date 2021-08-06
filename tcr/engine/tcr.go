@@ -25,7 +25,7 @@ var (
 	pollingPeriod time.Duration
 )
 
-func Start(u ui.UserInterface, params tcr.Params) {
+func Init(u ui.UserInterface, params tcr.Params) {
 	uitf = u
 
 	mode = params.Mode
@@ -58,7 +58,10 @@ func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
-func RunAsDriver(stopRequest <-chan bool) {
+var stopEngine chan bool
+
+func RunAsDriver() {
+	stopEngine = make(chan bool)
 	fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
@@ -78,10 +81,11 @@ func RunAsDriver(stopRequest <-chan bool) {
 		func() {
 			uitf.NotifyRoleEnding(role.Driver{})
 		},
-		stopRequest)
+		stopEngine)
 }
 
-func RunAsNavigator(stopRequest <-chan bool) {
+func RunAsNavigator() {
+	stopEngine = make(chan bool)
 	fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Navigator{})
@@ -99,7 +103,11 @@ func RunAsNavigator(stopRequest <-chan bool) {
 		func() {
 			uitf.NotifyRoleEnding(role.Navigator{})
 		},
-		stopRequest)
+		stopEngine)
+}
+
+func Stop() {
+	stopEngine <- true
 }
 
 func fromBirthTillDeath(

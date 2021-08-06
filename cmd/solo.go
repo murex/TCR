@@ -21,7 +21,7 @@ It never pushes or pulls to a remote repository.`,
 		params.Mode = runmode.Solo{}
 		params.AutoPush = false
 		params.PollingPeriod = tcr.DefaultPollingPeriod
-		engine.Start(u, params)
+		engine.Init(u, params)
 	},
 }
 

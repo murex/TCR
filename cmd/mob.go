@@ -21,7 +21,7 @@ is shared with other participants through calling git push-pull.`,
 		params.Mode = runmode.Mob{}
 		params.AutoPush = true
 		params.PollingPeriod = tcr.DefaultPollingPeriod
-		engine.Start(u, params)
+		engine.Init(u, params)
 	},
 }
 

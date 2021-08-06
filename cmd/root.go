@@ -31,7 +31,7 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		u := cli.New()
 		params.Mode = runmode.Mob{}
 		params.PollingPeriod = tcr.DefaultPollingPeriod
-		engine.Start(u, params)
+		engine.Init(u, params)
 	},
 }
 

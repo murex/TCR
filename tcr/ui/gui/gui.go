@@ -121,9 +121,6 @@ func (gui *GUI) Confirm(message string, def bool) bool {
 	return term.Confirm(message, def)
 }
 
-// TODO move it as a gui field?
-var stopEngine = make(chan bool)
-
 func (gui *GUI) initApp() {
 	gui.app = app.New()
 	// TODO Add a TCR-Specific icon
@@ -142,7 +139,7 @@ func (gui *GUI) initApp() {
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
 
-		go engine.RunAsDriver(stopEngine)
+		go engine.RunAsDriver()
 	})
 	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
 		// TODO Remove once everything works as expected
@@ -151,7 +148,7 @@ func (gui *GUI) initApp() {
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
 
-		go engine.RunAsNavigator(stopEngine)
+		go engine.RunAsNavigator()
 	})
 	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
 		// TODO Remove once everything works as expected
@@ -159,7 +156,7 @@ func (gui *GUI) initApp() {
 		gui.stopButton.Disable()
 		gui.startDriverButton.Enable()
 		gui.startNavigatorButton.Enable()
-		stopEngine <- true
+		engine.Stop()
 	})
 	actionBar := container.NewHBox(
 		layout.NewSpacer(),

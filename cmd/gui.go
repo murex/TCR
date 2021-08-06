@@ -20,7 +20,7 @@ Runs TCR application though a Graphical User Interface.`,
 		params.Mode = runmode.Mob{}
 		params.AutoPush = true
 		params.PollingPeriod = tcr.DefaultPollingPeriod
-		engine.Start(u, params)
+		engine.Init(u, params)
 	},
 }
 

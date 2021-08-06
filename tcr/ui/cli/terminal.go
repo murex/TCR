@@ -88,12 +88,11 @@ func (term *Terminal) mainMenu() {
 func (term *Terminal) startAs(r role.Role) {
 
 	// We ask TCR engine to start...
-	stopEngine := make(chan bool)
 	switch r {
 	case role.Navigator{}:
-		go engine.RunAsNavigator(stopEngine)
+		go engine.RunAsNavigator()
 	case role.Driver{}:
-		go engine.RunAsDriver(stopEngine)
+		go engine.RunAsDriver()
 	default:
 		term.Warning("No action defined for role ", r.Name())
 	}
@@ -109,7 +108,7 @@ func (term *Terminal) startAs(r role.Role) {
 		case escapeKey:
 			term.Warning("OK, I heard you")
 			stopRequest = true
-			stopEngine <- true
+			engine.Stop()
 		default:
 			term.Warning("Key not recognized. Press ESC to leave ", r.Name(), " role")
 		}
