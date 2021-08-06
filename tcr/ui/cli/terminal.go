@@ -90,9 +90,9 @@ func (term *Terminal) startAs(r role.Role) {
 	// We ask TCR engine to start...
 	switch r {
 	case role.Navigator{}:
-		go engine.RunAsNavigator()
+		engine.RunAsNavigator()
 	case role.Driver{}:
-		go engine.RunAsDriver()
+		engine.RunAsDriver()
 	default:
 		term.Warning("No action defined for role ", r.Name())
 	}

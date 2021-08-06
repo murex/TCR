@@ -85,35 +85,35 @@ func (gui *GUI) ShowSessionInfo() {
 }
 
 func (gui *GUI) Info(a ...interface{}) {
-	gui.appendTrace(cyanColor, a...)
+	gui.addTrace(cyanColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Info(a...)
 }
 
-func (gui *GUI) appendTrace(color color.Color, a ...interface{}) {
-	gui.traceVBox.Add(canvas.NewText(fmt.Sprint(a...), color))
-	// The ScrollToTop() call below is some kind of workaround to ensure
-	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
-	gui.traceArea.ScrollToTop()
-	gui.traceArea.ScrollToBottom()
-}
-
 func (gui *GUI) Warning(a ...interface{}) {
-	gui.appendTrace(yellowColor, a...)
+	gui.addTrace(yellowColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Warning(a...)
 }
 
 func (gui *GUI) Error(a ...interface{}) {
-	gui.appendTrace(redColor, a...)
+	gui.addTrace(redColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Error(a...)
 }
 
 func (gui *GUI) Trace(a ...interface{}) {
-	gui.appendTrace(whiteColor, a...)
+	gui.addTrace(whiteColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Trace(a...)
+}
+
+func (gui *GUI) addTrace(col color.Color, a ...interface{}) {
+	gui.traceVBox.Add(canvas.NewText(fmt.Sprint(a...), col))
+	// The ScrollToTop() call below is some kind of workaround to ensure
+	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
+	gui.traceArea.ScrollToTop()
+	gui.traceArea.ScrollToBottom()
 }
 
 func (gui *GUI) Confirm(message string, def bool) bool {
@@ -128,7 +128,7 @@ func (gui *GUI) initApp() {
 	gui.win = gui.app.NewWindow("TCR")
 	gui.win.Resize(fyne.NewSize(400, 800))
 
-	// TODO Refactor into smaller functions, one for each main area
+	// TODO Refactor into smaller functions, one for each main UI area
 
 	// Action Buttons container
 
@@ -138,8 +138,7 @@ func (gui *GUI) initApp() {
 		gui.startDriverButton.Disable()
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
-
-		go engine.RunAsDriver()
+		engine.RunAsDriver()
 	})
 	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
 		// TODO Remove once everything works as expected
@@ -148,7 +147,7 @@ func (gui *GUI) initApp() {
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
 
-		go engine.RunAsNavigator()
+		engine.RunAsNavigator()
 	})
 	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
 		// TODO Remove once everything works as expected
@@ -168,7 +167,7 @@ func (gui *GUI) initApp() {
 	)
 
 	// Initial state
-
+	// TODO encapsulate in a single function to enforce consistency
 	gui.startDriverButton.Enable()
 	gui.startNavigatorButton.Enable()
 	gui.stopButton.Disable()

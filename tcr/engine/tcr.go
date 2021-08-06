@@ -59,8 +59,7 @@ func ToggleAutoPush() {
 }
 
 func RunAsDriver() {
-	//	shoot = make(chan bool)
-	fromBirthTillDeath(
+	go fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
 			git.Pull()
@@ -78,12 +77,12 @@ func RunAsDriver() {
 		},
 		func() {
 			uitf.NotifyRoleEnding(role.Driver{})
-		})
+		},
+	)
 }
 
 func RunAsNavigator() {
-	//	shoot = make(chan bool)
-	fromBirthTillDeath(
+	go fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Navigator{})
 		},
@@ -99,9 +98,11 @@ func RunAsNavigator() {
 		},
 		func() {
 			uitf.NotifyRoleEnding(role.Navigator{})
-		})
+		},
+	)
 }
 
+// shoot channel is used to handle interruptions coming from the UI
 var shoot chan bool
 
 func Stop() {
