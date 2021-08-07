@@ -67,6 +67,7 @@ func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
+	gui.traceLine()
 	gui.Info("Starting as a ", strings.Title(r.Name()))
 }
 
@@ -85,31 +86,40 @@ func (gui *GUI) ShowSessionInfo() {
 }
 
 func (gui *GUI) Info(a ...interface{}) {
-	gui.addTrace(cyanColor, a...)
+	gui.traceText(cyanColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Info(a...)
 }
 
 func (gui *GUI) Warning(a ...interface{}) {
-	gui.addTrace(yellowColor, a...)
+	gui.traceText(yellowColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Warning(a...)
 }
 
 func (gui *GUI) Error(a ...interface{}) {
-	gui.addTrace(redColor, a...)
+	gui.traceText(redColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Error(a...)
 }
 
 func (gui *GUI) Trace(a ...interface{}) {
-	gui.addTrace(whiteColor, a...)
+	gui.traceText(whiteColor, a...)
 	// TODO Remove when all traces have been transferred to UI
 	term.Trace(a...)
 }
 
-func (gui *GUI) addTrace(col color.Color, a ...interface{}) {
+func (gui *GUI) traceText(col color.Color, a ...interface{}) {
 	gui.traceVBox.Add(canvas.NewText(fmt.Sprint(a...), col))
+	gui.scrollTraceToBottom()
+}
+
+func (gui *GUI) traceLine() {
+	gui.traceVBox.Add(widget.NewSeparator())
+	gui.scrollTraceToBottom()
+}
+
+func (gui *GUI) scrollTraceToBottom() {
 	// The ScrollToTop() call below is some kind of workaround to ensure
 	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
 	gui.traceArea.ScrollToTop()
