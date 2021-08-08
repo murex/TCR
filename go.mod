@@ -9,6 +9,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/imkira/go-observer v1.0.3
 	github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d
 	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible
