@@ -162,16 +162,12 @@ func (gui *GUI) initApp() {
 	// Action Buttons container
 
 	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver", theme.MediaPlayIcon(), func() {
-		// TODO Remove once everything works as expected
-		//report.PostWarning("Start as Driver Pushed")
 		gui.startDriverButton.Disable()
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
 		engine.RunAsDriver()
 	})
 	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
-		// TODO Remove once everything works as expected
-		//report.PostWarning("Start as Navigator Pushed")
 		gui.startDriverButton.Disable()
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
@@ -179,20 +175,21 @@ func (gui *GUI) initApp() {
 		engine.RunAsNavigator()
 	})
 	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
-		// TODO Remove once everything works as expected
-		//report.PostWarning("Stop Pushed")
 		gui.stopButton.Disable()
 		gui.startDriverButton.Enable()
 		gui.startNavigatorButton.Enable()
 		engine.Stop()
 	})
-	actionBar := container.NewHBox(
-		layout.NewSpacer(),
-		gui.startDriverButton,
-		gui.startNavigatorButton,
-		layout.NewSpacer(),
-		gui.stopButton,
-		layout.NewSpacer(),
+	actionBar := container.NewVBox(
+		widget.NewSeparator(),
+		container.NewHBox(
+			layout.NewSpacer(),
+			gui.startDriverButton,
+			gui.startNavigatorButton,
+			layout.NewSpacer(),
+			gui.stopButton,
+			layout.NewSpacer(),
+		),
 	)
 
 	// Initial state
