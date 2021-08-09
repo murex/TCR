@@ -1,7 +1,8 @@
 package language
 
 import (
-	"github.com/mengdaming/tcr/tcr/report"
+	"errors"
+	"fmt"
 	"path/filepath"
 )
 
@@ -12,17 +13,16 @@ type Language interface {
 	IsSrcFile(filename string) bool
 }
 
-func DetectLanguage(baseDir string) Language {
+func DetectLanguage(baseDir string) (Language, error) {
 	dir := filepath.Base(baseDir)
 	switch dir {
 	case "java":
-		return Java{}
+		return Java{}, nil
 	case "cpp":
-		return Cpp{}
+		return Cpp{}, nil
 	default:
-		report.PostError("Unrecognized language: ", dir)
+		return nil, errors.New(fmt.Sprint("Unrecognized language: ", dir))
 	}
-	return nil
 }
 
 func DirsToWatch(baseDir string, lang Language) []string {

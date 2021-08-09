@@ -7,7 +7,9 @@ import (
 )
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, New("gradle", language.Java{}))
+	tchn, err := New("gradle", language.Java{})
+	assert.Equal(t, GradleToolchain{}, tchn)
+	assert.Zero(t, err)
 }
 
 func Test_gradle_toolchain_name(t *testing.T) {
@@ -67,6 +69,14 @@ func Test_gradle_toolchain_does_not_support_cpp(t *testing.T) {
 }
 
 func Test_gradle_toolchain_language_compatibility(t *testing.T) {
-	assert.True(t, verifyCompatibility(GradleToolchain{}, language.Java{}))
-	assert.False(t, verifyCompatibility(GradleToolchain{}, language.Cpp{}))
+	var comp bool
+	var err error
+
+	comp, err = verifyCompatibility(GradleToolchain{}, language.Java{})
+	assert.True(t, comp)
+	assert.Zero(t, err)
+
+	comp, err = verifyCompatibility(GradleToolchain{}, language.Cpp{})
+	assert.False(t, comp)
+	assert.NotZero(t, err)
 }

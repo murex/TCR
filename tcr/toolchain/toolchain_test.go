@@ -1,10 +1,9 @@
 package toolchain
 
 import (
-	trace2 "github.com/mengdaming/tcr/tcr/trace"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/tcr/trace"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,7 +11,7 @@ import (
 
 func TestMain(m *testing.M) {
 	// Prevent trace.Error() from triggering os.Exit()
-	trace2.SetTestMode()
+	trace.SetTestMode()
 	os.Exit(m.Run())
 }
 
@@ -47,24 +46,32 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 	initialDir, _ := os.Getwd()
 	_ = os.Chdir(testDir)
 	workDir, _ := os.Getwd()
-	trace2.Info("Working directory: ", workDir)
+	trace.Info("Working directory: ", workDir)
 	testFunction(t)
 	_ = os.Chdir(initialDir)
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	assert.Zero(t, New("dummy", nil))
-	assert.NotZero(t, trace2.GetExitReturnCode())
+	toolchain, err := New("dummy", nil)
+	assert.Zero(t, toolchain)
+	assert.NotZero(t, err)
+	//assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_language_with_no_toolchain(t *testing.T) {
-	assert.Zero(t, New("", FakeLanguage{}))
+	toolchain, err := New("", FakeLanguage{})
+	assert.Zero(t, toolchain)
+	assert.NotZero(t, err)
 }
 
 func Test_default_toolchain_for_java(t *testing.T) {
-	assert.Equal(t, GradleToolchain{}, New("", language.Java{}))
+	toolchain, err := New("", language.Java{})
+	assert.Equal(t, GradleToolchain{}, toolchain)
+	assert.Zero(t, err)
 }
 
 func Test_default_toolchain_for_cpp(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, New("", language.Cpp{}))
+	toolchain, err := New("", language.Cpp{})
+	assert.Equal(t, CmakeToolchain{}, toolchain)
+	assert.Zero(t, err)
 }

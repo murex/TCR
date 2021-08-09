@@ -13,14 +13,14 @@ type SourceTreeImpl struct {
 	matcher func(filename string) bool
 }
 
-func New(dir string) SourceTree {
+func New(dir string) (SourceTree, error) {
 	var st = SourceTreeImpl{}
 	var err error
 	st.baseDir, err = st.changeDir(dir)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return &st
+	return &st, nil
 }
 
 func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
@@ -40,8 +40,7 @@ func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
 		return "", err
 	}
 
-	wd, _ := os.Getwd()
-	return wd, nil
+	return os.Getwd()
 }
 
 func (st *SourceTreeImpl) GetBaseDir() string {

@@ -7,7 +7,9 @@ import (
 )
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, CmakeToolchain{}, New("cmake", language.Cpp{}))
+	tchn, err := New("cmake", language.Cpp{})
+	assert.Equal(t, CmakeToolchain{}, tchn)
+	assert.Zero(t, err)
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {
@@ -68,6 +70,14 @@ func Test_cmake_toolchain_does_not_support_java(t *testing.T) {
 }
 
 func Test_cmake_toolchain_language_compatibility(t *testing.T) {
-	assert.True(t, verifyCompatibility(CmakeToolchain{}, language.Cpp{}))
-	assert.False(t, verifyCompatibility(CmakeToolchain{}, language.Java{}))
+	var comp bool
+	var err error
+
+	comp, err = verifyCompatibility(CmakeToolchain{}, language.Cpp{})
+	assert.True(t, comp)
+	assert.Zero(t, err)
+
+	comp, err = verifyCompatibility(CmakeToolchain{}, language.Java{})
+	assert.False(t, comp)
+	assert.NotZero(t, err)
 }

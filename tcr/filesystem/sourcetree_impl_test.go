@@ -16,10 +16,14 @@ func TestMain(m *testing.M) {
 // Source Tree initialization
 
 func Test_init_source_tree_with_missing_directory_fails(t *testing.T) {
-	assert.Zero(t, New("/dummy"))
-	assert.NotZero(t, trace.GetExitReturnCode())
+	tree, err := New("/dummy")
+	assert.Zero(t, tree)
+	assert.NotZero(t, err)
+	//assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_init_source_tree_with_existing_directory_passes(t *testing.T) {
-	assert.NotZero(t, New("."))
+	tree, err := New(".")
+	assert.NotZero(t, tree)
+	assert.Zero(t, err)
 }

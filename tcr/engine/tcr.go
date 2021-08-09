@@ -27,16 +27,18 @@ var (
 )
 
 func Init(u ui.UserInterface, params tcr.Params) {
+	var err error
+
 	uitf = u
 
-	//report.PostInfo("Welcome to TCR!")
+	report.PostInfo("Starting TCR version ", tcr.Version, "...")
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod
-	sourceTree = filesystem.New(params.BaseDir)
-	lang = language.DetectLanguage(sourceTree.GetBaseDir())
-	tchn = toolchain.New(params.Toolchain, lang)
-	git = vcs.New(sourceTree.GetBaseDir())
+	sourceTree, err = filesystem.New(params.BaseDir); handleError(err)
+	lang, err = language.DetectLanguage(sourceTree.GetBaseDir()); handleError(err)
+	tchn, err = toolchain.New(params.Toolchain, lang); handleError(err)
+	git, err = vcs.New(sourceTree.GetBaseDir()); handleError(err)
 	git.EnablePush(params.AutoPush)
 
 	uitf.ShowRunningMode(mode)
@@ -199,4 +201,12 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 func Quit() {
 	report.PostInfo("That's All Folks!")
 	os.Exit(0)
+}
+
+func handleError(err error) {
+	if err != nil {
+		report.PostError(err)
+		time.Sleep(1 * time.Millisecond)
+		os.Exit(1)
+	}
 }

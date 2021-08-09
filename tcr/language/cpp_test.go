@@ -9,7 +9,9 @@ import (
 
 func Test_detect_cpp_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "cpp")
-	assert.Equal(t, Cpp{}, DetectLanguage(dirPath))
+	language, err := DetectLanguage(dirPath)
+	assert.Equal(t, Cpp{}, language)
+	assert.Zero(t, err)
 }
 
 func Test_cpp_language_name(t *testing.T) {

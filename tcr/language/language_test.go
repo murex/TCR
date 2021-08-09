@@ -36,7 +36,9 @@ func (lang FakeLanguage) IsSrcFile(_ string) bool {
 
 func Test_does_not_detect_unknown_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "dummy")
-	assert.Zero(t, DetectLanguage(dirPath))
+	language, err := DetectLanguage(dirPath)
+	assert.Zero(t, language)
+	assert.NotZero(t, err)
 }
 
 func Test_dirs_to_watch_should_contain_both_src_and_test_dirs(t *testing.T) {

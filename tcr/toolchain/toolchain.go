@@ -1,6 +1,8 @@
 package toolchain
 
 import (
+	"errors"
+	"fmt"
 	"github.com/codeskyblue/go-sh"
 	"github.com/mengdaming/tcr/tcr/language"
 	"github.com/mengdaming/tcr/tcr/report"
@@ -19,8 +21,10 @@ type Toolchain interface {
 	supports(lang language.Language) bool
 }
 
-func New(name string, lang language.Language) Toolchain {
+func New(name string, lang language.Language) (Toolchain, error) {
 	var toolchain Toolchain = nil
+	var err error
+
 	switch name {
 	case GradleToolchain{}.Name():
 		toolchain = GradleToolchain{}
@@ -29,43 +33,43 @@ func New(name string, lang language.Language) Toolchain {
 	case CmakeToolchain{}.Name():
 		toolchain = CmakeToolchain{}
 	case "":
-		toolchain = defaultToolchain(lang)
+		toolchain, err = defaultToolchain(lang)
+		if err != nil {
+			return nil, err
+		}
 	default:
-		report.PostError("Toolchain \"", name, "\" not supported")
-		return nil
+		return nil, errors.New(fmt.Sprint("toolchain \"", name, "\" not supported"))
 	}
 
-	if !verifyCompatibility(toolchain, lang) {
-		return nil
+	comp, err := verifyCompatibility(toolchain, lang)
+	if !comp || err != nil {
+		return nil, err
 	}
-	return toolchain
+	return toolchain, nil
 }
 
-func defaultToolchain(lang language.Language) Toolchain {
+func defaultToolchain(lang language.Language) (Toolchain, error) {
 	switch lang {
 	case language.Java{}:
-		return GradleToolchain{}
+		return GradleToolchain{}, nil
 	case language.Cpp{}:
-		return CmakeToolchain{}
+		return CmakeToolchain{}, nil
 	default:
-		report.PostError("No supported toolchain for ", lang.Name(), " language")
+		return nil, errors.New(fmt.Sprint("no supported toolchain for ", lang.Name(), " language"))
 	}
-	return nil
 }
 
-func verifyCompatibility(toolchain Toolchain, lang language.Language) bool {
+func verifyCompatibility(toolchain Toolchain, lang language.Language) (bool, error) {
 	if toolchain == nil || lang == nil {
-		return false
+		return false, errors.New("toolchain and/or language is unknown")
 	}
 	if !toolchain.supports(lang) {
-		report.PostError(
-			toolchain.Name(), " toolchain ",
-			" does not support ",
-			lang.Name(), " language",
-		)
-		return false
+		return false, errors.New(fmt.Sprintf(
+			"%v toolchain does not support %v language",
+			toolchain.Name(), lang.Name(),
+		))
 	}
-	return true
+	return true, nil
 }
 
 func runBuild(toolchain Toolchain) error {

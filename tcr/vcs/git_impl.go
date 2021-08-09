@@ -25,7 +25,7 @@ type GitImpl struct {
 }
 
 // New initializes the git implementation based on the provided directory from local clone
-func New(dir string) GitInterface {
+func New(dir string) (GitInterface, error) {
 	var gitImpl = GitImpl{
 		baseDir:       dir,
 		remoteName:    DefaultRemoteName,
@@ -39,23 +39,21 @@ func New(dir string) GitInterface {
 	}
 	repo, err := git.PlainOpenWithOptions(gitImpl.baseDir, &plainOpenOptions)
 	if err != nil {
-		report.PostError("git.PlainOpenWithOptions(): ", err)
-		return nil
+		return nil, err
 	}
 	r, _ := rootDir(repo)
 	gitImpl.rootDir = filepath.Dir(r)
 
 	head, err := repo.Head()
 	if err != nil {
-		report.PostError("repo.Head(): ", err)
-		return nil
+		return nil, err
 	}
 
 	gitImpl.workingBranch = head.Name().Short()
 
 	gitImpl.workingBranchExistsOnRemote = isBranchOnRemote(repo, gitImpl.workingBranch, gitImpl.remoteName)
 
-	return &gitImpl
+	return &gitImpl, nil
 }
 
 // isBranchOnRemote returns true is the provided branch exists on provided remote
@@ -63,7 +61,8 @@ func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
 	remoteName := fmt.Sprintf("%v/%v", remote, branch)
 	branches, err := remoteBranches(repo.Storer)
 	if err != nil {
-		report.PostError("remoteBranches(): ", err)
+		report.PostWarning("remoteBranches(): ", err)
+		return false
 	}
 
 	var found = false
@@ -238,7 +237,7 @@ func (g *GitImpl) Pull() {
 	//case nil:
 	//	printLastCommit(repo)
 	//default:
-	//	report.PostWarning("Pull(): ", err)
+	//	report.PostError("Pull(): ", err)
 	//}
 
 	err := runGitCommand([]string{

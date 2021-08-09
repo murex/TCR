@@ -7,7 +7,9 @@ import (
 )
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	assert.Equal(t, MavenToolchain{}, New("maven", language.Java{}))
+	tchn, err := New("maven", language.Java{})
+	assert.Equal(t, MavenToolchain{}, tchn)
+	assert.Zero(t, err)
 }
 
 func Test_maven_toolchain_name(t *testing.T) {
@@ -67,6 +69,14 @@ func Test_maven_toolchain_does_not_support_cpp(t *testing.T) {
 }
 
 func Test_maven_toolchain_language_compatibility(t *testing.T) {
-	assert.True(t, verifyCompatibility(MavenToolchain{}, language.Java{}))
-	assert.False(t, verifyCompatibility(MavenToolchain{}, language.Cpp{}))
+	var comp bool
+	var err error
+
+	comp, err = verifyCompatibility(MavenToolchain{}, language.Java{})
+	assert.True(t, comp)
+	assert.Zero(t, err)
+
+	comp, err = verifyCompatibility(MavenToolchain{}, language.Cpp{})
+	assert.False(t, comp)
+	assert.NotZero(t, err)
 }

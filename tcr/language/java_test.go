@@ -9,7 +9,9 @@ import (
 
 func Test_detect_java_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "java")
-	assert.Equal(t, Java{}, DetectLanguage(dirPath))
+	language, err := DetectLanguage(dirPath)
+	assert.Equal(t, Java{}, language)
+	assert.Zero(t, err)
 }
 
 func Test_java_language_name(t *testing.T) {
