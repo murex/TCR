@@ -162,22 +162,15 @@ func (gui *GUI) initApp() {
 	// Action Buttons container
 
 	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver", theme.MediaPlayIcon(), func() {
-		gui.startDriverButton.Disable()
-		gui.startNavigatorButton.Disable()
-		gui.stopButton.Enable()
+		gui.updateButtonsState(true)
 		engine.RunAsDriver()
 	})
 	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
-		gui.startDriverButton.Disable()
-		gui.startNavigatorButton.Disable()
-		gui.stopButton.Enable()
-
+		gui.updateButtonsState(true)
 		engine.RunAsNavigator()
 	})
 	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
-		gui.stopButton.Disable()
-		gui.startDriverButton.Enable()
-		gui.startNavigatorButton.Enable()
+		gui.updateButtonsState(false)
 		engine.Stop()
 	})
 	actionBar := container.NewVBox(
@@ -193,10 +186,8 @@ func (gui *GUI) initApp() {
 	)
 
 	// Initial state
-	// TODO encapsulate in a single function to enforce consistency
-	gui.startDriverButton.Enable()
-	gui.startNavigatorButton.Enable()
-	gui.stopButton.Disable()
+
+	gui.updateButtonsState(false)
 
 	// Trace container
 
@@ -247,4 +238,16 @@ func (gui *GUI) initApp() {
 		sessionInfo, actionBar, gui.traceArea)
 
 	gui.win.SetContent(topLevel)
+}
+
+func (gui *GUI) updateButtonsState(running bool) {
+	if running {
+		gui.startDriverButton.Disable()
+		gui.startNavigatorButton.Disable()
+		gui.stopButton.Enable()
+	} else {
+		gui.startDriverButton.Enable()
+		gui.startNavigatorButton.Enable()
+		gui.stopButton.Disable()
+	}
 }
