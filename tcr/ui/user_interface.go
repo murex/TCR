@@ -11,9 +11,5 @@ type UserInterface interface {
 	NotifyRoleStarting(r role.Role)
 	NotifyRoleEnding(r role.Role)
 	ShowSessionInfo()
-	Info(a ...interface{})
-	Warning(a ...interface{})
-	Error(a ...interface{})
-	Trace(a ...interface{})
 	Confirm(message string, def bool) bool
 }

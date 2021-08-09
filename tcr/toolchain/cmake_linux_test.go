@@ -2,7 +2,6 @@ package toolchain
 
 import (
 	"github.com/stretchr/testify/assert"
-
 	"testing"
 )
 

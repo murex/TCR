@@ -1,10 +1,8 @@
 package filesystem
 
 import (
-	"github.com/mengdaming/tcr/trace"
-
 	"github.com/fsnotify/fsnotify"
-
+	"github.com/mengdaming/tcr/tcr/report"
 	"os"
 	"path/filepath"
 )
@@ -29,16 +27,16 @@ func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
 	_, err := os.Stat(dir)
 	switch {
 	case os.IsNotExist(err):
-		trace.Error("Directory ", dir, " does not exist")
+		report.PostError("Directory ", dir, " does not exist")
 		return "", err
 	case os.IsPermission(err):
-		trace.Error("Can't access directory ", dir)
+		report.PostError("Can't access directory ", dir)
 		return "", err
 	}
 
 	err = os.Chdir(dir)
 	if err != nil {
-		trace.Error("Failed to change directory to ", dir)
+		report.PostError("Failed to change directory to ", dir)
 		return "", err
 	}
 
@@ -61,7 +59,7 @@ func (st *SourceTreeImpl) Watch(
 	defer func(watcher *fsnotify.Watcher) {
 		err := watcher.Close()
 		if err != nil {
-			trace.Error("watcher.Close(): ", err)
+			report.PostError("watcher.Close(): ", err)
 		}
 	}(st.watcher)
 
@@ -73,9 +71,9 @@ func (st *SourceTreeImpl) Watch(
 
 	// We recursively watch all subdirectories for all the provided directories
 	for _, dir := range dirList {
-		trace.Echo("- Watching ", dir)
+		report.PostText("- Watching ", dir)
 		if err := filepath.Walk(dir, st.watchFile); err != nil {
-			trace.Warning("filepath.Walk(", dir, "): ", err)
+			report.PostWarning("filepath.Walk(", dir, "): ", err)
 		}
 	}
 
@@ -84,11 +82,11 @@ func (st *SourceTreeImpl) Watch(
 		for {
 			select {
 			case event := <-st.watcher.Events:
-				trace.Echo("-> ", event.Name)
+				report.PostText("-> ", event.Name)
 				changesDetected <- true
 				return
 			case err := <-st.watcher.Errors:
-				trace.Warning("Watcher error: ", err)
+				report.PostWarning("Watcher error: ", err)
 				changesDetected <- false
 				return
 			case <-interrupt:
@@ -104,7 +102,7 @@ func (st *SourceTreeImpl) Watch(
 // watchFile gets run as a walk func, searching for files to watch
 func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) error {
 	if err != nil {
-		trace.Warning("Something wrong with ", path)
+		report.PostWarning("Something wrong with ", path)
 		return err
 	}
 
@@ -117,7 +115,7 @@ func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) erro
 	if st.matcher(path) == true {
 		err = st.watcher.Add(path)
 		if err != nil {
-			trace.Error("watcher.Add(", path, "): ", err)
+			report.PostError("watcher.Add(", path, "): ", err)
 		}
 		return err
 	}

@@ -1,11 +1,9 @@
 package toolchain
 
 import (
-	"github.com/mengdaming/tcr/tcr/language"
-	"github.com/mengdaming/tcr/trace"
-
 	"github.com/codeskyblue/go-sh"
-
+	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/tcr/report"
 	"os"
 	"path/filepath"
 )
@@ -33,7 +31,7 @@ func New(name string, lang language.Language) Toolchain {
 	case "":
 		toolchain = defaultToolchain(lang)
 	default:
-		trace.Error("Toolchain \"", name, "\" not supported")
+		report.PostError("Toolchain \"", name, "\" not supported")
 		return nil
 	}
 
@@ -50,7 +48,7 @@ func defaultToolchain(lang language.Language) Toolchain {
 	case language.Cpp{}:
 		return CmakeToolchain{}
 	default:
-		trace.Error("No supported toolchain for ", lang.Name(), " language")
+		report.PostError("No supported toolchain for ", lang.Name(), " language")
 	}
 	return nil
 }
@@ -60,7 +58,7 @@ func verifyCompatibility(toolchain Toolchain, lang language.Language) bool {
 		return false
 	}
 	if !toolchain.supports(lang) {
-		trace.Error(
+		report.PostError(
 			toolchain.Name(), " toolchain ",
 			" does not support ",
 			lang.Name(), " language",
@@ -77,7 +75,7 @@ func runBuild(toolchain Toolchain) error {
 		buildCommandPath,
 		toolchain.buildCommandArgs()).Output()
 	if output != nil {
-		trace.Echo(string(output))
+		report.PostText(string(output))
 	}
 	return err
 }
@@ -89,7 +87,7 @@ func runTests(tchn Toolchain) error {
 		testCommandPath,
 		tchn.testCommandArgs()).Output()
 	if output != nil {
-		trace.Echo(string(output))
+		report.PostText(string(output))
 	}
 	return err
 }

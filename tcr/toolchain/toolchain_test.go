@@ -1,11 +1,10 @@
 package toolchain
 
 import (
+	trace2 "github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mengdaming/tcr/tcr/language"
-	"github.com/mengdaming/tcr/trace"
-
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,7 +12,7 @@ import (
 
 func TestMain(m *testing.M) {
 	// Prevent trace.Error() from triggering os.Exit()
-	trace.SetTestMode()
+	trace2.SetTestMode()
 	os.Exit(m.Run())
 }
 
@@ -48,14 +47,14 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 	initialDir, _ := os.Getwd()
 	_ = os.Chdir(testDir)
 	workDir, _ := os.Getwd()
-	trace.Info("Working directory: ", workDir)
+	trace2.Info("Working directory: ", workDir)
 	testFunction(t)
 	_ = os.Chdir(initialDir)
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
 	assert.Zero(t, New("dummy", nil))
-	assert.NotZero(t, trace.GetExitReturnCode())
+	assert.NotZero(t, trace2.GetExitReturnCode())
 }
 
 func Test_language_with_no_toolchain(t *testing.T) {

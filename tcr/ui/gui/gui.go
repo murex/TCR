@@ -10,11 +10,11 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/mengdaming/tcr/tcr/engine"
+	"github.com/mengdaming/tcr/tcr/report"
 	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/tcr/runmode"
 	"github.com/mengdaming/tcr/tcr/ui"
 	"github.com/mengdaming/tcr/tcr/ui/cli"
-	"github.com/mengdaming/tcr/trace"
 	"image/color"
 	"strings"
 )
@@ -34,10 +34,6 @@ type GUI struct {
 	traceArea            *container.Scroll
 }
 
-const (
-	linePrefix = "[TCR-GUI]"
-)
-
 var (
 	redColor    = color.RGBA{R: 255, G: 0, B: 0}
 	cyanColor   = color.RGBA{R: 0, G: 139, B: 139}
@@ -45,15 +41,34 @@ var (
 	whiteColor  = color.RGBA{R: 255, G: 255, B: 255}
 )
 
-// TODO We re-route temporarily messages to the terminal
+// TODO Remove once all GUI implementations are available
 var term ui.UserInterface
 
 func New() ui.UserInterface {
 	term = cli.New()
-	trace.SetLinePrefix(linePrefix)
 	var gui = GUI{}
 	gui.initApp()
+	gui.startReporting()
+
 	return &gui
+}
+
+func (gui *GUI) startReporting() chan bool {
+	// TODO Unsubscribe on quit
+	return report.Subscribe(func(msg report.Message) {
+		switch msg.Type {
+		case report.Normal:
+			gui.trace(msg.Text)
+		case report.Title:
+			gui.title(msg.Text)
+		case report.Info:
+			gui.info(msg.Text)
+		case report.Warning:
+			gui.warning(msg.Text)
+		case report.Error:
+			gui.error(msg.Text)
+		}
+	})
 }
 
 func (gui *GUI) RunInMode(mode runmode.RunMode) {
@@ -67,12 +82,11 @@ func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
-	gui.traceLine()
-	gui.Info("Starting as a ", strings.Title(r.Name()))
+	report.PostTitle("Starting as a ", strings.Title(r.Name()))
 }
 
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
-	gui.Info("Leaving ", strings.Title(r.Name()), " role")
+	report.PostInfo("Leaving ", strings.Title(r.Name()), " role")
 }
 
 func (gui *GUI) ShowSessionInfo() {
@@ -85,32 +99,37 @@ func (gui *GUI) ShowSessionInfo() {
 	gui.autoPushToggle.SetChecked(ap)
 }
 
-func (gui *GUI) Info(a ...interface{}) {
+func (gui *GUI) info(a ...interface{}) {
 	gui.traceText(cyanColor, a...)
-	// TODO Remove when all traces have been transferred to UI
-	term.Info(a...)
 }
 
-func (gui *GUI) Warning(a ...interface{}) {
+func (gui *GUI) title(a ...interface{}) {
+	gui.traceLine()
+	gui.traceVBox.Add(widget.NewLabelWithStyle(
+		fmt.Sprint(a...),
+		fyne.TextAlignLeading,
+		fyne.TextStyle{Bold: true},
+	))
+	gui.traceLine()
+	gui.scrollTraceToBottom()
+}
+
+func (gui *GUI) warning(a ...interface{}) {
 	gui.traceText(yellowColor, a...)
-	// TODO Remove when all traces have been transferred to UI
-	term.Warning(a...)
 }
 
-func (gui *GUI) Error(a ...interface{}) {
+func (gui *GUI) error(a ...interface{}) {
 	gui.traceText(redColor, a...)
-	// TODO Remove when all traces have been transferred to UI
-	term.Error(a...)
 }
 
-func (gui *GUI) Trace(a ...interface{}) {
+func (gui *GUI) trace(a ...interface{}) {
 	gui.traceText(whiteColor, a...)
-	// TODO Remove when all traces have been transferred to UI
-	term.Trace(a...)
 }
 
 func (gui *GUI) traceText(col color.Color, a ...interface{}) {
-	gui.traceVBox.Add(canvas.NewText(fmt.Sprint(a...), col))
+	for _, s := range strings.Split(fmt.Sprint(a...), "\n") {
+		gui.traceVBox.Add(canvas.NewText(s, col))
+	}
 	gui.scrollTraceToBottom()
 }
 
@@ -144,7 +163,7 @@ func (gui *GUI) initApp() {
 
 	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver", theme.MediaPlayIcon(), func() {
 		// TODO Remove once everything works as expected
-		trace.Warning("Start as Driver Pushed")
+		//report.PostWarning("Start as Driver Pushed")
 		gui.startDriverButton.Disable()
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
@@ -152,7 +171,7 @@ func (gui *GUI) initApp() {
 	})
 	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
 		// TODO Remove once everything works as expected
-		trace.Warning("Start as Navigator Pushed")
+		//report.PostWarning("Start as Navigator Pushed")
 		gui.startDriverButton.Disable()
 		gui.startNavigatorButton.Disable()
 		gui.stopButton.Enable()
@@ -161,7 +180,7 @@ func (gui *GUI) initApp() {
 	})
 	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
 		// TODO Remove once everything works as expected
-		trace.Warning("Stop Pushed")
+		//report.PostWarning("Stop Pushed")
 		gui.stopButton.Disable()
 		gui.startDriverButton.Enable()
 		gui.startNavigatorButton.Enable()
@@ -205,7 +224,7 @@ func (gui *GUI) initApp() {
 		if checked {
 			autoPushStr = "on"
 		}
-		gui.Info("Git auto-push is turned ", autoPushStr)
+		report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
 	})
 	sessionInfo := container.NewVBox(
 		container.NewHBox(

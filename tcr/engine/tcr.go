@@ -4,6 +4,7 @@ import (
 	"github.com/mengdaming/tcr/tcr"
 	"github.com/mengdaming/tcr/tcr/filesystem"
 	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/tcr/report"
 	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/tcr/runmode"
 	"github.com/mengdaming/tcr/tcr/toolchain"
@@ -27,6 +28,8 @@ var (
 
 func Init(u ui.UserInterface, params tcr.Params) {
 	uitf = u
+
+	//report.PostInfo("Welcome to TCR!")
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod
@@ -129,12 +132,12 @@ func fromBirthTillDeath(
 
 	err := tmb.Wait()
 	if err != nil {
-		uitf.Error("tmb.Wait(): ", err)
+		report.PostError("tmb.Wait(): ", err)
 	}
 }
 
 func waitForChange(interrupt <-chan bool) bool {
-	uitf.Info("Going to sleep until something interesting happens")
+	report.PostInfo("Going to sleep until something interesting happens")
 	return sourceTree.Watch(
 		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
 		lang.IsSrcFile,
@@ -153,31 +156,31 @@ func runTCR() {
 }
 
 func build() error {
-	uitf.Info("Launching Build")
+	report.PostInfo("Launching Build")
 	err := tchn.RunBuild()
 	if err != nil {
-		uitf.Warning("There are build errors! I can't go any further")
+		report.PostWarning("There are build errors! I can't go any further")
 	}
 	return err
 }
 
 func test() error {
-	uitf.Info("Running Tests")
+	report.PostInfo("Running Tests")
 	err := tchn.RunTests()
 	if err != nil {
-		uitf.Warning("Some tests are failing! That's unfortunate")
+		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
 	return err
 }
 
 func commit() {
-	uitf.Info("Committing changes on branch ", git.WorkingBranch())
+	report.PostInfo("Committing changes on branch ", git.WorkingBranch())
 	git.Commit()
 	git.Push()
 }
 
 func revert() {
-	uitf.Warning("Reverting changes")
+	report.PostWarning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
 		git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
 	}
@@ -194,6 +197,6 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 }
 
 func Quit() {
-	uitf.Info("That's All Folks!")
+	report.PostInfo("That's All Folks!")
 	os.Exit(0)
 }

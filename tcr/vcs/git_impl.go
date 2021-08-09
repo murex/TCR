@@ -9,7 +9,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
-	"github.com/mengdaming/tcr/trace"
+	"github.com/mengdaming/tcr/tcr/report"
 	"path/filepath"
 	"strings"
 )
@@ -39,7 +39,7 @@ func New(dir string) GitInterface {
 	}
 	repo, err := git.PlainOpenWithOptions(gitImpl.baseDir, &plainOpenOptions)
 	if err != nil {
-		trace.Error("git.PlainOpenWithOptions(): ", err)
+		report.PostError("git.PlainOpenWithOptions(): ", err)
 		return nil
 	}
 	r, _ := rootDir(repo)
@@ -47,7 +47,7 @@ func New(dir string) GitInterface {
 
 	head, err := repo.Head()
 	if err != nil {
-		trace.Error("repo.Head(): ", err)
+		report.PostError("repo.Head(): ", err)
 		return nil
 	}
 
@@ -63,7 +63,7 @@ func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
 	remoteName := fmt.Sprintf("%v/%v", remote, branch)
 	branches, err := remoteBranches(repo.Storer)
 	if err != nil {
-		trace.Error("remoteBranches(): ", err)
+		report.PostError("remoteBranches(): ", err)
 	}
 
 	var found = false
@@ -135,11 +135,11 @@ func (g *GitImpl) Restore(dir string) {
 	// In the meantime, we use direct call to git checkout HEAD
 	// TODO When available, replace git call with go-git restore function
 
-	trace.Info("Restoring ", dir)
+	report.PostInfo("Restoring ", dir)
 
 	err := runGitCommand([]string{"checkout", "HEAD", "--", dir})
 	if err != nil {
-		trace.Error(err)
+		report.PostError(err)
 	}
 }
 
@@ -147,7 +147,7 @@ func (g *GitImpl) Restore(dir string) {
 // Current implementation uses a direct call to git
 func (g *GitImpl) Push() {
 	if g.IsPushEnabled() {
-		trace.Info("Pushing changes to origin/", g.workingBranch)
+		report.PostInfo("Pushing changes to origin/", g.workingBranch)
 
 		// Solution below works but requires to provide username
 		// and password, which is not acceptable here. Until we
@@ -161,7 +161,7 @@ func (g *GitImpl) Push() {
 		//}
 		//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
 		//if err != nil {
-		//	trace.Error("git.PlainOpenWithOptions(): ", err)
+		//	report.PostError("git.PlainOpenWithOptions(): ", err)
 		//}
 		//
 		//err = repo.Push(&git.PushOptions{
@@ -172,7 +172,7 @@ func (g *GitImpl) Push() {
 		//	},
 		//})
 		//if err != nil {
-		//	trace.Error("repo.Push(): ", err)
+		//	report.PostError("repo.Push(): ", err)
 		//} else {
 		//	g.workingBranchExistsOnRemote = isBranchOnRemote(
 		//		repo, g.workingBranch, g.remoteName)
@@ -185,7 +185,7 @@ func (g *GitImpl) Push() {
 			g.workingBranch,
 		})
 		if err != nil {
-			trace.Error(err)
+			report.PostError(err)
 		} else {
 			g.workingBranchExistsOnRemote = true
 		}
@@ -196,11 +196,11 @@ func (g *GitImpl) Push() {
 // Current implementation uses a direct call to git
 func (g *GitImpl) Pull() {
 	if !g.workingBranchExistsOnRemote {
-		trace.Info("Working locally on branch ", g.workingBranch)
+		report.PostInfo("Working locally on branch ", g.workingBranch)
 		return
 	}
 
-	trace.Info("Pulling latest changes from ",
+	report.PostInfo("Pulling latest changes from ",
 		g.remoteName, "/", g.workingBranch)
 
 	// Solution below works but requires to provide username
@@ -215,12 +215,12 @@ func (g *GitImpl) Pull() {
 	//}
 	//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
 	//if err != nil {
-	//	trace.Error("git.PlainOpenWithOptions(): ", err)
+	//	report.PostError("git.PlainOpenWithOptions(): ", err)
 	//}
 	//
 	//worktree, err := repo.Worktree()
 	//if err != nil {
-	//	trace.Error("repo.Worktree(): ", err)
+	//	report.PostError("repo.Worktree(): ", err)
 	//}
 	//
 	//err = worktree.Pull(&git.PullOptions{
@@ -230,15 +230,15 @@ func (g *GitImpl) Pull() {
 	//	RecurseSubmodules: git.NoRecurseSubmodules},
 	//)
 
-	//trace.Echo("From ", g.remoteName)
-	//trace.Echo(" * branch\t", g.workingBranch, " -> FETCH_HEAD")
+	//report.PostEcho("From ", g.remoteName)
+	//report.PostEcho(" * branch\t", g.workingBranch, " -> FETCH_HEAD")
 	//switch err {
 	//case git.NoErrAlreadyUpToDate:
-	//	trace.Echo("Already up to date.")
+	//	report.PostEcho("Already up to date.")
 	//case nil:
 	//	printLastCommit(repo)
 	//default:
-	//	trace.Warning("Pull(): ", err)
+	//	report.PostWarning("Pull(): ", err)
 	//}
 
 	err := runGitCommand([]string{
@@ -248,7 +248,7 @@ func (g *GitImpl) Pull() {
 		g.workingBranch,
 	})
 	if err != nil {
-		trace.Error(err)
+		report.PostError(err)
 	}
 }
 
@@ -265,9 +265,10 @@ func (g *GitImpl) IsPushEnabled() bool {
 // runGitCommand Calls git command in a separate process
 func runGitCommand(params []string) error {
 	gitCommand := "git"
-	output, err := sh.Command(gitCommand, params).Output()
+	output, err := sh.Command(gitCommand, params).CombinedOutput()
+
 	if output != nil {
-		trace.Echo(string(output))
+		report.PostText(string(output))
 	}
 	return err
 }

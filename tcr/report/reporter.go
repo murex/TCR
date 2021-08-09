@@ -9,9 +9,9 @@ import (
 type MessageType int
 
 const (
-	Simple MessageType = iota
+	Normal MessageType = iota
 	Info
-	Header
+	Title
 	Warning
 	Error
 )
@@ -23,30 +23,65 @@ type Message struct {
 }
 
 var (
-	msgProperty = observer.NewProperty(Message{Type: Simple, Text: ""})
+	msgProperty = observer.NewProperty(Message{Type: Normal, Text: ""})
 )
 
-func Subscribe(onChange func(msg Message)) {
+func Subscribe(onReport func(msg Message)) chan bool {
 	stream := msgProperty.Observe()
 
-	val := stream.Value().(Message)
-	//fmt.Printf("initial value: %v\n", val)
+	msg := stream.Value().(Message)
+	//fmt.Printf("initial value: %v\n", msg)
 
-	for {
-		select {
-		// wait for changes
-		case <-stream.Changes():
-			// advance to next value
-			stream.Next()
-			val = stream.Value().(Message)
-			fmt.Printf("got new value: %v\n", val)
-			onChange(val)
+	unsubscribe := make(chan bool)
+	go func(s observer.Stream) {
+		for {
+			select {
+			// wait for changes
+			case <-s.Changes():
+				// advance to next value
+				s.Next()
+				msg = s.Value().(Message)
+				//fmt.Printf("got new value: %v\n", msg)
+				onReport(msg)
+			case <-unsubscribe:
+				return
+			}
+
 		}
-	}
+	}(stream)
+	return unsubscribe
 }
 
-func Report(str string) {
-	var message = Message{Simple, str, time.Now()}
-	fmt.Println("Reporting message:", message)
+func Unsubscribe(c chan bool) {
+	c <- true
+}
+
+func Post(a ...interface{}) {
+	PostText(a...)
+}
+
+func PostText(a ...interface{}) {
+	postMessage(Normal, a...)
+}
+
+func PostInfo(a ...interface{}) {
+	postMessage(Info, a...)
+}
+
+func PostTitle(a ...interface{}) {
+	postMessage(Title, a...)
+}
+
+func PostWarning(a ...interface{}) {
+	postMessage(Warning, a...)
+}
+
+func PostError(a ...interface{}) {
+	postMessage(Error, a...)
+}
+
+func postMessage(msgType MessageType, a ...interface{}) {
+	message := Message{msgType, fmt.Sprint(a...), time.Now()}
+	//fmt.Println("Reporting message:", message)
 	msgProperty.Update(message)
 }

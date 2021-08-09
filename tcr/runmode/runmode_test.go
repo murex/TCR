@@ -1,7 +1,7 @@
 package runmode
 
 import (
-	"github.com/mengdaming/tcr/trace"
+	"github.com/mengdaming/tcr/tcr/trace"
 	"os"
 	"testing"
 )

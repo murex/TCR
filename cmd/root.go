@@ -5,7 +5,6 @@ import (
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/runmode"
 	"github.com/mengdaming/tcr/tcr/ui/cli"
-
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

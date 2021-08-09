@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"github.com/mengdaming/tcr/trace"
+	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

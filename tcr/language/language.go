@@ -1,8 +1,7 @@
 package language
 
 import (
-	"github.com/mengdaming/tcr/trace"
-
+	"github.com/mengdaming/tcr/tcr/report"
 	"path/filepath"
 )
 
@@ -21,7 +20,7 @@ func DetectLanguage(baseDir string) Language {
 	case "cpp":
 		return Cpp{}
 	default:
-		trace.Error("Unrecognized language: ", dir)
+		report.PostError("Unrecognized language: ", dir)
 	}
 	return nil
 }
@@ -31,6 +30,6 @@ func DirsToWatch(baseDir string, lang Language) []string {
 	for i := 0; i < len(dirList); i++ {
 		dirList[i] = filepath.Join(baseDir, dirList[i])
 	}
-	//trace.Info(dirList)
+	//report.PostInfo(dirList)
 	return dirList
 }
