@@ -2,18 +2,11 @@ package toolchain
 
 import (
 	"github.com/mengdaming/tcr/tcr/language"
-	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	// Prevent trace.Error() from triggering os.Exit()
-	trace.SetTestMode()
-	os.Exit(m.Run())
-}
 
 const (
 	testKataRootDir = "../../test/kata"
@@ -45,8 +38,6 @@ func (lang FakeLanguage) IsSrcFile(_ string) bool {
 func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 	initialDir, _ := os.Getwd()
 	_ = os.Chdir(testDir)
-	workDir, _ := os.Getwd()
-	trace.Info("Working directory: ", workDir)
 	testFunction(t)
 	_ = os.Chdir(initialDir)
 }
@@ -55,7 +46,6 @@ func Test_unrecognized_toolchain_name(t *testing.T) {
 	toolchain, err := New("dummy", nil)
 	assert.Zero(t, toolchain)
 	assert.NotZero(t, err)
-	//assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_language_with_no_toolchain(t *testing.T) {

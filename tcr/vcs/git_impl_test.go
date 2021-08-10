@@ -1,17 +1,9 @@
 package vcs
 
 import (
-	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	// Prevent trace.Error() from triggering os.Exit()
-	trace.SetTestMode()
-	os.Exit(m.Run())
-}
 
 // push-enabling flag
 
@@ -34,7 +26,6 @@ func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
 	git, err := New("/")
 	assert.Zero(t, git)
 	assert.NotZero(t, err)
-	//assert.NotZero(t, trace.GetExitReturnCode())
 }
 
 func Test_can_retrieve_working_branch(t *testing.T) {

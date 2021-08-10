@@ -1,17 +1,10 @@
 package cli
 
 import (
-	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	// Prevent trace.Error() from triggering os.Exit()
-	trace.SetTestMode()
-	os.Exit(m.Run())
-}
 
 func Test_confirm_with_default_answer_to_yes(t *testing.T) {
 	assertConfirmBehaviour(t, []byte{enterKey}, true, true)

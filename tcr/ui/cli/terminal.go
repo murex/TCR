@@ -6,7 +6,6 @@ import (
 	"github.com/mengdaming/tcr/tcr/role"
 	"github.com/mengdaming/tcr/tcr/runmode"
 	"github.com/mengdaming/tcr/tcr/stty"
-	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/mengdaming/tcr/tcr/ui"
 	"os"
 	"strings"
@@ -16,16 +15,16 @@ type Terminal struct {
 }
 
 const (
-	linePrefix = "[TCR]"
+	tcrLinePrefix = "[TCR]"
 
 	enterKey  = 0x0a
 	escapeKey = 0x1b
 )
 
 func New() ui.UserInterface {
-	trace.SetLinePrefix(linePrefix)
-	// TODO Unsubscribe when ending
+	setLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
+	// TODO Unsubscribe when ending
 	term.startReporting()
 	return &term
 }
@@ -56,24 +55,24 @@ func (term *Terminal) NotifyRoleEnding(r role.Role) {
 }
 
 func (term *Terminal) info(a ...interface{}) {
-	trace.Info(a...)
+	printInCyan(a...)
 }
 
 func (term *Terminal) title(a ...interface{}) {
-	trace.HorizontalLine()
-	trace.Info(a...)
+	printHorizontalLine()
+	printInCyan(a...)
 }
 
 func (term *Terminal) warning(a ...interface{}) {
-	trace.Warning(a...)
+	printInYellow(a...)
 }
 
 func (term *Terminal) error(a ...interface{}) {
-	trace.Error(a...)
+	printInRed(a...)
 }
 
 func (term *Terminal) trace(a ...interface{}) {
-	trace.Echo(a...)
+	printUntouched(a...)
 }
 
 func (term *Terminal) mainMenu() {

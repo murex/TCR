@@ -1,9 +1,8 @@
-package trace
+package cli
 
 import (
 	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 
@@ -15,58 +14,52 @@ const (
 	newline      = "\n"
 )
 
-func TestMain(m *testing.M) {
-	// Prevent trace.Error() from triggering os.Exit()
-	SetTestMode()
-	os.Exit(m.Run())
-}
-
 func Test_change_line_prefix(t *testing.T) {
 	prefix := "PREFIX"
 	msg := "Message"
-	SetLinePrefix(prefix)
+	setLinePrefix(prefix)
 	out := capturer.CaptureStdout(func() {
-		Info(msg)
+		printInCyan(msg)
 	})
 	assert.Contains(t, out, prefix)
 }
 
-func Test_echo_function_does_not_alter_data(t *testing.T) {
+func Test_print_untouched_function_does_not_alter_data(t *testing.T) {
 	msg := "Dummy Message"
 	out := capturer.CaptureStdout(func() {
-		Echo(msg)
+		printUntouched(msg)
 	})
 	assert.Equal(t, msg+"\n", out)
 }
 
-func Test_info_function_formatting(t *testing.T) {
+func Test_print_in_cyan_function_formatting(t *testing.T) {
 	prefix := "PREFIX"
 	msg := "Message"
-	SetLinePrefix(prefix)
+	setLinePrefix(prefix)
 	out := capturer.CaptureStdout(func() {
-		Info(msg)
+		printInCyan(msg)
 	})
 	expected := ansiCyanFg + prefix + ansiEscape + " " + ansiCyanFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }
 
-func Test_warning_function_formatting(t *testing.T) {
+func Test_print_in_yellow_function_formatting(t *testing.T) {
 	prefix := "PREFIX"
 	msg := "Message"
-	SetLinePrefix(prefix)
+	setLinePrefix(prefix)
 	out := capturer.CaptureStdout(func() {
-		Warning(msg)
+		printInYellow(msg)
 	})
 	expected := ansiYellowFg + prefix + ansiEscape + " " + ansiYellowFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }
 
-func Test_error_function_formatting(t *testing.T) {
+func Test_print_in_red_function_formatting(t *testing.T) {
 	prefix := "PREFIX"
 	msg := "Message"
-	SetLinePrefix(prefix)
+	setLinePrefix(prefix)
 	out := capturer.CaptureStdout(func() {
-		Error(msg)
+		printInRed(msg)
 	})
 	expected := ansiRedFg + prefix + ansiEscape + " " + ansiRedFg + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)

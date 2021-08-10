@@ -1,19 +1,11 @@
 package language
 
 import (
-	"github.com/mengdaming/tcr/tcr/trace"
 	"github.com/stretchr/testify/assert"
-
 	"os"
 	"path/filepath"
 	"testing"
 )
-
-func TestMain(m *testing.M) {
-	// Prevent trace.Error() from triggering os.Exit()
-	trace.SetTestMode()
-	os.Exit(m.Run())
-}
 
 type FakeLanguage struct {
 }
