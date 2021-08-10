@@ -157,51 +157,18 @@ func (gui *GUI) initApp() {
 	gui.win = gui.app.NewWindow("TCR")
 	gui.win.Resize(fyne.NewSize(400, 800))
 
-	// TODO Refactor into smaller functions, one for each main UI area
+	actionBar := gui.initActionBar()
+	gui.traceArea = gui.initTraceArea()
+	sessionInfo := gui.initSessionInfoPanel()
 
-	// Action Buttons container
+	topLevel := container.New(layout.NewBorderLayout(
+		sessionInfo, actionBar, nil, nil),
+		sessionInfo, actionBar, gui.traceArea)
 
-	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver", theme.MediaPlayIcon(), func() {
-		gui.updateButtonsState(true)
-		engine.RunAsDriver()
-	})
-	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator", theme.MediaPlayIcon(), func() {
-		gui.updateButtonsState(true)
-		engine.RunAsNavigator()
-	})
-	gui.stopButton = widget.NewButtonWithIcon("Stop", theme.MediaStopIcon(), func() {
-		gui.updateButtonsState(false)
-		engine.Stop()
-	})
-	actionBar := container.NewVBox(
-		widget.NewSeparator(),
-		container.NewHBox(
-			layout.NewSpacer(),
-			gui.startDriverButton,
-			gui.startNavigatorButton,
-			layout.NewSpacer(),
-			gui.stopButton,
-			layout.NewSpacer(),
-		),
-	)
+	gui.win.SetContent(topLevel)
+}
 
-	// Initial state
-
-	gui.updateButtonsState(false)
-
-	// Trace container
-
-	gui.traceVBox = container.NewVBox(
-		widget.NewLabelWithStyle("Welcome to TCR!",
-			fyne.TextAlignLeading,
-			fyne.TextStyle{Bold: true},
-		))
-	gui.traceArea = container.NewVScroll(
-		gui.traceVBox,
-	)
-
-	// Session Information container
-
+func (gui *GUI) initSessionInfoPanel() *fyne.Container {
 	gui.directoryLabel = widget.NewLabel("Directory")
 	gui.languageLabel = widget.NewLabel("Language")
 	gui.toolchainLabel = widget.NewLabel("Toolchain")
@@ -230,14 +197,57 @@ func (gui *GUI) initApp() {
 		),
 		widget.NewSeparator(),
 	)
+	return sessionInfo
+}
 
-	// Top level container
+func (gui *GUI) initTraceArea() *container.Scroll {
+	gui.traceVBox = container.NewVBox(
+		widget.NewLabelWithStyle("Welcome to TCR!",
+			fyne.TextAlignLeading,
+			fyne.TextStyle{Bold: true},
+		))
 
-	topLevel := container.New(layout.NewBorderLayout(
-		sessionInfo, actionBar, nil, nil),
-		sessionInfo, actionBar, gui.traceArea)
+	return container.NewVScroll(
+		gui.traceVBox,
+	)
+}
 
-	gui.win.SetContent(topLevel)
+func (gui *GUI) initActionBar() *fyne.Container {
+	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver",
+		theme.MediaPlayIcon(),
+		func() {
+			gui.updateButtonsState(true)
+			engine.RunAsDriver()
+		},
+	)
+	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator",
+		theme.MediaPlayIcon(),
+		func() {
+			gui.updateButtonsState(true)
+			engine.RunAsNavigator()
+		},
+	)
+	gui.stopButton = widget.NewButtonWithIcon("Stop",
+		theme.MediaStopIcon(),
+		func() {
+			gui.updateButtonsState(false)
+			engine.Stop()
+		},
+	)
+	// Initial state
+	gui.updateButtonsState(false)
+
+	return container.NewVBox(
+		widget.NewSeparator(),
+		container.NewHBox(
+			layout.NewSpacer(),
+			gui.startDriverButton,
+			gui.startNavigatorButton,
+			layout.NewSpacer(),
+			gui.stopButton,
+			layout.NewSpacer(),
+		),
+	)
 }
 
 func (gui *GUI) updateButtonsState(running bool) {
