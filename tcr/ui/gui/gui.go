@@ -208,6 +208,7 @@ func (gui *GUI) initApp() {
 		gui.quit()
 		gui.win.Close()
 	})
+	gui.win.CenterOnScreen()
 
 	actionBar := gui.initActionBar()
 	gui.traceArea = gui.initTraceArea()
