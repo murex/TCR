@@ -46,7 +46,6 @@ func Subscribe(onReport func(msg Message)) chan bool {
 			case <-unsubscribe:
 				return
 			}
-
 		}
 	}(stream)
 	return unsubscribe

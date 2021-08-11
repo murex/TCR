@@ -12,6 +12,7 @@ import (
 )
 
 type Terminal struct {
+	reportingChannel chan bool
 }
 
 const (
@@ -24,13 +25,12 @@ const (
 func New() ui.UserInterface {
 	setLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
-	// TODO Unsubscribe when ending
-	term.startReporting()
+	term.StartReporting()
 	return &term
 }
 
-func (term *Terminal) startReporting() chan bool {
-	return report.Subscribe(func(msg report.Message) {
+func (term *Terminal) StartReporting() {
+	term.reportingChannel = report.Subscribe(func(msg report.Message) {
 		switch msg.Type {
 		case report.Normal:
 			term.trace(msg.Text)
@@ -44,6 +44,10 @@ func (term *Terminal) startReporting() chan bool {
 			term.error(msg.Text)
 		}
 	})
+}
+
+func (term *Terminal) StopReporting() {
+	report.Unsubscribe(term.reportingChannel)
 }
 
 func (term *Terminal) NotifyRoleStarting(r role.Role) {

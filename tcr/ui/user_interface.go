@@ -12,4 +12,6 @@ type UserInterface interface {
 	NotifyRoleEnding(r role.Role)
 	ShowSessionInfo()
 	Confirm(message string, def bool) bool
+	StartReporting()
+	StopReporting()
 }

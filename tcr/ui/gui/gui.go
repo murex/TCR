@@ -20,7 +20,21 @@ import (
 	"strings"
 )
 
+const (
+	defaultWidth  = 400
+	defaultHeight = 800
+)
+
+var (
+	redColor    = color.RGBA{R: 255, G: 0, B: 0}
+	cyanColor   = color.RGBA{R: 0, G: 139, B: 139}
+	yellowColor = color.RGBA{R: 255, G: 255, B: 0}
+	whiteColor  = color.RGBA{R: 255, G: 255, B: 255}
+)
+
 type GUI struct {
+	term                 ui.UserInterface
+	reporting            chan bool
 	app                  fyne.App
 	win                  fyne.Window
 	directoryLabel       *widget.Label
@@ -35,28 +49,18 @@ type GUI struct {
 	traceArea            *container.Scroll
 }
 
-var (
-	redColor    = color.RGBA{R: 255, G: 0, B: 0}
-	cyanColor   = color.RGBA{R: 0, G: 139, B: 139}
-	yellowColor = color.RGBA{R: 255, G: 255, B: 0}
-	whiteColor  = color.RGBA{R: 255, G: 255, B: 255}
-)
-
-// TODO Remove once all GUI implementations are available
-var term ui.UserInterface
-
 func New() ui.UserInterface {
-	term = cli.New()
 	var gui = GUI{}
+	gui.term = cli.New()
 	gui.initApp()
-	gui.startReporting()
-
+	report.PostInfo("Opening GUI")
+	gui.term.StopReporting()
+	gui.StartReporting()
 	return &gui
 }
 
-func (gui *GUI) startReporting() chan bool {
-	// TODO Unsubscribe on quit
-	return report.Subscribe(func(msg report.Message) {
+func (gui *GUI) StartReporting() {
+	gui.reporting = report.Subscribe(func(msg report.Message) {
 		switch msg.Type {
 		case report.Normal:
 			gui.trace(msg.Text)
@@ -72,6 +76,10 @@ func (gui *GUI) startReporting() chan bool {
 	})
 }
 
+func (gui *GUI) StopReporting() {
+	report.Unsubscribe(gui.reporting)
+}
+
 func (gui *GUI) RunInMode(mode runmode.RunMode) {
 	// TODO setup according to mode value
 	gui.confirmRootBranch()
@@ -80,7 +88,7 @@ func (gui *GUI) RunInMode(mode runmode.RunMode) {
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 	// TODO Replace with GUI-specific implementation
-	term.ShowRunningMode(mode)
+	gui.term.ShowRunningMode(mode)
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
@@ -158,10 +166,11 @@ var rootBranchConfirm confirmationInfo
 
 func (gui *GUI) Confirm(message string, def bool) bool {
 	// We need to defer the confirmation dialog until the window is displayed
+	gui.warning(message)
 	rootBranchConfirm = confirmationInfo{
 		required:      true,
 		title:         message,
-		message:       "Do you want to proceed?",
+		message:       "Are you sure you want to continue?",
 		defaultAnswer: def,
 	}
 	return true
@@ -184,6 +193,8 @@ func (gui *GUI) confirmRootBranch() {
 }
 
 func (gui *GUI) quit() {
+	gui.StopReporting()
+	gui.term.StartReporting()
 	engine.Quit()
 }
 
@@ -192,7 +203,11 @@ func (gui *GUI) initApp() {
 	// TODO Add a TCR-Specific icon
 	gui.app.SetIcon(theme.FyneLogo())
 	gui.win = gui.app.NewWindow("TCR")
-	gui.win.Resize(fyne.NewSize(400, 800))
+	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
+	gui.win.SetCloseIntercept(func() {
+		gui.quit()
+		gui.win.Close()
+	})
 
 	actionBar := gui.initActionBar()
 	gui.traceArea = gui.initTraceArea()
