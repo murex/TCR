@@ -1,14 +1,12 @@
 package gui
 
 import (
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/report"
 	"github.com/mengdaming/tcr/tcr/role"
@@ -32,19 +30,13 @@ var (
 )
 
 type GUI struct {
-	term           ui.UserInterface
-	reporting      chan bool
-	app            fyne.App
-	win            fyne.Window
-	actionBar      *ActionBar
-	traceArea *TraceArea
-	directoryLabel *widget.Label
-	languageLabel  *widget.Label
-	toolchainLabel *widget.Label
-	branchLabel    *widget.Label
-	modeLabel      *widget.Label
-	autoPushToggle *widget.Check
-	sessionInfo    *fyne.Container
+	term         ui.UserInterface
+	reporting    chan bool
+	app          fyne.App
+	win          fyne.Window
+	actionBar    *ActionBar
+	traceArea    *TraceArea
+	sessionPanel *SessionPanel
 }
 
 func New() ui.UserInterface {
@@ -86,7 +78,7 @@ func (gui *GUI) Start(_ runmode.RunMode) {
 }
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
-	gui.modeLabel.SetText(fmt.Sprintf("Mode: %v", mode.Name()))
+	gui.sessionPanel.setMode(mode)
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
@@ -98,13 +90,7 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 }
 
 func (gui *GUI) ShowSessionInfo() {
-	d, l, t, ap, b := engine.GetSessionInfo()
-
-	gui.directoryLabel.SetText(fmt.Sprintf("Directory: %v", d))
-	gui.languageLabel.SetText(fmt.Sprintf("Language: %v", l))
-	gui.toolchainLabel.SetText(fmt.Sprintf("Toolchain: %v", t))
-	gui.branchLabel.SetText(fmt.Sprintf("Branch: %v", b))
-	gui.autoPushToggle.SetChecked(ap)
+	gui.sessionPanel.setSessionInfo()
 }
 
 func (gui *GUI) info(a ...interface{}) {
@@ -184,47 +170,11 @@ func (gui *GUI) initApp() {
 
 	gui.actionBar = NewActionBar()
 	gui.traceArea = NewTraceArea()
-	gui.sessionInfo = gui.initSessionInfoPanel()
+	gui.sessionPanel = NewSessionPanel()
 
 	topLevel := container.New(layout.NewBorderLayout(
-		gui.sessionInfo, gui.actionBar.container, nil, nil),
-		gui.sessionInfo, gui.actionBar.container, gui.traceArea.scroll)
+		gui.sessionPanel.container, gui.actionBar.container, nil, nil),
+		gui.sessionPanel.container, gui.actionBar.container, gui.traceArea.container)
 
 	gui.win.SetContent(topLevel)
 }
-
-func (gui *GUI) initSessionInfoPanel() *fyne.Container {
-	gui.directoryLabel = widget.NewLabel("Directory")
-	gui.modeLabel = widget.NewLabel("Mode")
-	gui.languageLabel = widget.NewLabel("Language")
-	gui.toolchainLabel = widget.NewLabel("Toolchain")
-	gui.branchLabel = widget.NewLabel("Branch")
-	gui.autoPushToggle = widget.NewCheck("Auto-Push", func(checked bool) {
-		engine.ToggleAutoPush()
-		autoPushStr := "off"
-		if checked {
-			autoPushStr = "on"
-		}
-		report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
-	})
-	sessionInfo := container.NewVBox(
-		container.NewHBox(
-			gui.directoryLabel,
-		),
-		widget.NewSeparator(),
-		container.NewHBox(
-			gui.modeLabel,
-			widget.NewSeparator(),
-			gui.languageLabel,
-			widget.NewSeparator(),
-			gui.toolchainLabel,
-			widget.NewSeparator(),
-			gui.branchLabel,
-			widget.NewSeparator(),
-			gui.autoPushToggle,
-		),
-		widget.NewSeparator(),
-	)
-	return sessionInfo
-}
-

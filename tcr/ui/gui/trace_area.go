@@ -11,8 +11,8 @@ import (
 )
 
 type TraceArea struct {
-	vbox   *fyne.Container
-	scroll *container.Scroll
+	vbox      *fyne.Container
+	container *container.Scroll
 }
 
 func NewTraceArea() *TraceArea {
@@ -23,7 +23,7 @@ func NewTraceArea() *TraceArea {
 			fyne.TextStyle{Bold: true},
 		))
 
-	ta.scroll = container.NewVScroll(ta.vbox)
+	ta.container = container.NewVScroll(ta.vbox)
 
 	return &ta
 }
@@ -54,7 +54,7 @@ func (ta *TraceArea) printTitle(a ...interface{}) {
 func (ta *TraceArea) scrollToBottom() {
 	// The ScrollToTop() call below is some kind of workaround to ensure
 	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
-	ta.scroll.ScrollToTop()
-	ta.scroll.ScrollToBottom()
+	ta.container.ScrollToTop()
+	ta.container.ScrollToBottom()
 }
 
