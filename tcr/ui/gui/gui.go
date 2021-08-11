@@ -6,6 +6,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -73,6 +74,7 @@ func (gui *GUI) startReporting() chan bool {
 
 func (gui *GUI) RunInMode(mode runmode.RunMode) {
 	// TODO setup according to mode value
+	gui.confirmRootBranch()
 	gui.win.ShowAndRun()
 }
 
@@ -145,9 +147,44 @@ func (gui *GUI) scrollTraceToBottom() {
 	gui.traceArea.ScrollToBottom()
 }
 
+type confirmationInfo struct {
+	required      bool
+	title         string
+	message       string
+	defaultAnswer bool
+}
+
+var rootBranchConfirm confirmationInfo
+
 func (gui *GUI) Confirm(message string, def bool) bool {
-	// TODO Replace with GUI-specific implementation
-	return term.Confirm(message, def)
+	// We need to defer the confirmation dialog until the window is displayed
+	rootBranchConfirm = confirmationInfo{
+		required:      true,
+		title:         message,
+		message:       "Do you want to proceed?",
+		defaultAnswer: def,
+	}
+	return true
+}
+
+func (gui *GUI) confirmRootBranch() {
+	if rootBranchConfirm.required {
+		// TODO See if there is a way to change the default button selection in fyne confirmation dialog
+		dialog.ShowConfirm(
+			rootBranchConfirm.title,
+			rootBranchConfirm.message,
+			func(response bool) {
+				if response == false {
+					gui.quit()
+				}
+			},
+			gui.win,
+		)
+	}
+}
+
+func (gui *GUI) quit() {
+	engine.Quit()
 }
 
 func (gui *GUI) initApp() {
