@@ -8,10 +8,10 @@ const (
 
 type GitInterface interface {
 	WorkingBranch() string
-	Commit()
-	Restore(dir string)
-	Push()
-	Pull()
+	Commit() error
+	Restore(dir string) error
+	Push() error
+	Pull() error
 	EnablePush(flag bool)
 	IsPushEnabled() bool
 }

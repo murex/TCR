@@ -67,7 +67,7 @@ func RunAsDriver() {
 	go fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
-			git.Pull()
+			_ = git.Pull()
 		},
 		func(interrupt <-chan bool) bool {
 			if waitForChange(interrupt) {
@@ -96,7 +96,7 @@ func RunAsNavigator() {
 			case <-interrupt:
 				return false
 			default:
-				git.Pull()
+				_ = git.Pull()
 				time.Sleep(pollingPeriod)
 				return true
 			}
@@ -177,14 +177,14 @@ func test() error {
 
 func commit() {
 	report.PostInfo("Committing changes on branch ", git.WorkingBranch())
-	git.Commit()
-	git.Push()
+	_ = git.Commit()
+	_ = git.Push()
 }
 
 func revert() {
 	report.PostWarning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
-		git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
+		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
 	}
 }
 
@@ -200,6 +200,7 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 
 func Quit() {
 	report.PostInfo("That's All Folks!")
+	time.Sleep(1 * time.Millisecond)
 	os.Exit(0)
 }
 

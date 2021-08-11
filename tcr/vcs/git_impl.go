@@ -10,6 +10,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/mengdaming/tcr/tcr/report"
+
+	//	"github.com/mengdaming/tcr/tcr/report"
 	"path/filepath"
 	"strings"
 )
@@ -50,19 +52,17 @@ func New(dir string) (GitInterface, error) {
 	}
 
 	gitImpl.workingBranch = head.Name().Short()
+	gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.workingBranch, gitImpl.remoteName)
 
-	gitImpl.workingBranchExistsOnRemote = isBranchOnRemote(repo, gitImpl.workingBranch, gitImpl.remoteName)
-
-	return &gitImpl, nil
+	return &gitImpl, err
 }
 
 // isBranchOnRemote returns true is the provided branch exists on provided remote
-func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
+func isBranchOnRemote(repo *git.Repository, branch, remote string) (bool, error) {
 	remoteName := fmt.Sprintf("%v/%v", remote, branch)
 	branches, err := remoteBranches(repo.Storer)
 	if err != nil {
-		report.PostWarning("remoteBranches(): ", err)
-		return false
+		return false, err
 	}
 
 	var found = false
@@ -70,8 +70,7 @@ func isBranchOnRemote(repo *git.Repository, branch, remote string) bool {
 		found = found || strings.HasSuffix(branch.Name().Short(), remoteName)
 		return nil
 	})
-
-	return found
+	return found, nil
 }
 
 // remoteBranches returns the list of known remote branches
@@ -111,21 +110,22 @@ func (g *GitImpl) WorkingBranch() string {
 
 // Commit restores to last commit.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Commit() {
+func (g *GitImpl) Commit() error {
 	// go-git Add function does not use .gitignore contents
 	// when applied on a directory.
 	// Until this is implemented we rely instead on a direct
 	// git command call
 	// TODO When gitignore rules are implemented, use go-git.Commit()
 
-	// We ignore return code on purpose to prevent exiting
-	// when there is nothing to commit
 	_ = runGitCommand([]string{"commit", "-am", g.commitMessage})
+	// We ignore return code on purpose to prevent raising an error
+	// when there is nothing to commit
+	return nil
 }
 
 // Restore restores to last commit for everything under dir.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Restore(dir string) {
+func (g *GitImpl) Restore(dir string) error {
 	// Currently, go-git does not allow to checkout a subset of the
 	// files related to a branch or commit.
 	// There's a pending PR that should allow this, that we could use
@@ -140,105 +140,47 @@ func (g *GitImpl) Restore(dir string) {
 	if err != nil {
 		report.PostError(err)
 	}
+	return err
 }
 
 // Push runs a git push.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Push() {
-	if g.IsPushEnabled() {
-		report.PostInfo("Pushing changes to origin/", g.workingBranch)
-
-		// Solution below works but requires to provide username
-		// and password, which is not acceptable here. Until we
-		// find a way to reuse git credentials, we'll use a direct
-		// git command call instead
-		// TODO Look if there is a way to reuse git credentials
-
-		//gitOptions := git.PlainOpenOptions{
-		//	DetectDotGit:          true,
-		//	EnableDotGitCommonDir: false,
-		//}
-		//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
-		//if err != nil {
-		//	report.PostError("git.PlainOpenWithOptions(): ", err)
-		//}
-		//
-		//err = repo.Push(&git.PushOptions{
-		//	RemoteName: g.remoteName,
-		//	Auth: &http.BasicAuth{
-		//		Username: "xxx",
-		//		Password: "xxx",
-		//	},
-		//})
-		//if err != nil {
-		//	report.PostError("repo.Push(): ", err)
-		//} else {
-		//	g.workingBranchExistsOnRemote = isBranchOnRemote(
-		//		repo, g.workingBranch, g.remoteName)
-		//}
-
-		err := runGitCommand([]string{
-			"push",
-			"--no-recurse-submodules",
-			g.remoteName,
-			g.workingBranch,
-		})
-		if err != nil {
-			report.PostError(err)
-		} else {
-			g.workingBranchExistsOnRemote = true
-		}
+func (g *GitImpl) Push() error {
+	if !g.IsPushEnabled() {
+		// There's nothing to do in this case
+		return nil
 	}
+
+	report.PostInfo("Pushing changes to origin/", g.workingBranch)
+
+	// TODO Look if there is a way to leverage on git credentials
+
+	err := runGitCommand([]string{
+		"push",
+		"--no-recurse-submodules",
+		g.remoteName,
+		g.workingBranch,
+	})
+	if err != nil {
+		report.PostError(err)
+	} else {
+		g.workingBranchExistsOnRemote = true
+	}
+	return err
 }
 
 // Pull runs a git pull operation.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Pull() {
+func (g *GitImpl) Pull() error {
 	if !g.workingBranchExistsOnRemote {
 		report.PostInfo("Working locally on branch ", g.workingBranch)
-		return
+		return nil
 	}
 
 	report.PostInfo("Pulling latest changes from ",
 		g.remoteName, "/", g.workingBranch)
 
-	// Solution below works but requires to provide username
-	// and password, which is not acceptable here. Until we
-	// find a way to reuse git credentials, we'll use a direct
-	// git command call instead
-	// TODO Look if there is a way to reuse git credentials
-
-	//gitOptions := git.PlainOpenOptions{
-	//	DetectDotGit:          true,
-	//	EnableDotGitCommonDir: false,
-	//}
-	//repo, err := git.PlainOpenWithOptions(g.baseDir, &gitOptions)
-	//if err != nil {
-	//	report.PostError("git.PlainOpenWithOptions(): ", err)
-	//}
-	//
-	//worktree, err := repo.Worktree()
-	//if err != nil {
-	//	report.PostError("repo.Worktree(): ", err)
-	//}
-	//
-	//err = worktree.Pull(&git.PullOptions{
-	//	RemoteName:        g.remoteName,
-	//	ReferenceName:     plumbing.ReferenceName(g.workingBranch),
-	//	SingleBranch:      true,
-	//	RecurseSubmodules: git.NoRecurseSubmodules},
-	//)
-
-	//report.PostEcho("From ", g.remoteName)
-	//report.PostEcho(" * branch\t", g.workingBranch, " -> FETCH_HEAD")
-	//switch err {
-	//case git.NoErrAlreadyUpToDate:
-	//	report.PostEcho("Already up to date.")
-	//case nil:
-	//	printLastCommit(repo)
-	//default:
-	//	report.PostError("Pull(): ", err)
-	//}
+	// TODO Look if there is a way to leverage on git credentials
 
 	err := runGitCommand([]string{
 		"pull",
@@ -249,6 +191,7 @@ func (g *GitImpl) Pull() {
 	if err != nil {
 		report.PostError(err)
 	}
+	return err
 }
 
 // EnablePush Set a flag allowing to turn on/off git push operations
