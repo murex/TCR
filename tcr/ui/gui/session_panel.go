@@ -16,6 +16,7 @@ type SessionPanel struct {
 	toolchainLabel *widget.Label
 	branchLabel    *widget.Label
 	modeLabel      *widget.Label
+	modeSelect     *widget.Select
 	autoPushToggle *widget.Check
 	container      *fyne.Container
 }
@@ -24,6 +25,13 @@ func NewSessionPanel() *SessionPanel {
 	sp := SessionPanel{}
 	sp.directoryLabel = widget.NewLabel("Directory")
 	sp.modeLabel = widget.NewLabel("Mode")
+
+	// TODO retrieve the list from runmode package
+	modeOptions := []string{runmode.Mob{}.Name(), runmode.Solo{}.Name()}
+	sp.modeSelect = widget.NewSelect(modeOptions, func(s string) {
+		report.PostWarning(fmt.Sprintf("Switching to %v mode", s))
+	})
+
 	sp.languageLabel = widget.NewLabel("Language")
 	sp.toolchainLabel = widget.NewLabel("Toolchain")
 	sp.branchLabel = widget.NewLabel("Branch")
@@ -43,6 +51,7 @@ func NewSessionPanel() *SessionPanel {
 		widget.NewSeparator(),
 		container.NewHBox(
 			sp.modeLabel,
+			sp.modeSelect,
 			widget.NewSeparator(),
 			sp.languageLabel,
 			widget.NewSeparator(),
@@ -58,10 +67,12 @@ func NewSessionPanel() *SessionPanel {
 }
 
 func (sp *SessionPanel) setMode(mode runmode.RunMode) {
-	sp.modeLabel.SetText(fmt.Sprintf("Mode: %v", mode.Name()))
+	//sp.modeLabel.SetText(fmt.Sprintf("Mode: %v", mode.Name()))
+	sp.modeSelect.SetSelected(mode.Name())
+	//sp.modeSelect.Refresh()
 }
 
-func (sp *SessionPanel)  setSessionInfo() {
+func (sp *SessionPanel) setSessionInfo() {
 	d, l, t, ap, b := engine.GetSessionInfo()
 
 	sp.directoryLabel.SetText(fmt.Sprintf("Directory: %v", d))
@@ -70,4 +81,3 @@ func (sp *SessionPanel)  setSessionInfo() {
 	sp.branchLabel.SetText(fmt.Sprintf("Branch: %v", b))
 	sp.autoPushToggle.SetChecked(ap)
 }
-

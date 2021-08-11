@@ -34,7 +34,7 @@ type GUI struct {
 	reporting    chan bool
 	app          fyne.App
 	win          fyne.Window
-	actionBar    *ActionBar
+	actionBar    ActionBar
 	traceArea    *TraceArea
 	sessionPanel *SessionPanel
 }
@@ -72,13 +72,15 @@ func (gui *GUI) StopReporting() {
 	report.Unsubscribe(gui.reporting)
 }
 
-func (gui *GUI) Start(_ runmode.RunMode) {
+func (gui *GUI) Start(mode runmode.RunMode) {
 	gui.confirmRootBranch()
+	gui.ShowRunningMode(mode)
 	gui.win.ShowAndRun()
 }
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 	gui.sessionPanel.setMode(mode)
+	gui.adjustActionBar(mode)
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
@@ -98,7 +100,7 @@ func (gui *GUI) info(a ...interface{}) {
 }
 
 func (gui *GUI) title(a ...interface{}) {
-	gui.traceArea.printTitle(a...)
+	gui.traceArea.printHeader(a...)
 }
 
 func (gui *GUI) warning(a ...interface{}) {
@@ -120,12 +122,12 @@ type confirmationInfo struct {
 	defaultAnswer bool
 }
 
-var rootBranchConfirm confirmationInfo
+var rootBranchConfirmation confirmationInfo
 
 func (gui *GUI) Confirm(message string, def bool) bool {
 	// We need to defer the confirmation dialog until the window is displayed
 	gui.warning(message)
-	rootBranchConfirm = confirmationInfo{
+	rootBranchConfirmation = confirmationInfo{
 		required:      true,
 		title:         message,
 		message:       "Are you sure you want to continue?",
@@ -135,11 +137,11 @@ func (gui *GUI) Confirm(message string, def bool) bool {
 }
 
 func (gui *GUI) confirmRootBranch() {
-	if rootBranchConfirm.required {
+	if rootBranchConfirmation.required {
 		// TODO See if there is a way to change the default button selection in fyne confirmation dialog
 		dialog.ShowConfirm(
-			rootBranchConfirm.title,
-			rootBranchConfirm.message,
+			rootBranchConfirmation.title,
+			rootBranchConfirmation.message,
 			func(response bool) {
 				if response == false {
 					gui.quit()
@@ -168,13 +170,23 @@ func (gui *GUI) initApp() {
 	})
 	gui.win.CenterOnScreen()
 
-	gui.actionBar = NewActionBar()
+	gui.actionBar = NewMobActionBar()
 	gui.traceArea = NewTraceArea()
 	gui.sessionPanel = NewSessionPanel()
 
 	topLevel := container.New(layout.NewBorderLayout(
-		gui.sessionPanel.container, gui.actionBar.container, nil, nil),
-		gui.sessionPanel.container, gui.actionBar.container, gui.traceArea.container)
+		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil),
+		gui.sessionPanel.container, gui.actionBar.getContainer(), gui.traceArea.container)
 
 	gui.win.SetContent(topLevel)
+}
+
+func (gui *GUI) adjustActionBar(mode runmode.RunMode) {
+	// TODO replace containers
+	switch mode {
+	case runmode.Mob{}:
+		gui.actionBar = NewMobActionBar()
+	case runmode.Solo{}:
+		gui.actionBar = NewSoloActionBar()
+	}
 }

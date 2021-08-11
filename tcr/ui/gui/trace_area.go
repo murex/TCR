@@ -40,7 +40,7 @@ func (ta *TraceArea) printText(col color.Color, a ...interface{}) {
 	ta.scrollToBottom()
 }
 
-func (ta *TraceArea) printTitle(a ...interface{}) {
+func (ta *TraceArea) printHeader(a ...interface{}) {
 	ta.printLine()
 	ta.vbox.Add(widget.NewLabelWithStyle(
 		fmt.Sprint(a...),
