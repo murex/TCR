@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
@@ -38,15 +37,14 @@ type GUI struct {
 	app            fyne.App
 	win            fyne.Window
 	actionBar      *ActionBar
+	traceArea *TraceArea
 	directoryLabel *widget.Label
 	languageLabel  *widget.Label
 	toolchainLabel *widget.Label
 	branchLabel    *widget.Label
 	modeLabel      *widget.Label
 	autoPushToggle *widget.Check
-	traceVBox            *fyne.Container
-	traceArea            *container.Scroll
-	sessionInfo          *fyne.Container
+	sessionInfo    *fyne.Container
 }
 
 func New() ui.UserInterface {
@@ -110,49 +108,23 @@ func (gui *GUI) ShowSessionInfo() {
 }
 
 func (gui *GUI) info(a ...interface{}) {
-	gui.traceText(cyanColor, a...)
+	gui.traceArea.printText(cyanColor, a...)
 }
 
 func (gui *GUI) title(a ...interface{}) {
-	gui.traceLine()
-	gui.traceVBox.Add(widget.NewLabelWithStyle(
-		fmt.Sprint(a...),
-		fyne.TextAlignLeading,
-		fyne.TextStyle{Bold: true},
-	))
-	gui.traceLine()
-	gui.scrollTraceToBottom()
+	gui.traceArea.printTitle(a...)
 }
 
 func (gui *GUI) warning(a ...interface{}) {
-	gui.traceText(yellowColor, a...)
+	gui.traceArea.printText(yellowColor, a...)
 }
 
 func (gui *GUI) error(a ...interface{}) {
-	gui.traceText(redColor, a...)
+	gui.traceArea.printText(redColor, a...)
 }
 
 func (gui *GUI) trace(a ...interface{}) {
-	gui.traceText(whiteColor, a...)
-}
-
-func (gui *GUI) traceText(col color.Color, a ...interface{}) {
-	for _, s := range strings.Split(fmt.Sprint(a...), "\n") {
-		gui.traceVBox.Add(canvas.NewText(s, col))
-	}
-	gui.scrollTraceToBottom()
-}
-
-func (gui *GUI) traceLine() {
-	gui.traceVBox.Add(widget.NewSeparator())
-	gui.scrollTraceToBottom()
-}
-
-func (gui *GUI) scrollTraceToBottom() {
-	// The ScrollToTop() call below is some kind of workaround to ensure
-	// that the UI indeed refreshes and scrolls to bottom when ScrollToBottom() is called
-	gui.traceArea.ScrollToTop()
-	gui.traceArea.ScrollToBottom()
+	gui.traceArea.printText(whiteColor, a...)
 }
 
 type confirmationInfo struct {
@@ -211,12 +183,12 @@ func (gui *GUI) initApp() {
 	gui.win.CenterOnScreen()
 
 	gui.actionBar = NewActionBar()
-	gui.traceArea = gui.initTraceArea()
+	gui.traceArea = NewTraceArea()
 	gui.sessionInfo = gui.initSessionInfoPanel()
 
 	topLevel := container.New(layout.NewBorderLayout(
 		gui.sessionInfo, gui.actionBar.container, nil, nil),
-		gui.sessionInfo, gui.actionBar.container, gui.traceArea)
+		gui.sessionInfo, gui.actionBar.container, gui.traceArea.scroll)
 
 	gui.win.SetContent(topLevel)
 }
@@ -256,14 +228,3 @@ func (gui *GUI) initSessionInfoPanel() *fyne.Container {
 	return sessionInfo
 }
 
-func (gui *GUI) initTraceArea() *container.Scroll {
-	gui.traceVBox = container.NewVBox(
-		widget.NewLabelWithStyle("Welcome to TCR!",
-			fyne.TextAlignLeading,
-			fyne.TextStyle{Bold: true},
-		))
-
-	return container.NewVScroll(
-		gui.traceVBox,
-	)
-}
