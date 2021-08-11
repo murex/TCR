@@ -21,7 +21,7 @@ type SessionPanel struct {
 	container      *fyne.Container
 }
 
-func NewSessionPanel() *SessionPanel {
+func (gui *GUI) NewSessionPanel() *SessionPanel {
 	sp := SessionPanel{}
 	sp.directoryLabel = widget.NewLabel("Directory")
 	sp.modeLabel = widget.NewLabel("Mode")
@@ -29,7 +29,15 @@ func NewSessionPanel() *SessionPanel {
 	// TODO retrieve the list from runmode package
 	modeOptions := []string{runmode.Mob{}.Name(), runmode.Solo{}.Name()}
 	sp.modeSelect = widget.NewSelect(modeOptions, func(s string) {
-		report.PostWarning(fmt.Sprintf("Switching to %v mode", s))
+		report.PostInfo(fmt.Sprintf("Switching to %v mode", s))
+		var newMode runmode.RunMode
+		switch s {
+		case runmode.Mob{}.Name():
+			newMode = runmode.Mob{}
+		case runmode.Solo{}.Name():
+			newMode = runmode.Solo{}
+		}
+		gui.adjustActionBar(newMode)
 	})
 
 	sp.languageLabel = widget.NewLabel("Language")

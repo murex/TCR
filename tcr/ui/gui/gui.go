@@ -37,6 +37,8 @@ type GUI struct {
 	actionBar    ActionBar
 	traceArea    *TraceArea
 	sessionPanel *SessionPanel
+	topLevel     *fyne.Container
+	layout       fyne.Layout
 }
 
 func New() ui.UserInterface {
@@ -72,9 +74,9 @@ func (gui *GUI) StopReporting() {
 	report.Unsubscribe(gui.reporting)
 }
 
-func (gui *GUI) Start(mode runmode.RunMode) {
+func (gui *GUI) Start(_ runmode.RunMode) {
 	gui.confirmRootBranch()
-	gui.ShowRunningMode(mode)
+	//gui.ShowRunningMode(mode)
 	gui.win.ShowAndRun()
 }
 
@@ -172,21 +174,31 @@ func (gui *GUI) initApp() {
 
 	gui.actionBar = NewMobActionBar()
 	gui.traceArea = NewTraceArea()
-	gui.sessionPanel = NewSessionPanel()
+	gui.sessionPanel = gui.NewSessionPanel()
 
-	topLevel := container.New(layout.NewBorderLayout(
-		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil),
-		gui.sessionPanel.container, gui.actionBar.getContainer(), gui.traceArea.container)
-
-	gui.win.SetContent(topLevel)
+	gui.layout = layout.NewBorderLayout(
+		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil)
+	gui.topLevel = container.New(gui.layout,
+		gui.sessionPanel.container,
+		gui.actionBar.getContainer(),
+		gui.traceArea.container,
+	)
+	gui.win.SetContent(gui.topLevel)
 }
 
 func (gui *GUI) adjustActionBar(mode runmode.RunMode) {
-	// TODO replace containers
+	// TODO refactor
 	switch mode {
 	case runmode.Mob{}:
 		gui.actionBar = NewMobActionBar()
 	case runmode.Solo{}:
 		gui.actionBar = NewSoloActionBar()
 	}
+	//fmt.Println("Before", gui.topLevel.Objects)
+	gui.topLevel.Objects[1] = gui.actionBar.getContainer()
+	gui.layout = layout.NewBorderLayout(
+		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil)
+	gui.topLevel.Layout = gui.layout
+	gui.topLevel.Refresh()
+	//fmt.Println("After", gui.topLevel.Objects)
 }
