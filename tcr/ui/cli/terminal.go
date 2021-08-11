@@ -51,7 +51,7 @@ func (term *Terminal) NotifyRoleStarting(r role.Role) {
 }
 
 func (term *Terminal) NotifyRoleEnding(r role.Role) {
-	term.info("Leaving ", strings.Title(r.Name()), " role")
+	term.info("Ending ", strings.Title(r.Name()), " role")
 }
 
 func (term *Terminal) info(a ...interface{}) {

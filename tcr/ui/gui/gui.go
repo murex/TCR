@@ -86,7 +86,7 @@ func (gui *GUI) NotifyRoleStarting(r role.Role) {
 }
 
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
-	report.PostInfo("Leaving ", strings.Title(r.Name()), " role")
+	report.PostInfo("Ending ", strings.Title(r.Name()), " role")
 }
 
 func (gui *GUI) ShowSessionInfo() {
