@@ -33,21 +33,20 @@ var (
 )
 
 type GUI struct {
-	term                 ui.UserInterface
-	reporting            chan bool
-	app                  fyne.App
-	win                  fyne.Window
-	directoryLabel       *widget.Label
-	languageLabel        *widget.Label
-	toolchainLabel       *widget.Label
-	branchLabel          *widget.Label
-	modeLabel            *widget.Label
-	autoPushToggle       *widget.Check
-	startNavigatorButton *widget.Button
-	startDriverButton    *widget.Button
-	stopButton           *widget.Button
+	term           ui.UserInterface
+	reporting      chan bool
+	app            fyne.App
+	win            fyne.Window
+	actionBar      *ActionBar
+	directoryLabel *widget.Label
+	languageLabel  *widget.Label
+	toolchainLabel *widget.Label
+	branchLabel    *widget.Label
+	modeLabel      *widget.Label
+	autoPushToggle *widget.Check
 	traceVBox            *fyne.Container
 	traceArea            *container.Scroll
+	sessionInfo          *fyne.Container
 }
 
 func New() ui.UserInterface {
@@ -211,13 +210,13 @@ func (gui *GUI) initApp() {
 	})
 	gui.win.CenterOnScreen()
 
-	actionBar := gui.initActionBar()
+	gui.actionBar = NewActionBar()
 	gui.traceArea = gui.initTraceArea()
-	sessionInfo := gui.initSessionInfoPanel()
+	gui.sessionInfo = gui.initSessionInfoPanel()
 
 	topLevel := container.New(layout.NewBorderLayout(
-		sessionInfo, actionBar, nil, nil),
-		sessionInfo, actionBar, gui.traceArea)
+		gui.sessionInfo, gui.actionBar.container, nil, nil),
+		gui.sessionInfo, gui.actionBar.container, gui.traceArea)
 
 	gui.win.SetContent(topLevel)
 }
@@ -267,54 +266,4 @@ func (gui *GUI) initTraceArea() *container.Scroll {
 	return container.NewVScroll(
 		gui.traceVBox,
 	)
-}
-
-func (gui *GUI) initActionBar() *fyne.Container {
-	gui.startDriverButton = widget.NewButtonWithIcon("Start as Driver",
-		theme.MediaPlayIcon(),
-		func() {
-			gui.updateButtonsState(true)
-			engine.RunAsDriver()
-		},
-	)
-	gui.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator",
-		theme.MediaPlayIcon(),
-		func() {
-			gui.updateButtonsState(true)
-			engine.RunAsNavigator()
-		},
-	)
-	gui.stopButton = widget.NewButtonWithIcon("Stop",
-		theme.MediaStopIcon(),
-		func() {
-			gui.updateButtonsState(false)
-			engine.Stop()
-		},
-	)
-	// Initial state
-	gui.updateButtonsState(false)
-
-	return container.NewVBox(
-		widget.NewSeparator(),
-		container.NewHBox(
-			layout.NewSpacer(),
-			gui.startDriverButton,
-			gui.startNavigatorButton,
-			layout.NewSpacer(),
-			gui.stopButton,
-			layout.NewSpacer(),
-		),
-	)
-}
-
-func (gui *GUI) updateButtonsState(running bool) {
-	if running {
-		gui.startDriverButton.Disable()
-		gui.startNavigatorButton.Disable()
-		gui.stopButton.Enable()
-	} else {
-		gui.startDriverButton.Enable()
-		gui.startNavigatorButton.Enable()
-		gui.stopButton.Disable()
-	}
 }
