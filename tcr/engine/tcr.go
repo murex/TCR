@@ -45,7 +45,7 @@ func Init(u ui.UserInterface, params tcr.Params) {
 	uitf.ShowSessionInfo()
 	warnIfOnRootBranch(git.WorkingBranch())
 
-	uitf.RunInMode(mode)
+	uitf.Start(mode)
 }
 
 func warnIfOnRootBranch(branch string) {

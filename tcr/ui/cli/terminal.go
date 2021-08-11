@@ -195,7 +195,7 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 	}
 }
 
-func (term *Terminal) RunInMode(mode runmode.RunMode) {
+func (term *Terminal) Start(mode runmode.RunMode) {
 
 	_ = stty.SetRaw()
 	defer stty.Restore()

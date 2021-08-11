@@ -13,7 +13,7 @@ var guiCmd = &cobra.Command{
 	Use:   "gui",
 	Short: "Launch TCR GUI",
 	Long: `
-Runs TCR application though a Graphical User Interface.`,
+Run TCR application though a Graphical User Interface.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		u := gui.New()
 		params.Mode = runmode.Mob{}

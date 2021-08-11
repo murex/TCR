@@ -6,7 +6,7 @@ import (
 )
 
 type UserInterface interface {
-	RunInMode(mode runmode.RunMode)
+	Start(mode runmode.RunMode)
 	ShowRunningMode(mode runmode.RunMode)
 	NotifyRoleStarting(r role.Role)
 	NotifyRoleEnding(r role.Role)

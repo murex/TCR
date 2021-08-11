@@ -41,6 +41,7 @@ type GUI struct {
 	languageLabel        *widget.Label
 	toolchainLabel       *widget.Label
 	branchLabel          *widget.Label
+	modeLabel            *widget.Label
 	autoPushToggle       *widget.Check
 	startNavigatorButton *widget.Button
 	startDriverButton    *widget.Button
@@ -51,9 +52,11 @@ type GUI struct {
 
 func New() ui.UserInterface {
 	var gui = GUI{}
+	// Until the GUI is able to report, we rely on the terminal to report information
 	gui.term = cli.New()
 	gui.initApp()
-	report.PostInfo("Opening GUI")
+	report.PostInfo("Opening TCR GUI")
+
 	gui.term.StopReporting()
 	gui.StartReporting()
 	return &gui
@@ -80,15 +83,13 @@ func (gui *GUI) StopReporting() {
 	report.Unsubscribe(gui.reporting)
 }
 
-func (gui *GUI) RunInMode(mode runmode.RunMode) {
-	// TODO setup according to mode value
+func (gui *GUI) Start(_ runmode.RunMode) {
 	gui.confirmRootBranch()
 	gui.win.ShowAndRun()
 }
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
-	// TODO Replace with GUI-specific implementation
-	gui.term.ShowRunningMode(mode)
+	gui.modeLabel.SetText(fmt.Sprintf("Mode: %v", mode.Name()))
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
@@ -223,6 +224,7 @@ func (gui *GUI) initApp() {
 
 func (gui *GUI) initSessionInfoPanel() *fyne.Container {
 	gui.directoryLabel = widget.NewLabel("Directory")
+	gui.modeLabel = widget.NewLabel("Mode")
 	gui.languageLabel = widget.NewLabel("Language")
 	gui.toolchainLabel = widget.NewLabel("Toolchain")
 	gui.branchLabel = widget.NewLabel("Branch")
@@ -240,6 +242,8 @@ func (gui *GUI) initSessionInfoPanel() *fyne.Container {
 		),
 		widget.NewSeparator(),
 		container.NewHBox(
+			gui.modeLabel,
+			widget.NewSeparator(),
 			gui.languageLabel,
 			widget.NewSeparator(),
 			gui.toolchainLabel,
