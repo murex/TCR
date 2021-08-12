@@ -30,6 +30,8 @@ jobs:
         check-latest: true  
 
     - name: Build
+      env:
+        CGO_ENABLED: 1
       run: go build -v ./...
 
     - name: Test
