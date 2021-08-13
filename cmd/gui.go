@@ -17,7 +17,7 @@ Run TCR application though a Graphical User Interface.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		u := gui.New()
 		params.Mode = runmode.Mob{}
-		params.AutoPush = true
+		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = tcr.DefaultPollingPeriod
 		engine.Init(u, params)
 	},

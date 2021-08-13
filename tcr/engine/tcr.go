@@ -35,10 +35,14 @@ func Init(u ui.UserInterface, params tcr.Params) {
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod
-	sourceTree, err = filesystem.New(params.BaseDir); handleError(err)
-	lang, err = language.DetectLanguage(sourceTree.GetBaseDir()); handleError(err)
-	tchn, err = toolchain.New(params.Toolchain, lang); handleError(err)
-	git, err = vcs.New(sourceTree.GetBaseDir()); handleError(err)
+	sourceTree, err = filesystem.New(params.BaseDir)
+	handleError(err)
+	lang, err = language.DetectLanguage(sourceTree.GetBaseDir())
+	handleError(err)
+	tchn, err = toolchain.New(params.Toolchain, lang)
+	handleError(err)
+	git, err = vcs.New(sourceTree.GetBaseDir())
+	handleError(err)
 	git.EnablePush(params.AutoPush)
 
 	uitf.ShowRunningMode(mode)
@@ -61,6 +65,10 @@ func warnIfOnRootBranch(branch string) {
 
 func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
+}
+
+func SetAutoPush(ap bool) {
+	git.EnablePush(ap)
 }
 
 func RunAsDriver() {

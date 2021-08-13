@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/report"
 	"github.com/mengdaming/tcr/tcr/runmode"
 )
 
@@ -24,33 +23,24 @@ type SessionPanel struct {
 func (gui *GUI) NewSessionPanel() *SessionPanel {
 	sp := SessionPanel{}
 	sp.directoryLabel = widget.NewLabel("Directory")
-	sp.modeLabel = widget.NewLabel("Mode")
 
-	// TODO retrieve the list from runmode package
-	modeOptions := []string{runmode.Mob{}.Name(), runmode.Solo{}.Name()}
-	sp.modeSelect = widget.NewSelect(modeOptions, func(s string) {
-		report.PostInfo(fmt.Sprintf("Switching to %v mode", s))
-		var newMode runmode.RunMode
-		switch s {
-		case runmode.Mob{}.Name():
-			newMode = runmode.Mob{}
-		case runmode.Solo{}.Name():
-			newMode = runmode.Solo{}
-		}
-		gui.adjustActionBar(newMode)
-	})
+	sp.modeLabel = widget.NewLabel("Mode")
+	sp.modeSelect = widget.NewSelect(
+		runmode.Names(),
+		func(selected string) {
+			var newMode = runmode.Map()[selected]
+			gui.setRunMode(newMode)
+		},
+	)
 
 	sp.languageLabel = widget.NewLabel("Language")
 	sp.toolchainLabel = widget.NewLabel("Toolchain")
 	sp.branchLabel = widget.NewLabel("Branch")
-	sp.autoPushToggle = widget.NewCheck("Auto-Push", func(checked bool) {
-		engine.ToggleAutoPush()
-		autoPushStr := "off"
-		if checked {
-			autoPushStr = "on"
-		}
-		report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
-	})
+	sp.autoPushToggle = widget.NewCheck("Auto-Push",
+		func(checked bool) {
+			engine.SetAutoPush(checked)
+		},
+	)
 
 	sp.container = container.NewVBox(
 		container.NewHBox(
@@ -74,10 +64,9 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 	return &sp
 }
 
-func (sp *SessionPanel) setMode(mode runmode.RunMode) {
-	//sp.modeLabel.SetText(fmt.Sprintf("Mode: %v", mode.Name()))
+func (sp *SessionPanel) setRunMode(mode runmode.RunMode) {
 	sp.modeSelect.SetSelected(mode.Name())
-	//sp.modeSelect.Refresh()
+	sp.autoPushToggle.SetChecked(mode.AutoPushDefault())
 }
 
 func (sp *SessionPanel) setSessionInfo() {

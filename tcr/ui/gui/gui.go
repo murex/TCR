@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -38,6 +39,7 @@ type GUI struct {
 	sessionPanel *SessionPanel
 	topLevel     *fyne.Container
 	layout       fyne.Layout
+	runMode      runmode.RunMode
 }
 
 func New() ui.UserInterface {
@@ -75,13 +77,11 @@ func (gui *GUI) StopReporting() {
 
 func (gui *GUI) Start(_ runmode.RunMode) {
 	gui.confirmRootBranch()
-	//gui.ShowRunningMode(mode)
 	gui.win.ShowAndRun()
 }
 
 func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
-	gui.sessionPanel.setMode(mode)
-	gui.adjustActionBar(mode)
+	gui.setRunMode(mode)
 }
 
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
@@ -171,33 +171,29 @@ func (gui *GUI) initApp() {
 	})
 	gui.win.CenterOnScreen()
 
-	gui.actionBar = NewMobActionBar()
+	gui.actionBar = NewActionBar()
 	gui.traceArea = NewTraceArea()
 	gui.sessionPanel = gui.NewSessionPanel()
 
 	gui.layout = layout.NewBorderLayout(
-		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil)
+		gui.sessionPanel.container, gui.actionBar.container, nil, nil)
 	gui.topLevel = container.New(gui.layout,
 		gui.sessionPanel.container,
-		gui.actionBar.getContainer(),
+		gui.actionBar.container,
 		gui.traceArea.container,
 	)
 	gui.win.SetContent(gui.topLevel)
 }
 
-func (gui *GUI) adjustActionBar(mode runmode.RunMode) {
-	// TODO refactor
-	switch mode {
-	case runmode.Mob{}:
-		gui.actionBar = NewMobActionBar()
-	case runmode.Solo{}:
-		gui.actionBar = NewSoloActionBar()
+func (gui *GUI) setRunMode(mode runmode.RunMode) {
+	if mode != gui.runMode {
+		gui.runMode = mode
+		report.PostInfo(fmt.Sprintf("Run mode is %v", gui.runMode.Name()))
+		gui.sessionPanel.setRunMode(gui.runMode)
+		gui.actionBar.setRunMode(gui.runMode)
 	}
-	//fmt.Println("Before", gui.topLevel.Objects)
-	gui.topLevel.Objects[1] = gui.actionBar.getContainer()
-	gui.layout = layout.NewBorderLayout(
-		gui.sessionPanel.container, gui.actionBar.getContainer(), nil, nil)
-	gui.topLevel.Layout = gui.layout
-	gui.topLevel.Refresh()
-	//fmt.Println("After", gui.topLevel.Objects)
+}
+
+func (gui *GUI) getRunMode() runmode.RunMode {
+	return gui.runMode
 }

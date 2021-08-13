@@ -196,7 +196,15 @@ func (g *GitImpl) Pull() error {
 
 // EnablePush Set a flag allowing to turn on/off git push operations
 func (g *GitImpl) EnablePush(flag bool) {
+	if g.pushEnabled == flag {
+		return
+	}
 	g.pushEnabled = flag
+	autoPushStr := "off"
+	if g.pushEnabled {
+		autoPushStr = "on"
+	}
+	report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
 }
 
 // IsPushEnabled Indicates if git push operations are turned on

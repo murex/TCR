@@ -9,18 +9,18 @@ import (
 	"github.com/mengdaming/tcr/tcr/engine"
 )
 
-type SoloActionBar struct {
+type SoloActionBarButtonPanel struct {
 	startButton *widget.Button
 	stopButton  *widget.Button
 	container   *fyne.Container
 }
 
-func (ab *SoloActionBar) getContainer() *fyne.Container {
+func (ab *SoloActionBarButtonPanel) getContainer() *fyne.Container {
 	return ab.container
 }
 
-func NewSoloActionBar() ActionBar {
-	var ab = SoloActionBar{}
+func NewSoloActionBarButtonPanel() ActionBarButtonPanel {
+	var ab = SoloActionBarButtonPanel{}
 
 	ab.startButton = widget.NewButtonWithIcon("Start",
 		theme.MediaPlayIcon(),
@@ -40,21 +40,18 @@ func NewSoloActionBar() ActionBar {
 	// Initial state
 	ab.updateButtonsState(false)
 
-	ab.container = container.NewVBox(
-		widget.NewSeparator(),
-		container.NewHBox(
-			layout.NewSpacer(),
-			ab.startButton,
-			layout.NewSpacer(),
-			ab.stopButton,
-			layout.NewSpacer(),
-		),
+	ab.container = container.NewHBox(
+		layout.NewSpacer(),
+		ab.startButton,
+		layout.NewSpacer(),
+		ab.stopButton,
+		layout.NewSpacer(),
 	)
 
 	return &ab
 }
 
-func (ab *SoloActionBar) updateButtonsState(running bool) {
+func (ab *SoloActionBarButtonPanel) updateButtonsState(running bool) {
 	if running {
 		ab.startButton.Disable()
 		ab.stopButton.Enable()

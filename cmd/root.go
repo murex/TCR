@@ -29,7 +29,7 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		// so that the user can decide what they want to do
 		u := gui.New()
 		params.Mode = runmode.Mob{}
-		params.AutoPush = true
+		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = tcr.DefaultPollingPeriod
 		engine.Init(u, params)
 	},

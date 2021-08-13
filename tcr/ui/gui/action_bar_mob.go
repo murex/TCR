@@ -9,19 +9,19 @@ import (
 	"github.com/mengdaming/tcr/tcr/engine"
 )
 
-type MobActionBar struct {
+type MobActionBarButtonPanel struct {
 	startNavigatorButton *widget.Button
 	startDriverButton    *widget.Button
 	stopButton           *widget.Button
 	container            *fyne.Container
 }
 
-func (ab *MobActionBar) getContainer() *fyne.Container {
+func (ab *MobActionBarButtonPanel) getContainer() *fyne.Container {
 	return ab.container
 }
 
-func NewMobActionBar() ActionBar {
-	var ab = MobActionBar{}
+func NewMobActionBarButtonPanel() ActionBarButtonPanel {
+	var ab = MobActionBarButtonPanel{}
 
 	ab.startDriverButton = widget.NewButtonWithIcon("Start as Driver",
 		theme.MediaPlayIcon(),
@@ -48,22 +48,19 @@ func NewMobActionBar() ActionBar {
 	// Initial state
 	ab.updateButtonsState(false)
 
-	ab.container = container.NewVBox(
-		widget.NewSeparator(),
-		container.NewHBox(
-			layout.NewSpacer(),
-			ab.startDriverButton,
-			ab.startNavigatorButton,
-			layout.NewSpacer(),
-			ab.stopButton,
-			layout.NewSpacer(),
-		),
+	ab.container = container.NewHBox(
+		layout.NewSpacer(),
+		ab.startDriverButton,
+		ab.startNavigatorButton,
+		layout.NewSpacer(),
+		ab.stopButton,
+		layout.NewSpacer(),
 	)
 
 	return &ab
 }
 
-func (ab *MobActionBar) updateButtonsState(running bool) {
+func (ab *MobActionBarButtonPanel) updateButtonsState(running bool) {
 	if running {
 		ab.startDriverButton.Disable()
 		ab.startNavigatorButton.Disable()
