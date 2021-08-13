@@ -6,7 +6,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/theme"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/report"
 	"github.com/mengdaming/tcr/tcr/role"
@@ -162,9 +161,9 @@ func (gui *GUI) quit() {
 
 func (gui *GUI) initApp() {
 	gui.app = app.New()
-	// TODO Add a TCR-Specific icon
-	gui.app.SetIcon(theme.FyneLogo())
-	gui.win = gui.app.NewWindow("TCR")
+	icon, _ := fyne.LoadResourceFromPath("Icon.png")
+	gui.app.SetIcon(icon)
+	gui.win = gui.app.NewWindow("Test & (Commit | Revert)")
 	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
 	gui.win.SetCloseIntercept(func() {
 		gui.quit()
