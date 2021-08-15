@@ -5,7 +5,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"github.com/mengdaming/tcr/tcr/engine"
 	"github.com/mengdaming/tcr/tcr/report"
@@ -114,43 +113,6 @@ func (gui *GUI) error(a ...interface{}) {
 
 func (gui *GUI) trace(a ...interface{}) {
 	gui.traceArea.printText(whiteColor, a...)
-}
-
-type confirmationInfo struct {
-	required      bool
-	title         string
-	message       string
-	defaultAnswer bool
-}
-
-var rootBranchConfirmation confirmationInfo
-
-func (gui *GUI) Confirm(message string, def bool) bool {
-	// We need to defer the confirmation dialog until the window is displayed
-	gui.warning(message)
-	rootBranchConfirmation = confirmationInfo{
-		required:      true,
-		title:         message,
-		message:       "Are you sure you want to continue?",
-		defaultAnswer: def,
-	}
-	return true
-}
-
-func (gui *GUI) confirmRootBranch() {
-	if rootBranchConfirmation.required {
-		// TODO See if there is a way to change the default button selection in fyne confirmation dialog
-		dialog.ShowConfirm(
-			rootBranchConfirmation.title,
-			rootBranchConfirmation.message,
-			func(response bool) {
-				if response == false {
-					gui.quit()
-				}
-			},
-			gui.win,
-		)
-	}
 }
 
 func (gui *GUI) quit() {
