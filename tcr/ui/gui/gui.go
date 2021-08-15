@@ -93,7 +93,12 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 }
 
 func (gui *GUI) ShowSessionInfo() {
-	gui.sessionPanel.setSessionInfo()
+	d, l, t, ap, b := engine.GetSessionInfo()
+	gui.win.SetTitle(fmt.Sprintf("TCR - %v", d))
+	gui.sessionPanel.setLanguage(l)
+	gui.sessionPanel.setToolchain(t)
+	gui.sessionPanel.setBranch(b)
+	gui.sessionPanel.setGitAutoPush(ap)
 }
 
 func (gui *GUI) info(a ...interface{}) {
@@ -126,7 +131,7 @@ func (gui *GUI) initApp() {
 	gui.app = app.New()
 	icon, _ := fyne.LoadResourceFromPath("Icon.png")
 	gui.app.SetIcon(icon)
-	gui.win = gui.app.NewWindow("Test & (Commit | Revert)")
+	gui.win = gui.app.NewWindow("TCR")
 	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
 	gui.win.SetCloseIntercept(func() {
 		gui.quit()
@@ -151,7 +156,7 @@ func (gui *GUI) initApp() {
 func (gui *GUI) setRunMode(mode runmode.RunMode) {
 	if mode != gui.runMode {
 		gui.runMode = mode
-		report.PostInfo(fmt.Sprintf("Run mode is %v", gui.runMode.Name()))
+		report.PostInfo(fmt.Sprintf("Run mode set to %v", gui.runMode.Name()))
 		gui.sessionPanel.setRunMode(gui.runMode)
 		gui.actionBar.setRunMode(gui.runMode)
 	}

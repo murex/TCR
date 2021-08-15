@@ -10,7 +10,6 @@ import (
 )
 
 type SessionPanel struct {
-	directoryLabel *widget.Label
 	languageLabel  *widget.Label
 	toolchainLabel *widget.Label
 	branchLabel    *widget.Label
@@ -22,7 +21,6 @@ type SessionPanel struct {
 
 func (gui *GUI) NewSessionPanel() *SessionPanel {
 	sp := SessionPanel{}
-	sp.directoryLabel = widget.NewLabel("Directory")
 
 	sp.modeLabel = widget.NewLabel("Mode")
 	sp.modeSelect = widget.NewSelect(
@@ -36,6 +34,7 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 	sp.languageLabel = widget.NewLabel("Language")
 	sp.toolchainLabel = widget.NewLabel("Toolchain")
 	sp.branchLabel = widget.NewLabel("Branch")
+
 	sp.autoPushToggle = widget.NewCheck("Auto-Push",
 		func(checked bool) {
 			engine.SetAutoPush(checked)
@@ -43,10 +42,6 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 	)
 
 	sp.container = container.NewVBox(
-		container.NewHBox(
-			sp.directoryLabel,
-		),
-		widget.NewSeparator(),
 		container.NewHBox(
 			sp.modeLabel,
 			sp.modeSelect,
@@ -69,12 +64,18 @@ func (sp *SessionPanel) setRunMode(mode runmode.RunMode) {
 	sp.autoPushToggle.SetChecked(mode.AutoPushDefault())
 }
 
-func (sp *SessionPanel) setSessionInfo() {
-	d, l, t, ap, b := engine.GetSessionInfo()
+func (sp *SessionPanel) setLanguage(language string) {
+	sp.languageLabel.SetText(fmt.Sprintf("Language: %v", language))
+}
 
-	sp.directoryLabel.SetText(fmt.Sprintf("Directory: %v", d))
-	sp.languageLabel.SetText(fmt.Sprintf("Language: %v", l))
-	sp.toolchainLabel.SetText(fmt.Sprintf("Toolchain: %v", t))
-	sp.branchLabel.SetText(fmt.Sprintf("Branch: %v", b))
-	sp.autoPushToggle.SetChecked(ap)
+func (sp *SessionPanel) setToolchain(toolchain string) {
+	sp.toolchainLabel.SetText(fmt.Sprintf("Toolchain: %v", toolchain))
+}
+
+func (sp *SessionPanel) setBranch(branch string) {
+	sp.branchLabel.SetText(fmt.Sprintf("Branch: %v", branch))
+}
+
+func (sp *SessionPanel) setGitAutoPush(autoPush bool) {
+	sp.autoPushToggle.SetChecked(autoPush)
 }
