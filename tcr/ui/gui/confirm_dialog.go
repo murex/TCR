@@ -1,48 +1,34 @@
 package gui
 
 import (
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 )
 
-type confirmationInfo struct {
-	required      bool
-	title         string
-	message       string
-	defaultAnswer bool
+type DeferredConfirmDialog struct {
+	confirmDialog *dialog.ConfirmDialog
 }
 
-var rootBranchConfirmation confirmationInfo
-
-func (gui *GUI) Confirm(message string, def bool) bool {
-	// We need to defer the confirmation dialog until the window is displayed
-	gui.warning(message)
-	rootBranchConfirmation = confirmationInfo{
-		required:      true,
-		title:         message,
-		message:       "Are you sure you want to continue?",
-		defaultAnswer: def,
+func NewDeferredConfirmDialog(message string, defaultSelected bool, cbAction func(), parent fyne.Window) DeferredConfirmDialog {
+	cd := DeferredConfirmDialog{}
+	cd.confirmDialog = dialog.NewConfirm(
+		message, "Are you sure you want to continue?",
+		func(response bool) {
+			if response != defaultSelected {
+				cbAction()
+			}
+		},
+		parent,
+	)
+	if defaultSelected == false {
+		cd.confirmDialog.SetConfirmText("No")
+		cd.confirmDialog.SetDismissText("Yes")
 	}
-	return true
+	return cd
 }
 
-func (gui *GUI) confirmRootBranch() {
-	if rootBranchConfirmation.required {
-		c := dialog.NewConfirm(
-			rootBranchConfirmation.title,
-			rootBranchConfirmation.message,
-			func(response bool) {
-				if response != rootBranchConfirmation.defaultAnswer {
-					gui.quit()
-				}
-			},
-			gui.win,
-		)
-		// This is a workaround to allow default selection of "No" answer.
-		// Fyne ConfirmDialog don't allow this by default
-		if rootBranchConfirmation.defaultAnswer == false {
-			c.SetConfirmText("No")
-			c.SetDismissText("Yes")
-		}
-		c.Show()
+func (dlg *DeferredConfirmDialog) showIfNeeded() {
+	if dlg.confirmDialog != nil {
+		dlg.confirmDialog.Show()
 	}
 }

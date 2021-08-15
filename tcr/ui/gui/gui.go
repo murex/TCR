@@ -36,6 +36,7 @@ type GUI struct {
 	actionBar    ActionBar
 	traceArea    *TraceArea
 	sessionPanel *SessionPanel
+	rbConfirm    DeferredConfirmDialog
 	topLevel     *fyne.Container
 	layout       fyne.Layout
 	runMode      runmode.RunMode
@@ -75,7 +76,7 @@ func (gui *GUI) StopReporting() {
 }
 
 func (gui *GUI) Start(_ runmode.RunMode) {
-	gui.confirmRootBranch()
+	gui.rbConfirm.showIfNeeded()
 	gui.win.ShowAndRun()
 }
 
@@ -158,4 +159,11 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 
 func (gui *GUI) getRunMode() runmode.RunMode {
 	return gui.runMode
+}
+
+func (gui *GUI) Confirm(message string, def bool) bool {
+	gui.warning(message)
+	// We need to defer showing the confirmation dialog until the window is displayed
+	gui.rbConfirm = NewDeferredConfirmDialog(message, def, gui.quit, gui.win)
+	return true
 }
