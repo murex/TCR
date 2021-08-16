@@ -27,7 +27,10 @@ jobs:
         distribution: 'adopt'
         java-version: '11'
         check-latest: true  
-
+        
+    - name: Install CGO Libraries
+        run: sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+  
     - name: Build
       env:
         CGO_ENABLED: 1
