@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/mengdaming/tcr/tcr/engine"
+	"github.com/mengdaming/tcr/engine"
 )
 
 type SoloActionBarButtonPanel struct {

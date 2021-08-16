@@ -1,8 +1,8 @@
 package ui
 
 import (
-	"github.com/mengdaming/tcr/tcr/role"
-	"github.com/mengdaming/tcr/tcr/runmode"
+	"github.com/mengdaming/tcr/role"
+	"github.com/mengdaming/tcr/runmode"
 )
 
 type UserInterface interface {

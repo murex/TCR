@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"github.com/mengdaming/tcr/tcr"
-	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/runmode"
-	"github.com/mengdaming/tcr/tcr/ui/gui"
+	"github.com/mengdaming/tcr/engine"
+	"github.com/mengdaming/tcr/runmode"
+	"github.com/mengdaming/tcr/ui/gui"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +17,7 @@ Run TCR application though a Graphical User Interface.`,
 		u := gui.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = tcr.DefaultPollingPeriod
+		params.PollingPeriod = engine.DefaultPollingPeriod
 		engine.Init(u, params)
 	},
 }

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/codeskyblue/go-sh"
-	"github.com/mengdaming/tcr/tcr/language"
-	"github.com/mengdaming/tcr/tcr/report"
+	"github.com/mengdaming/tcr/language"
+	"github.com/mengdaming/tcr/report"
 	"os"
 	"path/filepath"
 )

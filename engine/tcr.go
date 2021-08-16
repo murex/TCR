@@ -1,15 +1,14 @@
 package engine
 
 import (
-	"github.com/mengdaming/tcr/tcr"
-	"github.com/mengdaming/tcr/tcr/filesystem"
-	"github.com/mengdaming/tcr/tcr/language"
-	"github.com/mengdaming/tcr/tcr/report"
-	"github.com/mengdaming/tcr/tcr/role"
-	"github.com/mengdaming/tcr/tcr/runmode"
-	"github.com/mengdaming/tcr/tcr/toolchain"
-	"github.com/mengdaming/tcr/tcr/ui"
-	"github.com/mengdaming/tcr/tcr/vcs"
+	"github.com/mengdaming/tcr/filesystem"
+	"github.com/mengdaming/tcr/language"
+	"github.com/mengdaming/tcr/report"
+	"github.com/mengdaming/tcr/role"
+	"github.com/mengdaming/tcr/runmode"
+	"github.com/mengdaming/tcr/toolchain"
+	"github.com/mengdaming/tcr/ui"
+	"github.com/mengdaming/tcr/vcs"
 	"gopkg.in/tomb.v2"
 	"os"
 	"path/filepath"
@@ -26,12 +25,12 @@ var (
 	pollingPeriod time.Duration
 )
 
-func Init(u ui.UserInterface, params tcr.Params) {
+func Init(u ui.UserInterface, params Params) {
 	var err error
 
 	uitf = u
 
-	report.PostInfo("Starting TCR version ", tcr.Version, "...")
+	report.PostInfo("Starting TCR version ", Version, "...")
 
 	mode = params.Mode
 	pollingPeriod = params.PollingPeriod

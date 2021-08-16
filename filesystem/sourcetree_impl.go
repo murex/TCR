@@ -2,7 +2,7 @@ package filesystem
 
 import (
 	"github.com/fsnotify/fsnotify"
-	"github.com/mengdaming/tcr/tcr/report"
+	"github.com/mengdaming/tcr/report"
 	"os"
 	"path/filepath"
 )

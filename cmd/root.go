@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"github.com/mengdaming/tcr/tcr"
-	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/runmode"
-	"github.com/mengdaming/tcr/tcr/ui/gui"
+	"github.com/mengdaming/tcr/engine"
+	"github.com/mengdaming/tcr/runmode"
+	"github.com/mengdaming/tcr/ui/gui"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -15,11 +14,11 @@ import (
 
 // Command Line Options placeholders
 
-var params tcr.Params
+var params engine.Params
 
 var rootCmd = &cobra.Command{
 	Use:     "tcr",
-	Version: tcr.Version,
+	Version: engine.Version,
 	Short:   "TCR (Test && Commit || Revert)",
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
@@ -30,7 +29,7 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 		u := gui.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = tcr.DefaultPollingPeriod
+		params.PollingPeriod = engine.DefaultPollingPeriod
 		engine.Init(u, params)
 	},
 }

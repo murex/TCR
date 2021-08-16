@@ -1,7 +1,7 @@
 package toolchain
 
 import (
-	"github.com/mengdaming/tcr/tcr/language"
+	"github.com/mengdaming/tcr/language"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	testKataRootDir = "../../test/kata"
+	testKataRootDir = "../test/kata"
 )
 
 func testLanguageRootDir(lang language.Language) string {

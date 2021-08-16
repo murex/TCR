@@ -1,12 +1,12 @@
 package cli
 
 import (
-	"github.com/mengdaming/tcr/tcr/engine"
-	"github.com/mengdaming/tcr/tcr/report"
-	"github.com/mengdaming/tcr/tcr/role"
-	"github.com/mengdaming/tcr/tcr/runmode"
-	"github.com/mengdaming/tcr/tcr/stty"
-	"github.com/mengdaming/tcr/tcr/ui"
+	"github.com/mengdaming/tcr/engine"
+	"github.com/mengdaming/tcr/report"
+	"github.com/mengdaming/tcr/role"
+	"github.com/mengdaming/tcr/runmode"
+	"github.com/mengdaming/tcr/stty"
+	"github.com/mengdaming/tcr/ui"
 	"os"
 	"strings"
 )

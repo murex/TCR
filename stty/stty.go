@@ -2,7 +2,7 @@ package stty
 
 import (
 	"bytes"
-	"github.com/mengdaming/tcr/tcr/report"
+	"github.com/mengdaming/tcr/report"
 	"os"
 	"os/exec"
 )

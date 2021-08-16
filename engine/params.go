@@ -1,7 +1,7 @@
-package tcr
+package engine
 
 import (
-	"github.com/mengdaming/tcr/tcr/runmode"
+	"github.com/mengdaming/tcr/runmode"
 	"time"
 )
 

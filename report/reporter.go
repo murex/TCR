@@ -17,8 +17,8 @@ const (
 )
 
 type Message struct {
-	Type      MessageType
-	Text      string
+	Type MessageType
+	Text string
 	Timestamp time.Time
 }
 
