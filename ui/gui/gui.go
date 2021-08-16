@@ -22,10 +22,13 @@ const (
 )
 
 var (
-	redColor    = color.RGBA{R: 255, G: 0, B: 0}
-	cyanColor   = color.RGBA{R: 0, G: 139, B: 139}
-	yellowColor = color.RGBA{R: 255, G: 255, B: 0}
-	whiteColor  = color.RGBA{R: 255, G: 255, B: 255}
+	redColor  = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	cyanColor = color.RGBA{R: 0, G: 139, B: 139, A: 255}
+	//yellowColor = color.RGBA{R: 255, G: 255, B: 0, A: 255}
+	orangeColor = color.RGBA{R: 255, G: 165, B: 0, A: 255}
+	//whiteColor  = color.RGBA{R: 255, G: 255, B: 255, A: 255}
+	grayColor = color.RGBA{R: 128, G: 128, B: 128, A: 255}
+	//blackColor  = color.RGBA{R: 0, G: 0, B: 0, A: 255}
 )
 
 type GUI struct {
@@ -110,7 +113,7 @@ func (gui *GUI) title(a ...interface{}) {
 }
 
 func (gui *GUI) warning(a ...interface{}) {
-	gui.traceArea.printText(yellowColor, a...)
+	gui.traceArea.printText(orangeColor, a...)
 }
 
 func (gui *GUI) error(a ...interface{}) {
@@ -118,7 +121,7 @@ func (gui *GUI) error(a ...interface{}) {
 }
 
 func (gui *GUI) trace(a ...interface{}) {
-	gui.traceArea.printText(whiteColor, a...)
+	gui.traceArea.printText(grayColor, a...)
 }
 
 func (gui *GUI) quit() {
