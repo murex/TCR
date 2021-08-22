@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"image/color"
+	"math"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func NewTraceArea() *TraceArea {
 			fyne.TextAlignLeading,
 			fyne.TextStyle{Bold: true},
 		))
-	ta.container = container.NewVScroll(ta.vbox)
+	ta.container = container.NewScroll(ta.vbox)
 	return &ta
 }
 
@@ -34,9 +35,29 @@ func (ta *TraceArea) printSeparator() {
 	ta.print(widget.NewSeparator())
 }
 
+func splitStringFixedLength(str string, length int) []string {
+	strLength := len(str)
+	nbChunks := int(math.Ceil(float64(strLength) / float64(length)))
+	chunks := make([]string, nbChunks)
+	var start, stop int
+	for i := 0; i < nbChunks; i += 1 {
+		start = i * length
+		stop = start + length
+		if stop > strLength {
+			stop = strLength
+		}
+		chunks[i] = str[start : stop]
+	}
+	return chunks
+}
+
 func (ta *TraceArea) printText(col color.Color, a ...interface{}) {
-	for _, s := range strings.Split(fmt.Sprint(a...), "\n") {
-		ta.print(canvas.NewText(s, col))
+	str := fmt.Sprint(a...)
+	const maxCharsPerLine = 80
+	for _, line := range strings.Split(strings.TrimRight(str, "\n"), "\n") {
+		for _, chunk := range splitStringFixedLength(line, maxCharsPerLine) {
+			ta.print(canvas.NewText(chunk, col))
+		}
 	}
 }
 

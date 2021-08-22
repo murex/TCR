@@ -77,9 +77,10 @@ func runBuild(toolchain Toolchain) error {
 	buildCommandPath := filepath.Join(wd, toolchain.buildCommandName())
 	output, err := sh.Command(
 		buildCommandPath,
-		toolchain.buildCommandArgs()).Output()
+		toolchain.buildCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
+		//fmt.Println(string(output))
 	}
 	return err
 }
@@ -89,9 +90,10 @@ func runTests(tchn Toolchain) error {
 	testCommandPath := filepath.Join(wd, tchn.testCommandName())
 	output, err := sh.Command(
 		testCommandPath,
-		tchn.testCommandArgs()).Output()
+		tchn.testCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
+		//fmt.Println(string(output))
 	}
 	return err
 }
