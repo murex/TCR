@@ -1,15 +1,15 @@
 
 setlocal
 
-set OS=win64
-set ARCH=x64
+set OS=windows
+set ARCH=x86_64
 set ARCHIVE_EXTENSION=zip
 set CMAKE_BIN_DIR=bin
 set CMAKE=cmake.exe
 set CTEST=ctest.exe
 set CMAKE_GENERATOR_OPTIONS=-G "Visual Studio 15 2017 Win64"
 
-set CMAKE_VERSION=3.19.3
+set CMAKE_VERSION=3.21.0
 set CMAKE_EXPECTED_DIR=cmake-%CMAKE_VERSION%-%OS%-%ARCH%
 set CMAKE_EXPECTED_ARCHIVE_FILE=%CMAKE_EXPECTED_DIR%.%ARCHIVE_EXTENSION%
 set CMAKE_ARCHIVE_URL="http://github.com/Kitware/CMake/releases/download/v%CMAKE_VERSION%/%CMAKE_EXPECTED_ARCHIVE_FILE%"

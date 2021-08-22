@@ -22,8 +22,8 @@ Linux)
     cmake_generator_options="-G \"Unix Makefiles\""
     ;;
 MINGW64_NT-*)
-    os="win64"
-    arch="x64"
+    os="windows"
+    arch="x86_64"
     archive_extension="zip"
     cmake_bin_dir="bin"
     cmake="cmake.exe"
@@ -39,7 +39,7 @@ esac
 base_dir=$(dirname -- "$0")
 cd "${base_dir}"
 
-cmake_version="3.19.3"
+cmake_version="3.21.0"
 cmake_expected_dir="cmake-${cmake_version}-${os}-${arch}"
 cmake_expected_archive_file="${cmake_expected_dir}.${archive_extension}"
 cmake_archive_url="http://github.com/Kitware/CMake/releases/download/v${cmake_version}/${cmake_expected_archive_file}"
