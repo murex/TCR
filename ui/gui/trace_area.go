@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	traceMaxSize = 200
+	maxNumberOfLines = 200
+	maxCharsPerLine  = 80
 )
 
 type TraceArea struct {
@@ -46,17 +47,18 @@ func splitStringFixedLength(str string, length int) []string {
 		if stop > strLength {
 			stop = strLength
 		}
-		chunks[i] = str[start : stop]
+		chunks[i] = str[start:stop]
 	}
 	return chunks
 }
 
-func (ta *TraceArea) printText(col color.Color, a ...interface{}) {
+func (ta *TraceArea) printText(col color.Color, monospace bool, a ...interface{}) {
 	str := fmt.Sprint(a...)
-	const maxCharsPerLine = 80
 	for _, line := range strings.Split(strings.TrimRight(str, "\n"), "\n") {
 		for _, chunk := range splitStringFixedLength(line, maxCharsPerLine) {
-			ta.print(canvas.NewText(chunk, col))
+			txt := canvas.NewText(chunk, col)
+			txt.TextStyle = fyne.TextStyle{Monospace: monospace}
+			ta.print(txt)
 		}
 	}
 }
@@ -73,7 +75,7 @@ func (ta *TraceArea) printHeader(a ...interface{}) {
 
 func (ta *TraceArea) print(object fyne.CanvasObject) {
 	// We cap the number of lines in trace to prevent performance decrease as trace piles up
-	if len(ta.vbox.Objects) >= traceMaxSize {
+	if len(ta.vbox.Objects) >= maxNumberOfLines {
 		ta.vbox.Objects = ta.vbox.Objects[1:]
 	}
 	ta.vbox.Add(object)

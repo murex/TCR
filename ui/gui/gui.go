@@ -105,7 +105,7 @@ func (gui *GUI) ShowSessionInfo() {
 }
 
 func (gui *GUI) info(a ...interface{}) {
-	gui.traceArea.printText(cyanColor, a...)
+	gui.traceArea.printText(cyanColor, false, a...)
 }
 
 func (gui *GUI) title(a ...interface{}) {
@@ -113,15 +113,15 @@ func (gui *GUI) title(a ...interface{}) {
 }
 
 func (gui *GUI) warning(a ...interface{}) {
-	gui.traceArea.printText(orangeColor, a...)
+	gui.traceArea.printText(orangeColor, false, a...)
 }
 
 func (gui *GUI) error(a ...interface{}) {
-	gui.traceArea.printText(redColor, a...)
+	gui.traceArea.printText(redColor, false, a...)
 }
 
 func (gui *GUI) trace(a ...interface{}) {
-	gui.traceArea.printText(grayColor, a...)
+	gui.traceArea.printText(grayColor, true, a...)
 }
 
 func (gui *GUI) quit() {
