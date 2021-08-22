@@ -30,6 +30,7 @@ jobs:
         
     - name: Install CGO Libraries
       if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: sudo apt-get update
       run: sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
   
     - name: Build
