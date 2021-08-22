@@ -53,17 +53,17 @@ target_link_libraries(Kata-Dummy-test
 
 add_test(NAME ctest-Kata-Dummy COMMAND Kata-Dummy-test)
 
-add_custom_target(Docs
-    SOURCES
-        ../README.md
-        ../QuickRetrospective.md)
+#add_custom_target(Docs
+#    SOURCES
+#        ../README.md
+#        ../QuickRetrospective.md)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Kata-Dummy-test)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY XCODE_STARTUP_PROJECT Kata-Dummy-test)
 
 set_property(TARGET Kata-Dummy-shared PROPERTY FOLDER "Kata")
 set_property(TARGET Kata-Dummy-test PROPERTY FOLDER "Kata")
-set_property(TARGET Docs PROPERTY FOLDER "Kata")
+#set_property(TARGET Docs PROPERTY FOLDER "Kata")
 
 set_property(TARGET gtest gtest_main PROPERTY FOLDER "Third-Party/GoogleTest")
 # Uncomment if using ApprovalTests, remove otherwise
