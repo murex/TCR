@@ -1,6 +1,8 @@
 
 # Cross-platform builds
 /build/
+/dist/
+/fyne-cross/
 
 # Test kata generated files
 /test/kata/java/.gradle/
@@ -8,6 +10,7 @@
 /test/kata/java/build/
 /test/kata/java/target/
 /test/kata/cpp/build/
+/test/kata/cpp/Testing/
 
 # Created by https://www.toptal.com/developers/gitignore/api/go,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,intellij
@@ -140,4 +143,3 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/go,intellij
 
-dist/
