@@ -22,7 +22,7 @@ type Toolchain interface {
 }
 
 func New(name string, lang language.Language) (Toolchain, error) {
-	var toolchain Toolchain = nil
+	var toolchain Toolchain
 	var err error
 
 	switch name {
@@ -64,10 +64,10 @@ func verifyCompatibility(toolchain Toolchain, lang language.Language) (bool, err
 		return false, errors.New("toolchain and/or language is unknown")
 	}
 	if !toolchain.supports(lang) {
-		return false, errors.New(fmt.Sprintf(
+		return false, fmt.Errorf(
 			"%v toolchain does not support %v language",
 			toolchain.Name(), lang.Name(),
-		))
+		)
 	}
 	return true, nil
 }

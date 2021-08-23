@@ -165,9 +165,9 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 	}
 }
 
-func (gui *GUI) getRunMode() runmode.RunMode {
-	return gui.runMode
-}
+//func (gui *GUI) getRunMode() runmode.RunMode {
+//	return gui.runMode
+//}
 
 func (gui *GUI) Confirm(message string, def bool) bool {
 	gui.warning(message)

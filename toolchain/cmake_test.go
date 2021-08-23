@@ -31,12 +31,12 @@ func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
 }
 
 // TODO Figure out a way to provide a cmake wrapper
-func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	runFromDir(t, testLanguageRootDir(language.Cpp{}),
-		func(t *testing.T) {
-			assert.Zero(t, CmakeToolchain{}.RunBuild())
-		})
-}
+//func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
+//	runFromDir(t, testLanguageRootDir(language.Cpp{}),
+//		func(t *testing.T) {
+//			assert.Zero(t, CmakeToolchain{}.RunBuild())
+//		})
+//}
 
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
 	assert.Equal(t, []string{
@@ -54,12 +54,12 @@ func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
 }
 
 // TODO Figure out a way to provide a cmake wrapper
-func test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	runFromDir(t, testLanguageRootDir(language.Cpp{}),
-		func(t *testing.T) {
-			assert.Zero(t, CmakeToolchain{}.RunTests())
-		})
-}
+//func Test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+//	runFromDir(t, testLanguageRootDir(language.Cpp{}),
+//		func(t *testing.T) {
+//			assert.Zero(t, CmakeToolchain{}.RunTests())
+//		})
+//}
 
 func Test_cmake_toolchain_supports_cpp(t *testing.T) {
 	assert.True(t, CmakeToolchain{}.supports(language.Cpp{}))

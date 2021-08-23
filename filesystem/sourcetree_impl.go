@@ -111,7 +111,7 @@ func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) erro
 	}
 
 	// If the filename matches our filter, we add it to the watching list
-	if st.matcher(path) == true {
+	if st.matcher(path) {
 		err = st.watcher.Add(path)
 		if err != nil {
 			report.PostError("watcher.Add(", path, "): ", err)

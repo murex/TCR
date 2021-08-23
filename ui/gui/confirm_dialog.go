@@ -20,7 +20,7 @@ func NewDeferredConfirmDialog(message string, defaultSelected bool, cbAction fun
 		},
 		parent,
 	)
-	if defaultSelected == false {
+	if !defaultSelected {
 		cd.confirmDialog.SetConfirmText("No")
 		cd.confirmDialog.SetDismissText("Yes")
 	}

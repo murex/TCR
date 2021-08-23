@@ -22,6 +22,7 @@ func setStty(state *bytes.Buffer) (err error) {
 	return cmd.Run()
 }
 
+//SetRaw changes the terminal state to "raw" mode
 func SetRaw() bytes.Buffer {
 	var initialState bytes.Buffer
 	err := readStty(&initialState)
@@ -43,16 +44,15 @@ func SetRaw() bytes.Buffer {
 	return initialState
 }
 
+//Restore puts back the terminal state to a "normal" state
 func Restore() {
-	//func Restore(state *bytes.Buffer) {
+	//func Restore(state *bytes.Buffer)
 	// For some unknown reason restoring previous stty state
 	// fails on WSL, while working correctly on Windows git bash
-	// Still need to test it on MacOS and on a non-WSL Linux box
+	// Still need to test it on macOS and on a non-WSL Linux box
 	// Until then we set back echo and -cbreak instead of
 	// restoring the previous state
 	//report.PostInfo("Restoring stty initial state")
 	_ = setStty(bytes.NewBufferString("-cbreak"))
 	_ = setStty(bytes.NewBufferString("echo"))
 }
-
-

@@ -188,7 +188,7 @@ func (term *Terminal) Confirm(message string, defaultAnswer bool) bool {
 }
 
 func yesOrNoAdvice(defaultAnswer bool) string {
-	if defaultAnswer == true {
+	if defaultAnswer {
 		return "[Y/n]"
 	} else {
 		return "[y/N]"
