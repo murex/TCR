@@ -17,6 +17,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Install CGO Libraries
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+  
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
