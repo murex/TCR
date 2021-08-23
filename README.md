@@ -1,4 +1,5 @@
 [![Go](https://github.com/mengdaming/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/go.yml)
+[![Go Lint](https://github.com/mengdaming/tcr/actions/workflows/golangci_lint.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/golangci_lint.yml)
 [![goreleaser](https://github.com/mengdaming/tcr/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/goreleaser.yml)
 [![Add contributors](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/mengdaming/tcr/actions/workflows/add_contributors.yml)
 
