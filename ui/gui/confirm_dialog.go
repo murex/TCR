@@ -5,10 +5,14 @@ import (
 	"fyne.io/fyne/v2/dialog"
 )
 
+// DeferredConfirmDialog is a customized ConfirmDialog for which display is deferred until the application
+// main window is displayed on the screen. It also adds the possibility to indicate the button to be selected
+// by default in the dialog window
 type DeferredConfirmDialog struct {
 	confirmDialog *dialog.ConfirmDialog
 }
 
+// NewDeferredConfirmDialog creates a new instance of deferred confirmation dialog
 func NewDeferredConfirmDialog(message string, defaultSelected bool, cbAction func(), parent fyne.Window) DeferredConfirmDialog {
 	cd := DeferredConfirmDialog{}
 	cd.confirmDialog = dialog.NewConfirm(

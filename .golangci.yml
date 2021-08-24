@@ -12,6 +12,7 @@ linters:
     - megacheck
     - misspell
     - nakedret
+    - revive
     - staticcheck
     - structcheck
     - typecheck
@@ -21,7 +22,6 @@ linters:
     - varcheck
   disable:
     - goimports
-    - revive
     - errcheck
 run:
   timeout: 5m

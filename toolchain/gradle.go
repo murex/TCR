@@ -4,17 +4,21 @@ import (
 	"github.com/mengdaming/tcr/language"
 )
 
+// GradleToolchain is the toolchain implementation for Maven
 type GradleToolchain struct {
 }
 
+// Name provides the name of the toolchain
 func (tchn GradleToolchain) Name() string {
 	return "gradle"
 }
 
+// RunBuild runs the build with this toolchain
 func (tchn GradleToolchain) RunBuild() error {
 	return runBuild(tchn)
 }
 
+// RunTests runs the tests with this toolchain
 func (tchn GradleToolchain) RunTests() error {
 	return runTests(tchn)
 }

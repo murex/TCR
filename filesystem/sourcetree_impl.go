@@ -7,12 +7,15 @@ import (
 	"path/filepath"
 )
 
+// SourceTreeImpl is the implementation of Source Tree interface
 type SourceTreeImpl struct {
 	baseDir string
 	watcher *fsnotify.Watcher
 	matcher func(filename string) bool
 }
 
+// New creates a new instance of source tree implementation with a root directory set as dir.
+// The method returns an error if the root directory does not exist or cannot be accessed
 func New(dir string) (SourceTree, error) {
 	var st = SourceTreeImpl{}
 	var err error
@@ -43,10 +46,14 @@ func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
 	return os.Getwd()
 }
 
+// GetBaseDir returns the base directory for the source tree instance
 func (st *SourceTreeImpl) GetBaseDir() string {
 	return st.baseDir
 }
 
+// Watch starts watching for changes on a list of directories. The files under watch are the ones
+// satisfying filenameMatcher() function. The watch lasts until either a watched file has been modified,
+// or if an interruption is sent through the interrupt channel
 func (st *SourceTreeImpl) Watch(
 	dirList []string,
 	filenameMatcher func(filename string) bool,

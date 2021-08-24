@@ -16,11 +16,13 @@ const (
 	maxCharsPerLine  = 80
 )
 
+// TraceArea is the area of the GUI in charge of printing traces
 type TraceArea struct {
 	vbox      *fyne.Container
 	container *container.Scroll
 }
 
+// NewTraceArea initializes the trace area widget
 func NewTraceArea() *TraceArea {
 	ta := TraceArea{}
 	ta.vbox = container.NewVBox(
@@ -41,7 +43,7 @@ func splitStringFixedLength(str string, length int) []string {
 	nbChunks := int(math.Ceil(float64(strLength) / float64(length)))
 	chunks := make([]string, nbChunks)
 	var start, stop int
-	for i := 0; i < nbChunks; i += 1 {
+	for i := 0; i < nbChunks; i++ {
 		start = i * length
 		stop = start + length
 		if stop > strLength {

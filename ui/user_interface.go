@@ -5,6 +5,8 @@ import (
 	"github.com/mengdaming/tcr/runmode"
 )
 
+// UserInterface provides the interface to be satisfied by a UI implementation to be able to interact
+// with TCR engine
 type UserInterface interface {
 	Start(mode runmode.RunMode)
 	ShowRunningMode(mode runmode.RunMode)

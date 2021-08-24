@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 )
 
+// Language is the interface that any supported language implementation must comply with
+// in order to be used by TCR engine
 type Language interface {
 	Name() string
 	SrcDirs() []string
@@ -13,6 +15,8 @@ type Language interface {
 	IsSrcFile(filename string) bool
 }
 
+// DetectLanguage is used to identify the language used in the provided directory. The current implementation
+// simply looks at the name of the directory and checks if it matches with one of the supported languages
 func DetectLanguage(baseDir string) (Language, error) {
 	dir := filepath.Base(baseDir)
 	switch dir {
@@ -25,6 +29,7 @@ func DetectLanguage(baseDir string) (Language, error) {
 	}
 }
 
+// DirsToWatch returns the list of directories that TCR engine needs to watch for the provided language
 func DirsToWatch(baseDir string, lang Language) []string {
 	dirList := append(lang.SrcDirs(), lang.TestDirs()...)
 	for i := 0; i < len(dirList); i++ {

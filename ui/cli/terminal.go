@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// Terminal is the user interface implementation when using the Command Line Interface
 type Terminal struct {
 	reportingChannel chan bool
 }
@@ -22,6 +23,7 @@ const (
 	escapeKey = 0x1b
 )
 
+// New creates a new instance of terminal
 func New() ui.UserInterface {
 	setLinePrefix(tcrLinePrefix)
 	var term = Terminal{}
@@ -29,6 +31,7 @@ func New() ui.UserInterface {
 	return &term
 }
 
+// StartReporting tells the terminal to start reporting information
 func (term *Terminal) StartReporting() {
 	term.reportingChannel = report.Subscribe(func(msg report.Message) {
 		switch msg.Type {
@@ -46,14 +49,17 @@ func (term *Terminal) StartReporting() {
 	})
 }
 
+// StopReporting tells the terminal to stop reporting information
 func (term *Terminal) StopReporting() {
 	report.Unsubscribe(term.reportingChannel)
 }
 
+// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *Terminal) NotifyRoleStarting(r role.Role) {
 	term.title("Starting as a ", strings.Title(r.Name()), ". Press ESC when done")
 }
 
+// NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (term *Terminal) NotifyRoleEnding(r role.Role) {
 	term.info("Ending ", strings.Title(r.Name()), " role")
 }
@@ -138,6 +144,7 @@ func (term *Terminal) startAs(r role.Role) {
 	}
 }
 
+// ShowRunningMode shows the current running mode
 func (term *Terminal) ShowRunningMode(mode runmode.RunMode) {
 	term.title("Running in ", mode.Name(), " mode")
 }
@@ -150,6 +157,7 @@ func (term *Terminal) printOptionsMenu() {
 	term.info("\tQ -> Quit")
 }
 
+// ShowSessionInfo shows main information related to the current TCR session
 func (term *Terminal) ShowSessionInfo() {
 	d, l, t, ap, b := engine.GetSessionInfo()
 
@@ -165,6 +173,7 @@ func (term *Terminal) ShowSessionInfo() {
 		"\" with auto-push ", autoPush)
 }
 
+// Confirm asks the user for confirmation
 func (term *Terminal) Confirm(message string, defaultAnswer bool) bool {
 
 	_ = stty.SetRaw()
@@ -190,11 +199,11 @@ func (term *Terminal) Confirm(message string, defaultAnswer bool) bool {
 func yesOrNoAdvice(defaultAnswer bool) string {
 	if defaultAnswer {
 		return "[Y/n]"
-	} else {
-		return "[y/N]"
 	}
+	return "[y/N]"
 }
 
+// Start starts running in the provided run mode
 func (term *Terminal) Start(mode runmode.RunMode) {
 
 	_ = stty.SetRaw()

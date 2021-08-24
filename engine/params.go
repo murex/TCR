@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Params contains the main parameter values that TCR engine is using
 type Params struct {
 	CfgFile       string
 	Toolchain     string
@@ -15,5 +16,6 @@ type Params struct {
 }
 
 const (
+	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull
 	DefaultPollingPeriod = 2 * time.Second
 )

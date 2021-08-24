@@ -89,10 +89,12 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		_, _ = fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 }
 
+// GetRootCmd returns the root command. This function is used by the doc package to generate
+// the application help markdown files
 func GetRootCmd() *cobra.Command {
 	return rootCmd
 }

@@ -18,8 +18,8 @@ const (
 )
 
 var (
-	colorizer      = aurora.NewAurora(true)
-	linePrefix     = defaultLinePrefix
+	colorizer  = aurora.NewAurora(true)
+	linePrefix = defaultLinePrefix
 )
 
 func setLinePrefix(value string) {
@@ -71,4 +71,3 @@ func getTerminalColumns() int {
 	}
 	return columns
 }
-

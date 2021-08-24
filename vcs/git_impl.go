@@ -14,6 +14,7 @@ import (
 	"strings"
 )
 
+// GitImpl provides the implementation of the git interface
 type GitImpl struct {
 	baseDir                     string
 	rootDir                     string
@@ -141,7 +142,7 @@ func (g *GitImpl) Restore(dir string) error {
 	return err
 }
 
-// Push runs a git push.
+// Push runs a git push operation.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Push() error {
 	if !g.IsPushEnabled() {

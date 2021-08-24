@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 )
 
+// Toolchain provides the interface that any toolchain needs to implement so that it can be used by TcR
 type Toolchain interface {
 	Name() string
 	RunBuild() error
@@ -21,6 +22,7 @@ type Toolchain interface {
 	supports(lang language.Language) bool
 }
 
+// New creates a new toolchain instance with the provided name and for the provided language
 func New(name string, lang language.Language) (Toolchain, error) {
 	var toolchain Toolchain
 	var err error

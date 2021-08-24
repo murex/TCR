@@ -9,6 +9,7 @@ import (
 	"github.com/mengdaming/tcr/engine"
 )
 
+// MobActionBarButtonPanel is the action bar panel containing the buttons when running in mob
 type MobActionBarButtonPanel struct {
 	startNavigatorButton *widget.Button
 	startDriverButton    *widget.Button
@@ -20,6 +21,7 @@ func (ab *MobActionBarButtonPanel) getContainer() *fyne.Container {
 	return ab.container
 }
 
+// NewMobActionBarButtonPanel creates the action bar panel containing the buttons when running in mob
 func NewMobActionBarButtonPanel() ActionBarButtonPanel {
 	var ab = MobActionBarButtonPanel{}
 

@@ -25,6 +25,8 @@ var (
 	pollingPeriod time.Duration
 )
 
+// Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
+// This function should be called only once during the lifespan of the application
 func Init(u ui.UserInterface, params Params) {
 	var err error
 
@@ -62,14 +64,17 @@ func warnIfOnRootBranch(branch string) {
 	}
 }
 
+// ToggleAutoPush toggles git auto-push state
 func ToggleAutoPush() {
 	git.EnablePush(!git.IsPushEnabled())
 }
 
+// SetAutoPush sets git auto-push to the provided value
 func SetAutoPush(ap bool) {
 	git.EnablePush(ap)
 }
 
+// RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
 	go fromBirthTillDeath(
 		func() {
@@ -81,11 +86,11 @@ func RunAsDriver() {
 				// Some file changes were detected
 				runTCR()
 				return true
-			} else {
-				// If we enter here this means that the end of waitForChange
-				// was triggered by the user
-				return false
 			}
+			// If we arrive here this means that the end of waitForChange
+			// was triggered by the user
+			return false
+
 		},
 		func() {
 			uitf.NotifyRoleEnding(role.Driver{})
@@ -93,6 +98,7 @@ func RunAsDriver() {
 	)
 }
 
+// RunAsNavigator tells TCR engine to start running with navigator role
 func RunAsNavigator() {
 	go fromBirthTillDeath(
 		func() {
@@ -117,6 +123,7 @@ func RunAsNavigator() {
 // shoot channel is used to handle interruptions coming from the UI
 var shoot chan bool
 
+// Stop is the entry point for telling TCR engine to stop its current operations
 func Stop() {
 	shoot <- true
 }
@@ -195,6 +202,8 @@ func revert() {
 	}
 }
 
+// GetSessionInfo provides the information (as strings) related to the current TCR session.
+// Used mainly by the user interface packages to retrieve and display this information
 func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	d = sourceTree.GetBaseDir()
 	l = lang.Name()
@@ -205,6 +214,7 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	return d, l, t, ap, b
 }
 
+// Quit is the exit point for TCR application
 func Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)

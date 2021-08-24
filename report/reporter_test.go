@@ -19,7 +19,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
 	text := "Dummy Message"
 	var result [nbListeners]Message
-	var c[nbListeners]chan bool
+	var c [nbListeners]chan bool
 
 	received := make(chan int, nbListeners)
 
@@ -123,4 +123,3 @@ func reportAndReceive(report func()) Message {
 	Unsubscribe(c)
 	return result
 }
-

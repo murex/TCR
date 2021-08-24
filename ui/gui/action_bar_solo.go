@@ -9,6 +9,7 @@ import (
 	"github.com/mengdaming/tcr/engine"
 )
 
+// SoloActionBarButtonPanel is the action bar panel containing the buttons when running in solo
 type SoloActionBarButtonPanel struct {
 	startButton *widget.Button
 	stopButton  *widget.Button
@@ -19,6 +20,7 @@ func (ab *SoloActionBarButtonPanel) getContainer() *fyne.Container {
 	return ab.container
 }
 
+// NewSoloActionBarButtonPanel creates the action bar panel containing the buttons when running in solo
 func NewSoloActionBarButtonPanel() ActionBarButtonPanel {
 	var ab = SoloActionBarButtonPanel{}
 

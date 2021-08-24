@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
+// MessageType type used for message characterization
 type MessageType int
 
+// List of possible values for MessageType field
 const (
 	Normal MessageType = iota
 	Info
@@ -16,9 +18,10 @@ const (
 	Error
 )
 
+// Message is the placeholder for any reported message
 type Message struct {
-	Type MessageType
-	Text string
+	Type      MessageType
+	Text      string
 	Timestamp time.Time
 }
 
@@ -26,6 +29,9 @@ var (
 	msgProperty = observer.NewProperty(Message{Type: Normal, Text: ""})
 )
 
+// Subscribe allows a listener to subscribe to any posted message through the reporter.
+// onReport() will be called every time a new message is posted. The returned channel
+// shall be kept by the listener as this channel will be used for unsubscription
 func Subscribe(onReport func(msg Message)) chan bool {
 	stream := msgProperty.Observe()
 
@@ -51,30 +57,38 @@ func Subscribe(onReport func(msg Message)) chan bool {
 	return unsubscribe
 }
 
+// Unsubscribe unsubscribes the listener associated to the provided channel from being notified
+// of any further reported messages
 func Unsubscribe(c chan bool) {
 	c <- true
 }
 
+// Post posts some text for reporting. This is actually the same as PostText()
 func Post(a ...interface{}) {
 	PostText(a...)
 }
 
+// PostText posts some text for reporting
 func PostText(a ...interface{}) {
 	postMessage(Normal, a...)
 }
 
+// PostInfo posts an information message for reporting
 func PostInfo(a ...interface{}) {
 	postMessage(Info, a...)
 }
 
+// PostTitle posts a title message for reporting
 func PostTitle(a ...interface{}) {
 	postMessage(Title, a...)
 }
 
+// PostWarning posts a warning message for reporting
 func PostWarning(a ...interface{}) {
 	postMessage(Warning, a...)
 }
 
+// PostError posts an error message for reporting
 func PostError(a ...interface{}) {
 	postMessage(Error, a...)
 }

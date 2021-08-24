@@ -9,6 +9,7 @@ import (
 	"github.com/mengdaming/tcr/runmode"
 )
 
+// SessionPanel is the panel showing all information related to the current TCR session
 type SessionPanel struct {
 	languageLabel  *widget.Label
 	toolchainLabel *widget.Label
@@ -19,6 +20,7 @@ type SessionPanel struct {
 	container      *fyne.Container
 }
 
+// NewSessionPanel creates a new instance of session information panel
 func (gui *GUI) NewSessionPanel() *SessionPanel {
 	sp := SessionPanel{}
 
