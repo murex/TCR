@@ -27,22 +27,23 @@ func New(dir string) (SourceTree, error) {
 }
 
 func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
-	_, err := os.Stat(dir)
-	switch {
-	case os.IsNotExist(err):
-		report.PostError("Directory ", dir, " does not exist")
-		return "", err
-	case os.IsPermission(err):
-		report.PostError("Can't access directory ", dir)
-		return "", err
-	}
+	if dir != "" {
+		_, err := os.Stat(dir)
+		switch {
+		case os.IsNotExist(err):
+			report.PostError("Directory ", dir, " does not exist")
+			return "", err
+		case os.IsPermission(err):
+			report.PostError("Can't access directory ", dir)
+			return "", err
+		}
 
-	err = os.Chdir(dir)
-	if err != nil {
-		report.PostError("Failed to change directory to ", dir)
-		return "", err
+		err = os.Chdir(dir)
+		if err != nil {
+			report.PostError("Failed to change directory to ", dir)
+			return "", err
+		}
 	}
-
 	return os.Getwd()
 }
 

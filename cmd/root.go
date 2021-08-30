@@ -26,10 +26,10 @@ It can be used either in solo, or as a group within a mob or pair session.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we open the gui by default
 		// so that the user can decide what they want to do
-		u := gui.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
+		u := gui.New()
 		engine.Init(u, params)
 	},
 }
@@ -60,7 +60,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
 		"base-dir",
 		"b",
-		".",
+		"",
 		"Indicate the base directory from which TCR is running")
 
 	rootCmd.Flags().BoolVarP(&params.AutoPush,
