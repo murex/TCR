@@ -22,7 +22,9 @@ var rootCmd = &cobra.Command{
 	Short:   "TCR (Test && Commit || Revert)",
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
-It can be used either in solo, or as a group within a mob or pair session.`,
+It can be used either in solo, or as a group within a mob or pair session.
+
+When called directly without any subcommand, the application opens a GUI.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we open the gui by default
 		// so that the user can decide what they want to do
