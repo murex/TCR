@@ -17,11 +17,11 @@ is shared with other participants through calling git push-pull.
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		u := cli.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
-		engine.Init(u, params)
+		u := cli.New(params)
+		u.Start(params.Mode)
 	},
 }
 

@@ -14,11 +14,11 @@ var guiCmd = &cobra.Command{
 	Long: `
 Run TCR application though a Graphical User Interface.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		u := gui.New()
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
-		engine.Init(u, params)
+		u := gui.New(params)
+		u.Start(params.Mode)
 	},
 }
 

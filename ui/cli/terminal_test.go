@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/mengdaming/tcr/engine"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -42,7 +43,7 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	// Displayed info on stdout is useless for the test
 	os.Stdout = os.NewFile(0, os.DevNull)
 
-	term := New()
+	term := New(engine.Params{})
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
 }
 

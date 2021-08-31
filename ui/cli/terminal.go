@@ -14,6 +14,7 @@ import (
 // Terminal is the user interface implementation when using the Command Line Interface
 type Terminal struct {
 	reportingChannel chan bool
+	params           engine.Params
 }
 
 const (
@@ -24,9 +25,9 @@ const (
 )
 
 // New creates a new instance of terminal
-func New() ui.UserInterface {
+func New(p engine.Params) ui.UserInterface {
 	setLinePrefix(tcrLinePrefix)
-	var term = Terminal{}
+	var term = Terminal{params: p}
 	term.StartReporting()
 	return &term
 }
@@ -206,6 +207,8 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 // Start starts running in the provided run mode
 func (term *Terminal) Start(mode runmode.RunMode) {
 
+	term.initTcrEngine(term.params.BaseDir)
+
 	_ = stty.SetRaw()
 	defer stty.Restore()
 
@@ -222,4 +225,19 @@ func (term *Terminal) Start(mode runmode.RunMode) {
 	default:
 		term.error("Unknown run mode: ", mode)
 	}
+}
+
+func (term *Terminal) initTcrEngine(baseDir string) {
+	if baseDir == "" {
+		term.quit("Operation cancelled")
+	}
+	term.params.BaseDir = baseDir
+	engine.Init(term, term.params)
+}
+
+func (term *Terminal) quit(message string) {
+	if message != "" {
+		report.PostInfo(message)
+	}
+	engine.Quit()
 }

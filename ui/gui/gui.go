@@ -33,28 +33,31 @@ var (
 
 // GUI is the user interface implementation when using the TCR with its graphical user interface
 type GUI struct {
-	term         ui.UserInterface
-	reporting    chan bool
-	app          fyne.App
-	win          fyne.Window
-	actionBar    ActionBar
-	traceArea    *TraceArea
-	sessionPanel *SessionPanel
-	rbConfirm    DeferredConfirmDialog
-	topLevel     *fyne.Container
-	layout       fyne.Layout
-	runMode      runmode.RunMode
+	term          ui.UserInterface
+	reporting     chan bool
+	app           fyne.App
+	win           fyne.Window
+	actionBar     ActionBar
+	traceArea     *TraceArea
+	sessionPanel  *SessionPanel
+	rbConfirm     DeferredConfirmDialog
+	baseDirDialog BaseDirSelectionDialog
+	topLevel      *fyne.Container
+	layout        fyne.Layout
+	runMode       runmode.RunMode
+	params        engine.Params
 }
 
 // New creates a new instance of graphical user interface
-func New() ui.UserInterface {
-	var gui = GUI{}
+func New(p engine.Params) ui.UserInterface {
+	var gui = GUI{params: p}
 	// Until the GUI is able to report, we rely on the terminal to report information
-	gui.term = cli.New()
-	gui.initApp()
+	gui.term = cli.New(p)
 	report.PostInfo("Opening TCR GUI")
 
-	gui.term.StopReporting()
+	gui.initApp()
+	gui.initBaseDirSelectionDialog()
+
 	gui.StartReporting()
 	return &gui
 }
@@ -84,8 +87,17 @@ func (gui *GUI) StopReporting() {
 
 // Start starts running in the provided run mode
 func (gui *GUI) Start(_ runmode.RunMode) {
+	if isBaseDirDefined(gui.params.BaseDir) {
+		gui.initTcrEngine(gui.params.BaseDir)
+	} else {
+		gui.baseDirDialog.show()
+	}
 	gui.rbConfirm.showIfNeeded()
 	gui.win.ShowAndRun()
+}
+
+func isBaseDirDefined(dir string) bool {
+	return dir != ""
 }
 
 // ShowRunningMode shows the current running mode
@@ -133,9 +145,12 @@ func (gui *GUI) trace(a ...interface{}) {
 	gui.traceArea.printText(grayColor, true, a...)
 }
 
-func (gui *GUI) quit() {
+func (gui *GUI) quit(message string) {
 	gui.StopReporting()
 	gui.term.StartReporting()
+	if message != "" {
+		report.PostInfo(message)
+	}
 	engine.Quit()
 }
 
@@ -146,7 +161,7 @@ func (gui *GUI) initApp() {
 	gui.win = gui.app.NewWindow("TCR")
 	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
 	gui.win.SetCloseIntercept(func() {
-		gui.quit()
+		gui.quit("Closing application")
 		gui.win.Close()
 	})
 	gui.win.CenterOnScreen()
@@ -174,14 +189,24 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 	}
 }
 
-//func (gui *GUI) getRunMode() runmode.RunMode {
-//	return gui.runMode
-//}
-
 // Confirm asks the user for confirmation through a popup confirmation window
 func (gui *GUI) Confirm(message string, def bool) bool {
 	gui.warning(message)
 	// We need to defer showing the confirmation dialog until the window is displayed
 	gui.rbConfirm = NewDeferredConfirmDialog(message, def, gui.quit, gui.win)
+	gui.rbConfirm.showIfNeeded()
 	return true
+}
+
+func (gui *GUI) initBaseDirSelectionDialog() {
+	gui.baseDirDialog = NewBaseDirSelectionDialog(gui.initTcrEngine, gui.win)
+}
+
+func (gui *GUI) initTcrEngine(baseDir string) {
+	if baseDir == "" {
+		gui.quit("Operation cancelled")
+	}
+	gui.params.BaseDir = baseDir
+	engine.Init(gui, gui.params)
+	gui.term.StopReporting()
 }

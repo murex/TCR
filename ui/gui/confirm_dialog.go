@@ -13,13 +13,13 @@ type DeferredConfirmDialog struct {
 }
 
 // NewDeferredConfirmDialog creates a new instance of deferred confirmation dialog
-func NewDeferredConfirmDialog(message string, defaultSelected bool, cbAction func(), parent fyne.Window) DeferredConfirmDialog {
+func NewDeferredConfirmDialog(message string, defaultSelected bool, cbAction func(info string), parent fyne.Window) DeferredConfirmDialog {
 	cd := DeferredConfirmDialog{}
 	cd.confirmDialog = dialog.NewConfirm(
 		message, "Are you sure you want to continue?",
 		func(response bool) {
 			if response != defaultSelected {
-				cbAction()
+				cbAction("Ok, let's stop here then")
 			}
 		},
 		parent,

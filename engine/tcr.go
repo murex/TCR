@@ -38,6 +38,7 @@ func Init(u ui.UserInterface, params Params) {
 	pollingPeriod = params.PollingPeriod
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err)
+	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
 	lang, err = language.DetectLanguage(sourceTree.GetBaseDir())
 	handleError(err)
 	tchn, err = toolchain.New(params.Toolchain, lang)
@@ -49,8 +50,6 @@ func Init(u ui.UserInterface, params Params) {
 	uitf.ShowRunningMode(mode)
 	uitf.ShowSessionInfo()
 	warnIfOnRootBranch(git.WorkingBranch())
-
-	uitf.Start(mode)
 }
 
 func warnIfOnRootBranch(branch string) {
