@@ -85,8 +85,8 @@ func (gui *GUI) StopReporting() {
 	report.Unsubscribe(gui.reporting)
 }
 
-// Start starts running in the provided run mode
-func (gui *GUI) Start(_ runmode.RunMode) {
+// Start runs the GUI session
+func (gui *GUI) Start() {
 	if isBaseDirDefined(gui.params.BaseDir) {
 		gui.initTcrEngine(gui.params.BaseDir)
 	} else {

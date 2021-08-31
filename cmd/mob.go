@@ -21,7 +21,7 @@ This subcommand runs directly in the terminal (no GUI).`,
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
 		u := cli.New(params)
-		u.Start(params.Mode)
+		u.Start()
 	},
 }
 

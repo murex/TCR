@@ -204,15 +204,15 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 	return "[y/N]"
 }
 
-// Start starts running in the provided run mode
-func (term *Terminal) Start(mode runmode.RunMode) {
+// Start runs the terminal session
+func (term *Terminal) Start() {
 
-	term.initTcrEngine(term.params.BaseDir)
+	term.initTcrEngine()
 
 	_ = stty.SetRaw()
 	defer stty.Restore()
 
-	switch mode {
+	switch term.params.Mode {
 	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode
@@ -223,21 +223,10 @@ func (term *Terminal) Start(mode runmode.RunMode) {
 		// driver and navigator modes
 		term.mainMenu()
 	default:
-		term.error("Unknown run mode: ", mode)
+		term.error("Unknown run mode: ", term.params.Mode)
 	}
 }
 
-func (term *Terminal) initTcrEngine(baseDir string) {
-	if baseDir == "" {
-		term.quit("Operation cancelled")
-	}
-	term.params.BaseDir = baseDir
+func (term *Terminal) initTcrEngine() {
 	engine.Init(term, term.params)
-}
-
-func (term *Terminal) quit(message string) {
-	if message != "" {
-		report.PostInfo(message)
-	}
-	engine.Quit()
 }

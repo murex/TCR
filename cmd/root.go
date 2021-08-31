@@ -32,7 +32,7 @@ When called directly without any subcommand, the application opens a GUI.`,
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
 		u := gui.New(params)
-		u.Start(params.Mode)
+		u.Start()
 	},
 }
 
