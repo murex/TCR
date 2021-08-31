@@ -5,21 +5,21 @@ before:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
-    - go generate ./...
+ #   - go generate ./...
 builds:
   - env:
-      - CGO_ENABLED=1
+ #     - CGO_ENABLED=1
     goos:
 #      - linux
-      - windows
+#      - windows
 #      - darwin
 archives:
   - replacements:
  #     darwin: Darwin
  #     linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+ #     windows: Windows
+ #     386: i386
+ #     amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
