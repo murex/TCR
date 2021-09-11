@@ -10,13 +10,21 @@ builds:
   - env:
     #     - CGO_ENABLED=1
     goos:
-          - linux
-          - windows
-          - darwin
+        - linux
+        - windows
+        - darwin
+    goarch:
+        - amd64
+    gobinary: "./fyne-cross-wrapper.bash"
     # If true, skip the build.
     # Useful for library projects.
     # Default is false
-    skip: true
+    skip: false
+    hooks:
+      pre:
+      post:
+        - upx "{{ .Path }}"
+        - codesign -s - "{{ .Path }}"
 archives:
   - replacements:
       darwin: Darwin
