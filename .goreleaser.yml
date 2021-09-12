@@ -23,7 +23,7 @@ builds:
     hooks:
       pre:
       post:
-        - upx "{{ .Path }}"
+#        - upx "{{ .Path }}"
         - codesign -s - "{{ .Path }}"
 archives:
   - replacements:
