@@ -4,6 +4,9 @@ deps:
 lint:
 	@golangci-lint run -v
 
+vet:
+	@go vet ./...
+
 test:
 	@go test -coverprofile=cover.out -v ./...
 
@@ -25,4 +28,4 @@ release:
 snapshot: GORELEASER_ARGS= --rm-dist --snapshot
 snapshot: release
 
-.PHONY: build build-linux test snapshot doc tidy
+.PHONY: deps lint vet test cov tidy build doc tidy release snapshot
