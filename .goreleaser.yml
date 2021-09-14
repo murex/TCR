@@ -2,43 +2,95 @@
 # Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
-    # - go generate ./...
 builds:
   - env:
-    #     - CGO_ENABLED=1
     goos:
-        - linux
-        - windows
-        - darwin
+      - windows
+      - linux
+#      - darwin
     goarch:
-        - amd64
-    gobinary: "./fyne-cross-wrapper.bash"
-    # If true, skip the build.
-    # Useful for library projects.
-    # Default is false
+      - amd64
+    gobinary: "fyne-cross-wrapper.bat"
+    #gobinary: "fyne-cross-wrapper.bash"
     skip: false
     hooks:
       pre:
       post:
-#        - upx "{{ .Path }}"
-        - codesign -s - "{{ .Path }}"
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+#        - codesign -s - "{{ .Path }}"
+#archives:
+#  - replacements:
+#      darwin: Darwin
+#      linux: Linux
+#      windows: Windows
+#      amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Tag }}-dev"
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+signs:
+  - # ID of the sign config, must be unique.
+    #
+    # Defaults to "default".
+    id: tcr
+
+    # Name/template of the signature file.
+    #
+    # Available environment variables:
+    # - '${artifact}': the path to the artifact that will be signed
+    # - '${artifactID}': the ID of the artifact that will be signed
+    #
+    # Defaults to `${artifact}.sig`.
+    #signature: "${artifact}_sig"
+
+    # Path to the signature command
+    #
+    # Defaults to `gpg`
+    cmd: gpg
+
+    # Command line templateable arguments for the command
+    #
+    # to sign with a specific key use
+    # args: ["-u", "<key id, fingerprint, email, ...>", "--output", "${signature}", "--detach-sign", "${artifact}"]
+    #
+    # Defaults to `["--output", "${signature}", "--detach-sign", "${artifact}"]`
+#    args: [ "--output", "${signature}", "${artifact}", "{{ .ProjectName }}" ]
+
+
+    # Which artifacts to sign
+    #
+    #   all:      all artifacts
+    #   none:     no signing
+    #   checksum: only checksum file(s)
+    #   source:   source archive
+    #   package:  linux packages (deb, rpm, apk)
+    #   archive:  archives from archive pipe
+    #   binary:   binaries if archiving format is set to binary
+    #
+    # Defaults to `none`
+    artifacts: all
+
+    # IDs of the artifacts to sign.
+    #
+    # If `artifacts` is checksum or source, this fields has no effect.
+    #
+    # Defaults to empty (which implies no filtering).
+    ids:
+#      - foo
+#      - bar
+
+    # Stdin data template to be given to the signature command as stdin.
+    #
+    # Defaults to empty
+#    stdin: '{{ .Env.GPG_PASSWORD }}'
+
+    # StdinFile file to be given to the signature command as stdin.
+    #
+    # Defaults to empty
+#    stdin_file: ./.password

@@ -22,19 +22,19 @@ app_id="tcr"
 app_version=$(go run . --version | cut -f3 -d' ')
 echo "Building TCR version ${app_version} for all targets"
 
-fyne-cross darwin --app-id ${app_id} --app-version "${app_version}" -arch=amd64
+#fyne-cross darwin --app-id ${app_id} --app-version "${app_version}" -arch=amd64
 fyne-cross linux --app-id ${app_id} --app-version "${app_version}" -arch=amd64
 fyne-cross windows --app-id ${app_id} --app-version "${app_version}" -arch=amd64
 
 cd fyne-cross/dist
 
-tar -zcvf ${app_id}_"${app_version}"_Darwin_x86_64.tar.gz darwin-amd64
+#tar -zcvf ${app_id}_"${app_version}"_Darwin_x86_64.tar.gz darwin-amd64
 tar -zcvf ${app_id}_"${app_version}"_Linux_x86_64.tar.gz linux-amd64
 tar -zcvf ${app_id}_"${app_version}"_Windows_x86_64.tar.gz windows-amd64
 
-cd ..
+#cd ..
 
-mkdir -p release
-mv ./dist/*.tar.gz release
+#mkdir -p release
+#mv ./dist/*.tar.gz release
 
 

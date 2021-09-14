@@ -1,35 +1,38 @@
 #!/usr/bin/env bash
 
 set -eu
+set -x
 
 base_dir="$(cd "$(dirname -- "$0")" && pwd)"
 
 cd "${base_dir}"
 
 if ! type go >/dev/null 2>/dev/null; then
-  echo "go is required to run this script"
-  echo "Refer to https://golang.org/ for installation and setup"
+  echo >&2 "go is required to run this script"
+  echo >&2 "Refer to https://golang.org/ for installation and setup"
   exit 1
 fi
 
 if ! type fyne-cross >/dev/null 2>/dev/null; then
-  echo "fyne-cross command is required to run this script"
-  echo "Refer to https://github.com/fyne-io/fyne-cross for installation and setup"
+  echo >&2 "fyne-cross command is required to run this script"
+  echo >&2 "Refer to https://github.com/fyne-io/fyne-cross for installation and setup"
   exit 1
 fi
 
-function fyne_cross_wrapper() {
+# --------------------------------------------------------------------------------------
+# Converts go command arguments (sent by goreleaser) to fyne-cross compatible ones,
+# and calls fyne-cross with them.
+# (goreleaser is assuming it's calling a go command)
+# --------------------------------------------------------------------------------------
+
+go_cmd_to_fyne_cross_wrapper() {
   REMAINDER=()
   LD_FLAGS=()
   BUILD_CALLED=0
   APP_NAME=""
 
-  pwd
-  echo "BEFORE: $@"
-
   while [[ $# -gt 0 ]]; do
     key="$1"
-
     echo $key
 
     case $key in
@@ -63,7 +66,7 @@ function fyne_cross_wrapper() {
       ;;
     *) # remainder
       REMAINDER+=("$1") # save it in an array for later
-      shift             # past argument
+      shift # past argument
       ;;
     esac
   done
@@ -78,14 +81,15 @@ function fyne_cross_wrapper() {
       exe_file="fyne-cross/dist/${GOOS}-${GOARCH}/${app_id}.app/Contents/MacOS/${app_id}"
       ;;
     linux)
-      echo fyne-cross "${GOOS}" --app-id "${app_id}" --app-version "${app_version}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
-      fyne-cross "${GOOS}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
+      fyne-cross "${GOOS}" --app-id "${app_id}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
+      #fyne-cross "${GOOS}" --app-id "${app_id}" --app-version "${app_version}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
       (cd fyne-cross/dist/${GOOS}-${GOARCH} && tar xvf "${app_id}".tar.gz)
       exe_file="fyne-cross/dist/${GOOS}-${GOARCH}/usr/local/bin/${app_id}"
       ;;
     windows)
-      fyne-cross "${GOOS}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
-      (cd fyne-cross/dist/${GOOS}-${GOARCH} && tar xvf "${app_id}".zip)
+      fyne-cross "${GOOS}" --app-id "${app_id}" --app-version "${app_version}" -arch="${GOARCH}" -ldflags "\"${LD_FLAGS[*]}\"" ${REMAINDER[@]}
+      #(cd fyne-cross/dist/${GOOS}-${GOARCH} && tar xvf "${app_id}".zip)
+      (cd fyne-cross/dist/${GOOS}-${GOARCH} && unzip -q -o "${app_id}".zip)
       exe_file="fyne-cross/dist/${GOOS}-${GOARCH}/${app_id}"
       ;;
     *)
@@ -101,5 +105,5 @@ function fyne_cross_wrapper() {
 }
 
 #rm "$0".log
-fyne_cross_wrapper $@ >>"$0".log
+go_cmd_to_fyne_cross_wrapper $@ # >>"$0".log
 exit $?
