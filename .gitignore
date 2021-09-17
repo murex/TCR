@@ -8,14 +8,6 @@
 /**/.gradle/
 /**/.mvn/wrapper/maven-wrapper.jar
 
-# Test kata generated files
-#/**/test/kata/java/.gradle/
-#/**/test/kata/java/.mvn/
-#/**/test/kata/java/build/
-#/**/test/kata/java/target/
-#/**/test/kata/cpp/build/
-#/**/test/kata/cpp/Testing/
-
 # Log files
 *.log
 

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	testKataRootDir = "../test/kata"
+	testKataRootDir = "../testdata/kata"
 )
 
 func testLanguageRootDir(lang language.Language) string {
