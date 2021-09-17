@@ -1,9 +1,9 @@
-module github.com/mengdaming/tcr/doc
+module github.com/mengdaming/tcr-doc
 
 go 1.17
 
 require (
-	github.com/mengdaming/tcr v0.0.0-20210704172954-4213deac264f
+	github.com/mengdaming/tcr-engine v0.0.0-20210704172954-4213deac264f
 	github.com/spf13/cobra v1.2.1
 )
 
@@ -64,4 +64,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
-replace github.com/mengdaming/tcr => ../
+replace github.com/mengdaming/tcr-engine => ../tcr-engine

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mengdaming/tcr/cmd"
+	"github.com/mengdaming/tcr-engine/cmd"
 
 	"github.com/spf13/cobra/doc"
 
@@ -10,7 +10,7 @@ import (
 
 func main() {
 	tcr := cmd.GetRootCmd()
-	err := doc.GenMarkdownTree(tcr, "./")
+	err := doc.GenMarkdownTree(tcr, "../doc")
 	if err != nil {
 		log.Fatal(err)
 	}
