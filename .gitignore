@@ -1,10 +1,12 @@
 
 # Cross-platform builds
 
-**/build/
-**/dist/
-**/target/
-**/fyne-cross/
+/**/build/
+/**/dist/
+/**/target/
+/**/fyne-cross/
+/**/.gradle/
+/**/.mvn/wrapper/maven-wrapper.jar
 
 # Test kata generated files
 #/**/test/kata/java/.gradle/
