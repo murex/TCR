@@ -34,10 +34,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
   
-    - name: Build
-      env:
-        CGO_ENABLED: 1
-      run: go build -v ./...
+    - name: Build tcr-engine module
+#      env:
+#        CGO_ENABLED: 1
+      run: |
+        cd tcr-engine
+        go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
+    - name: Test tcr-engine module
+      run: |
+        cd tcr-engine
+        go test -v ./...
