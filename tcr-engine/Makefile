@@ -19,13 +19,10 @@ tidy:
 build:
 	@go build .
 
-doc:
-	@$(MAKE) -C doc all
-
 release:
 	@goreleaser $(GORELEASER_ARGS)
 
 snapshot: GORELEASER_ARGS= --rm-dist --snapshot
 snapshot: release
 
-.PHONY: deps lint vet test cov tidy build doc tidy release snapshot
+.PHONY: deps lint vet test cov tidy build tidy release snapshot
