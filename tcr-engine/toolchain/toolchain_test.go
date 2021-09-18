@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	testKataRootDir = "../testdata/kata"
+	testDataRootDir = "../testdata"
 )
 
 func testLanguageRootDir(lang language.Language) string {
-	return filepath.Join(testKataRootDir, lang.Name())
+	return filepath.Join(testDataRootDir, lang.Name())
 }
 
 type FakeLanguage struct {

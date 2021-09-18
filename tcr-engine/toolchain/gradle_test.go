@@ -25,7 +25,7 @@ func Test_gradle_toolchain_build_command_args(t *testing.T) {
 }
 
 func Test_gradle_toolchain_returns_error_when_build_fails(t *testing.T) {
-	runFromDir(t, testKataRootDir,
+	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
 			assert.NotZero(t, GradleToolchain{}.RunBuild())
 		})
@@ -47,7 +47,7 @@ func Test_gradle_toolchain_test_command_args(t *testing.T) {
 }
 
 func Test_gradle_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	runFromDir(t, testKataRootDir,
+	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
 			assert.NotZero(t, GradleToolchain{}.RunTests())
 		})
