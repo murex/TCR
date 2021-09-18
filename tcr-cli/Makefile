@@ -16,13 +16,13 @@ cov:
 tidy:
 	@go mod tidy
 
-#build:
-#	@go build .
+build:
+	@go build .
 
-#release:
-#	@goreleaser $(GORELEASER_ARGS)
+release:
+	@goreleaser $(GORELEASER_ARGS)
 
-#snapshot: GORELEASER_ARGS= --rm-dist --snapshot
-#snapshot: release
+snapshot: GORELEASER_ARGS= --rm-dist --snapshot
+snapshot: release
 
 .PHONY: deps lint vet test cov tidy build tidy release snapshot

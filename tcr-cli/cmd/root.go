@@ -1,9 +1,9 @@
 package cmd
 
 import (
+	"github.com/mengdaming/tcr-cli/cli"
 	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/runmode"
-	"github.com/mengdaming/tcr-engine/ui/gui"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,14 +24,12 @@ var rootCmd = &cobra.Command{
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
-When called directly without any subcommand, the application opens a GUI.`,
+This application runs within a terminal.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// When run without a subcommand, we open the gui by default
-		// so that the user can decide what they want to do
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
-		u := gui.New(params)
+		u := cli.New(params)
 		u.Start()
 	},
 }

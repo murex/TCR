@@ -3,7 +3,7 @@ module github.com/mengdaming/tcr-doc
 go 1.17
 
 require (
-	github.com/mengdaming/tcr-engine v0.0.0-20210704172954-4213deac264f
+	github.com/mengdaming/tcr-cli v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
 )
 
@@ -35,6 +35,7 @@ require (
 	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/mengdaming/tcr-engine v0.0.0-20210704172954-4213deac264f // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
@@ -63,5 +64,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+
+replace github.com/mengdaming/tcr-cli => ../tcr-cli
 
 replace github.com/mengdaming/tcr-engine => ../tcr-engine

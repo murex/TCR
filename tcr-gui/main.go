@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mengdaming/tcr-engine/cmd"
+	"github.com/mengdaming/tcr-gui/cmd"
 )
 
 func main() {

@@ -6,12 +6,12 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
+	"github.com/mengdaming/tcr-cli/cli"
 	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/report"
 	"github.com/mengdaming/tcr-engine/role"
 	"github.com/mengdaming/tcr-engine/runmode"
 	"github.com/mengdaming/tcr-engine/ui"
-	"github.com/mengdaming/tcr-engine/ui/cli"
 	"image/color"
 	"strings"
 )

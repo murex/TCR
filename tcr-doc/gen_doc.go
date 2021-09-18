@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mengdaming/tcr-engine/cmd"
+	"github.com/mengdaming/tcr-cli/cmd"
 
 	"github.com/spf13/cobra/doc"
 

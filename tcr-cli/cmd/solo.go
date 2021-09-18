@@ -1,23 +1,24 @@
 package cmd
 
 import (
+	"github.com/mengdaming/tcr-cli/cli"
 	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/runmode"
-	"github.com/mengdaming/tcr-engine/ui/cli"
+
 	"github.com/spf13/cobra"
 )
 
-// mobCmd represents the mob command
-var mobCmd = &cobra.Command{
-	Use:   "mob",
-	Short: "Run TCR in mob mode",
+// soloCmd represents the solo command
+var soloCmd = &cobra.Command{
+	Use:   "solo",
+	Short: "Run TCR in solo mode",
 	Long: `
-When used in "mob" mode, TCR ensures that any commit
-is shared with other participants through calling git push-pull.
+When used in "solo" mode, TCR only commits changes locally.
+It never pushes or pulls to a remote repository.
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.Mob{}
+		params.Mode = runmode.Solo{}
 		params.AutoPush = params.Mode.AutoPushDefault()
 		params.PollingPeriod = engine.DefaultPollingPeriod
 		u := cli.New(params)
@@ -26,5 +27,5 @@ This subcommand runs directly in the terminal (no GUI).`,
 }
 
 func init() {
-	rootCmd.AddCommand(mobCmd)
+	rootCmd.AddCommand(soloCmd)
 }
