@@ -30,7 +30,7 @@ Available [here](./doc/tcr.md)
 - [x] Tool version
 - [ ] Mob Timer integration
 - [ ] Connection with video sharing tool
-- [ ] GUI - local application
+- [x] GUI - local application
 - [ ] GUI - Web interface
 - [ ] Multi-user sessions
 - [ ] Cmake wrapper
