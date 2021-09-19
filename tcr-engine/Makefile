@@ -1,6 +1,3 @@
-deps:
-	@go get
-
 lint:
 	@golangci-lint run -v
 
