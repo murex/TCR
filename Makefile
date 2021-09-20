@@ -52,3 +52,11 @@ doc: $(DOC_MODULES)
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \
 	done
+
+.PHONY: release
+release:
+	@goreleaser $(GORELEASER_ARGS)
+
+.PHONY: snapshot
+snapshot: GORELEASER_ARGS= --rm-dist --snapshot
+snapshot: release

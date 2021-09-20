@@ -26,10 +26,3 @@ tidy:
 build:
 	@go build .
 
-.PHONY: release
-release:
-	@goreleaser $(GORELEASER_ARGS)
-
-.PHONY: snapshot
-snapshot: GORELEASER_ARGS= --rm-dist --snapshot
-snapshot: release
