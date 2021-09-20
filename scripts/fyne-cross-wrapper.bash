@@ -3,7 +3,7 @@
 set -eu
 set -x
 
-base_dir="$(cd "$(dirname -- "$0")" && pwd)"
+base_dir="$(cd "$(dirname -- "$0")" && pwd)/../tcr-gui"
 
 cd "${base_dir}"
 
