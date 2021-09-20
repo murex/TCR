@@ -2,9 +2,12 @@
 # Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
-    - cd tcr-cli && go mod tidy
+    - make tidy
 builds:
-  - env:
+  - id: "tcr-cli"
+    dir: tcr-cli
+    binary: tcr
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
