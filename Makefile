@@ -1,11 +1,16 @@
-APP_MODULES = tcr-cli tcr-gui
+# Modules that can be build into an executable
+BUILD_MODULES = tcr-cli tcr-gui
+# Library modules
 LIB_MODULES = tcr-engine
+# Documentation modules
 DOC_MODULES = tcr-doc
 
-MAIN_MODULES = $(APP_MODULES) $(DOC_MODULES)
-BUILD_MODULES = $(APP_MODULES) $(LIB_MODULES)
+# Modules with a main package
+MAIN_MODULES = $(BUILD_MODULES) $(DOC_MODULES)
+# Production modules
+PROD_MODULES = $(BUILD_MODULES) $(LIB_MODULES)
 
-ALL_MODULES = $(APP_MODULES) $(LIB_MODULES) $(DOC_MODULES)
+ALL_MODULES = $(BUILD_MODULES) $(LIB_MODULES) $(DOC_MODULES)
 .PHONY: $(ALL_MODULES)
 
 # Module dependencies
@@ -14,29 +19,36 @@ tcr-gui: tcr-engine tcr-cli
 tcr-doc: tcr-cli tcr-gui
 
 .PHONY: deps
-deps:
-	@for mod in $(MAIN_MODULES); do \
-		echo "- make $@ $$mod"; \
-		$(MAKE) -C $$mod $@; \
+deps: $(MAIN_MODULES)
+	@for module in $^; do \
+		echo "- make $@ $$module"; \
+		$(MAKE) -C $$module $@; \
 	done
 
-.PHONY: tidy vet
-tidy vet:
-	@for mod in $(ALL_MODULES); do \
-		echo "- make $@ $$mod"; \
-		$(MAKE) -C $$mod $@; \
+.PHONY: tidy vet lint
+tidy vet lint: $(ALL_MODULES)
+	@for module in $^; do \
+		echo "- make $@ $$module"; \
+		$(MAKE) -C $$module $@; \
 	done
 
-.PHONY: test
-test:
-	@for mod in $(BUID_MODULES); do \
-		echo "- make $@ $$mod"; \
-		$(MAKE) -C $$mod $@; \
+.PHONY: test cov
+test cov: $(PROD_MODULES)
+	@for module in $^; do \
+		echo "- make $@ $$module"; \
+		$(MAKE) -C $$module $@; \
+	done
+
+.PHONY: build
+build: $(BUILD_MODULES)
+	@for module in $^; do \
+		echo "- make $@ $$module"; \
+		$(MAKE) -C $$module $@; \
 	done
 
 .PHONY: doc
-doc:
-	@for mod in $(DOC_MODULES); do \
-		echo "- make $@ $$mod"; \
-		$(MAKE) -C $$mod $@; \
+doc: $(DOC_MODULES)
+	@for module in $^; do \
+		echo "- make $@ $$module"; \
+		$(MAKE) -C $$module $@; \
 	done
