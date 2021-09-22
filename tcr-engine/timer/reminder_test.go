@@ -102,3 +102,32 @@ func Test_can_track_number_of_ticks_fired(t *testing.T) {
 	assert.Equal(t, 2, r.tickCounter)
 	assert.Equal(t, StoppedAfterTimeOut, r.state)
 }
+
+// Reminder callback function
+
+func Test_callback_function_can_retrieve_its_tick_index(t *testing.T) {
+	var index int
+	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {
+		index = tickIndex
+	})
+	r.Start()
+	time.Sleep(testTickPeriod + testTickPeriod/2)
+	assert.Equal(t, 0, index)
+	time.Sleep(testTickPeriod)
+	assert.Equal(t, 1, index)
+}
+
+func Test_callback_function_can_retrieve_its_timestamp(t *testing.T) {
+	var ts [2]time.Time
+	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {
+		ts[tickIndex] = timestamp
+	})
+	tsStart := time.Now()
+	r.Start()
+	time.Sleep(testTimeout)
+	tsEnd := time.Now()
+
+	assert.True(t, tsStart.Before(ts[0]))
+	assert.True(t, ts[0].Before(ts[1]))
+	assert.True(t, ts[1].Before(tsEnd))
+}
