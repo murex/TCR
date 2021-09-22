@@ -21,6 +21,7 @@ const (
 type Reminder struct {
 	timeout     time.Duration
 	tickPeriod  time.Duration
+	tickCounter int
 	onTick      func(t time.Time)
 	ticker      *time.Ticker
 	state       ReminderState
@@ -33,7 +34,13 @@ func New(
 	tickPeriod time.Duration,
 	onTick func(t time.Time),
 ) *Reminder {
-	r := Reminder{timeout: defaultTimeout, tickPeriod: defaultTickPeriod, onTick: onTick, state: NotStarted}
+	r := Reminder{
+		timeout: defaultTimeout,
+		tickPeriod: defaultTickPeriod,
+		tickCounter: 0,
+		onTick: onTick,
+		state: NotStarted,
+	}
 	if timeout > 0 {
 		r.timeout = timeout
 	}
@@ -60,6 +67,7 @@ func (r *Reminder) Start() {
 				r.state = StoppedAfterInterruption
 				return
 			case t := <-r.ticker.C:
+				r.tickCounter++
 				r.onTick(t)
 			}
 		}
