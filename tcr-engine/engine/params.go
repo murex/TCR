@@ -18,4 +18,6 @@ type Params struct {
 const (
 	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull
 	DefaultPollingPeriod = 2 * time.Second
+	DefaultInactivityPeriod = 1 * time.Minute
+	DefaultInactivityTimeout = 5 * time.Minute
 )

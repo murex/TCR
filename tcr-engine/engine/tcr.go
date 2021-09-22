@@ -6,6 +6,7 @@ import (
 	"github.com/mengdaming/tcr-engine/report"
 	"github.com/mengdaming/tcr-engine/role"
 	"github.com/mengdaming/tcr-engine/runmode"
+	"github.com/mengdaming/tcr-engine/timer"
 	"github.com/mengdaming/tcr-engine/toolchain"
 	"github.com/mengdaming/tcr-engine/ui"
 	"github.com/mengdaming/tcr-engine/vcs"
@@ -81,13 +82,19 @@ func RunAsDriver() {
 			_ = git.Pull()
 		},
 		func(interrupt <-chan bool) bool {
+			// TODO pass default values as parameters
+			r := timer.NewInactivityReminder(DefaultInactivityTimeout, DefaultInactivityPeriod)
+			r.Start()
 			if waitForChange(interrupt) {
 				// Some file changes were detected
+				r.Stop()
 				runTCR()
+				r.Start()
 				return true
 			}
 			// If we arrive here this means that the end of waitForChange
 			// was triggered by the user
+			r.Stop()
 			return false
 
 		},
