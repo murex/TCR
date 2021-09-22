@@ -22,7 +22,7 @@ type Reminder struct {
 	timeout     time.Duration
 	tickPeriod  time.Duration
 	tickCounter int
-	onTick      func(t time.Time)
+	onTick      func(tickIndex int, timestamp time.Time)
 	ticker      *time.Ticker
 	state       ReminderState
 	timedOut    chan bool
@@ -32,7 +32,7 @@ type Reminder struct {
 func New(
 	timeout time.Duration,
 	tickPeriod time.Duration,
-	onTick func(t time.Time),
+	onTick func(tickIndex int, timestamp time.Time),
 ) *Reminder {
 	r := Reminder{
 		timeout: defaultTimeout,
@@ -66,9 +66,9 @@ func (r *Reminder) Start() {
 			case <-r.interrupted:
 				r.state = StoppedAfterInterruption
 				return
-			case t := <-r.ticker.C:
+			case timestamp := <-r.ticker.C:
+				r.onTick(r.tickCounter, timestamp)
 				r.tickCounter++
-				r.onTick(t)
 			}
 		}
 	}()
