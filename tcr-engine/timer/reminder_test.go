@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-const testTimeout = 250 * time.Millisecond
-const testTickPeriod = 100 * time.Millisecond
+const testTimeout = 2500 * time.Millisecond
+const testTickPeriod = 1000 * time.Millisecond
 
 // Timeout
 
