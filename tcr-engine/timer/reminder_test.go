@@ -1,13 +1,37 @@
 package timer
 
 import (
+	"flag"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 	"time"
 )
 
-const testTimeout = 1000 * time.Millisecond
-const testTickPeriod = 400 * time.Millisecond
+var testTimeout time.Duration
+var testTickPeriod time.Duration
+
+func TestMain(m *testing.M) {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+	// Most tests in this file are designed so that reminders fire twice, and then go in time out.
+	// We differentiate CI and local machine to optimize test speed execution when run on local machine
+	// while not failing when run on CI (which runs slower)
+	if testing.Short() {
+		fmt.Println("Running tests with fast timers")
+		testTimeout = 100 * time.Millisecond
+		testTickPeriod = 40 * time.Millisecond
+	} else {
+		fmt.Println("Running tests with long timers")
+		testTimeout = 1000 * time.Millisecond
+		testTickPeriod = 400 * time.Millisecond
+	}
+	// Run tests
+	exitVal := m.Run()
+	os.Exit(exitVal)
+}
 
 // Timeout
 
