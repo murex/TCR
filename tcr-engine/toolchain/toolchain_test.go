@@ -36,6 +36,9 @@ func (lang FakeLanguage) IsSrcFile(_ string) bool {
 }
 
 func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	initialDir, _ := os.Getwd()
 	_ = os.Chdir(testDir)
 	testFunction(t)
