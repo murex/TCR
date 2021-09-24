@@ -18,6 +18,7 @@ const (
 	StoppedAfterInterruption
 )
 
+// Reminder provides a mechanism allowing to trigger an action every tickPeriod, until timeout expires.
 type Reminder struct {
 	timeout     time.Duration
 	tickPeriod  time.Duration
@@ -29,17 +30,19 @@ type Reminder struct {
 	interrupted chan bool
 }
 
+// New returns a new Reminder that will trigger action onTick() every tickPeriod, until timeout expires.
+// The returned Reminder is ready to start, but has not started counting yet.
 func New(
 	timeout time.Duration,
 	tickPeriod time.Duration,
 	onTick func(tickIndex int, timestamp time.Time),
 ) *Reminder {
 	r := Reminder{
-		timeout: defaultTimeout,
-		tickPeriod: defaultTickPeriod,
+		timeout:     defaultTimeout,
+		tickPeriod:  defaultTickPeriod,
 		tickCounter: 0,
-		onTick: onTick,
-		state: NotStarted,
+		onTick:      onTick,
+		state:       NotStarted,
 	}
 	if timeout > 0 {
 		r.timeout = timeout
@@ -50,6 +53,7 @@ func New(
 	return &r
 }
 
+// Start triggers the Reminder's beginning of counting.
 func (r *Reminder) Start() {
 	// Create the ticker and stop it for now
 	r.ticker = time.NewTicker(r.tickPeriod)
@@ -82,6 +86,7 @@ func (r *Reminder) Start() {
 	}()
 }
 
+// Stop stops the Reminder, even if it has not yet timed out.
 func (r *Reminder) Stop() {
 	if r.state == Running {
 		r.ticker.Stop()

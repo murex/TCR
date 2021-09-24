@@ -13,12 +13,14 @@ var message = map[int]string{
 	4: "Are you still there?!",
 }
 
-func NewInactivityReminder(timeout time.Duration, tickPeriod time.Duration) *Reminder {
-	return New(timeout, tickPeriod, func(tickIndex int, timestamp time.Time) {
-
-		msg, ok := message[tickIndex]
-		if ok {
-			report.PostWarning(msg)
-		}
-	})
+// NewInactivityTeaser creates a ticker that sends a message every tickPeriod
+// until timeout expires.
+func NewInactivityTeaser(timeout time.Duration, tickPeriod time.Duration) *Reminder {
+	return New(timeout, tickPeriod,
+		func(tickIndex int, timestamp time.Time) {
+			msg, ok := message[tickIndex]
+			if ok {
+				report.PostWarning(msg)
+			}
+		})
 }

@@ -83,7 +83,7 @@ func RunAsDriver() {
 		},
 		func(interrupt <-chan bool) bool {
 			// TODO pass default values as parameters
-			r := timer.NewInactivityReminder(DefaultInactivityTimeout, DefaultInactivityPeriod)
+			r := timer.NewInactivityTeaser(DefaultInactivityTimeout, DefaultInactivityPeriod)
 			r.Start()
 			if waitForChange(interrupt) {
 				// Some file changes were detected

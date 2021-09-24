@@ -18,6 +18,8 @@ type Params struct {
 const (
 	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull
 	DefaultPollingPeriod = 2 * time.Second
+	// DefaultInactivityPeriod it the default inactivity period until TCR sends an inactivity teaser message
 	DefaultInactivityPeriod = 1 * time.Minute
+	// DefaultInactivityTimeout is the default timeout after which TCR stops sending inactivity teaser messages
 	DefaultInactivityTimeout = 5 * time.Minute
 )
