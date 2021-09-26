@@ -65,7 +65,7 @@ func Test_init_with_non_default_tick_period(t *testing.T) {
 	assert.Equal(t, testTickPeriod, r.tickPeriod)
 }
 
-// Starting Reminder
+// Starting PeriodicReminder
 
 func Test_start_reminder(t *testing.T) {
 	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {})
@@ -76,7 +76,7 @@ func Test_start_reminder(t *testing.T) {
 	assert.Equal(t, 2, r.tickCounter)
 }
 
-// Stopping Reminder
+// Stopping PeriodicReminder
 
 func Test_stop_reminder_before_1st_tick(t *testing.T) {
 	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {})
@@ -110,7 +110,7 @@ func Test_stop_reminder_after_timeout(t *testing.T) {
 	assert.Equal(t, StoppedAfterTimeOut, r.state)
 }
 
-// Reminder tick counter
+// PeriodicReminder tick counter
 
 func Test_can_track_number_of_ticks_fired(t *testing.T) {
 	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {})
@@ -127,7 +127,7 @@ func Test_can_track_number_of_ticks_fired(t *testing.T) {
 	assert.Equal(t, StoppedAfterTimeOut, r.state)
 }
 
-// Reminder callback function
+// PeriodicReminder callback function
 
 func Test_callback_function_can_retrieve_its_tick_index(t *testing.T) {
 	var index int
@@ -154,4 +154,34 @@ func Test_callback_function_can_retrieve_its_timestamp(t *testing.T) {
 	assert.True(t, tsStart.Before(ts[0]))
 	assert.True(t, ts[0].Before(ts[1]))
 	assert.True(t, ts[1].Before(tsEnd))
+}
+
+// Time elapsed since timer started
+
+func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
+	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {})
+	// Before calling Start(), time elapsed should stick to 0
+	assert.Zero(t, r.GetElapsedTime())
+	r.Start()
+	time.Sleep(testTimeout / 2)
+	// While timer is running, total time elapsed is time spent since Start()
+	assert.InEpsilon(t, testTimeout/2, r.GetElapsedTime(), 0.1)
+	time.Sleep(testTimeout)
+	// When timer is done, time elapsed should stop increasing
+	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.1)
+}
+
+// Time remaining until timer ends
+
+func Test_retrieving_time_remaining_until_timer_ends(t *testing.T) {
+	r := New(testTimeout, testTickPeriod, func(tickIndex int, timestamp time.Time) {})
+	// Before calling Start(), time remaining should stick to timeout
+	assert.Equal(t, testTimeout, r.GetRemainingTime())
+	r.Start()
+	time.Sleep(testTimeout / 2)
+	// While timer is running, total time remaining is timeout - time spent since Start()
+	assert.InEpsilon(t, testTimeout/2, r.GetRemainingTime(), 0.1)
+	time.Sleep(testTimeout)
+	// When timer is done, time remaining should be 0
+	assert.Zero(t, r.GetRemainingTime())
 }
