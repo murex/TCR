@@ -26,8 +26,7 @@ type PeriodicReminder struct {
 	onTick      func(tickIndex int, timestamp time.Time)
 	ticker      *time.Ticker
 	state       ReminderState
-	timedOut    chan bool
-	interrupted chan bool
+	done        chan bool
 	startTime   time.Time
 	stopTime    time.Time
 }
@@ -57,23 +56,16 @@ func New(
 
 // Start triggers the PeriodicReminder's beginning of counting.
 func (r *PeriodicReminder) Start() {
-	// Create the ticker and stop it for now
+	// Create the ticker and stopTicking it for now
 	r.ticker = time.NewTicker(r.tickPeriod)
-	r.startTime = time.Now()
-	r.timedOut = make(chan bool)
-	r.interrupted = make(chan bool)
 	r.state = Running
+	r.startTime = time.Now()
+	r.done = make(chan bool)
 
 	go func() {
 		for {
 			select {
-			case <-r.timedOut:
-				r.state = StoppedAfterTimeOut
-				r.stopTime = time.Now()
-				return
-			case <-r.interrupted:
-				r.state = StoppedAfterInterruption
-				r.stopTime = time.Now()
+			case <-r.done:
 				return
 			case timestamp := <-r.ticker.C:
 				r.onTick(r.tickCounter, timestamp)
@@ -84,20 +76,22 @@ func (r *PeriodicReminder) Start() {
 
 	go func() {
 		time.Sleep(r.timeout)
-
-		if r.state == Running {
-			r.ticker.Stop()
-			r.timedOut <- true
-		}
+		r.stopTicking(StoppedAfterTimeOut)
 	}()
+}
+
+func (r *PeriodicReminder) stopTicking(s ReminderState) {
+	if r.state == Running {
+		r.ticker.Stop()
+		r.state = s
+		r.stopTime = time.Now()
+		r.done <- true
+	}
 }
 
 // Stop stops the PeriodicReminder, even if it has not yet timed out.
 func (r *PeriodicReminder) Stop() {
-	if r.state == Running {
-		r.ticker.Stop()
-		r.interrupted <- true
-	}
+	r.stopTicking(StoppedAfterInterruption)
 }
 
 // GetElapsedTime returns the time elapsed since the timer was started

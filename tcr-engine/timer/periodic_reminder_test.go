@@ -167,7 +167,7 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 	// While timer is running, total time elapsed is time spent since Start()
 	assert.InEpsilon(t, testTimeout/2, r.GetElapsedTime(), 0.1)
 	time.Sleep(testTimeout)
-	// When timer is done, time elapsed should stop increasing
+	// When timer is done, time elapsed should stopTicking increasing
 	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.1)
 }
 
