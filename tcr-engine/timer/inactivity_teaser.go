@@ -17,10 +17,10 @@ var message = map[int]string{
 // until timeout expires.
 func NewInactivityTeaser(timeout time.Duration, tickPeriod time.Duration) *PeriodicReminder {
 	return New(timeout, tickPeriod,
-		func(tickIndex int, timestamp time.Time) {
-			msg, ok := message[tickIndex]
+		func(tc TickContext) {
+			msg, ok := message[tc.index]
 			if ok {
 				report.PostWarning(msg)
 			}
-		})
+		}, func(tc TickContext) {})
 }

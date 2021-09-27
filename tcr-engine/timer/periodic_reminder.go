@@ -20,15 +20,26 @@ const (
 
 // PeriodicReminder provides a mechanism allowing to trigger an action every tickPeriod, until timeout expires.
 type PeriodicReminder struct {
-	timeout     time.Duration
-	tickPeriod  time.Duration
-	tickCounter int
-	onTick      func(tickIndex int, timestamp time.Time)
-	ticker      *time.Ticker
-	state       ReminderState
-	done        chan bool
-	startTime   time.Time
-	stopTime    time.Time
+	timeout       time.Duration
+	tickPeriod    time.Duration
+	tickCounter   int
+	lastTickIndex int
+	onTick        func(tc TickContext)
+	onTimeout     func(tc TickContext)
+	ticker        *time.Ticker
+	state         ReminderState
+	done          chan bool
+	startTime     time.Time
+	stopTime      time.Time
+}
+
+// TickContext provides the context related to a specific reminder event
+type TickContext struct {
+	index     int
+	indexMax  int
+	timestamp time.Time
+	elapsed   time.Duration
+	remaining time.Duration
 }
 
 // New returns a new PeriodicReminder that will trigger action onTick() every tickPeriod, until timeout expires.
@@ -36,13 +47,15 @@ type PeriodicReminder struct {
 func New(
 	timeout time.Duration,
 	tickPeriod time.Duration,
-	onTick func(tickIndex int, timestamp time.Time),
+	onTick func(tc TickContext),
+	onTimeout func(tc TickContext),
 ) *PeriodicReminder {
 	r := PeriodicReminder{
 		timeout:     defaultTimeout,
 		tickPeriod:  defaultTickPeriod,
 		tickCounter: 0,
 		onTick:      onTick,
+		onTimeout:   onTimeout,
 		state:       NotStarted,
 	}
 	if timeout > 0 {
@@ -51,6 +64,7 @@ func New(
 	if tickPeriod > 0 {
 		r.tickPeriod = tickPeriod
 	}
+	r.lastTickIndex = int(r.timeout/r.tickPeriod) - 1
 	return &r
 }
 
@@ -66,9 +80,12 @@ func (r *PeriodicReminder) Start() {
 		for {
 			select {
 			case <-r.done:
+				if r.state == StoppedAfterTimeOut {
+					r.onTimeout(r.buildTickContext(time.Now()))
+				}
 				return
 			case timestamp := <-r.ticker.C:
-				r.onTick(r.tickCounter, timestamp)
+				r.onTick(r.buildTickContext(timestamp))
 				r.tickCounter++
 			}
 		}
@@ -78,6 +95,17 @@ func (r *PeriodicReminder) Start() {
 		time.Sleep(r.timeout)
 		r.stopTicking(StoppedAfterTimeOut)
 	}()
+}
+
+func (r *PeriodicReminder) buildTickContext(timestamp time.Time) TickContext {
+	elapsed := time.Duration(r.tickCounter+1) * r.tickPeriod
+	return TickContext{
+		index:     r.tickCounter,
+		indexMax:  r.lastTickIndex,
+		timestamp: timestamp,
+		elapsed:   elapsed,
+		remaining: r.timeout - elapsed,
+	}
 }
 
 func (r *PeriodicReminder) stopTicking(s ReminderState) {

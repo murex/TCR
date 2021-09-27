@@ -76,10 +76,13 @@ func SetAutoPush(ap bool) {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
+	t := timer.NewMobTurnCountdown(DefaultMobTurnDuration)
+
 	go fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
 			_ = git.Pull()
+			t.Start()
 		},
 		func(interrupt <-chan bool) bool {
 			// TODO pass default values as parameters
@@ -96,9 +99,9 @@ func RunAsDriver() {
 			// was triggered by the user
 			r.Stop()
 			return false
-
 		},
 		func() {
+			t.Stop()
 			uitf.NotifyRoleEnding(role.Driver{})
 		},
 	)
