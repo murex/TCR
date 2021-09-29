@@ -93,12 +93,21 @@ func Test_report_warning_message(t *testing.T) {
 	})
 	assertMessageMatch(t, text, Warning, result)
 }
+
 func Test_report_error_message(t *testing.T) {
 	text := "Error Message"
 	result := reportAndReceive(func() {
 		PostError(text)
 	})
 	assertMessageMatch(t, text, Error, result)
+}
+
+func Test_report_event_message(t *testing.T) {
+	text := "Event Message"
+	result := reportAndReceive(func() {
+		PostEvent(text)
+	})
+	assertMessageMatch(t, text, Event, result)
 }
 
 func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {

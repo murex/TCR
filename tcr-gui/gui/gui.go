@@ -22,8 +22,9 @@ const (
 )
 
 var (
-	redColor  = color.RGBA{R: 255, G: 0, B: 0, A: 255}
-	cyanColor = color.RGBA{R: 0, G: 139, B: 139, A: 255}
+	redColor   = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	cyanColor  = color.RGBA{R: 0, G: 139, B: 139, A: 255}
+	greenColor = color.RGBA{R: 0, G: 255, B: 0, A: 255}
 	//yellowColor = color.RGBA{R: 255, G: 255, B: 0, A: 255}
 	orangeColor = color.RGBA{R: 255, G: 165, B: 0, A: 255}
 	//whiteColor  = color.RGBA{R: 255, G: 255, B: 255, A: 255}
@@ -76,6 +77,8 @@ func (gui *GUI) StartReporting() {
 			gui.warning(msg.Text)
 		case report.Error:
 			gui.error(msg.Text)
+		case report.Event:
+			gui.event(msg.Text)
 		}
 	})
 }
@@ -141,6 +144,10 @@ func (gui *GUI) error(a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
 }
 
+func (gui *GUI) event(a ...interface{}) {
+	gui.traceArea.printText(greenColor, false, a...)
+}
+
 func (gui *GUI) trace(a ...interface{}) {
 	gui.traceArea.printText(grayColor, true, a...)
 }
@@ -186,6 +193,7 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 		report.PostInfo(fmt.Sprintf("Run mode set to %v", gui.runMode.Name()))
 		gui.sessionPanel.setRunMode(gui.runMode)
 		gui.actionBar.setRunMode(gui.runMode)
+		engine.SetRunMode(mode)
 	}
 }
 

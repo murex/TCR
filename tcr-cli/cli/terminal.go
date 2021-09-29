@@ -46,6 +46,8 @@ func (term *Terminal) StartReporting() {
 			term.warning(msg.Text)
 		case report.Error:
 			term.error(msg.Text)
+		case report.Event:
+			term.event(msg.Text)
 		}
 	})
 }
@@ -80,6 +82,10 @@ func (term *Terminal) warning(a ...interface{}) {
 
 func (term *Terminal) error(a ...interface{}) {
 	printInRed(a...)
+}
+
+func (term *Terminal) event(a ...interface{}) {
+	printInGreen(a...)
 }
 
 func (term *Terminal) trace(a ...interface{}) {

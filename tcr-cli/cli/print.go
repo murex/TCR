@@ -40,6 +40,10 @@ func printInYellow(a ...interface{}) {
 	printPrefixedAndColored(aurora.YellowFg, fmt.Sprint(a...))
 }
 
+func printInGreen(a ...interface{}) {
+	printPrefixedAndColored(aurora.GreenFg, fmt.Sprint(a...))
+}
+
 func printInRed(a ...interface{}) {
 	printPrefixedAndColored(aurora.RedFg, fmt.Sprint(a...))
 }
