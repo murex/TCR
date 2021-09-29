@@ -16,7 +16,7 @@ type Params struct {
 }
 
 const (
-	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull
+	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull when running as Navigator
 	DefaultPollingPeriod = 2 * time.Second
 	// DefaultMobTurnDuration is the default duration for a mob turn
 	DefaultMobTurnDuration = 5 * time.Minute

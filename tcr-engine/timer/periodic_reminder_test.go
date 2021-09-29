@@ -36,17 +36,17 @@ func TestMain(m *testing.M) {
 // Timeout
 
 func Test_default_timeout_is_5_min(t *testing.T) {
-	r := New(0, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(0, testTickPeriod, func(ctx ReminderContext) {})
 	assert.Equal(t, 5*time.Minute, r.timeout)
 }
 
 func Test_init_with_non_default_timeout(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	assert.Equal(t, testTimeout, r.timeout)
 }
 
 func Test_ticking_stops_after_timeout(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
 	assert.Equal(t, 2, r.tickCounter)
@@ -56,19 +56,19 @@ func Test_ticking_stops_after_timeout(t *testing.T) {
 // Tick Period
 
 func Test_default_tick_period_is_1_min(t *testing.T) {
-	r := New(testTimeout, 0, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, 0, func(ctx ReminderContext) {})
 	assert.Equal(t, 1*time.Minute, r.tickPeriod)
 }
 
 func Test_init_with_non_default_tick_period(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	assert.Equal(t, testTickPeriod, r.tickPeriod)
 }
 
 // Starting PeriodicReminder
 
 func Test_start_reminder(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	time.Sleep(testTimeout)
 	assert.Equal(t, 0, r.tickCounter)
 	r.Start()
@@ -76,10 +76,23 @@ func Test_start_reminder(t *testing.T) {
 	assert.Equal(t, 2, r.tickCounter)
 }
 
+func Test_start_reminder_triggers_start_event(t *testing.T) {
+	var eventFired = false
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		if ctx.eventType == StartEvent {
+			eventFired = true
+		}
+	})
+	r.Start()
+	r.Stop()
+
+	assert.True(t, eventFired)
+}
+
 // Stopping PeriodicReminder
 
 func Test_stop_reminder_before_1st_tick(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTickPeriod / 2)
 	r.Stop()
@@ -90,7 +103,7 @@ func Test_stop_reminder_before_1st_tick(t *testing.T) {
 }
 
 func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTickPeriod + testTickPeriod/2)
 	r.Stop()
@@ -101,7 +114,7 @@ func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
 }
 
 func Test_stop_reminder_after_timeout(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
 	r.Stop()
@@ -113,7 +126,7 @@ func Test_stop_reminder_after_timeout(t *testing.T) {
 // PeriodicReminder tick counter
 
 func Test_can_track_number_of_ticks_fired(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	assert.Equal(t, 0, r.tickCounter)
 	time.Sleep(testTickPeriod / 2)
@@ -131,9 +144,11 @@ func Test_can_track_number_of_ticks_fired(t *testing.T) {
 
 func Test_callback_function_can_know_current_tick_index(t *testing.T) {
 	var index int
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {
-		index = tc.index
-	}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		if ctx.eventType == PeriodicEvent {
+			index = ctx.index
+		}
+	})
 	r.Start()
 	time.Sleep(testTickPeriod + testTickPeriod/2)
 	assert.Equal(t, 0, index)
@@ -142,43 +157,68 @@ func Test_callback_function_can_know_current_tick_index(t *testing.T) {
 }
 
 func Test_callback_function_can_know_timestamp(t *testing.T) {
-	var ts [2]time.Time
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {
-		ts[tc.index] = tc.timestamp
-	}, func(tc TickContext) {})
-	tsStart := time.Now()
+	var tsPeriodic [2]time.Time
+	var tsStart time.Time
+	var tsTimeout time.Time
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		switch ctx.eventType {
+		case StartEvent:
+			tsStart = ctx.timestamp
+		case PeriodicEvent:
+			tsPeriodic[ctx.index] = ctx.timestamp
+		case TimeoutEvent:
+			tsTimeout = ctx.timestamp
+		}
+	})
 	r.Start()
-	time.Sleep(testTimeout)
+	time.Sleep(testTimeout * 2)
 	tsEnd := time.Now()
 
-	assert.True(t, tsStart.Before(ts[0]))
-	assert.True(t, ts[0].Before(ts[1]))
-	assert.True(t, ts[1].Before(tsEnd))
+	assert.True(t, tsStart.Before(tsPeriodic[0]))
+	assert.True(t, tsPeriodic[0].Before(tsPeriodic[1]))
+	assert.True(t, tsPeriodic[1].Before(tsTimeout))
+	assert.True(t, tsTimeout.Before(tsEnd))
 }
 
 func Test_callback_function_can_know_elapsed_time_since_start(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {
-		var expected = testTickPeriod * time.Duration(tc.index+1)
-		assert.Equal(t, expected, tc.elapsed)
-	}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		var expected time.Duration
+		switch ctx.eventType {
+		case StartEvent:
+			expected = 0
+		case PeriodicEvent:
+			expected = testTickPeriod * time.Duration(ctx.index+1)
+		case TimeoutEvent:
+			expected = testTimeout
+		}
+		assert.Equal(t, expected, ctx.elapsed)
+	})
 	r.Start()
 	time.Sleep(testTimeout)
 }
 
 func Test_callback_function_can_know_remaining_time_until_end(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {
-		var expected = testTimeout - testTickPeriod*time.Duration(tc.index+1)
-		assert.Equal(t, expected, tc.remaining)
-	}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		var expected time.Duration
+		switch ctx.eventType {
+		case StartEvent:
+			expected = testTimeout
+		case PeriodicEvent:
+			expected = testTimeout - testTickPeriod*time.Duration(ctx.index+1)
+		case TimeoutEvent:
+			expected = 0
+		}
+		assert.Equal(t, expected, ctx.remaining)
+	})
 	r.Start()
 	time.Sleep(testTimeout)
 }
 
 func Test_callback_function_can_know_max_index_value(t *testing.T) {
 	var expected = int(testTimeout/testTickPeriod) - 1
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {
-		assert.Equal(t, expected, tc.indexMax)
-	}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {
+		assert.Equal(t, expected, ctx.indexMax)
+	})
 	r.Start()
 	time.Sleep(testTimeout)
 }
@@ -186,7 +226,7 @@ func Test_callback_function_can_know_max_index_value(t *testing.T) {
 // Time elapsed since timer started
 
 func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	// Before calling Start(), time elapsed should stick to 0
 	assert.Zero(t, r.GetElapsedTime())
 	r.Start()
@@ -201,7 +241,7 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 // Time remaining until timer ends
 
 func Test_retrieving_time_remaining_until_timer_ends(t *testing.T) {
-	r := New(testTimeout, testTickPeriod, func(tc TickContext) {}, func(tc TickContext) {})
+	r := New(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	// Before calling Start(), time remaining should stick to timeout
 	assert.Equal(t, testTimeout, r.GetRemainingTime())
 	r.Start()
