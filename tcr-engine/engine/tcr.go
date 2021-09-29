@@ -17,13 +17,14 @@ import (
 )
 
 var (
-	mode          runmode.RunMode
-	uitf          ui.UserInterface
-	git           vcs.GitInterface
-	lang          language.Language
-	tchn          toolchain.Toolchain
-	sourceTree    filesystem.SourceTree
-	pollingPeriod time.Duration
+	mode            runmode.RunMode
+	uitf            ui.UserInterface
+	git             vcs.GitInterface
+	lang            language.Language
+	tchn            toolchain.Toolchain
+	sourceTree      filesystem.SourceTree
+	pollingPeriod   time.Duration
+	mobTurnDuration time.Duration
 )
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -35,8 +36,9 @@ func Init(u ui.UserInterface, params Params) {
 
 	report.PostInfo("Starting TCR version ", Version, "...")
 
-	mode = params.Mode
+	SetRunMode(params.Mode)
 	pollingPeriod = params.PollingPeriod
+	mobTurnDuration = params.MobTurnDuration
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err)
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
@@ -76,7 +78,7 @@ func SetAutoPush(ap bool) {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
-	countdown := timer.NewMobTurnCountdown(DefaultMobTurnDuration)
+	countdown := timer.NewMobTurnCountdown(mode, mobTurnDuration)
 
 	go fromBirthTillDeath(
 		func() {
@@ -220,6 +222,11 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	b = git.WorkingBranch()
 
 	return d, l, t, ap, b
+}
+
+// SetRunMode sets the run mode for TCR engine
+func SetRunMode(m runmode.RunMode) {
+	mode = m
 }
 
 // Quit is the exit point for TCR application

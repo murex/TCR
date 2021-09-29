@@ -1,14 +1,13 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/mengdaming/tcr-cli/cli"
 	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/runmode"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"fmt"
 	"os"
 )
 
@@ -68,6 +67,12 @@ func init() {
 		"p",
 		false,
 		"Enable git push after every commit")
+
+	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
+		"duration",
+		"d",
+		engine.DefaultMobTurnDuration,
+		"Set the duration for role rotation countdown timer")
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -7,12 +7,13 @@ import (
 
 // Params contains the main parameter values that TCR engine is using
 type Params struct {
-	CfgFile       string
-	Toolchain     string
-	AutoPush      bool
-	BaseDir       string
-	Mode          runmode.RunMode
-	PollingPeriod time.Duration
+	CfgFile         string
+	Toolchain       string
+	AutoPush        bool
+	BaseDir         string
+	Mode            runmode.RunMode
+	PollingPeriod   time.Duration
+	MobTurnDuration time.Duration
 }
 
 const (
