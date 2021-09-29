@@ -13,3 +13,8 @@ func (mode Mob) Name() string {
 func (mode Mob) AutoPushDefault() bool {
 	return true
 }
+
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (mode Mob) NeedsCountdownTimer() bool {
+	return true
+}

@@ -4,6 +4,7 @@ package runmode
 type RunMode interface {
 	Name() string
 	AutoPushDefault() bool
+	NeedsCountdownTimer() bool
 }
 
 var (

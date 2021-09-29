@@ -13,3 +13,8 @@ func (mode Solo) Name() string {
 func (mode Solo) AutoPushDefault() bool {
 	return false
 }
+
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (mode Solo) NeedsCountdownTimer() bool {
+	return false
+}
