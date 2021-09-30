@@ -36,7 +36,12 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 }
 
 func findBestTickPeriodFor(timeout time.Duration) time.Duration {
-	// TODO adjust tick period based on timeout ranges
+	if timeout <= 10*time.Second {
+		return 1 * time.Second
+	}
+	if timeout <= 1*time.Minute {
+		return 10 * time.Second
+	}
 	return defaultTickPeriod
 }
 
