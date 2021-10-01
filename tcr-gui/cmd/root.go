@@ -17,7 +17,7 @@ import (
 var params engine.Params
 
 var rootCmd = &cobra.Command{
-	Use:     "tcr",
+	Use:     "tcr-gui",
 	Version: engine.Version,
 	Short:   "TCR (Test && Commit || Revert)",
 	Long: `
@@ -70,6 +70,12 @@ func init() {
 		"p",
 		false,
 		"Enable git push after every commit")
+
+	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
+		"duration",
+		"d",
+		engine.DefaultMobTurnDuration,
+		"Set the duration for role rotation countdown timer")
 }
 
 // initConfig reads in config file and ENV variables if set.
