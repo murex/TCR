@@ -59,7 +59,7 @@ func (term *Terminal) StopReporting() {
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *Terminal) NotifyRoleStarting(r role.Role) {
-	term.title("Starting as a ", strings.Title(r.Name()), ". Press ESC when done")
+	term.title("Starting as a ", strings.Title(r.Name()), ". Press ESC or Q when done")
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
@@ -141,12 +141,12 @@ func (term *Terminal) startAs(r role.Role) {
 			term.warning("Something went wrong while reading from stdin: ", err)
 		}
 		switch keyboardInput[0] {
-		case escapeKey:
+		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
 			engine.Stop()
 		default:
-			term.warning("Key not recognized. Press ESC to leave ", r.Name(), " role")
+			term.warning("Key not recognized. Press ESC or Q to leave ", r.Name(), " role")
 		}
 	}
 }
