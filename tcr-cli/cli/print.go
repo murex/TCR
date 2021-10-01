@@ -27,6 +27,7 @@ func setLinePrefix(value string) {
 }
 
 func printPrefixedAndColored(fgColor aurora.Color, message string) {
+	setupConsole()
 	fmt.Println(
 		colorizer.Colorize(linePrefix, fgColor),
 		colorizer.Colorize(message, fgColor))
@@ -75,3 +76,4 @@ func getTerminalColumns() int {
 	}
 	return columns
 }
+
