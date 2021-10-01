@@ -38,7 +38,7 @@ func Init(u ui.UserInterface, params Params) {
 
 	SetRunMode(params.Mode)
 	pollingPeriod = params.PollingPeriod
-	mobTurnDuration = params.MobTurnDuration
+
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err)
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
@@ -49,6 +49,11 @@ func Init(u ui.UserInterface, params Params) {
 	git, err = vcs.New(sourceTree.GetBaseDir())
 	handleError(err)
 	git.EnablePush(params.AutoPush)
+
+	if EnableMobTimer {
+		mobTurnDuration = params.MobTurnDuration
+		report.PostInfo("Mob timer duration is ", mobTurnDuration)
+	}
 
 	uitf.ShowRunningMode(mode)
 	uitf.ShowSessionInfo()
@@ -78,31 +83,47 @@ func SetAutoPush(ap bool) {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
-	countdown := timer.NewMobTurnCountdown(mode, mobTurnDuration)
+	var mobTimer *timer.PeriodicReminder
+	if EnableMobTimer {
+		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
+	}
 
 	go fromBirthTillDeath(
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
 			_ = git.Pull()
-			countdown.Start()
+			if EnableMobTimer {
+				mobTimer.Start()
+			}
 		},
 		func(interrupt <-chan bool) bool {
-			teaser := timer.NewInactivityTeaser(DefaultInactivityTimeout, DefaultInactivityPeriod)
-			teaser.Start()
+			var teaser *timer.PeriodicReminder
+			if EnableTcrInactivityTeaser {
+				teaser := timer.NewInactivityTeaser(DefaultInactivityTimeout, DefaultInactivityPeriod)
+				teaser.Start()
+			}
 			if waitForChange(interrupt) {
 				// Some file changes were detected
-				teaser.Stop()
+				if EnableTcrInactivityTeaser {
+					teaser.Stop()
+				}
 				runTCR()
-				teaser.Start()
+				if EnableTcrInactivityTeaser {
+					teaser.Start()
+				}
 				return true
 			}
 			// If we arrive here this means that the end of waitForChange
 			// was triggered by the user
-			teaser.Stop()
+			if EnableTcrInactivityTeaser {
+				teaser.Stop()
+			}
 			return false
 		},
 		func() {
-			countdown.Stop()
+			if EnableMobTimer {
+				mobTimer.Stop()
+			}
 			uitf.NotifyRoleEnding(role.Driver{})
 		},
 	)
