@@ -218,3 +218,11 @@ func (gui *GUI) initTcrEngine(baseDir string) {
 	engine.Init(gui, gui.params)
 	gui.term.StopReporting()
 }
+
+// TODO Disable session panel buttons when driver or navigator modes are in running state
+
+// TODO Add possibility to tune mob timer duration from the GUI
+
+// TODO Add possibility to disable/enable mob timer from the GUI
+
+// TODO Replace timer trace with a visual component such as a progress bar or even a clock
