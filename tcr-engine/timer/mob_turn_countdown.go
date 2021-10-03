@@ -15,7 +15,7 @@ const messagePrefix = "(Mob Timer) "
 func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicReminder {
 	if mode.NeedsCountdownTimer() {
 		tickPeriod := findBestTickPeriodFor(timeout)
-		return New(timeout, tickPeriod,
+		return NewPeriodicReminder(timeout, tickPeriod,
 			func(ctx ReminderContext) {
 				switch ctx.eventType {
 				case StartEvent:
@@ -32,7 +32,7 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 			},
 		)
 	}
-	return New(0, 0, func(ctx ReminderContext) {})
+	return NewPeriodicReminder(0, 0, func(ctx ReminderContext) {})
 }
 
 func findBestTickPeriodFor(timeout time.Duration) time.Duration {

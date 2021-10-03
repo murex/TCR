@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/mengdaming/tcr-cli/cli"
-	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/runmode"
+	"github.com/mengdaming/tcr-engine/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +19,7 @@ This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = engine.DefaultPollingPeriod
+		params.PollingPeriod = settings.DefaultPollingPeriod
 		u := cli.New(params)
 		u.Start()
 	},

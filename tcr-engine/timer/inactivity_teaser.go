@@ -2,10 +2,12 @@ package timer
 
 import (
 	"github.com/mengdaming/tcr-engine/report"
+	"github.com/mengdaming/tcr-engine/settings"
+	"sync"
 	"time"
 )
 
-var message = map[int]string{
+var teasingMessage = map[int]string{
 	0: "It's been a while since you last saved your work. Is there anything wrong?",
 	1: "Still nothing worth saving? Shall we start to worry?",
 	2: "Remember: the more you wait, the more reverting will hurt!",
@@ -13,15 +15,63 @@ var message = map[int]string{
 	4: "Are you still there?!",
 }
 
-// NewInactivityTeaser creates a PeriodicReminder that sends a message every teasingPeriod
+var once sync.Once
+
+// InactivityTeaser sends a teasing message every period until it times out
+type InactivityTeaser struct {
+	timeout  time.Duration
+	period   time.Duration
+	reminder *PeriodicReminder
+}
+
+var teaserInstance *InactivityTeaser
+
+// GetInactivityTeaserInstance returns the InactivityTeaser instance (singleton)
+func GetInactivityTeaserInstance() *InactivityTeaser {
+	if teaserInstance == nil {
+		once.Do(createTeaser)
+	}
+	return teaserInstance
+}
+
+func createTeaser() {
+	teaserInstance = &InactivityTeaser{
+		timeout: settings.DefaultInactivityTimeout,
+		period:  settings.DefaultInactivityPeriod,
+	}
+	teaserInstance.reminder = createReminder(teaserInstance.timeout, teaserInstance.period)
+}
+
+// createReminder creates a PeriodicReminder that sends a teasing message every teasingPeriod
 // until timeout expires.
-func NewInactivityTeaser(timeout time.Duration, teasingPeriod time.Duration) *PeriodicReminder {
-	return New(timeout, teasingPeriod,
+// The message is taken from teasingMessage map defined at the top of this file
+func createReminder(timeout time.Duration, teasingPeriod time.Duration) *PeriodicReminder {
+	return NewPeriodicReminder(
+		timeout,
+		teasingPeriod,
 		func(ctx ReminderContext) {
-			msg, ok := message[ctx.index]
-			if ok {
-				report.PostWarning(msg)
+			if ctx.eventType == PeriodicEvent {
+				msg, ok := teasingMessage[ctx.index]
+				if ok {
+					report.PostWarning(msg)
+				}
 			}
 		},
 	)
+}
+
+// Start starts sending periodic teasing messages
+func (teaser *InactivityTeaser) Start() {
+	teaser.reminder.Start()
+}
+
+// Stop stops sending periodic teasing messages
+func (teaser *InactivityTeaser) Stop() {
+	teaser.reminder.Stop()
+}
+
+// Reset resets the InactivityTeaser. Next call to Start will run as if the InactivityTeaser was
+// just created
+func (teaser *InactivityTeaser) Reset() {
+	teaser.reminder = createReminder(teaser.timeout, teaser.period)
 }

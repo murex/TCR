@@ -6,6 +6,7 @@ import (
 	"github.com/mengdaming/tcr-engine/report"
 	"github.com/mengdaming/tcr-engine/role"
 	"github.com/mengdaming/tcr-engine/runmode"
+	"github.com/mengdaming/tcr-engine/settings"
 	"github.com/mengdaming/tcr-engine/timer"
 	"github.com/mengdaming/tcr-engine/toolchain"
 	"github.com/mengdaming/tcr-engine/ui"
@@ -50,7 +51,7 @@ func Init(u ui.UserInterface, params Params) {
 	handleError(err)
 	git.EnablePush(params.AutoPush)
 
-	if EnableMobTimer {
+	if settings.EnableMobTimer {
 		mobTurnDuration = params.MobTurnDuration
 		report.PostInfo("Mob timer duration is ", mobTurnDuration)
 	}
@@ -84,7 +85,7 @@ func SetAutoPush(ap bool) {
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
 	var mobTimer *timer.PeriodicReminder
-	if EnableMobTimer {
+	if settings.EnableMobTimer {
 		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
 	}
 
@@ -92,36 +93,37 @@ func RunAsDriver() {
 		func() {
 			uitf.NotifyRoleStarting(role.Driver{})
 			_ = git.Pull()
-			if EnableMobTimer {
+			if settings.EnableMobTimer {
 				mobTimer.Start()
 			}
 		},
 		func(interrupt <-chan bool) bool {
-			var teaser *timer.PeriodicReminder
-			if EnableTcrInactivityTeaser {
-				teaser := timer.NewInactivityTeaser(DefaultInactivityTimeout, DefaultInactivityPeriod)
-				teaser.Start()
+			//var teaser *timer.PeriodicReminder
+			if settings.EnableTcrInactivityTeaser {
+				//teaser := timer.createReminder(DefaultInactivityTimeout, DefaultInactivityPeriod)
+				timer.GetInactivityTeaserInstance().Start()
 			}
 			if waitForChange(interrupt) {
 				// Some file changes were detected
-				if EnableTcrInactivityTeaser {
-					teaser.Stop()
+				if settings.EnableTcrInactivityTeaser {
+					timer.GetInactivityTeaserInstance().Stop()
+					timer.GetInactivityTeaserInstance().Reset()
 				}
 				runTCR()
-				if EnableTcrInactivityTeaser {
-					teaser.Start()
+				if settings.EnableTcrInactivityTeaser {
+					timer.GetInactivityTeaserInstance().Start()
 				}
 				return true
 			}
 			// If we arrive here this means that the end of waitForChange
 			// was triggered by the user
-			if EnableTcrInactivityTeaser {
-				teaser.Stop()
+			if settings.EnableTcrInactivityTeaser {
+				timer.GetInactivityTeaserInstance().Start()
 			}
 			return false
 		},
 		func() {
-			if EnableMobTimer {
+			if settings.EnableMobTimer {
 				mobTimer.Stop()
 			}
 			uitf.NotifyRoleEnding(role.Driver{})

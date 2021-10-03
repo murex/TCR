@@ -1,4 +1,4 @@
-package engine
+package settings
 
 import "time"
 
@@ -14,4 +14,3 @@ const (
 	// DefaultInactivityTimeout is the default timeout after which TCR stops sending inactivity teaser messages
 	DefaultInactivityTimeout = 5 * time.Minute
 )
-

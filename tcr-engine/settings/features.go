@@ -1,4 +1,4 @@
-package engine
+package settings
 
 // Feature toggles allowing to quickly turn on/off a feature
 

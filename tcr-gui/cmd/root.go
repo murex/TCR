@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/mengdaming/tcr-engine/engine"
 	"github.com/mengdaming/tcr-engine/runmode"
+	"github.com/mengdaming/tcr-engine/settings"
 	"github.com/mengdaming/tcr-gui/gui"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -30,7 +31,7 @@ This application runs within a GUI.`,
 		// so that the user can decide what they want to do
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = engine.DefaultPollingPeriod
+		params.PollingPeriod = settings.DefaultPollingPeriod
 		u := gui.New(params)
 		u.Start()
 	},
@@ -74,7 +75,7 @@ func init() {
 	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
 		"duration",
 		"d",
-		engine.DefaultMobTurnDuration,
+		settings.DefaultMobTurnDuration,
 		"Set the duration for role rotation countdown timer")
 }
 
