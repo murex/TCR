@@ -80,8 +80,6 @@ func (teaser *InactivityTeaser) Stop() {
 // Reset resets the InactivityTeaser. Next call to Start will run as if the InactivityTeaser was
 // just created
 func (teaser *InactivityTeaser) Reset() {
-	if teaser.reminder != nil {
-		teaser.reminder.Stop()
-	}
+	teaser.Stop()
 	teaser.reminder = createReminder(teaser.timeout, teaser.period)
 }
