@@ -46,32 +46,42 @@ func createTeaser() {
 // until timeout expires.
 // The message is taken from teasingMessage map defined at the top of this file
 func createReminder(timeout time.Duration, teasingPeriod time.Duration) *PeriodicReminder {
-	return NewPeriodicReminder(
-		timeout,
-		teasingPeriod,
-		func(ctx ReminderContext) {
-			if ctx.eventType == PeriodicEvent {
-				msg, ok := teasingMessage[ctx.index]
-				if ok {
-					report.PostWarning(msg)
+	if settings.EnableTcrInactivityTeaser {
+		return NewPeriodicReminder(
+			timeout,
+			teasingPeriod,
+			func(ctx ReminderContext) {
+				if ctx.eventType == PeriodicEvent {
+					msg, ok := teasingMessage[ctx.index]
+					if ok {
+						report.PostWarning(msg)
+					}
 				}
-			}
-		},
-	)
+			},
+		)
+	}
+	return nil
 }
 
 // Start starts sending periodic teasing messages
 func (teaser *InactivityTeaser) Start() {
-	teaser.reminder.Start()
+	if teaser.reminder != nil {
+		teaser.reminder.Start()
+	}
 }
 
 // Stop stops sending periodic teasing messages
 func (teaser *InactivityTeaser) Stop() {
-	teaser.reminder.Stop()
+	if teaser.reminder != nil {
+		teaser.reminder.Stop()
+	}
 }
 
 // Reset resets the InactivityTeaser. Next call to Start will run as if the InactivityTeaser was
 // just created
 func (teaser *InactivityTeaser) Reset() {
+	if teaser.reminder != nil {
+		teaser.reminder.Stop()
+	}
 	teaser.reminder = createReminder(teaser.timeout, teaser.period)
 }

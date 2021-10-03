@@ -98,28 +98,18 @@ func RunAsDriver() {
 			}
 		},
 		func(interrupt <-chan bool) bool {
-			//var teaser *timer.PeriodicReminder
-			if settings.EnableTcrInactivityTeaser {
-				//teaser := timer.createReminder(DefaultInactivityTimeout, DefaultInactivityPeriod)
-				timer.GetInactivityTeaserInstance().Start()
-			}
+			inactivityTeaser := timer.GetInactivityTeaserInstance()
+			inactivityTeaser.Start()
 			if waitForChange(interrupt) {
 				// Some file changes were detected
-				if settings.EnableTcrInactivityTeaser {
-					timer.GetInactivityTeaserInstance().Stop()
-					timer.GetInactivityTeaserInstance().Reset()
-				}
+				inactivityTeaser.Reset()
 				runTCR()
-				if settings.EnableTcrInactivityTeaser {
-					timer.GetInactivityTeaserInstance().Start()
-				}
+				inactivityTeaser.Start()
 				return true
 			}
 			// If we arrive here this means that the end of waitForChange
 			// was triggered by the user
-			if settings.EnableTcrInactivityTeaser {
-				timer.GetInactivityTeaserInstance().Start()
-			}
+			inactivityTeaser.Reset()
 			return false
 		},
 		func() {
