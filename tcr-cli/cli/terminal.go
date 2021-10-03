@@ -113,6 +113,9 @@ func (term *Terminal) mainMenu() {
 		case 'q', 'Q':
 			stty.Restore()
 			engine.Quit()
+		case enterKey:
+			// We ignore enter key press
+			continue
 		default:
 			term.warning("No action is mapped to shortcut '",
 				string(keyboardInput), "'")
@@ -145,6 +148,9 @@ func (term *Terminal) startAs(r role.Role) {
 			term.warning("OK, I heard you")
 			stopRequest = true
 			engine.Stop()
+		case enterKey:
+			// We ignore enter key press
+			continue
 		default:
 			term.warning("Key not recognized. Press ESC or Q to leave ", r.Name(), " role")
 		}
