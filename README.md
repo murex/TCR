@@ -11,9 +11,7 @@ TCR utility experiment, written in Go
 
 Available [here](./doc/tcr.md)
 
-## TODO
-
-### Base version
+## Main Features
 
 - [x] Gradle toolchain
 - [x] Maven toolchain
@@ -24,13 +22,15 @@ Available [here](./doc/tcr.md)
 - [x] Git push integration
 - [x] Git commit integration
 - [x] Git checkout integration
+- [x] Tool version
+- [x] Mob Timer integration
+- [x] GUI - local application
+
+## TODO
 
 ### Other features & ideas
 
-- [x] Tool version
-- [ ] Mob Timer integration
 - [ ] Connection with video sharing tool
-- [x] GUI - local application
 - [ ] GUI - Web interface
 - [ ] Multi-user sessions
 - [ ] Cmake wrapper
@@ -39,7 +39,7 @@ Available [here](./doc/tcr.md)
 - [ ] Kotlin language
 - [ ] CLI option for setting git polling frequency
 - [ ] Keyboard shortcuts for increasing/decreasing git polling frequency
-- [ ] TCR online (using and online code editor)
+- [ ] TCR online (using an online code editor)
 
 ## Contributors
 
