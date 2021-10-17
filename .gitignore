@@ -1,6 +1,9 @@
 
-# Cross-platform builds
+# Local builds
+/tcr-cli/tcr-cli
+/tcr-gui/tcr-gui
 
+# Cross-platform builds
 /**/build/
 /**/dist/
 /**/target/
