@@ -1,7 +1,7 @@
 package toolchain
 
 import (
-	"github.com/mengdaming/tcr-engine/language"
+	"github.com/murex/tcr-engine/language"
 )
 
 // CmakeToolchain is the toolchain implementation for CMake

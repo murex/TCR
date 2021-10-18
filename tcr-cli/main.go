@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mengdaming/tcr-cli/cmd"
+	"github.com/murex/tcr-cli/cmd"
 )
 
 func main() {

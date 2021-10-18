@@ -1,15 +1,15 @@
-module github.com/mengdaming/tcr-cli
+module github.com/murex/tcr-cli
 
 go 1.17
 
-replace github.com/mengdaming/tcr-engine => ../tcr-engine
+replace github.com/murex/tcr-engine => ../tcr-engine
 
 require (
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d
 	github.com/logrusorgru/aurora v2.0.3+incompatible
-	github.com/mengdaming/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/murex/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/testify v1.7.0

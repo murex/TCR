@@ -1,16 +1,16 @@
-module github.com/mengdaming/tcr-gui
+module github.com/murex/tcr-gui
 
 go 1.17
 
-replace github.com/mengdaming/tcr-engine => ../tcr-engine
+replace github.com/murex/tcr-engine => ../tcr-engine
 
-replace github.com/mengdaming/tcr-cli => ../tcr-cli
+replace github.com/murex/tcr-cli => ../tcr-cli
 
 require (
 	fyne.io/fyne/v2 v2.1.0
-	github.com/mengdaming/tcr-cli v0.0.0-00010101000000-000000000000
-	github.com/mengdaming/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/murex/tcr-cli v0.0.0-00010101000000-000000000000
+	github.com/murex/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
 )

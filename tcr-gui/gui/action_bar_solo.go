@@ -6,7 +6,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/mengdaming/tcr-engine/engine"
+	"github.com/murex/tcr-engine/engine"
 )
 
 // SoloActionBarButtonPanel is the action bar panel containing the buttons when running in solo

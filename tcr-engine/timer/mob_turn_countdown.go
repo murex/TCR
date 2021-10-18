@@ -1,8 +1,8 @@
 package timer
 
 import (
-	"github.com/mengdaming/tcr-engine/report"
-	"github.com/mengdaming/tcr-engine/runmode"
+	"github.com/murex/tcr-engine/report"
+	"github.com/murex/tcr-engine/runmode"
 	"strings"
 	"time"
 )

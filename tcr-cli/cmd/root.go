@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/mengdaming/tcr-cli/cli"
-	"github.com/mengdaming/tcr-engine/engine"
-	"github.com/mengdaming/tcr-engine/runmode"
-	"github.com/mengdaming/tcr-engine/settings"
+	"github.com/murex/tcr-cli/cli"
+	"github.com/murex/tcr-engine/engine"
+	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr-engine/settings"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

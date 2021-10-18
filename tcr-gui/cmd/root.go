@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"github.com/mengdaming/tcr-engine/engine"
-	"github.com/mengdaming/tcr-engine/runmode"
-	"github.com/mengdaming/tcr-engine/settings"
-	"github.com/mengdaming/tcr-gui/gui"
+	"github.com/murex/tcr-engine/engine"
+	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr-engine/settings"
+	"github.com/murex/tcr-gui/gui"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

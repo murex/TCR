@@ -1,8 +1,8 @@
 package timer
 
 import (
-	"github.com/mengdaming/tcr-engine/report"
-	"github.com/mengdaming/tcr-engine/settings"
+	"github.com/murex/tcr-engine/report"
+	"github.com/murex/tcr-engine/settings"
 	"sync"
 	"time"
 )
