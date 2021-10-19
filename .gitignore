@@ -1,5 +1,12 @@
 
-# Local builds
+# Goland - ignore entirely .idea folder
+**/.idea/
+
+# VSCode - ignore entirely .vscode folder and output bin folder
+**/.vscode/
+**/bin/
+
+# Local builds (MacOS & Linux)
 /tcr-cli/tcr-cli
 /tcr-gui/tcr-gui
 
