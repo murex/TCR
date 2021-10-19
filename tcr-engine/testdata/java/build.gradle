@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'java-library'
+    id 'com.adarshr.test-logger' version '3.0.0'
 }
 
 java {
@@ -14,29 +15,7 @@ repositories {
 }
 
 dependencies {
-    // JUnit 4
     testImplementation 'junit:junit:4.13.1'
-
-    // ApprovalTests (for Golden Master tests)
-    // Uncomment if the kata is using it. Remove otherwise
-    // testImplementation 'com.approvaltests:approvaltests:9.3.0'
-
-    // Cucumber
-    // Uncomment if the kata is using it. Remove otherwise
-    // testImplementation 'io.cucumber:cucumber-junit:6.9.0'
-    // testImplementation 'io.cucumber:cucumber-java8:6.9.0'
-
-    // Cucumber with Spring
-    // Uncomment if the kata is using it. Remove otherwise
-    // testImplementation 'io.cucumber:cucumber-spring:6.9.0'
-
-    // Gson parser
-    // Uncomment if the kata is using it. Remove otherwise
-    // implementation 'com.google.code.gson:gson:2.8.6'
-
-    // Guava utility package
-    // Uncomment if the kata is using it. Remove otherwise
-    // implementation 'com.google.guava:guava:30.0-jre'
 }
 
 group = 'com.murex.xpcoaching'
@@ -44,4 +23,23 @@ version = '1.0-SNAPSHOT'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+testlogger {
+    theme 'standard'
+    showExceptions true
+    showStackTraces true
+    showFullStackTraces false
+    showCauses true
+    slowThreshold 5000
+    showSummary true
+    showSimpleNames false
+    showPassed true
+    showSkipped true
+    showFailed true
+    showStandardStreams false
+    showPassedStandardStreams true
+    showSkippedStandardStreams true
+    showFailedStandardStreams true
+    logLevel 'lifecycle'
 }
