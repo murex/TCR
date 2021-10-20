@@ -46,7 +46,7 @@ If you are a technical coach, you can advise participants to your coaching sessi
 
 1. Have [git](https://git-scm.com/) installed on your machine
 2. Have a clone of the git repository containing the code you intend to work on
-3. Supported platforms: MacOS (x86_64), Linux (x86_64) and Windows (x86_64)
+3. Supported platforms: macOS (x86_64), Linux (x86_64) and Windows (x86_64)
 4. Supported languages: TCR tool currently works with Java and C++ out of the box (more to come in the future)
 5. Have [Java JDK](https://jdk.java.net/archive/) 11 or later installed for java, or a working C++ compiler for C++
 6. Build toolchains: [Gradle](https://gradle.org/) and [Maven](https://maven.apache.org/index.html) for
@@ -161,16 +161,91 @@ of `CMake` that will then be used by the TCR tool.
 
 Refer to [here](./doc/tcr.md) for TCR command line help and additional options.
 
+## Building TCR tool on your machine
+
+This section provides information related to TCR tool development environment setup for those who would like to build
+TCR tool locally.
+
+### Clone tcr repository - `Required`
+
+```shell
+$ git clone https://github.com/murex/tcr.git
+$ cd tcr
+```
+
+### Install Go SDK - `Required`
+
+TCR is written in Go. This implies having Go compiler and tools installed on your machine.
+
+Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.17** or higher.
+
+### Install additional Go tools and utility packages
+
+#### Go IDE - `Optional`
+
+You can check this [link](https://www.tabnine.com/blog/top-7-golang-ides-for-go-developers/)
+for a list of recommended IDEs supporting Go language.
+
+#### Cobra library and tools - `Optional`
+
+TCR Go command line options and parameters are managed using [Cobra](https://github.com/spf13/cobra).
+
+The Cobra library download is already dealt with through Go Module dependencies, which means that in most situations you
+will not need to worry about installing it.
+
+In case you need to add or modify subcommands, options or parameters, you may need to use the Cobra Generator. In this
+situation you can refer to
+[Cobra Generator documentation](https://github.com/spf13/cobra/blob/master/user_guide.md#using-the-cobra-generator)
+
+#### GoReleaser utility - `Optional`
+
+New versions of TCR Go are released through [GoReleaser](https://goreleaser.com/).
+
+You should not need it as long as you don't have to release a new TCR Go version.
+
+If you do, you can refer to [GoReleaser Installation Instructions] for installing it locally on your machine.
+
+In most cases you will not even have to install it locally as TCR-Go new releases are built through a GoReleaser GitHub
+action.
+
+#### golangci-lint package - `Optional`
+
+We use a Go Linter called [golangci-lint](https://golangci-lint.run/) to perform various checks on TCR Go code.
+
+A GitHub action triggers execution of golangci-lint every time a new TCR-Go version is being released.
+
+Although not mandatory, we advise you to install it locally on your machine to check that your changes comply with
+golangci-lint rules. Refer to [golangci-lint installation instructions](https://golangci-lint.run/usage/install/)
+for installation.
+
+Once golangci-lint is installed, you can run it from the root directory:
+
+```shell
+$ make lint
+```
+
+#### Fyne toolkit - `Optional`
+
+The GUI version of TCR-Go is built on top of [Fyne toolkit](https://fyne.io/) for all GUI-related stuff.
+
+Refer to [Fyne Develop](https://developer.fyne.io/) for installation and usage instructions.
+
+You will not need it as long as you're working on the TCR Command Line implementation only.
+
+### Build TCR executable
+
+`TODO - Add instructions`
+
+### Release a new TCR version
+
+`TODO - Add instructions`
+
 ## How to Contribute?
 
 TCR tool is still at an early stage of development, and there are still plenty of features that we would like to add in
 the future, such as additional languages and toolchains, collaboration utilities, etc.
 
 Refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for general contribution agreement and guidelines.
-
-### Development environment and tools
-
-`TODO - Add instructions related to development environment and tools`
 
 ## License
 
