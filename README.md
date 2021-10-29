@@ -100,7 +100,7 @@ of `CMake` that will then be used by the TCR tool.
 <details>
   <summary>On MacOS</summary>
 
-1. Download the latest version of TCR for Darwin from [here](https://github.com/murex/tcr/releases)
+1. Download the latest version of TCR for Darwin from [here](https://github.com/murex/TCR/releases)
 
 2. Extract TCR executable
 
@@ -120,7 +120,7 @@ of `CMake` that will then be used by the TCR tool.
 <details>
   <summary>On Linux</summary>
 
-1. Download the latest version of TCR for Linux from [here](https://github.com/murex/tcr/releases)
+1. Download the latest version of TCR for Linux from [here](https://github.com/murex/TCR/releases)
 
 2. Extract TCR executable
 
@@ -140,7 +140,7 @@ of `CMake` that will then be used by the TCR tool.
 <details>
   <summary>On Windows</summary>
 
-1. Download the latest version of TCR for Windows from [here](https://github.com/murex/tcr/releases)
+1. Download the latest version of TCR for Windows from [here](https://github.com/murex/TCR/releases)
 
 2. Extract TCR executable
 
@@ -166,11 +166,11 @@ Refer to [here](./doc/tcr.md) for TCR command line help and additional options.
 This section provides information related to TCR tool development environment setup for those who would like to build
 TCR tool locally.
 
-### Clone tcr repository - `Required`
+### Clone TCR repository - `Required`
 
 ```shell
-$ git clone https://github.com/murex/tcr.git
-$ cd tcr
+$ git clone https://github.com/murex/TCR.git
+$ cd TCR
 ```
 
 ### Install Go SDK - `Required`
@@ -249,7 +249,7 @@ Refer to [CONTRIBUTING.md](./CONTRIBUTING.md) for general contribution agreement
 
 ## License
 
-The `tcr` application and the accompanying materials are made available under the terms of the [MIT License](LICENSE.md)
+The `TCR` application and the accompanying materials are made available under the terms of the [MIT License](LICENSE.md)
 which accompanies this distribution, and is available at the
 [Open Source site](https://opensource.org/licenses/MIT).
 
