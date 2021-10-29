@@ -1,5 +1,6 @@
 # This is goreleaser configuration for releasing tcr-cli application.
 # Make sure to check the documentation at http://goreleaser.com
+project_name: tcr
 before:
   hooks:
     - make tidy

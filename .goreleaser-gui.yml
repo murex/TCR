@@ -1,6 +1,7 @@
 # This is goreleaser configuration for releasing tcr-cli application.
 # WARNING - This is still work in progress
 # Make sure to check the documentation at http://goreleaser.com
+project_name: tcr
 before:
   hooks:
     - go mod tidy
@@ -9,7 +10,7 @@ builds:
     goos:
       - windows
       - linux
-#      - darwin
+    #      - darwin
     goarch:
       - amd64
     gobinary: "fyne-cross-wrapper.bat"
@@ -61,7 +62,7 @@ signs:
     # args: ["-u", "<key id, fingerprint, email, ...>", "--output", "${signature}", "--detach-sign", "${artifact}"]
     #
     # Defaults to `["--output", "${signature}", "--detach-sign", "${artifact}"]`
-#    args: [ "--output", "${signature}", "${artifact}", "{{ .ProjectName }}" ]
+    #    args: [ "--output", "${signature}", "${artifact}", "{{ .ProjectName }}" ]
 
 
     # Which artifacts to sign
@@ -83,13 +84,13 @@ signs:
     #
     # Defaults to empty (which implies no filtering).
     ids:
-#      - foo
-#      - bar
+    #      - foo
+    #      - bar
 
     # Stdin data template to be given to the signature command as stdin.
     #
     # Defaults to empty
-#    stdin: '{{ .Env.GPG_PASSWORD }}'
+    #    stdin: '{{ .Env.GPG_PASSWORD }}'
 
     # StdinFile file to be given to the signature command as stdin.
     #
