@@ -33,6 +33,7 @@ import (
 	"github.com/murex/tcr-engine/report"
 	"github.com/murex/tcr-engine/role"
 	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr-engine/settings"
 	"github.com/murex/tcr-engine/ui"
 	"image/color"
 	"strings"
@@ -76,7 +77,7 @@ func New(p engine.Params) ui.UserInterface {
 	var gui = GUI{params: p}
 	// Until the GUI is able to report, we rely on the terminal to report information
 	gui.term = cli.New(p)
-	report.PostInfo("Opening TCR GUI")
+	report.PostInfo("Opening ", settings.ApplicationName, " GUI")
 
 	gui.initApp()
 	gui.initBaseDirSelectionDialog()
@@ -143,7 +144,7 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 // ShowSessionInfo shows main information related to the current TCR session
 func (gui *GUI) ShowSessionInfo() {
 	d, l, t, ap, b := engine.GetSessionInfo()
-	gui.win.SetTitle(fmt.Sprintf("TCR - %v", d))
+	gui.win.SetTitle(fmt.Sprintf("%v - %v", settings.ApplicationName, d))
 	gui.sessionPanel.setLanguage(l)
 	gui.sessionPanel.setToolchain(t)
 	gui.sessionPanel.setBranch(b)
@@ -168,6 +169,7 @@ func (gui *GUI) error(a ...interface{}) {
 
 func (gui *GUI) event(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
+	gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
 }
 
 func (gui *GUI) trace(a ...interface{}) {
@@ -187,7 +189,7 @@ func (gui *GUI) initApp() {
 	gui.app = app.New()
 	icon, _ := fyne.LoadResourceFromPath("Icon.png")
 	gui.app.SetIcon(icon)
-	gui.win = gui.app.NewWindow("TCR")
+	gui.win = gui.app.NewWindow(settings.ApplicationName)
 	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
 	gui.win.SetCloseIntercept(func() {
 		gui.quit("Closing application")
