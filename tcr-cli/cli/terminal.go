@@ -23,6 +23,7 @@ SOFTWARE.
 package cli
 
 import (
+	"github.com/murex/tcr-cli/desktop"
 	"github.com/murex/tcr-engine/engine"
 	"github.com/murex/tcr-engine/report"
 	"github.com/murex/tcr-engine/role"
@@ -70,6 +71,7 @@ func (term *Terminal) StartReporting() {
 			term.error(msg.Text)
 		case report.Event:
 			term.event(msg.Text)
+			desktop.ShowNotification(desktop.NormalLevel, "TCR", msg.Text)
 		}
 	})
 }

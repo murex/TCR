@@ -20,22 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package notification
+package desktop
 
 import (
-	"testing"
-	"time"
+	"github.com/gen2brain/beeep"
+	"github.com/murex/tcr-engine/report"
 )
 
-func Test_beeep_beep(t *testing.T) {
-	tryBeeepBeep(440, 1)
-	time.Sleep(2 * time.Second)
-}
+// NotificationLevel is the level of desktop notification messages. It can be either
+// normal or high
+type NotificationLevel int
 
-func Test_beeep_notify(t *testing.T) {
-	tryBeeepNotify()
-}
+// List of possible values for desktop notification level
+const (
+	NormalLevel NotificationLevel = iota
+	HighLevel
+)
 
-func Test_beeep_alert(t *testing.T) {
-	tryBeeepAlert()
+// ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
+func ShowNotification(level NotificationLevel, title string, message string) {
+	var err error
+
+	switch level {
+	case NormalLevel:
+		err = beeep.Notify(title, message, "")
+	case HighLevel:
+		err = beeep.Alert(title, message, "")
+	}
+
+	if err != nil {
+		report.PostError("ShowNotification:", err)
+	}
 }
