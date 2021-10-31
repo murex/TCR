@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr-engine/report"
 	"github.com/murex/tcr-engine/role"
 	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr-engine/settings"
 	"github.com/murex/tcr-engine/stty"
 	"github.com/murex/tcr-engine/ui"
 	"os"
@@ -41,15 +42,13 @@ type Terminal struct {
 }
 
 const (
-	tcrLinePrefix = "[TCR]"
-
 	enterKey  = 0x0a
 	escapeKey = 0x1b
 )
 
 // New creates a new instance of terminal
 func New(p engine.Params) ui.UserInterface {
-	setLinePrefix(tcrLinePrefix)
+	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = Terminal{params: p}
 	term.StartReporting()
 	return &term
@@ -71,7 +70,7 @@ func (term *Terminal) StartReporting() {
 			term.error(msg.Text)
 		case report.Event:
 			term.event(msg.Text)
-			desktop.ShowNotification(desktop.NormalLevel, "TCR", msg.Text)
+			desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, msg.Text)
 		}
 	})
 }

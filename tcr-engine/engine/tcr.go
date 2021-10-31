@@ -57,7 +57,7 @@ func Init(u ui.UserInterface, params Params) {
 
 	uitf = u
 
-	report.PostInfo("Starting TCR version ", Version, "...")
+	report.PostInfo("Starting ", settings.ApplicationName, " version ", Version, "...")
 
 	SetRunMode(params.Mode)
 	pollingPeriod = params.PollingPeriod
@@ -86,7 +86,7 @@ func Init(u ui.UserInterface, params Params) {
 func warnIfOnRootBranch(branch string) {
 	for _, b := range []string{"main", "master"} {
 		if b == branch {
-			if !uitf.Confirm("Running TCR on branch \""+branch+"\" is not recommended", false) {
+			if !uitf.Confirm("Running "+settings.ApplicationName+" on branch \""+branch+"\" is not recommended", false) {
 				Quit()
 			}
 			break
