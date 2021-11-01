@@ -103,3 +103,13 @@ func (sp *SessionPanel) setBranch(branch string) {
 func (sp *SessionPanel) setGitAutoPush(autoPush bool) {
 	sp.autoPushToggle.SetChecked(autoPush)
 }
+
+func (sp *SessionPanel) disableActions() {
+	sp.modeSelect.Disable()
+	sp.autoPushToggle.Disable()
+}
+
+func (sp *SessionPanel) enableActions() {
+	sp.modeSelect.Enable()
+	sp.autoPushToggle.Enable()
+}

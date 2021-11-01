@@ -134,11 +134,13 @@ func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
 	report.PostTitle("Starting as a ", strings.Title(r.Name()))
+	gui.sessionPanel.disableActions()
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
 	report.PostInfo("Ending ", strings.Title(r.Name()), " role")
+	gui.sessionPanel.enableActions()
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
@@ -242,8 +244,6 @@ func (gui *GUI) initTcrEngine(baseDir string) {
 	engine.Init(gui, gui.params)
 	gui.term.StopReporting()
 }
-
-// TODO Disable session panel buttons when driver or navigator modes are in running state
 
 // TODO Add possibility to tune mob timer duration from the GUI
 
