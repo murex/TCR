@@ -57,7 +57,7 @@ func Init(u ui.UserInterface, params Params) {
 
 	uitf = u
 
-	report.PostInfo("Starting ", settings.ApplicationName, " version ", Version, "...")
+	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
 	SetRunMode(params.Mode)
 	pollingPeriod = params.PollingPeriod

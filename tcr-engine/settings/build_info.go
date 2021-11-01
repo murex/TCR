@@ -20,9 +20,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package settings
 
-// Version is TCR application version.
-// Its value must always be in sync with the git tag used when releasing a new version
-// TODO Use the build tag version without the need to hardcode it here
-const Version = "0.6.2"
+import (
+	"fmt"
+)
+
+// Below variables are set at build time through -ldflags
+var (
+	BuildVersion = "dev"
+	BuildOs      = "unknown"
+	BuildArch    = "unknown"
+	BuildCommit  = "none"
+	BuildDate    = "unknown"
+	BuildAuthor  = "unknown"
+)
+
+// PrintBuildInfo prints information related to the build
+func PrintBuildInfo() {
+	printBuildInfoValue("Version", BuildVersion)
+	printBuildInfoValue("OS Family", BuildOs)
+	printBuildInfoValue("Architecture", BuildArch)
+	printBuildInfoValue("Commit", BuildCommit)
+	printBuildInfoValue("Build Date", BuildDate)
+	printBuildInfoValue("Built By", BuildAuthor)
+}
+
+func printBuildInfoValue(description string, value string) {
+	fmt.Printf("- %s:\t%s\n", description, value)
+}

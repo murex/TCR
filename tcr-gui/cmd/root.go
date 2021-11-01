@@ -38,16 +38,20 @@ import (
 // Command Line Options placeholders
 
 var params engine.Params
+var infoFlag bool
 
 var rootCmd = &cobra.Command{
 	Use:     "tcr-gui",
-	Version: engine.Version,
-	Short:   "TCR (Test && Commit || Revert)",
+	Version: settings.BuildVersion,
+	Short:   settings.ApplicationShortDescription,
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a GUI.`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		printBuildInfo()
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we open the gui by default
 		// so that the user can decide what they want to do
@@ -99,6 +103,19 @@ func init() {
 		"d",
 		settings.DefaultMobTurnDuration,
 		"Set the duration for role rotation countdown timer")
+
+	rootCmd.PersistentFlags().BoolVarP(&infoFlag,
+		"info",
+		"i",
+		false,
+		"show build information about TCR application")
+}
+
+func printBuildInfo() {
+	if infoFlag {
+		settings.PrintBuildInfo()
+		os.Exit(0)
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.

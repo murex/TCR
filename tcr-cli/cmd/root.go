@@ -24,11 +24,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/mitchellh/go-homedir"
 	"github.com/murex/tcr-cli/cli"
 	"github.com/murex/tcr-engine/engine"
 	"github.com/murex/tcr-engine/runmode"
 	"github.com/murex/tcr-engine/settings"
-	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
@@ -37,24 +37,30 @@ import (
 // Command Line Options placeholders
 
 var params engine.Params
+var infoFlag bool
 
-var rootCmd = &cobra.Command{
-	Use:     "tcr",
-	Version: engine.Version,
-	Short:   "TCR (Test && Commit || Revert)",
-	Long: `
+var (
+	rootCmd = &cobra.Command{
+		Use:     "tcr",
+		Version: settings.BuildVersion,
+		Short:   settings.ApplicationShortDescription,
+		Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a terminal.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.Mob{}
-		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = settings.DefaultPollingPeriod
-		u := cli.New(params)
-		u.Start()
-	},
-}
+		PreRun: func(cmd *cobra.Command, args []string) {
+			printBuildInfo()
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			params.Mode = runmode.Mob{}
+			params.AutoPush = params.Mode.AutoPushDefault()
+			params.PollingPeriod = settings.DefaultPollingPeriod
+			u := cli.New(params)
+			u.Start()
+		},
+	}
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -77,25 +83,38 @@ func init() {
 		"toolchain",
 		"t",
 		"",
-		"Indicate the toolchain to be used by TCR")
+		"indicate the toolchain to be used by TCR")
 
 	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
 		"base-dir",
 		"b",
 		"",
-		"Indicate the base directory from which TCR is running")
+		"indicate the base directory from which TCR is running")
 
 	rootCmd.Flags().BoolVarP(&params.AutoPush,
 		"auto-push",
 		"p",
 		false,
-		"Enable git push after every commit")
+		"enable git push after every commit")
 
 	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
 		"duration",
 		"d",
 		settings.DefaultMobTurnDuration,
-		"Set the duration for role rotation countdown timer")
+		"set the duration for role rotation countdown timer")
+
+	rootCmd.PersistentFlags().BoolVarP(&infoFlag,
+		"info",
+		"i",
+		false,
+		"show build information about TCR application")
+}
+
+func printBuildInfo() {
+	if infoFlag {
+		settings.PrintBuildInfo()
+		os.Exit(0)
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.

@@ -29,6 +29,9 @@ import "time"
 const (
 	// ApplicationName is the name of the application
 	ApplicationName = "TCR"
+	// ApplicationShortDescription is a short description the application
+	ApplicationShortDescription = "TCR (Test && Commit || Revert)"
+
 	// DefaultPollingPeriod is the waiting time between 2 consecutive calls to git pull when running as Navigator
 	DefaultPollingPeriod = 2 * time.Second
 	// DefaultMobTurnDuration is the default duration for a mob turn
