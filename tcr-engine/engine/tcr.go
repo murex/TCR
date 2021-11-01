@@ -241,6 +241,7 @@ func commit() {
 }
 
 func revert() {
+	// TODO Make revert messages more meaningful when only test code has changed
 	report.PostWarning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
 		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
