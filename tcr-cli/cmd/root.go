@@ -49,7 +49,7 @@ This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a terminal.`,
-		PreRun: func(cmd *cobra.Command, args []string) {
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			printBuildInfo()
 		},
 		Run: func(cmd *cobra.Command, args []string) {
