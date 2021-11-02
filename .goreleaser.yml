@@ -8,16 +8,17 @@ builds:
   - id: "tcr-cli"
     dir: tcr-cli
     binary: tcr
-    ldflags:
-      - -s -w
-      - -X github.com/murex/tcr-engine/settings.BuildVersion={{.Version}}
-      - -X github.com/murex/tcr-engine/settings.BuildOs={{.Os}}
-      - -X github.com/murex/tcr-engine/settings.BuildArch={{.Arch}}
-      - -X github.com/murex/tcr-engine/settings.BuildCommit={{.Commit}}
-      - -X github.com/murex/tcr-engine/settings.BuildDate={{.Date}}
-      - -X github.com/murex/tcr-engine/settings.BuildAuthor=goreleaser
     env:
       - CGO_ENABLED=0
+      - SETTINGS_PKG=github.com/murex/tcr-engine/settings
+    ldflags:
+      - -s -w
+      - -X {{.Env.SETTINGS_PKG}}.BuildVersion={{.Version}}
+      - -X {{.Env.SETTINGS_PKG}}.BuildOs={{.Os}}
+      - -X {{.Env.SETTINGS_PKG}}.BuildArch={{.Arch}}
+      - -X {{.Env.SETTINGS_PKG}}.BuildCommit={{.Commit}}
+      - -X {{.Env.SETTINGS_PKG}}.BuildDate={{.Date}}
+      - -X {{.Env.SETTINGS_PKG}}.BuildAuthor=goreleaser
     goos:
       - linux
       - windows
