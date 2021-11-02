@@ -22,13 +22,14 @@ cov:
 tidy:
 	@go mod tidy
 
+SETTINGS_PKG="github.com/murex/tcr-engine/settings"
 .PHONY: build
 build:
-	@go build -ldflags '-s -w \
-    		-X github.com/murex/tcr-engine/settings.BuildVersion='`git describe --tags`' \
-            -X github.com/murex/tcr-engine/settings.BuildOs='`go env GOOS`' \
-            -X github.com/murex/tcr-engine/settings.BuildArch='`go env GOARCH`' \
-            -X github.com/murex/tcr-engine/settings.BuildCommit='`git rev-list --max-count=1 --tags`' \
-            -X github.com/murex/tcr-engine/settings.BuildDate='`date -u +%FT%TZ`' \
-            -X github.com/murex/tcr-engine/settings.BuildAuthor='`id -un`' \
-            '
+	@go build -ldflags "-s -w \
+    		-X ${SETTINGS_PKG}.BuildVersion="`git describe --tags`" \
+            -X ${SETTINGS_PKG}.BuildOs="`go env GOOS`" \
+            -X ${SETTINGS_PKG}.BuildArch="`go env GOARCH`" \
+            -X ${SETTINGS_PKG}.BuildCommit="`git rev-list --max-count=1 --tags`" \
+            -X ${SETTINGS_PKG}.BuildDate="`date -u +%FT%TZ`" \
+            -X ${SETTINGS_PKG}.BuildAuthor="`id -un`" \
+            "
