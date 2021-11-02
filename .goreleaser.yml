@@ -24,7 +24,9 @@ builds:
       - windows
       - darwin
     goarch:
+      - 386
       - amd64
+      - arm64
 archives:
   - replacements:
       darwin: Darwin
