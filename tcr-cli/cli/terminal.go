@@ -171,12 +171,31 @@ func (term *Terminal) startAs(r role.Role) {
 			term.warning("OK, I heard you")
 			stopRequest = true
 			engine.Stop()
+		case 't', 'T':
+			term.showTimerStatus(r)
 		case enterKey:
 			// We ignore enter key press
 			continue
 		default:
-			term.warning("Key not recognized. Press ESC or Q to leave ", r.Name(), " role")
+			term.keyNotRecognizedMessage(r)
 		}
+	}
+}
+
+func (term *Terminal) keyNotRecognizedMessage(r role.Role) {
+	term.warning("Key not recognized. Press ESC or Q to leave ", r.Name(), " role")
+}
+
+func (term *Terminal) showTimerStatus(r role.Role) {
+	if settings.EnableMobTimer {
+		switch r {
+		case role.Driver{}:
+			engine.ReportMobTimerStatus()
+		default:
+			term.info("There is no timer when running as ", r.Name())
+		}
+	} else {
+		term.keyNotRecognizedMessage(r)
 	}
 }
 

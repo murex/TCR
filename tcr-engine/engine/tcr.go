@@ -48,6 +48,7 @@ var (
 	sourceTree      filesystem.SourceTree
 	pollingPeriod   time.Duration
 	mobTurnDuration time.Duration
+	mobTimer        *timer.PeriodicReminder
 )
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -106,7 +107,7 @@ func SetAutoPush(ap bool) {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
-	var mobTimer *timer.PeriodicReminder
+
 	if settings.EnableMobTimer {
 		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
 	}
@@ -137,6 +138,7 @@ func RunAsDriver() {
 		func() {
 			if settings.EnableMobTimer {
 				mobTimer.Stop()
+				mobTimer = nil
 			}
 			uitf.NotifyRoleEnding(role.Driver{})
 		},
@@ -258,6 +260,13 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	b = git.WorkingBranch()
 
 	return d, l, t, ap, b
+}
+
+// ReportMobTimerStatus reports the status of the mob timer
+func ReportMobTimerStatus() {
+	if settings.EnableMobTimer {
+		timer.ReportCountDownStatus(mobTimer)
+	}
 }
 
 // SetRunMode sets the run mode for TCR engine

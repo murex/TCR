@@ -32,7 +32,7 @@ import (
 const messagePrefix = "(Mob Timer) "
 
 // NewMobTurnCountdown creates a PeriodicReminder that starts when entering driver mode, and
-// then sends a countdown message every minute until the driver turn expires, after which it
+// then sends a countdown message periodically until the driver turn expires, after which it
 // sends a message notifying the end of driver's turn
 func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicReminder {
 	if mode.NeedsCountdownTimer() {
@@ -73,4 +73,25 @@ func fmtDuration(d time.Duration) string {
 		s = s[:len(s)-2]
 	}
 	return s
+}
+
+// ReportCountDownStatus Reports the status for the provided PeriodicReminder,
+// If the PeriodicReminder is in running state, indicates time spent and time remaining.
+func ReportCountDownStatus(t *PeriodicReminder) {
+	if t == nil {
+		report.PostInfo("Mob Timer is off")
+	} else {
+		switch t.state {
+		case NotStarted:
+			report.PostInfo("Mob Timer is not started")
+		case Running:
+			report.PostInfo("Mob Timer: ",
+				fmtDuration(t.GetElapsedTime()), " done, ",
+				fmtDuration(t.GetRemainingTime()), " to go")
+		case StoppedAfterTimeOut:
+			report.PostInfo("Mob Timer has timed out")
+		case StoppedAfterInterruption:
+			report.PostInfo("Mob Timer was interrupted")
+		}
+	}
 }
