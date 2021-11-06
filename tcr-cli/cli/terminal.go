@@ -116,7 +116,7 @@ func (term *Terminal) trace(a ...interface{}) {
 }
 
 func (term *Terminal) mainMenu() {
-	term.printOptionsMenu()
+	term.whatShallWeDo()
 
 	keyboardInput := make([]byte, 1)
 	for {
@@ -126,13 +126,18 @@ func (term *Terminal) mainMenu() {
 		}
 
 		switch keyboardInput[0] {
+		case '?':
+			term.listMainMenuOptions("Available Options:")
 		case 'd', 'D':
 			term.startAs(role.Driver{})
+			term.whatShallWeDo()
 		case 'n', 'N':
 			term.startAs(role.Navigator{})
+			term.whatShallWeDo()
 		case 'p', 'P':
 			engine.ToggleAutoPush()
 			term.ShowSessionInfo()
+			term.whatShallWeDo()
 		case 'q', 'Q':
 			stty.Restore()
 			engine.Quit()
@@ -142,9 +147,13 @@ func (term *Terminal) mainMenu() {
 		default:
 			term.warning("No action is mapped to shortcut '",
 				string(keyboardInput), "'")
+			term.listMainMenuOptions("Please choose one of the following:")
 		}
-		term.printOptionsMenu()
 	}
+}
+
+func (term *Terminal) whatShallWeDo() {
+	term.listMainMenuOptions("What shall we do?")
 }
 
 func (term *Terminal) startAs(r role.Role) {
@@ -202,14 +211,6 @@ func (term *Terminal) showTimerStatus(r role.Role) {
 // ShowRunningMode shows the current running mode
 func (term *Terminal) ShowRunningMode(mode runmode.RunMode) {
 	term.title("Running in ", mode.Name(), " mode")
-}
-
-func (term *Terminal) printOptionsMenu() {
-	term.title("What shall we do?")
-	term.info("\tD -> ", strings.Title(role.Driver{}.Name()), " role")
-	term.info("\tN -> ", strings.Title(role.Navigator{}.Name()), " role")
-	term.info("\tP -> Turn on/off git auto-push")
-	term.info("\tQ -> Quit")
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
@@ -283,4 +284,17 @@ func (term *Terminal) Start() {
 
 func (term *Terminal) initTcrEngine() {
 	engine.Init(term, term.params)
+}
+
+func (term *Terminal) printMenuOption(shortcut byte, description ...interface{}) {
+	term.info(append([]interface{}{"\t", string(shortcut), " -> "}, description...)...)
+}
+
+func (term *Terminal) listMainMenuOptions(title string) {
+	term.title(title)
+	term.printMenuOption('D', strings.Title(role.Driver{}.Name()), " role")
+	term.printMenuOption('N', strings.Title(role.Navigator{}.Name()), " role")
+	term.printMenuOption('P', "Turn on/off git auto-push")
+	term.printMenuOption('Q', "Quit")
+	term.printMenuOption('?', "List available options")
 }
