@@ -30,3 +30,8 @@ type Driver struct {
 func (role Driver) Name() string {
 	return "driver"
 }
+
+// RunsWithTimer indicates whether this role uses a timer
+func (role Driver) RunsWithTimer() bool {
+	return true
+}

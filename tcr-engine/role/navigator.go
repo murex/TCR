@@ -30,3 +30,8 @@ type Navigator struct {
 func (role Navigator) Name() string {
 	return "navigator"
 }
+
+// RunsWithTimer indicates whether this role uses a timer
+func (role Navigator) RunsWithTimer() bool {
+	return false
+}
