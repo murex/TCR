@@ -76,7 +76,7 @@ func Init(u ui.UserInterface, params Params) {
 
 	if settings.EnableMobTimer {
 		mobTurnDuration = params.MobTurnDuration
-		report.PostInfo("Mob timer duration is ", mobTurnDuration)
+		report.PostInfo("Timer duration is ", mobTurnDuration)
 	}
 
 	uitf.ShowRunningMode(mode)
