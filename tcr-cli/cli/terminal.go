@@ -23,6 +23,7 @@ SOFTWARE.
 package cli
 
 import (
+	"fmt"
 	"github.com/murex/tcr-cli/desktop"
 	"github.com/murex/tcr-engine/engine"
 	"github.com/murex/tcr-engine/report"
@@ -70,7 +71,6 @@ func (term *Terminal) StartReporting() {
 			term.error(msg.Text)
 		case report.Event:
 			term.event(msg.Text)
-			desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, msg.Text)
 		}
 	})
 }
@@ -80,9 +80,9 @@ func (term *Terminal) StopReporting() {
 	report.Unsubscribe(term.reportingChannel)
 }
 
-// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
+// NotifyRoleStarting tells the user that TCR engine is starting witqh the provided role
 func (term *Terminal) NotifyRoleStarting(r role.Role) {
-	term.title("Starting as a ", strings.Title(r.Name()), ". Press ESC or Q when done")
+	term.title("Starting with ", strings.Title(r.Name()), " role. Press ? for options")
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
@@ -109,6 +109,7 @@ func (term *Terminal) error(a ...interface{}) {
 
 func (term *Terminal) event(a ...interface{}) {
 	printInGreen(a...)
+	desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
 }
 
 func (term *Terminal) trace(a ...interface{}) {
@@ -145,8 +146,7 @@ func (term *Terminal) mainMenu() {
 			// We ignore enter key press
 			continue
 		default:
-			term.warning("No action is mapped to shortcut '",
-				string(keyboardInput), "'")
+			term.warning("No action is mapped to shortcut '", string(keyboardInput), "'")
 			term.listMainMenuOptions("Please choose one of the following:")
 		}
 	}
@@ -176,6 +176,8 @@ func (term *Terminal) startAs(r role.Role) {
 			term.warning("Something went wrong while reading from stdin: ", err)
 		}
 		switch keyboardInput[0] {
+		case '?':
+			term.listRunningMenuOptions(r, "Available Options:")
 		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
@@ -186,25 +188,20 @@ func (term *Terminal) startAs(r role.Role) {
 			// We ignore enter key press
 			continue
 		default:
-			term.keyNotRecognizedMessage(r)
+			term.keyNotRecognizedMessage()
 		}
 	}
 }
 
-func (term *Terminal) keyNotRecognizedMessage(r role.Role) {
-	term.warning("Key not recognized. Press ESC or Q to leave ", r.Name(), " role")
+func (term *Terminal) keyNotRecognizedMessage() {
+	term.warning("Key not recognized. Press ? for available options")
 }
 
 func (term *Terminal) showTimerStatus(r role.Role) {
-	if settings.EnableMobTimer {
-		switch r {
-		case role.Driver{}:
-			engine.ReportMobTimerStatus()
-		default:
-			term.info("There is no timer when running as ", r.Name())
-		}
+	if settings.EnableMobTimer && r.RunsWithTimer() {
+		engine.ReportMobTimerStatus()
 	} else {
-		term.keyNotRecognizedMessage(r)
+		term.keyNotRecognizedMessage()
 	}
 }
 
@@ -296,5 +293,14 @@ func (term *Terminal) listMainMenuOptions(title string) {
 	term.printMenuOption('N', strings.Title(role.Navigator{}.Name()), " role")
 	term.printMenuOption('P', "Turn on/off git auto-push")
 	term.printMenuOption('Q', "Quit")
+	term.printMenuOption('?', "List available options")
+}
+
+func (term *Terminal) listRunningMenuOptions(r role.Role, title string) {
+	term.title(title)
+	if r.RunsWithTimer() {
+		term.printMenuOption('T', "Timer status")
+	}
+	term.printMenuOption('Q', "Quit ", r.Name(), " role")
 	term.printMenuOption('?', "List available options")
 }
