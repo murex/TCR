@@ -100,8 +100,8 @@ func (gui *GUI) StartReporting() {
 			gui.warning(msg.Text)
 		case report.Error:
 			gui.error(msg.Text)
-		case report.Event:
-			gui.event(msg.Text)
+		case report.Notification:
+			gui.notification(msg.Text)
 		}
 	})
 }
@@ -169,7 +169,7 @@ func (gui *GUI) error(a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
 }
 
-func (gui *GUI) event(a ...interface{}) {
+func (gui *GUI) notification(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
 	gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
 }

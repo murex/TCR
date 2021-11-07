@@ -38,7 +38,7 @@ const (
 	Title
 	Warning
 	Error
-	Event
+	Notification
 )
 
 // Message is the placeholder for any reported message
@@ -116,9 +116,9 @@ func PostError(a ...interface{}) {
 	postMessage(Error, a...)
 }
 
-// PostEvent posts an event message for reporting
-func PostEvent(a ...interface{}) {
-	postMessage(Event, a...)
+// PostNotification posts an event message for reporting
+func PostNotification(a ...interface{}) {
+	postMessage(Notification, a...)
 }
 
 func postMessage(msgType MessageType, a ...interface{}) {

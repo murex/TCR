@@ -69,8 +69,8 @@ func (term *Terminal) StartReporting() {
 			term.warning(msg.Text)
 		case report.Error:
 			term.error(msg.Text)
-		case report.Event:
-			term.event(msg.Text)
+		case report.Notification:
+			term.notification(msg.Text)
 		}
 	})
 }
@@ -107,7 +107,7 @@ func (term *Terminal) error(a ...interface{}) {
 	printInRed(a...)
 }
 
-func (term *Terminal) event(a ...interface{}) {
+func (term *Terminal) notification(a ...interface{}) {
 	printInGreen(a...)
 	desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
 }
@@ -171,13 +171,12 @@ func (term *Terminal) startAs(r role.Role) {
 	// ...Until the user decides to stop
 	keyboardInput := make([]byte, 1)
 	for stopRequest := false; !stopRequest; {
-		_, err := os.Stdin.Read(keyboardInput)
-		if err != nil {
+		if _, err := os.Stdin.Read(keyboardInput); err != nil {
 			term.warning("Something went wrong while reading from stdin: ", err)
 		}
 		switch keyboardInput[0] {
 		case '?':
-			term.listRunningMenuOptions(r, "Available Options:")
+			term.listRoleMenuOptions(r, "Available Options:")
 		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
@@ -296,9 +295,9 @@ func (term *Terminal) listMainMenuOptions(title string) {
 	term.printMenuOption('?', "List available options")
 }
 
-func (term *Terminal) listRunningMenuOptions(r role.Role, title string) {
+func (term *Terminal) listRoleMenuOptions(r role.Role, title string) {
 	term.title(title)
-	if r.RunsWithTimer() {
+	if settings.EnableMobTimer && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}
 	term.printMenuOption('Q', "Quit ", r.Name(), " role")
