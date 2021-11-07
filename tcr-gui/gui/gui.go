@@ -211,6 +211,8 @@ func (gui *GUI) initApp() {
 		gui.traceArea.container,
 	)
 	gui.win.SetContent(gui.topLevel)
+	gui.BuildMainMenu()
+
 }
 
 func (gui *GUI) setRunMode(mode runmode.RunMode) {
