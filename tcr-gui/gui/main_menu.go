@@ -51,7 +51,7 @@ func (gui *GUI) buildTcrMenu() *fyne.Menu {
 func (gui *GUI) buildTimerMenu() *fyne.Menu {
 	statusMenuItem := fyne.NewMenuItem("Status",
 		func() {
-
+			gui.showTimerStatus()
 		},
 	)
 	return fyne.NewMenu("Timer", statusMenuItem)

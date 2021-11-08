@@ -247,6 +247,12 @@ func (gui *GUI) initTcrEngine(baseDir string) {
 	gui.term.StopReporting()
 }
 
+func (gui *GUI) showTimerStatus() {
+	if settings.EnableMobTimer {
+		engine.ReportMobTimerStatus()
+	}
+}
+
 // TODO Add possibility to tune mob timer duration from the GUI
 
 // TODO Add possibility to disable/enable mob timer from the GUI

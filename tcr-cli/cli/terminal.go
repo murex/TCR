@@ -176,13 +176,13 @@ func (term *Terminal) startAs(r role.Role) {
 		}
 		switch keyboardInput[0] {
 		case '?':
-			term.listRoleMenuOptions(r, "Available Options:")
+			term.listRoleMenuOptions("Available Options:")
 		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
 			engine.Stop()
 		case 't', 'T':
-			term.showTimerStatus(r)
+			term.showTimerStatus()
 		case enterKey:
 			// We ignore enter key press
 			continue
@@ -196,12 +196,15 @@ func (term *Terminal) keyNotRecognizedMessage() {
 	term.warning("Key not recognized. Press ? for available options")
 }
 
-func (term *Terminal) showTimerStatus(r role.Role) {
-	if settings.EnableMobTimer && r.RunsWithTimer() {
-		engine.ReportMobTimerStatus()
-	} else {
-		term.keyNotRecognizedMessage()
+func (term *Terminal) showTimerStatus() {
+	if settings.EnableMobTimer {
+		if r := engine.GetCurrentRole(); r != nil && r.RunsWithTimer() {
+			engine.ReportMobTimerStatus()
+		} else {
+			term.keyNotRecognizedMessage()
+		}
 	}
+
 }
 
 // ShowRunningMode shows the current running mode
@@ -295,9 +298,10 @@ func (term *Terminal) listMainMenuOptions(title string) {
 	term.printMenuOption('?', "List available options")
 }
 
-func (term *Terminal) listRoleMenuOptions(r role.Role, title string) {
+func (term *Terminal) listRoleMenuOptions(title string) {
 	term.title(title)
-	if settings.EnableMobTimer && r.RunsWithTimer() {
+	r := engine.GetCurrentRole()
+	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}
 	term.printMenuOption('Q', "Quit ", r.Name(), " role")

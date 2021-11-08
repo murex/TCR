@@ -49,6 +49,7 @@ var (
 	pollingPeriod   time.Duration
 	mobTurnDuration time.Duration
 	mobTimer        *timer.PeriodicReminder
+	currentRole     role.Role
 )
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -105,16 +106,22 @@ func SetAutoPush(ap bool) {
 	git.EnablePush(ap)
 }
 
+// GetCurrentRole returns the role currently used for running TCR.
+// Returns nil when TCR engine is in standby
+func GetCurrentRole() role.Role {
+	return currentRole
+}
+
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
-
 	if settings.EnableMobTimer {
 		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
 	}
 
 	go fromBirthTillDeath(
 		func() {
-			uitf.NotifyRoleStarting(role.Driver{})
+			currentRole = role.Driver{}
+			uitf.NotifyRoleStarting(currentRole)
 			_ = git.Pull()
 			if settings.EnableMobTimer {
 				mobTimer.Start()
@@ -140,7 +147,8 @@ func RunAsDriver() {
 				mobTimer.Stop()
 				mobTimer = nil
 			}
-			uitf.NotifyRoleEnding(role.Driver{})
+			uitf.NotifyRoleEnding(currentRole)
+			currentRole = nil
 		},
 	)
 }
@@ -149,7 +157,8 @@ func RunAsDriver() {
 func RunAsNavigator() {
 	go fromBirthTillDeath(
 		func() {
-			uitf.NotifyRoleStarting(role.Navigator{})
+			currentRole = role.Navigator{}
+			uitf.NotifyRoleStarting(currentRole)
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -162,7 +171,8 @@ func RunAsNavigator() {
 			}
 		},
 		func() {
-			uitf.NotifyRoleEnding(role.Navigator{})
+			uitf.NotifyRoleEnding(currentRole)
+			currentRole = nil
 		},
 	)
 }
