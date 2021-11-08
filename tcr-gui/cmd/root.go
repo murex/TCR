@@ -72,14 +72,12 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	rootCmd.PersistentFlags().StringVarP(&params.CfgFile,
+		"config",
+		"c",
+		"",
+		"config file (default is $HOME/.tcr.yaml)")
 
-	//rootCmd.PersistentFlags().StringVar(&CfgFile, "config", "", "config file (default is $HOME/.tcr.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
 		"toolchain",
 		"t",
@@ -130,6 +128,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".tcr" (without extension).
 		viper.AddConfigPath(home)
+		viper.SetConfigType("yaml")
 		viper.SetConfigName(".tcr")
 	}
 
@@ -137,7 +136,7 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		_, _ = fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Using config file:", viper.ConfigFileUsed())
 	}
 }
 
