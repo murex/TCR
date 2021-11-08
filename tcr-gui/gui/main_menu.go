@@ -34,17 +34,9 @@ import (
 // BuildMainMenu creates the application's main menu
 func (gui *GUI) BuildMainMenu() {
 	tcrMenu := gui.buildTcrMenu()
+	timerMenu := gui.buildTimerMenu()
 	helpMenu := gui.buildHelpMenu()
-	gui.win.SetMainMenu(fyne.NewMainMenu(tcrMenu, helpMenu))
-}
-
-func (gui *GUI) buildHelpMenu() *fyne.Menu {
-	aboutMenuItem := fyne.NewMenuItem("About",
-		func() {
-			gui.NewAboutDialog().Show()
-		},
-	)
-	return fyne.NewMenu("Help", aboutMenuItem)
+	gui.win.SetMainMenu(fyne.NewMainMenu(tcrMenu, timerMenu, helpMenu))
 }
 
 func (gui *GUI) buildTcrMenu() *fyne.Menu {
@@ -54,6 +46,24 @@ func (gui *GUI) buildTcrMenu() *fyne.Menu {
 		},
 	)
 	return fyne.NewMenu("TCR", quitMenuItem)
+}
+
+func (gui *GUI) buildTimerMenu() *fyne.Menu {
+	statusMenuItem := fyne.NewMenuItem("Status",
+		func() {
+
+		},
+	)
+	return fyne.NewMenu("Timer", statusMenuItem)
+}
+
+func (gui *GUI) buildHelpMenu() *fyne.Menu {
+	aboutMenuItem := fyne.NewMenuItem("About",
+		func() {
+			gui.NewAboutDialog().Show()
+		},
+	)
+	return fyne.NewMenu("Help", aboutMenuItem)
 }
 
 func (gui *GUI) NewAboutDialog() dialog.Dialog {
