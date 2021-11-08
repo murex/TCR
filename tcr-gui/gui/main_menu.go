@@ -23,37 +23,44 @@ SOFTWARE.
 package gui
 
 import (
-	"bytes"
-	"fmt"
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/widget"
 	"github.com/murex/tcr-engine/settings"
 )
 
 // BuildMainMenu creates the application's main menu
 func (gui *GUI) BuildMainMenu() {
+	tcrMenu := gui.buildTcrMenu()
+	helpMenu := gui.buildHelpMenu()
+	gui.win.SetMainMenu(fyne.NewMainMenu(tcrMenu, helpMenu))
+}
 
-	tcrMenu := fyne.NewMenu("TCR")
-
-	// --------------------------------
-
-	buildInfoMenuItem := fyne.NewMenuItem("Build Info",
+func (gui *GUI) buildHelpMenu() *fyne.Menu {
+	aboutMenuItem := fyne.NewMenuItem("About",
 		func() {
-			b := new(bytes.Buffer)
-			for key, value := range settings.GetBuildInfo() {
-				_, _ = fmt.Fprintf(b, "%s:\t\"%s\"\n", key, value)
-			}
-			// TODO Replace dialog window with a custom window with nicer formatting of information
-			w := dialog.NewInformation("Build Information", b.String(), gui.win)
-			//w := dialog.NewCustom("Build Information", "Dismiss",
-			//	container.New(layout.NewFormLayout(), widget.NewLabel("xxx"), widget.NewLabel("yyy")), gui.win)
-			w.Show()
+			gui.NewAboutDialog().Show()
 		},
 	)
+	return fyne.NewMenu("Help", aboutMenuItem)
+}
 
-	helpMenu := fyne.NewMenu("Help", buildInfoMenuItem)
+func (gui *GUI) buildTcrMenu() *fyne.Menu {
+	quitMenuItem := fyne.NewMenuItem("Quit",
+		func() {
+			gui.quit("Closing application")
+		},
+	)
+	return fyne.NewMenu("TCR", quitMenuItem)
+}
 
-	// --------------------------------
-
-	gui.win.SetMainMenu(fyne.NewMainMenu(tcrMenu, helpMenu))
+func (gui *GUI) NewAboutDialog() dialog.Dialog {
+	c := container.New(layout.NewFormLayout())
+	for _, buildInfo := range settings.GetBuildInfo() {
+		c.Add(widget.NewLabelWithStyle(buildInfo.Label, fyne.TextAlignTrailing, fyne.TextStyle{Italic: true}))
+		c.Add(widget.NewLabelWithStyle(buildInfo.Value, fyne.TextAlignLeading, fyne.TextStyle{Bold: true}))
+	}
+	return dialog.NewCustom("About "+settings.ApplicationName, "Dismiss", c, gui.win)
 }
