@@ -22,7 +22,9 @@ SOFTWARE.
 
 package settings
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Below variables are set at build time through -ldflags
 var (
@@ -34,21 +36,26 @@ var (
 	BuildAuthor  = "unknown"
 )
 
-// GetBuildInfo returns TCR build information as a map
-func GetBuildInfo() map[string]string {
-	var m = make(map[string]string)
-	m["Version"] = BuildVersion
-	m["OS Family"] = BuildOs
-	m["Architecture"] = BuildArch
-	m["Commit"] = BuildCommit
-	m["Build Date"] = BuildDate
-	m["Built By"] = BuildAuthor
-	return m
+type BuildInfo struct {
+	Label string
+	Value string
+}
+
+// GetBuildInfo returns a table with TCR build information
+func GetBuildInfo() []BuildInfo {
+	var t []BuildInfo
+	t = append(t, BuildInfo{"Version", BuildVersion})
+	t = append(t, BuildInfo{"OS Family", BuildOs})
+	t = append(t, BuildInfo{"Architecture", BuildArch})
+	t = append(t, BuildInfo{"Commit", BuildCommit})
+	t = append(t, BuildInfo{"Build Date", BuildDate})
+	t = append(t, BuildInfo{"Built By", BuildAuthor})
+	return t
 }
 
 // PrintBuildInfo prints information related to the build
 func PrintBuildInfo() {
-	for key, value := range GetBuildInfo() {
-		fmt.Printf("- %s:\t%s\n", key, value)
+	for _, buildInfo := range GetBuildInfo() {
+		fmt.Printf("- %s:\t%s\n", buildInfo.Label, buildInfo.Value)
 	}
 }
