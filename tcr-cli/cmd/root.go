@@ -53,8 +53,10 @@ It can be used either in solo, or as a group within a mob or pair session.
 This application runs within a terminal.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			printBuildInfo()
+			paramDefaults()
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			//paramDefaults()
 			params.Mode = runmode.Mob{}
 			params.AutoPush = params.Mode.AutoPushDefault()
 			params.PollingPeriod = settings.DefaultPollingPeriod
@@ -65,6 +67,16 @@ This application runs within a terminal.`,
 	}
 )
 
+func paramDefaults() {
+	if params.MobTurnDuration == 0 {
+		if cfgValue := viper.GetDuration("params.duration"); cfgValue != 0 {
+			params.MobTurnDuration = cfgValue
+		} else {
+			params.MobTurnDuration = settings.DefaultMobTurnDuration
+		}
+	}
+}
+
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
@@ -74,47 +86,16 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// TODO read https://github.com/carolynvs/stingoftheviper
+	initCfgFileParam()
+	initToolchainParam()
+	initBaseDirParam()
+	initAutoPushParam()
+	initMobTimerDurationParam()
+	initInfoParam()
+	initSaveCfgParam()
+}
 
-	rootCmd.PersistentFlags().StringVarP(&params.CfgFile,
-		"config",
-		"c",
-		"",
-		"config file (default is $HOME/.tcr.yaml)")
-
-	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
-		"toolchain",
-		"t",
-		"",
-		"indicate the toolchain to be used by TCR")
-	_ = viper.BindPFlag("params.toolchain", rootCmd.PersistentFlags().Lookup("toolchain"))
-
-	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
-		"base-dir",
-		"b",
-		"",
-		"indicate the base directory from which TCR is running")
-
-	rootCmd.Flags().BoolVarP(&params.AutoPush,
-		"auto-push",
-		"p",
-		false,
-		"enable git push after every commit")
-	_ = viper.BindPFlag("params.auto-push", rootCmd.PersistentFlags().Lookup("auto-push"))
-
-	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
-		"duration",
-		"d",
-		settings.DefaultMobTurnDuration,
-		"set the duration for role rotation countdown timer")
-	_ = viper.BindPFlag("params.duration", rootCmd.PersistentFlags().Lookup("duration"))
-
-	rootCmd.PersistentFlags().BoolVarP(&infoFlag,
-		"info",
-		"i",
-		false,
-		"show build information about TCR application")
-
+func initSaveCfgParam() {
 	rootCmd.PersistentFlags().BoolVarP(&saveCfgFlag,
 		"save",
 		"s",
@@ -122,6 +103,61 @@ func init() {
 		"save configuration file on exit")
 }
 
+func initInfoParam() {
+	rootCmd.PersistentFlags().BoolVarP(&infoFlag,
+		"info",
+		"i",
+		false,
+		"show build information about TCR application")
+}
+
+func initAutoPushParam() {
+	rootCmd.Flags().BoolVarP(&params.AutoPush,
+		"auto-push",
+		"p",
+		false,
+		"enable git push after every commit")
+	_ = viper.BindPFlag("params.auto-push", rootCmd.PersistentFlags().Lookup("auto-push"))
+}
+
+func initBaseDirParam() {
+	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
+		"base-dir",
+		"b",
+		"",
+		"indicate the base directory from which TCR is running")
+}
+
+func initToolchainParam() {
+	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
+		"toolchain",
+		"t",
+		"",
+		"indicate the toolchain to be used by TCR")
+	_ = viper.BindPFlag("params.toolchain", rootCmd.PersistentFlags().Lookup("toolchain"))
+}
+
+func initCfgFileParam() {
+	rootCmd.PersistentFlags().StringVarP(&params.CfgFile,
+		"config",
+		"c",
+		"",
+		"config file (default is $HOME/.tcr.yaml)")
+}
+
+func initMobTimerDurationParam() {
+	const cobraKey = "duration"
+	const viperKey = "params.duration"
+
+	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
+		cobraKey,
+		"d",
+		0,
+		"set the duration for role rotation countdown timer")
+	_ = viper.BindPFlag(viperKey, rootCmd.PersistentFlags().Lookup(cobraKey))
+}
+
+// printBuildInfo prints out application's build information and exits
 func printBuildInfo() {
 	if infoFlag {
 		settings.PrintBuildInfo()
@@ -140,12 +176,13 @@ func initConfig() {
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name "tcr.yaml".
-		//viper.AddConfigPath(home)
-		//viper.SetConfigType("yaml")
-		//viper.SetConfigName("tcr.yaml")
+		viper.AddConfigPath(home)
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("tcr.yaml")
 		viper.SetConfigFile(filepath.Join(home, "tcr.yaml"))
 	}
 
+	viper.SetEnvPrefix("TCR")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.

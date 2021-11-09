@@ -109,6 +109,7 @@ func init() {
 		"show build information about TCR application")
 }
 
+// printBuildInfo prints out application's build information and exits
 func printBuildInfo() {
 	if infoFlag {
 		settings.PrintBuildInfo()
