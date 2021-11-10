@@ -72,7 +72,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVarP(&params.CfgFile,
+	rootCmd.PersistentFlags().StringVarP(&params.ConfigFile,
 		"config",
 		"c",
 		"",
@@ -119,9 +119,9 @@ func printBuildInfo() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if params.CfgFile != "" {
+	if params.ConfigFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(params.CfgFile)
+		viper.SetConfigFile(params.ConfigFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()

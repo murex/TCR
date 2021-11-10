@@ -42,7 +42,6 @@ This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params.Mode = runmode.Solo{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = settings.DefaultPollingPeriod
 		u := cli.New(params)
 		u.Start()
 	},

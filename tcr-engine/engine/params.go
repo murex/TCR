@@ -29,7 +29,7 @@ import (
 
 // Params contains the main parameter values that TCR engine is using
 type Params struct {
-	CfgFile         string
+	ConfigFile      string
 	Toolchain       string
 	AutoPush        bool
 	BaseDir         string

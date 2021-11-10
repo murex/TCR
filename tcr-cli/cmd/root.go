@@ -37,6 +37,13 @@ import (
 
 // Command Line Options placeholders
 
+var (
+	configFileParam       *param.StringParam
+	mobTimerDurationParam *param.DurationParam
+	toolchainParam        *param.StringParam
+	pollingPeriod         *param.DurationParam
+)
+
 var params engine.Params
 var infoFlag bool
 var saveCfgFlag bool
@@ -53,13 +60,12 @@ It can be used either in solo, or as a group within a mob or pair session.
 This application runs within a terminal.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			printBuildInfo()
-			paramDefaults()
+			retrieveParams()
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			//paramDefaults()
+			//retrieveParams()
 			params.Mode = runmode.Mob{}
 			params.AutoPush = params.Mode.AutoPushDefault()
-			params.PollingPeriod = settings.DefaultPollingPeriod
 			saveConfig()
 			u := cli.New(params)
 			u.Start()
@@ -67,14 +73,11 @@ This application runs within a terminal.`,
 	}
 )
 
-func paramDefaults() {
-	if params.MobTurnDuration == 0 {
-		if cfgValue := viper.GetDuration("params.duration"); cfgValue != 0 {
-			params.MobTurnDuration = cfgValue
-		} else {
-			params.MobTurnDuration = settings.DefaultMobTurnDuration
-		}
-	}
+func retrieveParams() {
+	params.ConfigFile = configFileParam.GetValue()
+	params.MobTurnDuration = mobTimerDurationParam.GetValue()
+	params.Toolchain = toolchainParam.GetValue()
+	params.PollingPeriod = pollingPeriod.GetValue()
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -86,11 +89,12 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	initCfgFileParam()
-	initToolchainParam()
+	configFileParam = param.NewConfigFileParam(rootCmd)
+	toolchainParam = param.NewToolchainParam(rootCmd)
+	pollingPeriod = param.NewPollingPeriodParam(rootCmd)
+	mobTimerDurationParam = param.NewMobTimerDurationParam(rootCmd)
 	initBaseDirParam()
 	initAutoPushParam()
-	initMobTimerDurationParam()
 	initInfoParam()
 	initSaveCfgParam()
 }
@@ -128,35 +132,6 @@ func initBaseDirParam() {
 		"indicate the base directory from which TCR is running")
 }
 
-func initToolchainParam() {
-	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
-		"toolchain",
-		"t",
-		"",
-		"indicate the toolchain to be used by TCR")
-	_ = viper.BindPFlag("params.toolchain", rootCmd.PersistentFlags().Lookup("toolchain"))
-}
-
-func initCfgFileParam() {
-	rootCmd.PersistentFlags().StringVarP(&params.CfgFile,
-		"config",
-		"c",
-		"",
-		"config file (default is $HOME/.tcr.yaml)")
-}
-
-func initMobTimerDurationParam() {
-	const cobraKey = "duration"
-	const viperKey = "params.duration"
-
-	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
-		cobraKey,
-		"d",
-		0,
-		"set the duration for role rotation countdown timer")
-	_ = viper.BindPFlag(viperKey, rootCmd.PersistentFlags().Lookup(cobraKey))
-}
-
 // printBuildInfo prints out application's build information and exits
 func printBuildInfo() {
 	if infoFlag {
@@ -167,9 +142,9 @@ func printBuildInfo() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if params.CfgFile != "" {
+	if params.ConfigFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(params.CfgFile)
+		viper.SetConfigFile(params.ConfigFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
@@ -187,13 +162,13 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Using config file:", viper.ConfigFileUsed())
+		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Loading configuration:", viper.ConfigFileUsed())
 	}
 }
 
 func saveConfig() {
 	if saveCfgFlag {
-		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Saving config file:", viper.ConfigFileUsed())
+		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Saving configuration:", viper.ConfigFileUsed())
 		if err := viper.WriteConfig(); err != nil {
 			if os.IsNotExist(err) {
 				err = viper.WriteConfigAs(viper.ConfigFileUsed())

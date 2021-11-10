@@ -5,24 +5,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewMobTimerDurationParam(cmd *cobra.Command) *DurationParam {
+func NewPollingPeriodParam(cmd *cobra.Command) *DurationParam {
 	param := DurationParam{
 		s: paramSettings{
 			viperSettings: viperSettings{
 				enabled: true,
-				keyPath: "params.timer",
-				name:    "duration",
+				keyPath: "params.polling",
+				name:    "period",
 			},
 			cobraSettings: cobraSettings{
-				name:       "duration",
-				shorthand:  "d",
-				usage:      "set the duration for role rotation countdown timer",
+				name:       "polling",
+				shorthand:  "o",
+				usage:      "set git polling period when running as navigator",
 				persistent: true,
 			},
 		},
 		v: paramValueDuration{
 			value:        0,
-			defaultValue: settings.DefaultMobTurnDuration,
+			defaultValue: settings.DefaultPollingPeriod,
 		},
 	}
 	param.addToCommand(cmd)
