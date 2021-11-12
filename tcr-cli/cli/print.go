@@ -98,4 +98,3 @@ func getTerminalColumns() int {
 	}
 	return columns
 }
-
