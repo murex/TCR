@@ -1,7 +1,7 @@
 package param
 
 import (
-	"github.com/murex/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
 )
 
@@ -10,8 +10,8 @@ func NewPollingPeriodParam(cmd *cobra.Command) *DurationParam {
 		s: paramSettings{
 			viperSettings: viperSettings{
 				enabled: true,
-				keyPath: "params.polling",
-				name:    "period",
+				keyPath: "params.git",
+				name:    "polling-period",
 			},
 			cobraSettings: cobraSettings{
 				name:       "polling",

@@ -27,6 +27,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/murex/tcr/tcr-cli/cli"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/param"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
@@ -39,9 +40,10 @@ import (
 
 var (
 	configFileParam       *param.StringParam
-	mobTimerDurationParam *param.DurationParam
 	toolchainParam        *param.StringParam
 	pollingPeriod         *param.DurationParam
+	mobTimerDurationParam *param.DurationParam
+	autoPushParam         *param.BoolParam
 )
 
 var params engine.Params
@@ -78,6 +80,7 @@ func retrieveParams() {
 	params.MobTurnDuration = mobTimerDurationParam.GetValue()
 	params.Toolchain = toolchainParam.GetValue()
 	params.PollingPeriod = pollingPeriod.GetValue()
+	params.AutoPush = autoPushParam.GetValue()
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -93,8 +96,8 @@ func init() {
 	toolchainParam = param.NewToolchainParam(rootCmd)
 	pollingPeriod = param.NewPollingPeriodParam(rootCmd)
 	mobTimerDurationParam = param.NewMobTimerDurationParam(rootCmd)
+	autoPushParam = param.NewAutoPushParam(rootCmd)
 	initBaseDirParam()
-	initAutoPushParam()
 	initInfoParam()
 	initSaveCfgParam()
 }
@@ -113,15 +116,6 @@ func initInfoParam() {
 		"i",
 		false,
 		"show build information about TCR application")
-}
-
-func initAutoPushParam() {
-	rootCmd.Flags().BoolVarP(&params.AutoPush,
-		"auto-push",
-		"p",
-		false,
-		"enable git push after every commit")
-	_ = viper.BindPFlag("params.auto-push", rootCmd.PersistentFlags().Lookup("auto-push"))
 }
 
 func initBaseDirParam() {

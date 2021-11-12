@@ -41,22 +41,22 @@ type paramSettings struct {
 	cobraSettings
 }
 
-func (s viperSettings) getViperKey() string {
-	if s.enabled {
-		return fmt.Sprintf("%v.%v", s.keyPath, s.name)
+func (vs viperSettings) getViperKey() string {
+	if vs.enabled {
+		return fmt.Sprintf("%v.%v", vs.keyPath, vs.name)
 	} else {
 		return ""
 	}
 }
 
-func (s viperSettings) bindToViper(flag *pflag.Flag) {
-	if s.enabled {
-		_ = viper.BindPFlag(s.getViperKey(), flag)
+func (vs viperSettings) bindToViper(flag *pflag.Flag) {
+	if vs.enabled {
+		_ = viper.BindPFlag(vs.getViperKey(), flag)
 	}
 }
 
-func (c cobraSettings) getCmdFlags(cmd *cobra.Command) *pflag.FlagSet {
-	if c.persistent {
+func (cs cobraSettings) getCmdFlags(cmd *cobra.Command) *pflag.FlagSet {
+	if cs.persistent {
 		return cmd.PersistentFlags()
 	} else {
 		return cmd.Flags()

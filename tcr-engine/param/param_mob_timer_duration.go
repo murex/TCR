@@ -1,7 +1,7 @@
 package param
 
 import (
-	"github.com/murex/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
 )
 
