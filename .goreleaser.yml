@@ -10,7 +10,7 @@ builds:
     binary: tcr
     env:
       - CGO_ENABLED=0
-      - SETTINGS_PKG=github.com/murex/tcr-engine/settings
+      - SETTINGS_PKG=github.com/murex/tcr/tcr-engine/settings
     ldflags:
       - -s -w
       - -X {{.Env.SETTINGS_PKG}}.BuildVersion={{.Version}}

@@ -23,7 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/murex/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/language"
 )
 
 // CmakeToolchain is the toolchain implementation for CMake

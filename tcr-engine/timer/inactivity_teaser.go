@@ -23,8 +23,8 @@ SOFTWARE.
 package timer
 
 import (
-	"github.com/murex/tcr-engine/report"
-	"github.com/murex/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"sync"
 	"time"
 )

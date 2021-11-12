@@ -24,7 +24,7 @@ package stty
 
 import (
 	"bytes"
-	"github.com/murex/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"os/exec"
 )
@@ -37,7 +37,7 @@ func readStty(state *bytes.Buffer) (err error) {
 }
 
 func setStty(state *bytes.Buffer) (err error) {
-	cmd := exec.Command("stty", state.String())
+	cmd := exec.Command("stty", state.String()) //nolint:gosec
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	//report.PostInfo("Command: ", cmd)

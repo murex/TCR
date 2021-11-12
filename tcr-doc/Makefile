@@ -1,3 +1,6 @@
+.PHONY: default
+default: doc ;
+
 .PHONY: deps
 deps:
 	@go get

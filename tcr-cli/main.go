@@ -23,7 +23,7 @@ SOFTWARE.
 package main
 
 import (
-	"github.com/murex/tcr-cli/cmd"
+	"github.com/murex/tcr/tcr-cli/cmd"
 )
 
 func main() {

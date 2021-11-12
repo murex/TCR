@@ -1,3 +1,6 @@
+.PHONY: default
+default: build ;
+
 # Modules that can be build into an executable
 BUILD_MODULES = tcr-cli tcr-gui
 # Library modules

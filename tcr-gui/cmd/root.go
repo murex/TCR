@@ -24,10 +24,10 @@ package cmd
 
 import (
 	"github.com/mitchellh/go-homedir"
-	"github.com/murex/tcr-engine/engine"
-	"github.com/murex/tcr-engine/runmode"
-	"github.com/murex/tcr-engine/settings"
-	"github.com/murex/tcr-gui/gui"
+	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-gui/gui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 

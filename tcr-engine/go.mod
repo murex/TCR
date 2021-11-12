@@ -1,4 +1,4 @@
-module github.com/murex/tcr-engine
+module github.com/murex/tcr/tcr-engine
 
 go 1.17
 

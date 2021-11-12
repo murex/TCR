@@ -23,7 +23,7 @@ SOFTWARE.
 package engine
 
 import (
-	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/runmode"
 	"time"
 )
 
@@ -37,4 +37,3 @@ type Params struct {
 	PollingPeriod   time.Duration
 	MobTurnDuration time.Duration
 }
-

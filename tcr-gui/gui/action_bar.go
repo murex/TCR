@@ -27,7 +27,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/runmode"
 )
 
 // ActionBar is the area containing the buttons that the user can use to start/stop TCR engine.

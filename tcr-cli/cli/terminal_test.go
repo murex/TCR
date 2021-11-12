@@ -23,7 +23,7 @@ SOFTWARE.
 package cli
 
 import (
-	"github.com/murex/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

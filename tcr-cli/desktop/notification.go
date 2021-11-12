@@ -24,7 +24,7 @@ package desktop
 
 import (
 	"github.com/gen2brain/beeep"
-	"github.com/murex/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/report"
 )
 
 // NotificationLevel is the level of desktop notification messages. It can be either

@@ -27,8 +27,8 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/murex/tcr-engine/engine"
-	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/runmode"
 )
 
 // SessionPanel is the panel showing all information related to the current TCR session

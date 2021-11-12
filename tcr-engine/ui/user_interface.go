@@ -23,8 +23,8 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/murex/tcr-engine/role"
-	"github.com/murex/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/role"
+	"github.com/murex/tcr/tcr-engine/runmode"
 )
 
 // UserInterface provides the interface to be satisfied by a UI implementation to be able to interact

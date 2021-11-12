@@ -1,3 +1,6 @@
+.PHONY: default
+default: test ;
+
 .PHONY: lint
 lint:
 	@golangci-lint run -v

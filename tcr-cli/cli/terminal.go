@@ -24,14 +24,14 @@ package cli
 
 import (
 	"fmt"
-	"github.com/murex/tcr-cli/desktop"
-	"github.com/murex/tcr-engine/engine"
-	"github.com/murex/tcr-engine/report"
-	"github.com/murex/tcr-engine/role"
-	"github.com/murex/tcr-engine/runmode"
-	"github.com/murex/tcr-engine/settings"
-	"github.com/murex/tcr-engine/stty"
-	"github.com/murex/tcr-engine/ui"
+	"github.com/murex/tcr/tcr-cli/desktop"
+	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/role"
+	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/stty"
+	"github.com/murex/tcr/tcr-engine/ui"
 	"os"
 	"strings"
 )

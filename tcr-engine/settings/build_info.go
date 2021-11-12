@@ -36,6 +36,7 @@ var (
 	BuildAuthor  = "unknown"
 )
 
+// BuildInfo contains build information in a Label/Value format
 type BuildInfo struct {
 	Label string
 	Value string

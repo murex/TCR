@@ -28,7 +28,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/murex/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/settings"
 )
 
 // BuildMainMenu creates the application's main menu
@@ -66,6 +66,7 @@ func (gui *GUI) buildHelpMenu() *fyne.Menu {
 	return fyne.NewMenu("Help", aboutMenuItem)
 }
 
+// NewAboutDialog creates a dialog window with "About TCR" contents
 func (gui *GUI) NewAboutDialog() dialog.Dialog {
 	c := container.New(layout.NewFormLayout())
 	for _, buildInfo := range settings.GetBuildInfo() {

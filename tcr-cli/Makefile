@@ -1,3 +1,6 @@
+.PHONY: default
+default: build ;
+
 .PHONY: deps
 deps:
 	@go get
@@ -22,7 +25,7 @@ cov:
 tidy:
 	@go mod tidy
 
-SETTINGS_PKG="github.com/murex/tcr-engine/settings"
+SETTINGS_PKG="github.com/murex/tcr/tcr-engine/settings"
 .PHONY: build
 build:
 	@go build -ldflags "-s -w \

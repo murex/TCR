@@ -26,8 +26,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr-engine/language"
-	"github.com/murex/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"path/filepath"
 )

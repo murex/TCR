@@ -1,16 +1,16 @@
-module github.com/murex/tcr-doc
+module github.com/murex/tcr/tcr-doc
 
 go 1.17
 
-replace github.com/murex/tcr-cli => ../tcr-cli
+replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
-replace github.com/murex/tcr-gui => ../tcr-gui
+replace github.com/murex/tcr/tcr-gui => ../tcr-gui
 
-replace github.com/murex/tcr-engine => ../tcr-engine
+replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr-cli v0.0.0-00010101000000-000000000000
-	github.com/murex/tcr-gui v0.0.0-00010101000000-000000000000
+	github.com/murex/tcr/tcr-cli v0.0.0-00010101000000-000000000000
+	github.com/murex/tcr/tcr-gui v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
 )
 
@@ -47,7 +47,7 @@ require (
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/murex/tcr-engine v0.0.0-20210704172954-4213deac264f // indirect
+	github.com/murex/tcr/tcr-engine v0.0.0-20210704172954-4213deac264f // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
