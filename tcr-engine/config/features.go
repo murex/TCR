@@ -20,21 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
-import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+// Feature toggles allowing to quickly turn on/off a feature
+
+const (
+	// EnableTcrInactivityTeaser Turns on/off TCR inactivity teaser messages
+	EnableTcrInactivityTeaser = false
+
+	// EnableMobTimer Turns on/off mob countdown timer
+	EnableMobTimer = true
 )
-
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
-}

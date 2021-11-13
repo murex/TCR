@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
+// AddBuildInfoParam adds TCR build information parameter to the provided command
+func AddBuildInfoParam(cmd *cobra.Command) *BoolParam {
+	param := BoolParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "info",
+				shorthand:  "i",
+				usage:      "show build information about TCR application",
+				persistent: true,
+			},
+		},
+		v: paramValueBool{
+			value:        false,
+			defaultValue: false,
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

@@ -23,41 +23,47 @@ SOFTWARE.
 package cmd
 
 import (
-	"github.com/mitchellh/go-homedir"
+	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-gui/gui"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
-	"fmt"
-	"os"
 )
 
 // Command Line Options placeholders
 
+var (
+	baseDirParam          *config.StringParam
+	saveConfigParam       *config.BoolParam
+	configFileParam       *config.StringParam
+	languageParam         *config.StringParam
+	toolchainParam        *config.StringParam
+	pollingPeriod         *config.DurationParam
+	mobTimerDurationParam *config.DurationParam
+	autoPushParam         *config.BoolParam
+	buildInfoParam        *config.BoolParam
+)
+
 var params engine.Params
-var infoFlag bool
 
 var rootCmd = &cobra.Command{
 	Use:     "tcr-gui",
-	Version: settings.BuildVersion,
-	Short:   settings.ApplicationShortDescription,
+	Version: config.BuildVersion,
+	Short:   config.ApplicationShortDescription,
 	Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a GUI.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		printBuildInfo()
+		retrieveConfig()
+		config.PrintBuildInfo()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we open the gui by default
 		// so that the user can decide what they want to do
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		params.PollingPeriod = settings.DefaultPollingPeriod
 		u := gui.New(params)
 		u.Start()
 	},
@@ -71,74 +77,37 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVarP(&params.ConfigFile,
-		"config",
-		"c",
-		"",
-		"config file (default is $HOME/.tcr.yaml)")
-
-	rootCmd.PersistentFlags().StringVarP(&params.Toolchain,
-		"toolchain",
-		"t",
-		"",
-		"Indicate the toolchain to be used by TCR")
-
-	rootCmd.PersistentFlags().StringVarP(&params.BaseDir,
-		"base-dir",
-		"b",
-		"",
-		"Indicate the base directory from which TCR is running")
-
-	rootCmd.Flags().BoolVarP(&params.AutoPush,
-		"auto-push",
-		"p",
-		false,
-		"Enable git push after every commit")
-
-	rootCmd.PersistentFlags().DurationVarP(&params.MobTurnDuration,
-		"duration",
-		"d",
-		settings.DefaultMobTurnDuration,
-		"Set the duration for role rotation countdown timer")
-
-	rootCmd.PersistentFlags().BoolVarP(&infoFlag,
-		"info",
-		"i",
-		false,
-		"show build information about TCR application")
-}
-
-// printBuildInfo prints out application's build information and exits
-func printBuildInfo() {
-	if infoFlag {
-		settings.PrintBuildInfo()
-		os.Exit(0)
-	}
+	addParameters()
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if params.ConfigFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(params.ConfigFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		cobra.CheckErr(err)
+	config.Init(params.ConfigFile)
+}
 
-		// Search config in home directory with name ".tcr" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".tcr")
-	}
+func addParameters() {
+	baseDirParam = config.AddBaseDirParam(rootCmd)
+	configFileParam = config.AddConfigFileParam(rootCmd)
+	languageParam = config.AddLanguageParam(rootCmd)
+	toolchainParam = config.AddToolchainParam(rootCmd)
+	pollingPeriod = config.AddPollingPeriodParam(rootCmd)
+	mobTimerDurationParam = config.AddMobTimerDurationParam(rootCmd)
+	autoPushParam = config.AddAutoPushParam(rootCmd)
+	buildInfoParam = config.AddBuildInfoParam(rootCmd)
+	saveConfigParam = config.AddSaveConfigParam(rootCmd)
+}
 
-	viper.AutomaticEnv() // read in environment variables that match
+func retrieveConfig() {
+	params.BaseDir = baseDirParam.GetValue()
+	params.ConfigFile = configFileParam.GetValue()
+	params.MobTurnDuration = mobTimerDurationParam.GetValue()
+	params.Language = languageParam.GetValue()
+	params.Toolchain = toolchainParam.GetValue()
+	params.PollingPeriod = pollingPeriod.GetValue()
+	params.AutoPush = autoPushParam.GetValue()
 
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", "Using config file:", viper.ConfigFileUsed())
-	}
+	config.BuildInfoFlag = buildInfoParam.GetValue()
+	config.SaveConfigFlag = saveConfigParam.GetValue()
 }
 
 // GetRootCmd returns the root command. This function is used by the doc package to generate

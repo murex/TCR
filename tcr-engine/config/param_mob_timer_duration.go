@@ -20,14 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package settings
+package config
 
-// Feature toggles allowing to quickly turn on/off a feature
-
-const (
-	// EnableTcrInactivityTeaser Turns on/off TCR inactivity teaser messages
-	EnableTcrInactivityTeaser = false
-
-	// EnableMobTimer Turns on/off mob countdown timer
-	EnableMobTimer = true
+import (
+	"github.com/spf13/cobra"
 )
+
+// AddMobTimerDurationParam adds mob timer duration parameter to the provided command
+func AddMobTimerDurationParam(cmd *cobra.Command) *DurationParam {
+	param := DurationParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: true,
+				keyPath: "config.mob-timer",
+				name:    "duration",
+			},
+			cobraSettings: cobraSettings{
+				name:       "duration",
+				shorthand:  "d",
+				usage:      "set the duration for role rotation countdown timer",
+				persistent: true,
+			},
+		},
+		v: paramValueDuration{
+			value:        0,
+			defaultValue: DefaultMobTurnDuration,
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
+}

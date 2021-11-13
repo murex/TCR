@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
+// AddPollingPeriodParam adds git polling period parameter to the provided command
+func AddPollingPeriodParam(cmd *cobra.Command) *DurationParam {
+	param := DurationParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: true,
+				keyPath: "config.git",
+				name:    "polling-period",
+			},
+			cobraSettings: cobraSettings{
+				name:       "polling",
+				shorthand:  "o",
+				usage:      "set git polling period when running as navigator",
+				persistent: true,
+			},
+		},
+		v: paramValueDuration{
+			value:        0,
+			defaultValue: DefaultPollingPeriod,
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

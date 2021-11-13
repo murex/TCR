@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
+// AddLanguageParam adds language parameter to the provided command
+func AddLanguageParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: true,
+				keyPath: "config.tcr",
+				name:    "language",
+			},
+			cobraSettings: cobraSettings{
+				name:       "language",
+				shorthand:  "l",
+				usage:      "indicate the programming language to be used by TCR",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

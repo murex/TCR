@@ -10,15 +10,15 @@ builds:
     binary: tcr
     env:
       - CGO_ENABLED=0
-      - SETTINGS_PKG=github.com/murex/tcr/tcr-engine/settings
+      - CONFIG_PKG=github.com/murex/tcr/tcr-engine/config
     ldflags:
       - -s -w
-      - -X {{.Env.SETTINGS_PKG}}.BuildVersion={{.Version}}
-      - -X {{.Env.SETTINGS_PKG}}.BuildOs={{.Os}}
-      - -X {{.Env.SETTINGS_PKG}}.BuildArch={{.Arch}}
-      - -X {{.Env.SETTINGS_PKG}}.BuildCommit={{.Commit}}
-      - -X {{.Env.SETTINGS_PKG}}.BuildDate={{.Date}}
-      - -X {{.Env.SETTINGS_PKG}}.BuildAuthor=goreleaser
+      - -X {{.Env.CONFIG_PKG}}.BuildVersion={{.Version}}
+      - -X {{.Env.CONFIG_PKG}}.BuildOs={{.Os}}
+      - -X {{.Env.CONFIG_PKG}}.BuildArch={{.Arch}}
+      - -X {{.Env.CONFIG_PKG}}.BuildCommit={{.Commit}}
+      - -X {{.Env.CONFIG_PKG}}.BuildDate={{.Date}}
+      - -X {{.Env.CONFIG_PKG}}.BuildAuthor=goreleaser
     goos:
       - linux
       - windows

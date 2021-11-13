@@ -23,8 +23,8 @@ SOFTWARE.
 package timer
 
 import (
+	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/report"
-	"github.com/murex/tcr/tcr-engine/settings"
 	"sync"
 	"time"
 )
@@ -58,8 +58,8 @@ func GetInactivityTeaserInstance() *InactivityTeaser {
 
 func createTeaser() {
 	teaserInstance = &InactivityTeaser{
-		timeout: settings.DefaultInactivityTimeout,
-		period:  settings.DefaultInactivityPeriod,
+		timeout: config.DefaultInactivityTimeout,
+		period:  config.DefaultInactivityPeriod,
 	}
 	teaserInstance.reminder = createReminder(teaserInstance.timeout, teaserInstance.period)
 }
@@ -68,7 +68,7 @@ func createTeaser() {
 // until timeout expires.
 // The message is taken from teasingMessage map defined at the top of this file
 func createReminder(timeout time.Duration, teasingPeriod time.Duration) *PeriodicReminder {
-	if settings.EnableTcrInactivityTeaser {
+	if config.EnableTcrInactivityTeaser {
 		return NewPeriodicReminder(
 			timeout,
 			teasingPeriod,

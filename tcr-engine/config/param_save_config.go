@@ -20,43 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package settings
+package config
 
 import (
-	"fmt"
+	"github.com/spf13/cobra"
 )
 
-// Below variables are set at build time through -ldflags
-var (
-	BuildVersion = "dev"
-	BuildOs      = "unknown"
-	BuildArch    = "unknown"
-	BuildCommit  = "none"
-	BuildDate    = "unknown"
-	BuildAuthor  = "unknown"
-)
-
-// BuildInfo contains build information in a Label/Value format
-type BuildInfo struct {
-	Label string
-	Value string
-}
-
-// GetBuildInfo returns a table with TCR build information
-func GetBuildInfo() []BuildInfo {
-	var t []BuildInfo
-	t = append(t, BuildInfo{"Version", BuildVersion})
-	t = append(t, BuildInfo{"OS Family", BuildOs})
-	t = append(t, BuildInfo{"Architecture", BuildArch})
-	t = append(t, BuildInfo{"Commit", BuildCommit})
-	t = append(t, BuildInfo{"Build Date", BuildDate})
-	t = append(t, BuildInfo{"Built By", BuildAuthor})
-	return t
-}
-
-// PrintBuildInfo prints information related to the build
-func PrintBuildInfo() {
-	for _, buildInfo := range GetBuildInfo() {
-		fmt.Printf("- %s:\t%s\n", buildInfo.Label, buildInfo.Value)
+// AddSaveConfigParam adds configuration saving parameter to the provided command
+func AddSaveConfigParam(cmd *cobra.Command) *BoolParam {
+	param := BoolParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "save",
+				shorthand:  "s",
+				usage:      "save configuration file on exit",
+				persistent: true,
+			},
+		},
+		v: paramValueBool{
+			value:        false,
+			defaultValue: false,
+		},
 	}
+	param.addToCommand(cmd)
+	return &param
 }

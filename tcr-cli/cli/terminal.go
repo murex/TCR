@@ -25,11 +25,11 @@ package cli
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-cli/desktop"
+	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/stty"
 	"github.com/murex/tcr/tcr-engine/ui"
 	"os"
@@ -49,7 +49,7 @@ const (
 
 // New creates a new instance of terminal
 func New(p engine.Params) ui.UserInterface {
-	setLinePrefix("[" + settings.ApplicationName + "]")
+	setLinePrefix("[" + config.ApplicationName + "]")
 	var term = Terminal{params: p}
 	term.StartReporting()
 	return &term
@@ -109,7 +109,7 @@ func (term *Terminal) error(a ...interface{}) {
 
 func (term *Terminal) notification(a ...interface{}) {
 	printInGreen(a...)
-	desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+	desktop.ShowNotification(desktop.NormalLevel, config.ApplicationName, fmt.Sprint(a...))
 }
 
 func (term *Terminal) trace(a ...interface{}) {
@@ -197,7 +197,7 @@ func (term *Terminal) keyNotRecognizedMessage() {
 }
 
 func (term *Terminal) showTimerStatus() {
-	if settings.EnableMobTimer {
+	if config.EnableMobTimer {
 		if r := engine.GetCurrentRole(); r != nil && r.RunsWithTimer() {
 			engine.ReportMobTimerStatus()
 		} else {
@@ -269,8 +269,9 @@ func (term *Terminal) Start() {
 	switch term.params.Mode {
 	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no
-		// selection menu: we directly enter driver mode
+		// selection menu: we directly enter driver mode, and quit when done
 		term.startAs(role.Driver{})
+		engine.Quit()
 	case runmode.Mob{}:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
@@ -301,7 +302,7 @@ func (term *Terminal) listMainMenuOptions(title string) {
 func (term *Terminal) listRoleMenuOptions(title string) {
 	term.title(title)
 	r := engine.GetCurrentRole()
-	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
+	if config.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}
 	term.printMenuOption('Q', "Quit ", r.Name(), " role")

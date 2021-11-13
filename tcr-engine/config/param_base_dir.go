@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
+// AddBaseDirParam adds TCR base directory parameter to the provided command
+func AddBaseDirParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "base-dir",
+				shorthand:  "b",
+				usage:      "indicate the base directory from which TCR is running",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

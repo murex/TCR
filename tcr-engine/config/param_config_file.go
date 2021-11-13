@@ -20,21 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigFile      string
-	Language        string
-	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
-	MobTurnDuration time.Duration
+// AddConfigFileParam adds TCR configuration file location parameter to the provided command
+func AddConfigFileParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "config",
+				shorthand:  "c",
+				usage:      "config file (default is $HOME/tcr.yaml)",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }
