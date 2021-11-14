@@ -40,6 +40,7 @@ func main() {
 }
 
 func genDocFor(cmd *cobra.Command) {
+	cmd.DisableAutoGenTag = true
 	if doc.GenMarkdownTree(cmd, docDirectory) != nil {
 		log.Fatal(doc.GenMarkdownTree(cmd, docDirectory))
 	}
