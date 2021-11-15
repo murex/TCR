@@ -86,7 +86,8 @@ func initConfig() {
 }
 
 func addParameters() {
-	baseDirParam = config.AddBaseDirParam(rootCmd)
+	// When running TCR-GUI, default base dir is empty to make sure we always start the application
+	baseDirParam = config.AddBaseDirParamWithDefault(rootCmd, "")
 	configFileParam = config.AddConfigFileParam(rootCmd)
 	languageParam = config.AddLanguageParam(rootCmd)
 	toolchainParam = config.AddToolchainParam(rootCmd)

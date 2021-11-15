@@ -86,7 +86,8 @@ func initConfig() {
 }
 
 func addParameters() {
-	baseDirParam = config.AddBaseDirParam(rootCmd)
+	// When running TCR-CLI, default base dir is the current directory
+	baseDirParam = config.AddBaseDirParamWithDefault(rootCmd, ".")
 	configFileParam = config.AddConfigFileParam(rootCmd)
 	languageParam = config.AddLanguageParam(rootCmd)
 	toolchainParam = config.AddToolchainParam(rootCmd)

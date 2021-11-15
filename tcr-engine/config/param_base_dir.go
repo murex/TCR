@@ -50,3 +50,10 @@ func AddBaseDirParam(cmd *cobra.Command) *StringParam {
 	param.addToCommand(cmd)
 	return &param
 }
+
+// AddBaseDirParamWithDefault adds TCR base directory parameter to the provided command, with a default value
+func AddBaseDirParamWithDefault(cmd *cobra.Command, defaultValue string) *StringParam {
+	param := AddBaseDirParam(cmd)
+	param.v.defaultValue = defaultValue
+	return param
+}
