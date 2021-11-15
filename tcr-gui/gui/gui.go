@@ -188,7 +188,7 @@ func (gui *GUI) quit(message string) {
 }
 
 func (gui *GUI) initApp() {
-	gui.app = app.New()
+	gui.app = app.NewWithID("TCR")
 	icon, _ := fyne.LoadResourceFromPath("Icon.png")
 	gui.app.SetIcon(icon)
 	gui.win = gui.app.NewWindow(config.ApplicationName)
