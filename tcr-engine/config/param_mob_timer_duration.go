@@ -24,6 +24,7 @@ package config
 
 import (
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // AddMobTimerDurationParam adds mob timer duration parameter to the provided command
@@ -44,7 +45,7 @@ func AddMobTimerDurationParam(cmd *cobra.Command) *DurationParam {
 		},
 		v: paramValueDuration{
 			value:        0,
-			defaultValue: DefaultMobTurnDuration,
+			defaultValue: 5 * time.Minute,
 		},
 	}
 	param.addToCommand(cmd)

@@ -24,6 +24,7 @@ package config
 
 import (
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // AddPollingPeriodParam adds git polling period parameter to the provided command
@@ -44,7 +45,7 @@ func AddPollingPeriodParam(cmd *cobra.Command) *DurationParam {
 		},
 		v: paramValueDuration{
 			value:        0,
-			defaultValue: DefaultPollingPeriod,
+			defaultValue: 2 * time.Second,
 		},
 	}
 	param.addToCommand(cmd)
