@@ -8,11 +8,9 @@ replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
 require (
 	fyne.io/fyne/v2 v2.1.2
-	github.com/mitchellh/go-homedir v1.1.0
 	github.com/murex/tcr/tcr-cli v0.0.0-00010101000000-000000000000
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.3.0
-	github.com/spf13/viper v1.10.1
 )
 
 require (
@@ -53,7 +51,7 @@ require (
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.8.1 // indirect
+	github.com/spf13/viper v1.9.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20210519022825-9fc0c575d5fe // indirect
 	github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
