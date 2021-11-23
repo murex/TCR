@@ -80,7 +80,7 @@ func (term *Terminal) StopReporting() {
 	report.Unsubscribe(term.reportingChannel)
 }
 
-// NotifyRoleStarting tells the user that TCR engine is starting witqh the provided role
+// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *Terminal) NotifyRoleStarting(r role.Role) {
 	term.title("Starting with ", strings.Title(r.Name()), " role. Press ? for options")
 }

@@ -56,7 +56,7 @@ signs:
     # Defaults to `gpg`
     cmd: gpg
 
-    # Command line templateable arguments for the command
+    # Command line template-able arguments for the command
     #
     # to sign with a specific key use
     # args: ["-u", "<key id, fingerprint, email, ...>", "--output", "${signature}", "--detach-sign", "${artifact}"]

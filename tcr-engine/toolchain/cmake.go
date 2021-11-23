@@ -49,7 +49,7 @@ func (tchn CmakeToolchain) buildCommandArgs() []string {
 }
 
 func (tchn CmakeToolchain) testCommandArgs() []string {
-	// Important: This (--test-dir option) requires to use cmake 3.20 version or higher
+	// Important: This (--test-dir option) requires using cmake 3.20 version or higher
 	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
 }
 
