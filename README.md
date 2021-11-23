@@ -20,15 +20,15 @@ This repository provides a tool allowing people to use the TCR workflow.
 
 ## Why TCR?
 
-Although probably a bit challenging to use when working on real production code, we found TCR to be quite beneficial
-when used as a learning and practicing tool on the katas that we use when doing software craftsmanship coaching.
+Although probably a bit challenging to use on real production code, we found TCR to be quite beneficial when used as a
+learning and practicing tool on the katas that we use when doing software craftsmanship coaching.
 
 TCR enforces developing in baby steps, with a strong focus on always keeping the green light on tests. Having a TCR tool
 feels a bit like having a coaching assistant constantly enforcing such practices!
 
 We initially came up with a small shell script implementing this workflow, and decided to embed it in each of our katas
-so that people can use it if they like. This was a way for us to quickly provide a usable TCR solution for. However,
-shell scripts are not the best in class when it comes to maintainability and changeability.
+so that people can use it if they like. This was a way for us to quickly provide a usable TCR solution. However, shell
+scripts are not the best in class when it comes to maintainability and changeability.
 
 For This reason we decided to work on a new implementation of TCR, written in [Go](https://golang.org/) this time.
 
@@ -46,11 +46,13 @@ If you are a technical coach, you can advise participants to your coaching sessi
 
 1. Have [git](https://git-scm.com/) installed on your machine
 2. Have a clone of the git repository containing the code you intend to work on
-3. Supported platforms: macOS (x86_64), Linux (x86_64) and Windows (x86_64)
+3. Supported platforms: macOS, Linux and Windows. Refer to [TCR releases page](https://github.com/murex/TCR/releases)
+   for supported architectures
 4. Supported languages: TCR tool currently works with Java and C++ out of the box (more to come in the future)
-5. Have [Java JDK](https://jdk.java.net/archive/) 11 or later installed for java, or a working C++ compiler for C++
-6. Build toolchains: [Gradle](https://gradle.org/) and [Maven](https://maven.apache.org/index.html) for
-   Java, [CMake](https://cmake.org/) for C++
+5. Have [Java JDK](https://jdk.java.net/archive/) 11 or later installed for java, or a working C++ compiler
+6. Build toolchains:
+    - [Gradle](https://gradle.org/) and [Maven](https://maven.apache.org/index.html) for Java
+    - [CMake](https://cmake.org/) for C++
 7. If you're using an IDE, make sure that **your IDE's auto-save is turned off**. TCR is constantly watching for file
    changes in your code, and for this reason it does not get along well with IDE's auto-save features.
 
@@ -105,8 +107,8 @@ of `CMake` that will then be used by the TCR tool.
 2. Extract TCR executable
 
     ```shell
-    $ # Replace "0.6.0" with the appropriate version
-    $ tar zxf tcr_0.6.0_Darwin_x86_64.tar.gz
+    $ # Replace "0.8.0" with the appropriate version
+    $ tar zxf tcr_0.8.0_Darwin_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -125,8 +127,8 @@ of `CMake` that will then be used by the TCR tool.
 2. Extract TCR executable
 
     ```shell
-    $ # Replace "0.6.0" with the appropriate version
-    $ tar zxf tcr_0.6.0_Linux_x86_64.tar.gz
+    $ # Replace "0.8.0" with the appropriate version
+    $ tar zxf tcr_0.8.0_Linux_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -145,8 +147,8 @@ of `CMake` that will then be used by the TCR tool.
 2. Extract TCR executable
 
     ```shell
-    $ # Replace "0.6.0" with the appropriate version
-    $ tar zxf tcr_0.6.0_Windows_x86_64.tar.gz
+    $ # Replace "0.8.0" with the appropriate version
+    $ tar zxf tcr_0.8.0_Windows_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -193,7 +195,7 @@ TCR Go command line options and parameters are managed using [Cobra](https://git
 The Cobra library download is already dealt with through Go Module dependencies, which means that in most situations you
 will not need to worry about installing it.
 
-In case you need to add or modify subcommands, options or parameters, you may need to use the Cobra Generator. In this
+In case you need to add or modify subcommands, options or parameters, you may want to use the Cobra Generator. In this
 situation you can refer to
 [Cobra Generator documentation](https://github.com/spf13/cobra/blob/master/user_guide.md#using-the-cobra-generator)
 
@@ -201,18 +203,21 @@ situation you can refer to
 
 New versions of TCR Go are released through [GoReleaser](https://goreleaser.com/).
 
-You should not need it as long as you don't have to release a new TCR Go version.
+You should not need it as long as you don't plan to release a new TCR Go version.
 
-If you do, you can refer to [GoReleaser Installation Instructions] for installing it locally on your machine.
+If you do, you can refer to [GoReleaser Installation Instructions](https://goreleaser.com/install/)
+for installing it locally on your machine.
 
-In most cases you will not even have to install it locally as TCR-Go new releases are built through a GoReleaser GitHub
-action.
+In most cases you will not even have to install it locally as TCR-Go new releases are built through
+a [GoReleaser GitHub action](.github/workflows/goreleaser.yml).
 
 #### golangci-lint package - `Optional`
 
-We use a Go Linter called [golangci-lint](https://golangci-lint.run/) to perform various checks on TCR Go code.
+We use the Go Linter aggregator [golangci-lint](https://golangci-lint.run/) to perform various static checks on TCR Go
+code.
 
-A GitHub action triggers execution of golangci-lint every time a new TCR-Go version is being released.
+A [dedicated GitHub action](.github/workflows/goreleaser.yml) triggers execution of golangci-lint every time a new
+TCR-Go version is being released.
 
 Although not mandatory, we advise you to install it locally on your machine to check that your changes comply with
 golangci-lint rules. Refer to [golangci-lint installation instructions](https://golangci-lint.run/usage/install/)
@@ -224,6 +229,8 @@ Once golangci-lint is installed, you can run it from the root directory:
 $ make lint
 ```
 
+Both local run and GitHub Action use [this configuration file](.golangci.yml)
+
 #### Fyne toolkit - `Optional`
 
 The GUI version of TCR-Go is built on top of [Fyne toolkit](https://fyne.io/) for all GUI-related stuff.
@@ -232,13 +239,104 @@ Refer to [Fyne Develop](https://developer.fyne.io/) for installation and usage i
 
 You will not need it as long as you're working on the TCR Command Line implementation only.
 
+> ***Note about TCR GUI version***
+>
+> So far we are only releasing the command line version of TCR.
+> We have not reached yet the stage where we could fully automate through a goreleaser GitHub Action
+> the cross-compilation and link of TCR with Fyne and its dependencies.
+> In the meantime if you wish to give TCR GUI a try, you still can build and run it locally on your machine
+> (refer to `Build TCR executable` section below)
+
 ### Build TCR executable
 
-`TODO - Add instructions`
+To build TCR locally on your machine, simply type the following from the root directory:
+
+```shell
+$ make
+```
+
+This command generates by default both TCR CLI (in [tcr-cli](./tcr-cli) directory)
+and TCR GUI (in [tcr-gui](./tcr-gui) directory) executables, as well as the command help pages (in [doc](./doc)
+directory).
+
+<details><summary>To build TCR CLI only</summary>
+
+Either run the following command from the root directory:
+
+```shell
+$ make -C ./tcr-cli
+```
+
+Or run make from [tcr-cli](./tcr-cli) directory:
+
+```shell
+$ cd tcr-cli
+$ make
+```
+
+</details>
+
+<details><summary>To build TCR GUI only</summary>
+
+Either run the following command from the root directory:
+
+```shell
+$ make -C ./tcr-gui
+```
+
+Or run make from [tcr-gui](./tcr-gui) directory:
+
+```shell
+$ cd tcr-gui
+$ make
+```
+
+</details>
+
+<details><summary>To generate TCR command markdown documentation</summary>
+
+```shell
+$ make doc
+```
+
+</details>
 
 ### Release a new TCR version
 
-`TODO - Add instructions`
+We use [GoReleaser](https://goreleaser.com/) for releasing new TCR versions.
+
+<details><summary>Expand for details</summary>
+
+#### Versioning Rules
+
+TCR release versions comply with [Semantic Versioning rules](https://semver.org/).
+
+#### Release Branch
+
+All TCR releases are published on GitHub's `main` branch.
+
+#### Release Preparation
+
+- [ ] Cleanup Go module dependencies: `make tidy`
+- [ ] Run static checks and fix any non-conformity: `make lint`
+- [ ] Verify that the build works: `make build`
+- [ ] Verify that all tests pass: `make test`
+- [ ] Commit all changes on the `main` branch
+- [ ] Push the changes to GitHub and [wait until all GitHub Actions are green](https://github.com/murex/TCR/actions)
+- [ ] Create the release tag: `git tag -a vX.Y.Z`
+- [ ] Verify that everything is ready for GoReleaser: `make snapshot`
+
+#### Releasing
+
+The creation of the new release is triggered by pushing the newly created release tag to GitHub repository
+
+- [ ] Push the release tag: `git push origin vX.Y.Z`
+- [ ] [Wait until all GitHub Actions are green](https://github.com/murex/TCR/actions)
+- [ ] Open [TCR Release page](https://github.com/murex/TCR/releases) and verify that the new release is there
+- [ ] Edit the release notes document, and add a `Summary` section at the top listing the main changes included in this
+  release. You can look at previous release notes if not sure what you should put in there.
+
+</details>
 
 ## How to Contribute?
 
