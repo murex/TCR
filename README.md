@@ -163,10 +163,12 @@ of `CMake` that will then be used by the TCR tool.
 
 Refer to [here](./doc/tcr.md) for TCR command line help and additional options.
 
-## Building TCR tool on your machine
+## Building TCR on your machine
 
 This section provides information related to TCR tool development environment setup for those who would like to build
 TCR tool locally.
+
+<details><summary>Expand for details</summary>
 
 ### Clone TCR repository - `Required`
 
@@ -301,21 +303,23 @@ $ make doc
 
 </details>
 
-### Release a new TCR version
+</details>
+
+## Releasing a new TCR version
 
 We use [GoReleaser](https://goreleaser.com/) for releasing new TCR versions.
 
 <details><summary>Expand for details</summary>
 
-#### Versioning Rules
+### Versioning Rules
 
 TCR release versions comply with [Semantic Versioning rules](https://semver.org/).
 
-#### Release Branch
+### Release Branch
 
 All TCR releases are published on GitHub's `main` branch.
 
-#### Release Preparation
+### Release Preparation
 
 - [ ] Cleanup Go module dependencies: `make tidy`
 - [ ] Run static checks and fix any non-conformity: `make lint`
@@ -326,15 +330,15 @@ All TCR releases are published on GitHub's `main` branch.
 - [ ] Create the release tag: `git tag -a vX.Y.Z`
 - [ ] Verify that everything is ready for GoReleaser: `make snapshot`
 
-#### Releasing
+### Releasing
 
 The creation of the new release is triggered by pushing the newly created release tag to GitHub repository
 
 - [ ] Push the release tag: `git push origin vX.Y.Z`
 - [ ] [Wait until all GitHub Actions are green](https://github.com/murex/TCR/actions)
 - [ ] Open [TCR Release page](https://github.com/murex/TCR/releases) and verify that the new release is there
-- [ ] Edit the release notes document, and add a `Summary` section at the top listing the main changes included in this
-  release. You can look at previous release notes if not sure what you should put in there.
+- [ ] Edit the release notes document, and insert a `Summary` section at the top, listing the main changes included in
+  this release. You may take a look at previous release notes if unsure what should go in there.
 
 </details>
 
