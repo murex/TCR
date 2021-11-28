@@ -25,6 +25,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"sort"
 )
 
 // configCmd represents the config command
@@ -49,8 +51,12 @@ config show subcommand displays TCR configuration.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO
-		fmt.Println("TODO: config show command")
+		fmt.Println("Configuration File:", viper.ConfigFileUsed())
+		keys := viper.AllKeys()
+		sort.Strings(keys)
+		for _, key := range keys {
+			fmt.Printf("- %v: %v\n", key, viper.Get(key))
+		}
 	},
 }
 
