@@ -23,10 +23,8 @@ SOFTWARE.
 package cmd
 
 import (
-	"fmt"
+	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"sort"
 )
 
 // configCmd represents the config command
@@ -51,12 +49,7 @@ config show subcommand displays TCR configuration.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Configuration File:", viper.ConfigFileUsed())
-		keys := viper.AllKeys()
-		sort.Strings(keys)
-		for _, key := range keys {
-			fmt.Printf("- %v: %v\n", key, viper.Get(key))
-		}
+		config.Show()
 	},
 }
 
@@ -69,8 +62,7 @@ config save subcommand saves TCR configuration into a file.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO
-		fmt.Println("TODO: config save command")
+		config.Save()
 	},
 }
 
@@ -83,8 +75,7 @@ config reset subcommand resets TCR configuration to default values.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO
-		fmt.Println("TODO: config reset command")
+		config.Reset()
 	},
 }
 

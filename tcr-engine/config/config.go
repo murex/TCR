@@ -28,12 +28,22 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
-// SaveConfigFlag is a placeholder for command line parameter allowing to save configuration to a file
-var SaveConfigFlag bool
+const (
+	configDir      = ".tcr"
+	configFileBase = "config"
+	configFileType = "yml"
+	configFileName = configFileBase + "." + configFileType
+)
 
-// Init initializes viper configuration
+var (
+	configDirPath  string
+	configFilePath string
+)
+
+// Init initializes TCR configuration
 func Init(configFile string) {
 	if configFile != "" {
 		// Use config file from the flag.
@@ -41,13 +51,14 @@ func Init(configFile string) {
 	} else {
 		// Find home directory.
 		home, _ := homedir.Dir()
-		//cobra.CheckErr(err)
+		configDirPath = filepath.Join(home, configDir)
+		configFilePath = filepath.Join(configDirPath, configFileName)
 
-		// Search config in home directory with name "tcr.yaml".
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("tcr.yaml")
-		viper.SetConfigFile(filepath.Join(home, "tcr.yaml"))
+		// Search config in tcr configuration directory
+		viper.AddConfigPath(configDirPath)
+		viper.SetConfigType(configFileType)
+		viper.SetConfigName(configFileName)
+		viper.SetConfigFile(configFilePath)
 	}
 
 	viper.SetEnvPrefix(ApplicationName)
@@ -59,16 +70,53 @@ func Init(configFile string) {
 	}
 }
 
-// Save saves viper configuration
+// Save saves TCR configuration
 func Save() {
-	if SaveConfigFlag {
-		trace("Saving configuration: ", viper.ConfigFileUsed())
-		if err := viper.WriteConfig(); err != nil {
-			if os.IsNotExist(err) {
-				_ = viper.WriteConfigAs(viper.ConfigFileUsed())
-			} else {
-				trace("Error while saving configuration file: ", err)
-			}
+	createConfigDir()
+	trace("Saving configuration: ", viper.ConfigFileUsed())
+	if err := viper.WriteConfig(); err != nil {
+		if os.IsNotExist(err) {
+			_ = viper.WriteConfigAs(viper.ConfigFileUsed())
+		} else {
+			trace("Error while saving configuration file: ", err)
+		}
+	}
+}
+
+// Reset resets TCR configuration to default value
+func Reset() {
+	trace("Resetting configuration to default values")
+
+	// TODO Implement me
+	trace("TODO - ", "Coming soon :)")
+}
+
+// Show displays current TCR configuration
+func Show() {
+	showConfigOrigin()
+	keys := viper.AllKeys()
+	sort.Strings(keys)
+	for _, key := range keys {
+		trace("- ", key, ": ", viper.Get(key))
+	}
+}
+
+func showConfigOrigin() {
+	_, err := os.Stat(viper.ConfigFileUsed())
+	if os.IsNotExist(err) {
+		trace("No configuration file found. Showing default configuration")
+	} else {
+		trace("Configuration file: ", viper.ConfigFileUsed())
+	}
+}
+
+func createConfigDir() {
+	_, err := os.Stat(configDirPath)
+	if os.IsNotExist(err) {
+		trace("Creating TCR configuration directory: ", configDirPath)
+		err := os.MkdirAll(configDirPath, os.ModePerm)
+		if err != nil {
+			trace("Error creating TCR configuration directory: ", err)
 		}
 	}
 }
