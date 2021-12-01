@@ -288,7 +288,6 @@ func SetRunMode(m runmode.RunMode) {
 func Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
-	config.Save()
 	os.Exit(0)
 }
 

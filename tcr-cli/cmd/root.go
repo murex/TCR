@@ -34,7 +34,6 @@ import (
 
 var (
 	baseDirParam          *config.StringParam
-	saveConfigParam       *config.BoolParam
 	configFileParam       *config.StringParam
 	languageParam         *config.StringParam
 	toolchainParam        *config.StringParam
@@ -95,7 +94,6 @@ func addParameters() {
 	mobTimerDurationParam = config.AddMobTimerDurationParam(rootCmd)
 	autoPushParam = config.AddAutoPushParam(rootCmd)
 	buildInfoParam = config.AddBuildInfoParam(rootCmd)
-	saveConfigParam = config.AddSaveConfigParam(rootCmd)
 }
 
 func retrieveConfig() {
@@ -108,7 +106,6 @@ func retrieveConfig() {
 	params.AutoPush = autoPushParam.GetValue()
 
 	config.BuildInfoFlag = buildInfoParam.GetValue()
-	config.SaveConfigFlag = saveConfigParam.GetValue()
 }
 
 // GetRootCmd returns the root command. This function is used by the doc package to generate
