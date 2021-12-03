@@ -25,11 +25,27 @@ package config
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
+	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"sort"
 )
+
+type TcrConfig struct {
+	BaseDir          *StringParam
+	ConfigFile       *StringParam
+	Language         *StringParam
+	Toolchain        *StringParam
+	PollingPeriod    *DurationParam
+	MobTimerDuration *DurationParam
+	AutoPush         *BoolParam
+	BuildInfo        *BoolParam
+}
+
+var Config = TcrConfig{}
 
 const (
 	configDir      = ".tcr"
@@ -61,7 +77,7 @@ func Init(configFile string) {
 		viper.SetConfigFile(configFilePath)
 	}
 
-	viper.SetEnvPrefix(ApplicationName)
+	viper.SetEnvPrefix(settings.ApplicationName)
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
@@ -122,5 +138,29 @@ func createConfigDir() {
 }
 
 func trace(a ...interface{}) {
-	_, _ = fmt.Fprintln(os.Stderr, "["+ApplicationName+"]", fmt.Sprint(a...))
+	_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
+}
+
+// AddParameters add parameter to the provided command cmd
+func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
+	Config.BaseDir = AddBaseDirParamWithDefault(cmd, defaultBaseDir)
+	Config.ConfigFile = AddConfigFileParam(cmd)
+	Config.Language = AddLanguageParam(cmd)
+	Config.Toolchain = AddToolchainParam(cmd)
+	Config.PollingPeriod = AddPollingPeriodParam(cmd)
+	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
+	Config.AutoPush = AddAutoPushParam(cmd)
+	Config.BuildInfo = AddBuildInfoParam(cmd)
+}
+
+func UpdateEngineParams(params *engine.Params) {
+	params.BaseDir = Config.BaseDir.GetValue()
+	params.ConfigFile = Config.ConfigFile.GetValue()
+	params.MobTurnDuration = Config.MobTimerDuration.GetValue()
+	params.Language = Config.Language.GetValue()
+	params.Toolchain = Config.Toolchain.GetValue()
+	params.PollingPeriod = Config.PollingPeriod.GetValue()
+	params.AutoPush = Config.AutoPush.GetValue()
+
+	settings.BuildInfoFlag = Config.BuildInfo.GetValue()
 }

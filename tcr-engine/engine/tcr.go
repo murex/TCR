@@ -23,12 +23,13 @@ SOFTWARE.
 package engine
 
 import (
-	"github.com/murex/tcr/tcr-engine/config"
+	//	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/timer"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/murex/tcr/tcr-engine/ui"
@@ -59,7 +60,7 @@ func Init(u ui.UserInterface, params Params) {
 
 	uitf = u
 
-	report.PostInfo("Starting ", config.ApplicationName, " version ", config.BuildVersion, "...")
+	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
 	SetRunMode(params.Mode)
 	pollingPeriod = params.PollingPeriod
@@ -75,7 +76,7 @@ func Init(u ui.UserInterface, params Params) {
 	handleError(err)
 	git.EnablePush(params.AutoPush)
 
-	if config.EnableMobTimer {
+	if settings.EnableMobTimer {
 		mobTurnDuration = params.MobTurnDuration
 		report.PostInfo("Timer duration is ", mobTurnDuration)
 	}
@@ -88,7 +89,7 @@ func Init(u ui.UserInterface, params Params) {
 func warnIfOnRootBranch(branch string) {
 	for _, b := range []string{"main", "master"} {
 		if b == branch {
-			if !uitf.Confirm("Running "+config.ApplicationName+" on branch \""+branch+"\" is not recommended", false) {
+			if !uitf.Confirm("Running "+settings.ApplicationName+" on branch \""+branch+"\" is not recommended", false) {
 				Quit()
 			}
 			break
@@ -114,7 +115,7 @@ func GetCurrentRole() role.Role {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func RunAsDriver() {
-	if config.EnableMobTimer {
+	if settings.EnableMobTimer {
 		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
 	}
 
@@ -123,7 +124,7 @@ func RunAsDriver() {
 			currentRole = role.Driver{}
 			uitf.NotifyRoleStarting(currentRole)
 			_ = git.Pull()
-			if config.EnableMobTimer {
+			if settings.EnableMobTimer {
 				mobTimer.Start()
 			}
 		},
@@ -143,7 +144,7 @@ func RunAsDriver() {
 			return false
 		},
 		func() {
-			if config.EnableMobTimer {
+			if settings.EnableMobTimer {
 				mobTimer.Stop()
 				mobTimer = nil
 			}
@@ -274,7 +275,7 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 
 // ReportMobTimerStatus reports the status of the mob timer
 func ReportMobTimerStatus() {
-	if config.EnableMobTimer {
+	if settings.EnableMobTimer {
 		timer.ReportCountDownStatus(mobTimer)
 	}
 }

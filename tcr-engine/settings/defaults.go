@@ -20,14 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package settings
 
-// Feature toggles allowing to quickly turn on/off a feature
+import "time"
+
+// Default values
 
 const (
-	// EnableTcrInactivityTeaser Turns on/off TCR inactivity teaser messages
-	EnableTcrInactivityTeaser = false
+	// ApplicationName is the name of the application
+	ApplicationName = "TCR"
+	// ApplicationShortDescription is a short description the application
+	ApplicationShortDescription = "TCR (Test && Commit || Revert)"
 
-	// EnableMobTimer Turns on/off mob countdown timer
-	EnableMobTimer = true
+	// DefaultInactivityPeriod is the default inactivity period until TCR sends an inactivity teaser message
+	DefaultInactivityPeriod = 1 * time.Minute
+	// DefaultInactivityTimeout is the default timeout after which TCR stops sending inactivity teaser messages
+	DefaultInactivityTimeout = 5 * time.Minute
 )

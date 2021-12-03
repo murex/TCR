@@ -29,11 +29,11 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"github.com/murex/tcr/tcr-cli/cli"
-	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/ui"
 	"image/color"
 	"strings"
@@ -77,7 +77,7 @@ func New(p engine.Params) ui.UserInterface {
 	var gui = GUI{params: p}
 	// Until the GUI is able to report, we rely on the terminal to report information
 	gui.term = cli.New(p)
-	report.PostInfo("Opening ", config.ApplicationName, " GUI")
+	report.PostInfo("Opening ", settings.ApplicationName, " GUI")
 
 	gui.initApp()
 	gui.initBaseDirSelectionDialog()
@@ -146,7 +146,7 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 // ShowSessionInfo shows main information related to the current TCR session
 func (gui *GUI) ShowSessionInfo() {
 	d, l, t, ap, b := engine.GetSessionInfo()
-	gui.win.SetTitle(fmt.Sprintf("%v - %v", config.ApplicationName, d))
+	gui.win.SetTitle(fmt.Sprintf("%v - %v", settings.ApplicationName, d))
 	gui.sessionPanel.setLanguage(l)
 	gui.sessionPanel.setToolchain(t)
 	gui.sessionPanel.setBranch(b)
@@ -171,7 +171,7 @@ func (gui *GUI) error(a ...interface{}) {
 
 func (gui *GUI) notification(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
-	gui.app.SendNotification(fyne.NewNotification(config.ApplicationName, fmt.Sprint(a...)))
+	gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
 }
 
 func (gui *GUI) trace(a ...interface{}) {
@@ -191,7 +191,7 @@ func (gui *GUI) initApp() {
 	gui.app = app.NewWithID("TCR")
 	icon, _ := fyne.LoadResourceFromPath("Icon.png")
 	gui.app.SetIcon(icon)
-	gui.win = gui.app.NewWindow(config.ApplicationName)
+	gui.win = gui.app.NewWindow(settings.ApplicationName)
 	gui.win.Resize(fyne.NewSize(defaultWidth, defaultHeight))
 	gui.win.SetCloseIntercept(func() {
 		gui.quit("Closing application")
@@ -248,7 +248,7 @@ func (gui *GUI) initTcrEngine(baseDir string) {
 }
 
 func (gui *GUI) showTimerStatus() {
-	if config.EnableMobTimer {
+	if settings.EnableMobTimer {
 		engine.ReportMobTimerStatus()
 	}
 }

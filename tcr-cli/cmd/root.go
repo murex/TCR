@@ -27,20 +27,8 @@ import (
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
-)
-
-// Command Line Options placeholders
-
-var (
-	baseDirParam          *config.StringParam
-	configFileParam       *config.StringParam
-	languageParam         *config.StringParam
-	toolchainParam        *config.StringParam
-	pollingPeriod         *config.DurationParam
-	mobTimerDurationParam *config.DurationParam
-	autoPushParam         *config.BoolParam
-	buildInfoParam        *config.BoolParam
 )
 
 var params engine.Params
@@ -48,16 +36,16 @@ var params engine.Params
 var (
 	rootCmd = &cobra.Command{
 		Use:     "tcr",
-		Version: config.BuildVersion,
-		Short:   config.ApplicationShortDescription,
+		Version: settings.BuildVersion,
+		Short:   settings.ApplicationShortDescription,
 		Long: `
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a terminal.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			retrieveConfig()
-			config.PrintBuildInfo()
+			config.UpdateEngineParams(&params)
+			settings.PrintBuildInfo()
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			params.Mode = runmode.Mob{}
@@ -76,36 +64,13 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	addParameters()
+	// When running TCR-CLI, default base dir is the current directory
+	config.AddParameters(rootCmd, ".")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	config.Init(params.ConfigFile)
-}
-
-func addParameters() {
-	// When running TCR-CLI, default base dir is the current directory
-	baseDirParam = config.AddBaseDirParamWithDefault(rootCmd, ".")
-	configFileParam = config.AddConfigFileParam(rootCmd)
-	languageParam = config.AddLanguageParam(rootCmd)
-	toolchainParam = config.AddToolchainParam(rootCmd)
-	pollingPeriod = config.AddPollingPeriodParam(rootCmd)
-	mobTimerDurationParam = config.AddMobTimerDurationParam(rootCmd)
-	autoPushParam = config.AddAutoPushParam(rootCmd)
-	buildInfoParam = config.AddBuildInfoParam(rootCmd)
-}
-
-func retrieveConfig() {
-	params.BaseDir = baseDirParam.GetValue()
-	params.ConfigFile = configFileParam.GetValue()
-	params.MobTurnDuration = mobTimerDurationParam.GetValue()
-	params.Language = languageParam.GetValue()
-	params.Toolchain = toolchainParam.GetValue()
-	params.PollingPeriod = pollingPeriod.GetValue()
-	params.AutoPush = autoPushParam.GetValue()
-
-	config.BuildInfoFlag = buildInfoParam.GetValue()
 }
 
 // GetRootCmd returns the root command. This function is used by the doc package to generate
