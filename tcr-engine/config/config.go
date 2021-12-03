@@ -45,6 +45,15 @@ type TcrConfig struct {
 	BuildInfo        *BoolParam
 }
 
+func (c TcrConfig) reset() {
+	c.BaseDir.reset()
+	c.Language.reset()
+	c.Toolchain.reset()
+	c.PollingPeriod.reset()
+	c.MobTimerDuration.reset()
+	c.AutoPush.reset()
+}
+
 var Config = TcrConfig{}
 
 const (
@@ -102,9 +111,8 @@ func Save() {
 // Reset resets TCR configuration to default value
 func Reset() {
 	trace("Resetting configuration to default values")
-
-	// TODO Implement me
-	trace("TODO - ", "Coming soon :)")
+	Config.reset()
+	Save()
 }
 
 // Show displays current TCR configuration

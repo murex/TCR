@@ -32,6 +32,10 @@ type paramValueBool struct {
 	defaultValue bool
 }
 
+func (p *paramValueBool) reset() {
+	p.value = p.defaultValue
+}
+
 // BoolParam is a parameter of type bool that can be handled by both viper and cobra frameworks
 type BoolParam struct {
 	s paramSettings
@@ -57,10 +61,10 @@ func (param *BoolParam) useDefaultValueIfNotSet() {
 			if cfgValue := viper.GetBool(param.s.getViperKey()); cfgValue != undefined {
 				param.v.value = cfgValue
 			} else {
-				param.v.value = param.v.defaultValue
+				param.reset()
 			}
 		} else {
-			param.v.value = param.v.defaultValue
+			param.reset()
 		}
 	}
 }
@@ -69,4 +73,11 @@ func (param *BoolParam) useDefaultValueIfNotSet() {
 func (param *BoolParam) GetValue() bool {
 	param.useDefaultValueIfNotSet()
 	return param.v.value
+}
+
+func (param *BoolParam) reset() {
+	param.v.reset()
+	if param.s.enabled {
+		viper.Set(param.s.getViperKey(), param.v.value)
+	}
 }

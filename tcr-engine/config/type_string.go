@@ -32,6 +32,10 @@ type paramValueString struct {
 	defaultValue string
 }
 
+func (p *paramValueString) reset() {
+	p.value = p.defaultValue
+}
+
 // StringParam is a parameter of type string that can be handled by both viper and cobra frameworks
 type StringParam struct {
 	s paramSettings
@@ -57,10 +61,10 @@ func (param *StringParam) useDefaultValueIfNotSet() {
 			if cfgValue := viper.GetString(param.s.getViperKey()); cfgValue != undefined {
 				param.v.value = cfgValue
 			} else {
-				param.v.value = param.v.defaultValue
+				param.reset()
 			}
 		} else {
-			param.v.value = param.v.defaultValue
+			param.reset()
 		}
 	}
 }
@@ -69,4 +73,11 @@ func (param *StringParam) useDefaultValueIfNotSet() {
 func (param *StringParam) GetValue() string {
 	param.useDefaultValueIfNotSet()
 	return param.v.value
+}
+
+func (param *StringParam) reset() {
+	param.v.reset()
+	if param.s.enabled {
+		viper.Set(param.s.getViperKey(), param.v.value)
+	}
 }

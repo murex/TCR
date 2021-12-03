@@ -33,6 +33,10 @@ type paramValueDuration struct {
 	defaultValue time.Duration
 }
 
+func (p *paramValueDuration) reset() {
+	p.value = p.defaultValue
+}
+
 // DurationParam is a parameter of type time.Duration that can be handled by both viper and cobra frameworks
 type DurationParam struct {
 	s paramSettings
@@ -57,10 +61,10 @@ func (param *DurationParam) useDefaultValueIfNotSet() {
 			if cfgValue := viper.GetDuration(param.s.getViperKey()); cfgValue != undefined {
 				param.v.value = cfgValue
 			} else {
-				param.v.value = param.v.defaultValue
+				param.reset()
 			}
 		} else {
-			param.v.value = param.v.defaultValue
+			param.reset()
 		}
 	}
 }
@@ -69,4 +73,11 @@ func (param *DurationParam) useDefaultValueIfNotSet() {
 func (param *DurationParam) GetValue() time.Duration {
 	param.useDefaultValueIfNotSet()
 	return param.v.value
+}
+
+func (param *DurationParam) reset() {
+	param.v.reset()
+	if param.s.enabled {
+		viper.Set(param.s.getViperKey(), param.v.value)
+	}
 }
