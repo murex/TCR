@@ -19,14 +19,18 @@ tcr [flags]
 ```
   -p, --auto-push           enable git push after every commit
   -b, --base-dir string     indicate the base directory from which TCR is running
-  -d, --duration duration   set the duration for role rotation countdown timer (default 5m0s)
+  -c, --config string       config file (default is $HOME/tcr.yaml)
+  -d, --duration duration   set the duration for role rotation countdown timer
   -h, --help                help for tcr
-  -i, --info                show build information about TCR application
+  -l, --language string     indicate the programming language to be used by TCR
+  -o, --polling duration    set git polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
 ```
 
 ### SEE ALSO
 
+* [tcr config](tcr_config.md)	 - Manage TCR configuration
+* [tcr info](tcr_info.md)	 - Display TCR build information
 * [tcr mob](tcr_mob.md)	 - Run TCR in mob mode
 * [tcr solo](tcr_solo.md)	 - Run TCR in solo mode
 

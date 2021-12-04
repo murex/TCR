@@ -23,9 +23,12 @@ tcr mob [flags]
 ### Options inherited from parent commands
 
 ```
+  -p, --auto-push           enable git push after every commit
   -b, --base-dir string     indicate the base directory from which TCR is running
-  -d, --duration duration   set the duration for role rotation countdown timer (default 5m0s)
-  -i, --info                show build information about TCR application
+  -c, --config string       config file (default is $HOME/tcr.yaml)
+  -d, --duration duration   set the duration for role rotation countdown timer
+  -l, --language string     indicate the programming language to be used by TCR
+  -o, --polling duration    set git polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
 ```
 

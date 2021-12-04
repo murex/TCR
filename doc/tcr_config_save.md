@@ -1,29 +1,37 @@
-## tcr-gui
+## tcr config save
 
-TCR (Test && Commit || Revert)
+Save TCR configuration
 
 ### Synopsis
 
 
-This application is a tool for practicing TCR (Test && Commit || Revert).
-It can be used either in solo, or as a group within a mob or pair session.
+config save subcommand saves TCR configuration into a file.
 
-This application runs within a GUI.
+This subcommand does not start TCR engine.
 
 ```
-tcr-gui [flags]
+tcr config save [flags]
 ```
 
 ### Options
+
+```
+  -h, --help   help for save
+```
+
+### Options inherited from parent commands
 
 ```
   -p, --auto-push           enable git push after every commit
   -b, --base-dir string     indicate the base directory from which TCR is running
   -c, --config string       config file (default is $HOME/tcr.yaml)
   -d, --duration duration   set the duration for role rotation countdown timer
-  -h, --help                help for tcr-gui
   -l, --language string     indicate the programming language to be used by TCR
   -o, --polling duration    set git polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
 ```
+
+### SEE ALSO
+
+* [tcr config](tcr_config.md)	 - Manage TCR configuration
 
