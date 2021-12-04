@@ -34,6 +34,7 @@ import (
 	"sort"
 )
 
+// TcrConfig wraps all possible TCR configuration parameters
 type TcrConfig struct {
 	BaseDir          *StringParam
 	ConfigFile       *StringParam
@@ -54,6 +55,7 @@ func (c TcrConfig) reset() {
 	c.AutoPush.reset()
 }
 
+// Config is the placeholder for all TCR configuration parameters
 var Config = TcrConfig{}
 
 const (
@@ -158,9 +160,9 @@ func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
 	Config.PollingPeriod = AddPollingPeriodParam(cmd)
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
-	Config.BuildInfo = AddBuildInfoParam(cmd)
 }
 
+// UpdateEngineParams updates TCR engine parameters based on configuration values
 func UpdateEngineParams(params *engine.Params) {
 	params.BaseDir = Config.BaseDir.GetValue()
 	params.ConfigFile = Config.ConfigFile.GetValue()
@@ -169,6 +171,4 @@ func UpdateEngineParams(params *engine.Params) {
 	params.Toolchain = Config.Toolchain.GetValue()
 	params.PollingPeriod = Config.PollingPeriod.GetValue()
 	params.AutoPush = Config.AutoPush.GetValue()
-
-	settings.BuildInfoFlag = Config.BuildInfo.GetValue()
 }

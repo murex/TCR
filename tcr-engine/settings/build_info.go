@@ -24,11 +24,7 @@ package settings
 
 import (
 	"fmt"
-	"os"
 )
-
-// BuildInfoFlag is a placeholder for command line parameter querying TCR build information
-var BuildInfoFlag bool
 
 // Below variables are set at build time through -ldflags
 var (
@@ -60,10 +56,7 @@ func GetBuildInfo() []BuildInfo {
 
 // PrintBuildInfo prints out application's build information and exits
 func PrintBuildInfo() {
-	if BuildInfoFlag {
-		for _, buildInfo := range GetBuildInfo() {
-			fmt.Printf("- %s:\t%s\n", buildInfo.Label, buildInfo.Value)
-		}
-		os.Exit(0)
+	for _, buildInfo := range GetBuildInfo() {
+		fmt.Printf("- %s:\t%s\n", buildInfo.Label, buildInfo.Value)
 	}
 }

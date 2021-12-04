@@ -45,7 +45,6 @@ It can be used either in solo, or as a group within a mob or pair session.
 This application runs within a terminal.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			config.UpdateEngineParams(&params)
-			settings.PrintBuildInfo()
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			params.Mode = runmode.Mob{}

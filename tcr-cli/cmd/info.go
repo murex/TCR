@@ -20,33 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package cmd
 
 import (
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
 )
 
-// AddBuildInfoParam adds TCR build information parameter to the provided command
-func AddBuildInfoParam(cmd *cobra.Command) *BoolParam {
-	param := BoolParam{
-		s: paramSettings{
-			viperSettings: viperSettings{
-				enabled: false,
-				keyPath: "",
-				name:    "",
-			},
-			cobraSettings: cobraSettings{
-				name:       "info",
-				shorthand:  "i",
-				usage:      "show build information about TCR application",
-				persistent: true,
-			},
-		},
-		v: paramValueBool{
-			value:        false,
-			defaultValue: false,
-		},
-	}
-	param.addToCommand(cmd)
-	return &param
+// infoCmd represents the info command
+var infoCmd = &cobra.Command{
+	Use:   "info",
+	Short: "Display TCR build information",
+	Long: `
+TCR info subcommand displays information related to TCR executable build.
+
+This subcommand does not start TCR engine.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		settings.PrintBuildInfo()
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(infoCmd)
 }
