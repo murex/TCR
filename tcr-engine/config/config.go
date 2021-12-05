@@ -24,7 +24,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/mitchellh/go-homedir"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
@@ -37,17 +36,15 @@ import (
 // TcrConfig wraps all possible TCR configuration parameters
 type TcrConfig struct {
 	BaseDir          *StringParam
-	ConfigFile       *StringParam
+	ConfigDir        *StringParam
 	Language         *StringParam
 	Toolchain        *StringParam
 	PollingPeriod    *DurationParam
 	MobTimerDuration *DurationParam
 	AutoPush         *BoolParam
-	BuildInfo        *BoolParam
 }
 
 func (c TcrConfig) reset() {
-	c.BaseDir.reset()
 	c.Language.reset()
 	c.Toolchain.reset()
 	c.PollingPeriod.reset()
@@ -59,41 +56,57 @@ func (c TcrConfig) reset() {
 var Config = TcrConfig{}
 
 const (
-	configDir      = ".tcr"
+	configDirRoot  = ".tcr"
 	configFileBase = "config"
 	configFileType = "yml"
 	configFileName = configFileBase + "." + configFileType
 )
 
 var (
-	configDirPath  string
-	configFilePath string
+	configDirPath string
 )
 
 // Init initializes TCR configuration
-func Init(configFile string) {
-	if configFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(configFile)
-	} else {
-		// Find home directory.
-		home, _ := homedir.Dir()
-		configDirPath = filepath.Join(home, configDir)
-		configFilePath = filepath.Join(configDirPath, configFileName)
+func Init() {
 
-		// Search config in tcr configuration directory
-		viper.AddConfigPath(configDirPath)
-		viper.SetConfigType(configFileType)
-		viper.SetConfigName(configFileName)
-		viper.SetConfigFile(configFilePath)
-	}
+	// Initialize configuration directory path
+	initConfigDirPath()
 
+	// Make sure configuration directory exists
+	createConfigDir()
+
+	// Viper setup
+	configFilePath := filepath.Join(configDirPath, configFileName)
+	viper.AddConfigPath(configDirPath)
+	viper.SetConfigType(configFileType)
+	viper.SetConfigName(configFileName)
+	viper.SetConfigFile(configFilePath)
 	viper.SetEnvPrefix(settings.ApplicationName)
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		trace("Loading configuration: ", viper.ConfigFileUsed())
+	}
+}
+
+func initConfigDirPath() {
+	if Config.ConfigDir.GetValue() == "" {
+		// If configuration directory is not specified, we use by default the current directory
+		configDirPath = filepath.Join(".", configDirRoot)
+	} else {
+		configDirPath = filepath.Join(Config.ConfigDir.GetValue(), configDirRoot)
+	}
+}
+
+func createConfigDir() {
+	_, err := os.Stat(configDirPath)
+	if os.IsNotExist(err) {
+		trace("Creating TCR configuration directory: ", configDirPath)
+		err := os.MkdirAll(configDirPath, os.ModePerm)
+		if err != nil {
+			trace("Error creating TCR configuration directory: ", err)
+		}
 	}
 }
 
@@ -136,17 +149,6 @@ func showConfigOrigin() {
 	}
 }
 
-func createConfigDir() {
-	_, err := os.Stat(configDirPath)
-	if os.IsNotExist(err) {
-		trace("Creating TCR configuration directory: ", configDirPath)
-		err := os.MkdirAll(configDirPath, os.ModePerm)
-		if err != nil {
-			trace("Error creating TCR configuration directory: ", err)
-		}
-	}
-}
-
 func trace(a ...interface{}) {
 	_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
 }
@@ -154,7 +156,7 @@ func trace(a ...interface{}) {
 // AddParameters add parameter to the provided command cmd
 func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
 	Config.BaseDir = AddBaseDirParamWithDefault(cmd, defaultBaseDir)
-	Config.ConfigFile = AddConfigFileParam(cmd)
+	Config.ConfigDir = AddConfigDirParam(cmd)
 	Config.Language = AddLanguageParam(cmd)
 	Config.Toolchain = AddToolchainParam(cmd)
 	Config.PollingPeriod = AddPollingPeriodParam(cmd)
@@ -165,7 +167,7 @@ func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
 // UpdateEngineParams updates TCR engine parameters based on configuration values
 func UpdateEngineParams(params *engine.Params) {
 	params.BaseDir = Config.BaseDir.GetValue()
-	params.ConfigFile = Config.ConfigFile.GetValue()
+	params.ConfigDir = Config.ConfigDir.GetValue()
 	params.MobTurnDuration = Config.MobTimerDuration.GetValue()
 	params.Language = Config.Language.GetValue()
 	params.Toolchain = Config.Toolchain.GetValue()

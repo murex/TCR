@@ -26,8 +26,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AddConfigFileParam adds TCR configuration file location parameter to the provided command
-func AddConfigFileParam(cmd *cobra.Command) *StringParam {
+// AddConfigDirParam adds TCR configuration directory location parameter to the provided command
+func AddConfigDirParam(cmd *cobra.Command) *StringParam {
 	param := StringParam{
 		s: paramSettings{
 			viperSettings: viperSettings{
@@ -36,9 +36,9 @@ func AddConfigFileParam(cmd *cobra.Command) *StringParam {
 				name:    "",
 			},
 			cobraSettings: cobraSettings{
-				name:       "config",
+				name:       "config-dir",
 				shorthand:  "c",
-				usage:      "config file (default is $HOME/tcr.yaml)",
+				usage:      "indicate the directory where TCR configuration is stored (default: current directory)",
 				persistent: true,
 			},
 		},

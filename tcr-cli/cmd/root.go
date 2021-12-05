@@ -62,14 +62,9 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(config.Init)
 	// When running TCR-CLI, default base dir is the current directory
 	config.AddParameters(rootCmd, ".")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	config.Init(params.ConfigFile)
 }
 
 // GetRootCmd returns the root command. This function is used by the doc package to generate
