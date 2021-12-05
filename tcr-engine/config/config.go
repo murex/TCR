@@ -87,6 +87,8 @@ func Init() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		trace("Loading configuration: ", viper.ConfigFileUsed())
+	} else {
+		trace("No configuration file found")
 	}
 }
 
@@ -132,20 +134,10 @@ func Reset() {
 
 // Show displays current TCR configuration
 func Show() {
-	showConfigOrigin()
 	keys := viper.AllKeys()
 	sort.Strings(keys)
 	for _, key := range keys {
 		trace("- ", key, ": ", viper.Get(key))
-	}
-}
-
-func showConfigOrigin() {
-	_, err := os.Stat(viper.ConfigFileUsed())
-	if os.IsNotExist(err) {
-		trace("No configuration file found. Showing default configuration")
-	} else {
-		trace("Configuration file: ", viper.ConfigFileUsed())
 	}
 }
 
