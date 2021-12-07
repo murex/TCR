@@ -28,6 +28,18 @@ import (
 	"testing"
 )
 
+func Test_cmake_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("cmake"))
+	assert.True(t, isSupported("Cmake"))
+	assert.True(t, isSupported("CMAKE"))
+}
+
+func Test_get_cmake_toolchain_instance(t *testing.T) {
+	toolchain, err := getToolchain("cmake")
+	assert.Equal(t, CmakeToolchain{}, toolchain)
+	assert.Zero(t, err)
+}
+
 func Test_cmake_toolchain_initialization(t *testing.T) {
 	tchn, err := New("cmake", language.Cpp{})
 	assert.Equal(t, CmakeToolchain{}, tchn)

@@ -28,6 +28,18 @@ import (
 	"testing"
 )
 
+func Test_gradle_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("gradle"))
+	assert.True(t, isSupported("Gradle"))
+	assert.True(t, isSupported("GRADLE"))
+}
+
+func Test_get_gradle_toolchain_instance(t *testing.T) {
+	toolchain, err := getToolchain("gradle")
+	assert.Equal(t, GradleToolchain{}, toolchain)
+	assert.Zero(t, err)
+}
+
 func Test_gradle_toolchain_initialization(t *testing.T) {
 	tchn, err := New("gradle", language.Java{})
 	assert.Equal(t, GradleToolchain{}, tchn)

@@ -67,6 +67,14 @@ func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
 	_ = os.Chdir(initialDir)
 }
 
+func Test_does_not_support_empty_toolchain_name(t *testing.T) {
+	assert.False(t, isSupported(""))
+}
+
+func Test_does_not_support_dummy_toolchain_name(t *testing.T) {
+	assert.False(t, isSupported("dummy"))
+}
+
 func Test_unrecognized_toolchain_name(t *testing.T) {
 	toolchain, err := New("dummy", nil)
 	assert.Zero(t, toolchain)

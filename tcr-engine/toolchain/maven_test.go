@@ -28,6 +28,18 @@ import (
 	"testing"
 )
 
+func Test_maven_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("maven"))
+	assert.True(t, isSupported("Maven"))
+	assert.True(t, isSupported("MAVEN"))
+}
+
+func Test_get_maven_toolchain_instance(t *testing.T) {
+	toolchain, err := getToolchain("maven")
+	assert.Equal(t, MavenToolchain{}, toolchain)
+	assert.Zero(t, err)
+}
+
 func Test_maven_toolchain_initialization(t *testing.T) {
 	tchn, err := New("maven", language.Java{})
 	assert.Equal(t, MavenToolchain{}, tchn)
