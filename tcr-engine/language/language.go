@@ -26,6 +26,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 )
 
 // Language is the interface that any supported language implementation must comply with
@@ -37,18 +38,47 @@ type Language interface {
 	IsSrcFile(filename string) bool
 }
 
-// DetectLanguage is used to identify the language used in the provided directory. The current implementation
-// simply looks at the name of the directory and checks if it matches with one of the supported languages
-func DetectLanguage(baseDir string) (Language, error) {
-	dir := filepath.Base(baseDir)
-	switch dir {
-	case "java":
-		return Java{}, nil
-	case "cpp":
-		return Cpp{}, nil
-	default:
-		return nil, errors.New(fmt.Sprint("Unrecognized language: ", dir))
+var (
+	supportedLanguages = make(map[string]Language)
+)
+
+func init() {
+	addSupportedLanguage(Java{})
+	addSupportedLanguage(Cpp{})
+}
+
+func addSupportedLanguage(lang Language) {
+	supportedLanguages[strings.ToLower(lang.Name())] = lang
+}
+
+func isSupported(name string) bool {
+	_, found := supportedLanguages[strings.ToLower(name)]
+	return found
+}
+
+func getLanguage(name string) (Language, error) {
+	language, found := supportedLanguages[strings.ToLower(name)]
+	if found {
+		return language, nil
 	}
+	return nil, errors.New(fmt.Sprint("Language not supported: ", name))
+}
+
+// New returns the language to be used in current session. If no value is provided
+// for language (e.g. empty string), we try to detect the language based on the directory name.
+// Both name and baseDir are case insensitive
+func New(name string, baseDir string) (Language, error) {
+	if name != "" {
+		return getLanguage(name)
+	} else {
+		return detectLanguage(baseDir)
+	}
+}
+
+// detectLanguage is used to identify the language used in the provided directory. The current implementation
+// simply looks at the name of the directory and checks if it matches with one of the supported languages
+func detectLanguage(baseDir string) (Language, error) {
+	return getLanguage(filepath.Base(baseDir))
 }
 
 // DirsToWatch returns the list of directories that TCR engine needs to watch for the provided language

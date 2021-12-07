@@ -48,9 +48,29 @@ func (lang FakeLanguage) IsSrcFile(_ string) bool {
 	return true
 }
 
+func Test_does_not_support_empty_language_name(t *testing.T) {
+	assert.False(t, isSupported(""))
+}
+
+func Test_does_not_support_dummy_language_name(t *testing.T) {
+	assert.False(t, isSupported("dummy"))
+}
+
+func Test_does_not_set_unknown_language_name(t *testing.T) {
+	language, err := New("dummy", "")
+	assert.Zero(t, language)
+	assert.NotZero(t, err)
+}
+
+func Test_fallbacks_on_dir_name_if_language_is_not_specified(t *testing.T) {
+	language, err := New("", Java{}.Name())
+	assert.Equal(t, Java{}, language)
+	assert.Zero(t, err)
+}
+
 func Test_does_not_detect_unknown_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "dummy")
-	language, err := DetectLanguage(dirPath)
+	language, err := detectLanguage(dirPath)
 	assert.Zero(t, language)
 	assert.NotZero(t, err)
 }

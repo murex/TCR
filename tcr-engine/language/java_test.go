@@ -29,9 +29,21 @@ import (
 	"testing"
 )
 
+func Test_java_language_is_supported(t *testing.T) {
+	assert.True(t, isSupported("java"))
+	assert.True(t, isSupported("Java"))
+	assert.True(t, isSupported("JAVA"))
+}
+
+func Test_get_java_language_instance(t *testing.T) {
+	language, err := getLanguage("java")
+	assert.Equal(t, Java{}, language)
+	assert.Zero(t, err)
+}
+
 func Test_detect_java_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "java")
-	language, err := DetectLanguage(dirPath)
+	language, err := detectLanguage(dirPath)
 	assert.Equal(t, Java{}, language)
 	assert.Zero(t, err)
 }

@@ -29,9 +29,21 @@ import (
 	"testing"
 )
 
+func Test_cpp_language_is_supported(t *testing.T) {
+	assert.True(t, isSupported("cpp"))
+	assert.True(t, isSupported("Cpp"))
+	assert.True(t, isSupported("CPP"))
+}
+
+func Test_get_cpp_language_instance(t *testing.T) {
+	language, err := getLanguage("cpp")
+	assert.Equal(t, Cpp{}, language)
+	assert.Zero(t, err)
+}
+
 func Test_detect_cpp_language(t *testing.T) {
 	dirPath := filepath.Join("dummy", "cpp")
-	language, err := DetectLanguage(dirPath)
+	language, err := detectLanguage(dirPath)
 	assert.Equal(t, Cpp{}, language)
 	assert.Zero(t, err)
 }

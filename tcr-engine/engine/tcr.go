@@ -68,7 +68,7 @@ func Init(u ui.UserInterface, params Params) {
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err)
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
-	lang, err = language.DetectLanguage(sourceTree.GetBaseDir())
+	lang, err = language.New(params.Language, sourceTree.GetBaseDir())
 	handleError(err)
 	tchn, err = toolchain.New(params.Toolchain, lang)
 	handleError(err)
