@@ -75,7 +75,7 @@ func getToolchain(name string) (Toolchain, error) {
 	if found {
 		return tchn, nil
 	}
-	return nil, errors.New(fmt.Sprint("Toolchain not supported: ", name))
+	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
 }
 
 func setDefaultToolchain(lang language.Language, tchn Toolchain) {
@@ -84,13 +84,13 @@ func setDefaultToolchain(lang language.Language, tchn Toolchain) {
 
 func getDefaultToolchain(lang language.Language) (Toolchain, error) {
 	if lang == nil {
-		return nil, errors.New(fmt.Sprint("Language is not defined"))
+		return nil, errors.New("language is not defined")
 	}
 	tchn, found := defaultToolchains[lang]
 	if found {
 		return tchn, nil
 	}
-	return nil, errors.New(fmt.Sprint("No supported toolchain for ", lang.Name(), " language"))
+	return nil, errors.New(fmt.Sprint("no supported toolchain for ", lang.Name(), " language"))
 }
 
 // New creates a new toolchain instance with the provided name and for the provided language.

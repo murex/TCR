@@ -61,7 +61,7 @@ func getLanguage(name string) (Language, error) {
 	if found {
 		return language, nil
 	}
-	return nil, errors.New(fmt.Sprint("Language not supported: ", name))
+	return nil, errors.New(fmt.Sprint("language not supported: ", name))
 }
 
 // New returns the language to be used in current session. If no value is provided
@@ -70,9 +70,9 @@ func getLanguage(name string) (Language, error) {
 func New(name string, baseDir string) (Language, error) {
 	if name != "" {
 		return getLanguage(name)
-	} else {
-		return detectLanguage(baseDir)
 	}
+	return detectLanguage(baseDir)
+
 }
 
 // detectLanguage is used to identify the language used in the provided directory. The current implementation
