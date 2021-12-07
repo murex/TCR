@@ -7,7 +7,7 @@ replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
 require (
-	fyne.io/fyne/v2 v2.1.1
+	fyne.io/fyne/v2 v2.1.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/murex/tcr/tcr-cli v0.0.0-00010101000000-000000000000
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
@@ -30,7 +30,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2 // indirect
 	github.com/go-gl/gl v0.0.0-20210813123233-e4099ee2221f // indirect
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210727001814-0db043d8d5be // indirect
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20211024062804-40e447a793be // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.0.5 // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
