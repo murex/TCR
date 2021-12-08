@@ -25,6 +25,7 @@ package language
 import (
 	"errors"
 	"fmt"
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
 	"strings"
 )
@@ -36,6 +37,9 @@ type Language interface {
 	SrcDirs() []string
 	TestDirs() []string
 	IsSrcFile(filename string) bool
+	defaultToolchain() toolchain.Toolchain
+	worksWithToolchain(t toolchain.Toolchain) bool
+	GetToolchain(t string) (toolchain.Toolchain, error)
 }
 
 var (
@@ -90,3 +94,54 @@ func DirsToWatch(baseDir string, lang Language) []string {
 	//report.PostInfo(dirList)
 	return dirList
 }
+
+func getToolchain(lang Language, toolchainName string) (toolchain.Toolchain, error) {
+	var tchn toolchain.Toolchain
+	var err error
+
+	// We first retrieve the toolchain
+	if toolchainName != "" {
+		tchn, err = toolchain.New(toolchainName)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// If no toolchain is specified, we use the default toolchain for this language
+		tchn = lang.defaultToolchain()
+	}
+
+	// Then we check language/toolchain compatibility
+	comp, err := verifyCompatibility(lang, tchn)
+	if !comp || err != nil {
+		return nil, err
+	}
+	return tchn, nil
+}
+
+func verifyCompatibility(lang Language, toolchain toolchain.Toolchain) (bool, error) {
+	if toolchain == nil || lang == nil {
+		return false, errors.New("toolchain and/or language is unknown")
+	}
+	if !lang.worksWithToolchain(toolchain) {
+		return false, fmt.Errorf(
+			"%v toolchain does not support %v language",
+			toolchain.Name(), lang.Name(),
+		)
+	}
+	return true, nil
+}
+
+//func setDefaultToolchain(lang language.Language, tchn Toolchain) {
+//	defaultToolchains[lang] = tchn
+//}
+//
+//func getDefaultToolchain(lang language.Language) (Toolchain, error) {
+//	if lang == nil {
+//		return nil, errors.New("language is not defined")
+//	}
+//	tchn, found := defaultToolchains[lang]
+//	if found {
+//		return tchn, nil
+//	}
+//	return nil, errors.New(fmt.Sprint("no supported toolchain for ", lang.Name(), " language"))
+//}

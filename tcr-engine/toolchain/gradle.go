@@ -22,10 +22,6 @@ SOFTWARE.
 
 package toolchain
 
-import (
-	"github.com/murex/tcr/tcr-engine/language"
-)
-
 // GradleToolchain is the toolchain implementation for Maven
 type GradleToolchain struct {
 }
@@ -59,8 +55,4 @@ func (tchn GradleToolchain) testCommandName() string {
 
 func (tchn GradleToolchain) testCommandArgs() []string {
 	return []string{"test"}
-}
-
-func (tchn GradleToolchain) supports(lang language.Language) bool {
-	return lang == language.Java{}
 }

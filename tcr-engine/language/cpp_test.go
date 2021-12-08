@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/stretchr/testify/assert"
 
 	"path/filepath"
@@ -106,4 +107,20 @@ func Test_filenames_recognized_as_cpp_src(t *testing.T) {
 		{"Dummy.swp", false},
 	}
 	assertFilenames(t, expected, Cpp{})
+}
+
+func Test_default_toolchain_for_cpp(t *testing.T) {
+	assert.Equal(t, Cpp{}.defaultToolchain(), toolchain.CmakeToolchain{})
+}
+
+func Test_cpp_works_with_cmake(t *testing.T) {
+	assert.True(t, Cpp{}.worksWithToolchain(toolchain.CmakeToolchain{}))
+}
+
+func Test_cpp_does_not_work_with_gradle(t *testing.T) {
+	assert.False(t, Cpp{}.worksWithToolchain(toolchain.GradleToolchain{}))
+}
+
+func Test_cpp_does_not_work_with_maven(t *testing.T) {
+	assert.False(t, Cpp{}.worksWithToolchain(toolchain.MavenToolchain{}))
 }

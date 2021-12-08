@@ -23,12 +23,33 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
 	"strings"
 )
 
 // Java is the language implementation for java
 type Java struct {
+}
+
+// GetToolchain returns the toolchain instance for the provided name.
+// If name is empty, returns java default toolchain.
+// If name designs a toolchain not compatible with java, returns an error.
+func (lang Java) GetToolchain(t string) (toolchain.Toolchain, error) {
+	return getToolchain(lang, t)
+}
+
+func (lang Java) worksWithToolchain(t toolchain.Toolchain) bool {
+	switch t {
+	case toolchain.GradleToolchain{}, toolchain.MavenToolchain{}:
+		return true
+	default:
+		return false
+	}
+}
+
+func (lang Java) defaultToolchain() toolchain.Toolchain {
+	return toolchain.GradleToolchain{}
 }
 
 // Name returns the language name. This name is used to detect if a directory contains Java files

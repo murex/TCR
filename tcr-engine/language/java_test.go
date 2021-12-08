@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/stretchr/testify/assert"
 
 	"path/filepath"
@@ -74,4 +75,20 @@ func Test_filenames_recognized_as_java_src(t *testing.T) {
 		{"Dummy.sh", false},
 	}
 	assertFilenames(t, expected, Java{})
+}
+
+func Test_default_toolchain_for_java(t *testing.T) {
+	assert.Equal(t, Java{}.defaultToolchain(), toolchain.GradleToolchain{})
+}
+
+func Test_java_works_with_gradle(t *testing.T) {
+	assert.True(t, Java{}.worksWithToolchain(toolchain.GradleToolchain{}))
+}
+
+func Test_java_works_with_maven(t *testing.T) {
+	assert.True(t, Java{}.worksWithToolchain(toolchain.MavenToolchain{}))
+}
+
+func Test_java_does_not_work_with_cmake(t *testing.T) {
+	assert.False(t, Java{}.worksWithToolchain(toolchain.CmakeToolchain{}))
 }

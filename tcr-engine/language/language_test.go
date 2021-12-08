@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -30,6 +31,18 @@ import (
 )
 
 type FakeLanguage struct {
+}
+
+func (lang FakeLanguage) GetToolchain(t string) (toolchain.Toolchain, error) {
+	return nil, nil
+}
+
+func (lang FakeLanguage) defaultToolchain() toolchain.Toolchain {
+	return nil
+}
+
+func (lang FakeLanguage) worksWithToolchain(_ toolchain.Toolchain) bool {
+	return false
 }
 
 func (lang FakeLanguage) Name() string {
@@ -100,3 +113,10 @@ func assertFilenames(t *testing.T, params []filenameMatching, lang Language) {
 			"Filename: %v", params[i].filename)
 	}
 }
+
+// TODO
+//func Test_language_with_no_toolchain(t *testing.T) {
+//	toolchain, err := New("")
+//	assert.Zero(t, toolchain)
+//	assert.NotZero(t, err)
+//}

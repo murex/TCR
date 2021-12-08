@@ -22,10 +22,6 @@ SOFTWARE.
 
 package toolchain
 
-import (
-	"github.com/murex/tcr/tcr-engine/language"
-)
-
 // CmakeToolchain is the toolchain implementation for CMake
 type CmakeToolchain struct{}
 
@@ -51,8 +47,4 @@ func (tchn CmakeToolchain) buildCommandArgs() []string {
 func (tchn CmakeToolchain) testCommandArgs() []string {
 	// Important: This (--test-dir option) requires using cmake 3.20 version or higher
 	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
-}
-
-func (tchn CmakeToolchain) supports(lang language.Language) bool {
-	return lang == language.Cpp{}
 }

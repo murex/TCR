@@ -26,7 +26,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"path/filepath"
@@ -42,23 +41,16 @@ type Toolchain interface {
 	buildCommandArgs() []string
 	testCommandName() string
 	testCommandArgs() []string
-	supports(lang language.Language) bool
 }
 
 var (
 	supportedToolchains = make(map[string]Toolchain)
-	defaultToolchains   = make(map[language.Language]Toolchain)
 )
 
 func init() {
-	// List of supported toolchains
 	addSupportedToolchain(GradleToolchain{})
 	addSupportedToolchain(MavenToolchain{})
 	addSupportedToolchain(CmakeToolchain{})
-
-	// Default toolchain for each language
-	setDefaultToolchain(language.Java{}, GradleToolchain{})
-	setDefaultToolchain(language.Cpp{}, CmakeToolchain{})
 }
 
 func addSupportedToolchain(tchn Toolchain) {
@@ -78,59 +70,13 @@ func getToolchain(name string) (Toolchain, error) {
 	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
 }
 
-func setDefaultToolchain(lang language.Language, tchn Toolchain) {
-	defaultToolchains[lang] = tchn
-}
-
-func getDefaultToolchain(lang language.Language) (Toolchain, error) {
-	if lang == nil {
-		return nil, errors.New("language is not defined")
-	}
-	tchn, found := defaultToolchains[lang]
-	if found {
-		return tchn, nil
-	}
-	return nil, errors.New(fmt.Sprint("no supported toolchain for ", lang.Name(), " language"))
-}
-
-// New creates a new toolchain instance with the provided name and for the provided language.
-// When toolchain name is not provided (e.g. empty string), we fallback on the default toolchain
-// for the provided language.
+// New creates a new toolchain instance with the provided name.
 // The toolchain name is case insensitive.
-// This function also verifies that toolchain and language are compatible with each other.
-func New(name string, lang language.Language) (Toolchain, error) {
-	var toolchain Toolchain
-	var err error
-
-	// We first retrieve the toolchain
+func New(name string) (Toolchain, error) {
 	if name != "" {
-		toolchain, err = getToolchain(name)
-	} else {
-		toolchain, err = getDefaultToolchain(lang)
+		return getToolchain(name)
 	}
-	if err != nil {
-		return nil, err
-	}
-
-	// Then check language compatibility
-	comp, err := verifyCompatibility(toolchain, lang)
-	if !comp || err != nil {
-		return nil, err
-	}
-	return toolchain, nil
-}
-
-func verifyCompatibility(toolchain Toolchain, lang language.Language) (bool, error) {
-	if toolchain == nil || lang == nil {
-		return false, errors.New("toolchain and/or language is unknown")
-	}
-	if !toolchain.supports(lang) {
-		return false, fmt.Errorf(
-			"%v toolchain does not support %v language",
-			toolchain.Name(), lang.Name(),
-		)
-	}
-	return true, nil
+	return nil, errors.New("toolchain name not provided")
 }
 
 func runBuild(toolchain Toolchain) error {
@@ -141,7 +87,6 @@ func runBuild(toolchain Toolchain) error {
 		toolchain.buildCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
-		//fmt.Println(string(output))
 	}
 	return err
 }
@@ -154,7 +99,6 @@ func runTests(tchn Toolchain) error {
 		tchn.testCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
-		//fmt.Println(string(output))
 	}
 	return err
 }

@@ -23,7 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -41,7 +40,7 @@ func Test_get_maven_toolchain_instance(t *testing.T) {
 }
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	tchn, err := New("maven", language.Java{})
+	tchn, err := New("maven")
 	assert.Equal(t, MavenToolchain{}, tchn)
 	assert.Zero(t, err)
 }
@@ -66,7 +65,7 @@ func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	runFromDir(t, testLanguageRootDir(language.Java{}),
+	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
 			assert.Zero(t, MavenToolchain{}.RunBuild())
 		})
@@ -88,29 +87,8 @@ func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	runFromDir(t, testLanguageRootDir(language.Java{}),
+	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
 			assert.Zero(t, MavenToolchain{}.RunTests())
 		})
-}
-
-func Test_maven_toolchain_supports_java(t *testing.T) {
-	assert.True(t, MavenToolchain{}.supports(language.Java{}))
-}
-
-func Test_maven_toolchain_does_not_support_cpp(t *testing.T) {
-	assert.False(t, MavenToolchain{}.supports(language.Cpp{}))
-}
-
-func Test_maven_toolchain_language_compatibility(t *testing.T) {
-	var comp bool
-	var err error
-
-	comp, err = verifyCompatibility(MavenToolchain{}, language.Java{})
-	assert.True(t, comp)
-	assert.Zero(t, err)
-
-	comp, err = verifyCompatibility(MavenToolchain{}, language.Cpp{})
-	assert.False(t, comp)
-	assert.NotZero(t, err)
 }

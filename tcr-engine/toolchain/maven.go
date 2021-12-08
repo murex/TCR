@@ -22,10 +22,6 @@ SOFTWARE.
 
 package toolchain
 
-import (
-	"github.com/murex/tcr/tcr-engine/language"
-)
-
 // MavenToolchain is the toolchain implementation for Maven
 type MavenToolchain struct {
 }
@@ -59,8 +55,4 @@ func (tchn MavenToolchain) testCommandName() string {
 
 func (tchn MavenToolchain) testCommandArgs() []string {
 	return []string{"test"}
-}
-
-func (tchn MavenToolchain) supports(lang language.Language) bool {
-	return lang == language.Java{}
 }

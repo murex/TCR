@@ -70,7 +70,7 @@ func Init(u ui.UserInterface, params Params) {
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
 	lang, err = language.New(params.Language, sourceTree.GetBaseDir())
 	handleError(err)
-	tchn, err = toolchain.New(params.Toolchain, lang)
+	tchn, err = lang.GetToolchain(params.Toolchain)
 	handleError(err)
 	git, err = vcs.New(sourceTree.GetBaseDir())
 	handleError(err)
