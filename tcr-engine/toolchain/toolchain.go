@@ -41,6 +41,7 @@ type Toolchain interface {
 	BuildCommandArgs() []string
 	TestCommandName() string
 	TestCommandArgs() []string
+	reset()
 }
 
 var (
@@ -78,6 +79,14 @@ func Names() []string {
 		names = append(names, tchn.Name())
 	}
 	return names
+}
+
+// Reset resets the toolchain with the provided name to its default values
+func Reset(name string) {
+	tchn, found := supportedToolchains[strings.ToLower(name)]
+	if found {
+		tchn.reset()
+	}
 }
 
 // New creates a new toolchain instance with the provided name.

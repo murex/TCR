@@ -34,7 +34,7 @@ func Test_gradle_toolchain_is_supported(t *testing.T) {
 }
 
 func Test_get_gradle_toolchain_instance(t *testing.T) {
-	toolchain, err := getToolchain("gradle")
+	toolchain, err := GetToolchain("gradle")
 	assert.Equal(t, GradleToolchain{}, toolchain)
 	assert.Zero(t, err)
 }

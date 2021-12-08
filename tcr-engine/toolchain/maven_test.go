@@ -34,7 +34,7 @@ func Test_maven_toolchain_is_supported(t *testing.T) {
 }
 
 func Test_get_maven_toolchain_instance(t *testing.T) {
-	toolchain, err := getToolchain("maven")
+	toolchain, err := GetToolchain("maven")
 	assert.Equal(t, MavenToolchain{}, toolchain)
 	assert.Zero(t, err)
 }

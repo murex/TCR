@@ -71,6 +71,15 @@ func saveToolchainConfigs() {
 	}
 }
 
+func resetToolchainConfigs() {
+	trace("Resetting toolchains configuration")
+	// Loop on all existing toolchains
+	for _, name := range toolchain.Names() {
+		trace("- ", name)
+		toolchain.Reset(name)
+	}
+}
+
 func buildYamlFilePath(name string) string {
 	filename := name + "." + configFileType
 	return filepath.Join(toolchainDirPath, filename)
@@ -90,8 +99,8 @@ func asToolchainConfig(tchn toolchain.Toolchain) ToolchainConfig {
 	}
 }
 
-// saveIntoYaml saves a toolchain configuration into a YAML file
-func saveIntoYaml(tchn ToolchainConfig, filename string) {
+// saveIntoYaml saves a structure configuration into a YAML file
+func saveIntoYaml(tchn interface{}, filename string) {
 
 	// First we marshall the data
 	var b bytes.Buffer
@@ -108,7 +117,7 @@ func saveIntoYaml(tchn ToolchainConfig, filename string) {
 	}
 }
 
-// loadFromYaml loads a toolchain configuration from a YAML file
+// loadFromYaml loads a structure configuration from a YAML file
 func loadFromYaml() ToolchainConfig {
 	// TODO load data from file
 	var data = `

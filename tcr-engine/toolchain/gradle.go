@@ -26,6 +26,10 @@ package toolchain
 type GradleToolchain struct {
 }
 
+func (tchn GradleToolchain) reset() {
+	//TODO implement me
+}
+
 // Name provides the name of the toolchain
 func (tchn GradleToolchain) Name() string {
 	return "gradle"
@@ -41,18 +45,22 @@ func (tchn GradleToolchain) RunTests() error {
 	return runTests(tchn)
 }
 
+// BuildCommandName returns the build command name for this toolchain
 func (tchn GradleToolchain) BuildCommandName() string {
 	return "gradlew"
 }
 
+// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
 func (tchn GradleToolchain) BuildCommandArgs() []string {
 	return []string{"build", "-x", "test"}
 }
 
+// TestCommandName returns the test command name for this toolchain
 func (tchn GradleToolchain) TestCommandName() string {
 	return "gradlew"
 }
 
+// TestCommandArgs returns a table with the list of test command arguments for this toolchain
 func (tchn GradleToolchain) TestCommandArgs() []string {
 	return []string{"test"}
 }

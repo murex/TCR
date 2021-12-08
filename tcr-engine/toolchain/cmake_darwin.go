@@ -22,10 +22,12 @@ SOFTWARE.
 
 package toolchain
 
-func (tchn CmakeToolchain) buildCommandName() string {
+// BuildCommandName returns the build command name for this toolchain
+func (tchn CmakeToolchain) BuildCommandName() string {
 	return "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake"
 }
 
-func (tchn CmakeToolchain) testCommandName() string {
+// TestCommandName returns the test command name for this toolchain
+func (tchn CmakeToolchain) TestCommandName() string {
 	return "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest"
 }

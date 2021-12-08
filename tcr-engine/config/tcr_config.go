@@ -137,6 +137,7 @@ func Save() {
 func Reset() {
 	trace("Resetting configuration to default values")
 	Config.reset()
+	resetToolchainConfigs()
 	Save()
 }
 

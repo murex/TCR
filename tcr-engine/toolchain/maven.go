@@ -26,6 +26,10 @@ package toolchain
 type MavenToolchain struct {
 }
 
+func (tchn MavenToolchain) reset() {
+	//TODO implement me
+}
+
 // Name provides the name of the toolchain
 func (tchn MavenToolchain) Name() string {
 	return "maven"
@@ -41,18 +45,22 @@ func (tchn MavenToolchain) RunTests() error {
 	return runTests(tchn)
 }
 
+// BuildCommandName returns the build command name for this toolchain
 func (tchn MavenToolchain) BuildCommandName() string {
 	return "mvnw"
 }
 
+// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
 func (tchn MavenToolchain) BuildCommandArgs() []string {
 	return []string{"test-compile"}
 }
 
+// TestCommandName returns the test command name for this toolchain
 func (tchn MavenToolchain) TestCommandName() string {
 	return "mvnw"
 }
 
+// TestCommandArgs returns a table with the list of test command arguments for this toolchain
 func (tchn MavenToolchain) TestCommandArgs() []string {
 	return []string{"test"}
 }

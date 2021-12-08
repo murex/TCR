@@ -25,6 +25,10 @@ package toolchain
 // CmakeToolchain is the toolchain implementation for CMake
 type CmakeToolchain struct{}
 
+func (tchn CmakeToolchain) reset() {
+	//TODO implement me
+}
+
 // Name provides the name of the toolchain
 func (tchn CmakeToolchain) Name() string {
 	return "cmake"
@@ -40,10 +44,12 @@ func (tchn CmakeToolchain) RunTests() error {
 	return runTests(tchn)
 }
 
+// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
 func (tchn CmakeToolchain) BuildCommandArgs() []string {
 	return []string{"--build", "build", "--config", "Debug"}
 }
 
+// TestCommandArgs returns a table with the list of test command arguments for this toolchain
 func (tchn CmakeToolchain) TestCommandArgs() []string {
 	// Important: This (--test-dir option) requires using cmake 3.20 version or higher
 	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
