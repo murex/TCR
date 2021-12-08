@@ -20,39 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package config
 
-// MavenToolchain is the toolchain implementation for Maven
-type MavenToolchain struct {
-}
+import (
+	"testing"
+)
 
-// Name provides the name of the toolchain
-func (tchn MavenToolchain) Name() string {
-	return "maven"
-}
+// TODO add test cases
 
-// RunBuild runs the build with this toolchain
-func (tchn MavenToolchain) RunBuild() error {
-	return runBuild(tchn)
-}
-
-// RunTests runs the tests with this toolchain
-func (tchn MavenToolchain) RunTests() error {
-	return runTests(tchn)
-}
-
-func (tchn MavenToolchain) BuildCommandName() string {
-	return "mvnw"
-}
-
-func (tchn MavenToolchain) BuildCommandArgs() []string {
-	return []string{"test-compile"}
-}
-
-func (tchn MavenToolchain) TestCommandName() string {
-	return "mvnw"
-}
-
-func (tchn MavenToolchain) TestCommandArgs() []string {
-	return []string{"test"}
+func Test_can_save_toolchain_configuration(t *testing.T) {
+	tchn := ToolchainConfig{
+		Name: "dummy",
+		BuildCommand: ToolchainCommand{
+			Command:   "dummy_build_command",
+			Arguments: []string{"arg1", "arg2"},
+		},
+		TestCommand: ToolchainCommand{
+			Command:   "dummy_test_command",
+			Arguments: []string{"arg3", "arg4"},
+		},
+	}
+	// TODO bypass filesystem
+	saveIntoYaml(tchn, "")
 }

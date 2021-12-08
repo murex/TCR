@@ -41,18 +41,18 @@ func (tchn GradleToolchain) RunTests() error {
 	return runTests(tchn)
 }
 
-func (tchn GradleToolchain) buildCommandName() string {
+func (tchn GradleToolchain) BuildCommandName() string {
 	return "gradlew"
 }
 
-func (tchn GradleToolchain) buildCommandArgs() []string {
+func (tchn GradleToolchain) BuildCommandArgs() []string {
 	return []string{"build", "-x", "test"}
 }
 
-func (tchn GradleToolchain) testCommandName() string {
+func (tchn GradleToolchain) TestCommandName() string {
 	return "gradlew"
 }
 
-func (tchn GradleToolchain) testCommandArgs() []string {
+func (tchn GradleToolchain) TestCommandArgs() []string {
 	return []string{"test"}
 }

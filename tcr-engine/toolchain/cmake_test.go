@@ -34,7 +34,7 @@ func Test_cmake_toolchain_is_supported(t *testing.T) {
 }
 
 func Test_get_cmake_toolchain_instance(t *testing.T) {
-	toolchain, err := getToolchain("cmake")
+	toolchain, err := GetToolchain("cmake")
 	assert.Equal(t, CmakeToolchain{}, toolchain)
 	assert.Zero(t, err)
 }
@@ -53,7 +53,7 @@ func Test_cmake_toolchain_build_command_args(t *testing.T) {
 	assert.Equal(t, []string{
 		"--build", "build",
 		"--config", "Debug",
-	}, CmakeToolchain{}.buildCommandArgs())
+	}, CmakeToolchain{}.BuildCommandArgs())
 }
 
 func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
@@ -76,7 +76,7 @@ func Test_cmake_toolchain_test_command_args(t *testing.T) {
 		"--output-on-failure",
 		"--test-dir", "build",
 		"--build-config", "Debug",
-	}, CmakeToolchain{}.testCommandArgs())
+	}, CmakeToolchain{}.TestCommandArgs())
 }
 
 func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {

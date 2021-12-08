@@ -40,11 +40,11 @@ func (tchn CmakeToolchain) RunTests() error {
 	return runTests(tchn)
 }
 
-func (tchn CmakeToolchain) buildCommandArgs() []string {
+func (tchn CmakeToolchain) BuildCommandArgs() []string {
 	return []string{"--build", "build", "--config", "Debug"}
 }
 
-func (tchn CmakeToolchain) testCommandArgs() []string {
+func (tchn CmakeToolchain) TestCommandArgs() []string {
 	// Important: This (--test-dir option) requires using cmake 3.20 version or higher
 	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
 }

@@ -37,10 +37,10 @@ type Toolchain interface {
 	Name() string
 	RunBuild() error
 	RunTests() error
-	buildCommandName() string
-	buildCommandArgs() []string
-	testCommandName() string
-	testCommandArgs() []string
+	BuildCommandName() string
+	BuildCommandArgs() []string
+	TestCommandName() string
+	TestCommandArgs() []string
 }
 
 var (
@@ -62,7 +62,8 @@ func isSupported(name string) bool {
 	return found
 }
 
-func getToolchain(name string) (Toolchain, error) {
+// GetToolchain returns the toolchain instance with the provided name
+func GetToolchain(name string) (Toolchain, error) {
 	tchn, found := supportedToolchains[strings.ToLower(name)]
 	if found {
 		return tchn, nil
@@ -70,21 +71,30 @@ func getToolchain(name string) (Toolchain, error) {
 	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
 }
 
+// Names returns the list of available toolchain names
+func Names() []string {
+	var names []string
+	for _, tchn := range supportedToolchains {
+		names = append(names, tchn.Name())
+	}
+	return names
+}
+
 // New creates a new toolchain instance with the provided name.
 // The toolchain name is case insensitive.
 func New(name string) (Toolchain, error) {
 	if name != "" {
-		return getToolchain(name)
+		return GetToolchain(name)
 	}
 	return nil, errors.New("toolchain name not provided")
 }
 
 func runBuild(toolchain Toolchain) error {
 	wd, _ := os.Getwd()
-	buildCommandPath := filepath.Join(wd, toolchain.buildCommandName())
+	buildCommandPath := filepath.Join(wd, toolchain.BuildCommandName())
 	output, err := sh.Command(
 		buildCommandPath,
-		toolchain.buildCommandArgs()).CombinedOutput()
+		toolchain.BuildCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
 	}
@@ -93,10 +103,10 @@ func runBuild(toolchain Toolchain) error {
 
 func runTests(tchn Toolchain) error {
 	wd, _ := os.Getwd()
-	testCommandPath := filepath.Join(wd, tchn.testCommandName())
+	testCommandPath := filepath.Join(wd, tchn.TestCommandName())
 	output, err := sh.Command(
 		testCommandPath,
-		tchn.testCommandArgs()).CombinedOutput()
+		tchn.TestCommandArgs()).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
 	}

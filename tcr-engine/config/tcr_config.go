@@ -90,6 +90,9 @@ func Init() {
 	} else {
 		trace("No configuration file found")
 	}
+
+	// initialize toolchain configuration
+	initToolchainConfig()
 }
 
 func initConfigDirPath() {
@@ -115,6 +118,8 @@ func createConfigDir() {
 // Save saves TCR configuration
 func Save() {
 	createConfigDir()
+
+	// Save TCR configuration parameters
 	trace("Saving configuration: ", viper.ConfigFileUsed())
 	if err := viper.WriteConfig(); err != nil {
 		if os.IsNotExist(err) {
@@ -123,6 +128,9 @@ func Save() {
 			trace("Error while saving configuration file: ", err)
 		}
 	}
+
+	// Save toolchain configurations
+	saveToolchainConfigs()
 }
 
 // Reset resets TCR configuration to default value
