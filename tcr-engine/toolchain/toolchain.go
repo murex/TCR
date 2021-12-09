@@ -99,25 +99,23 @@ func New(name string) (Toolchain, error) {
 }
 
 func runBuild(toolchain Toolchain) error {
-	wd, _ := os.Getwd()
-	buildCommandPath := filepath.Join(wd, toolchain.BuildCommandName())
-	output, err := sh.Command(
-		buildCommandPath,
-		toolchain.BuildCommandArgs()).CombinedOutput()
+	return runCommand(toolchain.BuildCommandName(), toolchain.BuildCommandArgs())
+}
+
+func runTests(toolchain Toolchain) error {
+	return runCommand(toolchain.TestCommandName(), toolchain.TestCommandArgs())
+}
+
+func runCommand(cmdPath string, cmdArgs []string) error {
+	output, err := sh.Command(tuneCommandPath(cmdPath), cmdArgs).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
 	}
 	return err
 }
 
-func runTests(tchn Toolchain) error {
+func tuneCommandPath(cmdPath string) string {
+	// TODO handle different types of paths (relative, absolute, no path)
 	wd, _ := os.Getwd()
-	testCommandPath := filepath.Join(wd, tchn.TestCommandName())
-	output, err := sh.Command(
-		testCommandPath,
-		tchn.TestCommandArgs()).CombinedOutput()
-	if output != nil {
-		report.PostText(string(output))
-	}
-	return err
+	return filepath.Join(wd, cmdPath)
 }
