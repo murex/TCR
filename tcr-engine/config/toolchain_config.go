@@ -119,6 +119,9 @@ func saveIntoYaml(tchn interface{}, filename string) {
 
 // loadFromYaml loads a structure configuration from a YAML file
 func loadFromYaml() ToolchainConfig {
+	// TODO see if we need to use variables in yaml configuration files
+	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
+	// Cf. https://pkg.go.dev/os#Expand
 	// TODO load data from file
 	var data = `
 name: dummy
