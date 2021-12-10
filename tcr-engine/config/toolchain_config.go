@@ -42,17 +42,19 @@ var (
 )
 
 type (
-	// ToolchainCommand defines the structure of a toolchain configuration.
-	ToolchainCommand struct {
+	// ToolchainCommandConfig defines the structure of a toolchain configuration.
+	ToolchainCommandConfig struct {
+		Os        []string `yaml:"os,flow"`
+		Arch      []string `yaml:"arch,flow"`
 		Command   string   `yaml:"command"`
-		Arguments []string `yaml:"arguments"`
+		Arguments []string `yaml:"arguments,flow"`
 	}
 
 	// ToolchainConfig defines the structure of a toolchain configuration.
 	ToolchainConfig struct {
 		Name         string
-		BuildCommand ToolchainCommand `yaml:"build"`
-		TestCommand  ToolchainCommand `yaml:"test"`
+		BuildCommand []ToolchainCommandConfig `yaml:"build"`
+		TestCommand  []ToolchainCommandConfig `yaml:"test"`
 	}
 )
 
@@ -67,7 +69,7 @@ func saveToolchainConfigs() {
 	for _, name := range toolchain.Names() {
 		trace("- ", name)
 		tchn, _ := toolchain.GetToolchain(name)
-		saveIntoYaml(asToolchainConfig(tchn), buildYamlFilePath(name))
+		saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(name))
 	}
 }
 
@@ -86,22 +88,55 @@ func buildYamlFilePath(name string) string {
 }
 
 func asToolchainConfig(tchn toolchain.Toolchain) ToolchainConfig {
+	// TODO OS and arch lists should be command-specific
 	return ToolchainConfig{
 		Name: tchn.Name(),
-		BuildCommand: ToolchainCommand{
-			Command:   tchn.BuildCommandName(),
-			Arguments: tchn.BuildCommandArgs(),
+		BuildCommand: []ToolchainCommandConfig{
+			asToolchainCommandConfig(
+				tchn.BuildCommandName(),
+				tchn.BuildCommandArgs(),
+				toolchain.GetAllOsNames(),
+				toolchain.GetAllArchNames(),
+			),
 		},
-		TestCommand: ToolchainCommand{
-			Command:   tchn.TestCommandName(),
-			Arguments: tchn.TestCommandArgs(),
+		TestCommand: []ToolchainCommandConfig{
+			asToolchainCommandConfig(
+				tchn.TestCommandName(),
+				tchn.TestCommandArgs(),
+				toolchain.GetAllOsNames(),
+				toolchain.GetAllArchNames(),
+			),
 		},
 	}
 }
 
-// saveIntoYaml saves a structure configuration into a YAML file
-func saveIntoYaml(tchn interface{}, filename string) {
+func asToolchainCommandConfig(cmd string, args []string, osNames []toolchain.OsName, archNames []toolchain.ArchName) ToolchainCommandConfig {
+	return ToolchainCommandConfig{
+		Os:        asOsTableConfig(osNames),
+		Arch:      asArchTableConfig(archNames),
+		Command:   cmd,
+		Arguments: args,
+	}
+}
 
+func asOsTableConfig(osNames []toolchain.OsName) []string {
+	var res []string
+	for _, osName := range osNames {
+		res = append(res, string(osName))
+	}
+	return res
+}
+
+func asArchTableConfig(archNames []toolchain.ArchName) []string {
+	var res []string
+	for _, archName := range archNames {
+		res = append(res, string(archName))
+	}
+	return res
+}
+
+// saveToYaml saves a structure configuration into a YAML file
+func saveToYaml(tchn interface{}, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)

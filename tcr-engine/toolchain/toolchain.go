@@ -44,6 +44,36 @@ type Toolchain interface {
 	reset()
 }
 
+// OsName is the name of a supported operating system
+type OsName string
+
+// ArchName is the name of a supported architecture
+type ArchName string
+
+// List of possible values for OsName
+const (
+	OsDarwin  = "darwin"
+	OsLinux   = "linux"
+	OsWindows = "windows"
+)
+
+// GetAllOsNames return the list of all supported OS Names
+func GetAllOsNames() []OsName {
+	return []OsName{OsDarwin, OsLinux, OsWindows}
+}
+
+// List of possible values for OsArch
+const (
+	Arch386   = "386"
+	ArchAmd64 = "amd64"
+	ArchArm64 = "arm64"
+)
+
+// GetAllArchNames return the list of all supported OS Architectures
+func GetAllArchNames() []ArchName {
+	return []ArchName{Arch386, ArchAmd64, ArchArm64}
+}
+
 var (
 	supportedToolchains = make(map[string]Toolchain)
 )
