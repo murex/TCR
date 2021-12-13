@@ -29,12 +29,13 @@ import (
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
-// Toolchain provides the interface that any toolchain needs to implement so that it can be used by TcR
-type Toolchain interface {
-	Name() string
+// TchnInterface provides the interface that any toolchain needs to implement so that it can be used by TcR
+type TchnInterface interface {
+	GetName() string
 	RunBuild() error
 	RunTests() error
 	BuildCommandName() string
@@ -44,11 +45,36 @@ type Toolchain interface {
 	reset()
 }
 
-// OsName is the name of a supported operating system
-type OsName string
+type (
+	// OsName is the name of a supported operating system
+	OsName string
 
-// ArchName is the name of a supported architecture
-type ArchName string
+	// ArchName is the name of a supported architecture
+	ArchName string
+
+	// Command is a command that can be run by a toolchain.
+	// It contains 2 filters (Os and Arch) allowing to restrict it to specific OS(s)/Architecture(s).
+	// - Path is the path to the command to be run.
+	// - Arguments is the arguments to be passed to the command when executed.
+	Command struct {
+		Os        []OsName
+		Arch      []ArchName
+		Path      string
+		Arguments []string
+	}
+
+	// Toolchain defines the structure of a toolchain.
+	// - Name is the name of the toolchain, it must be unique in the list of available toolchains
+	// - BuildCommands is a table of commands that can be called when running the build. The first one
+	// matching the current OS and configuration will be the one to be called.
+	// - TestCommands is a table of commands that can be called when running the tests. The first one
+	// matching the current OS and configuration will be the one to be called.
+	Toolchain struct {
+		Name          string
+		BuildCommands []Command
+		TestCommands  []Command
+	}
+)
 
 // List of possible values for OsName
 const (
@@ -75,17 +101,18 @@ func GetAllArchNames() []ArchName {
 }
 
 var (
+	builtInToolchains   = make(map[string]Toolchain)
 	supportedToolchains = make(map[string]Toolchain)
 )
 
-func init() {
-	addSupportedToolchain(GradleToolchain{})
-	addSupportedToolchain(MavenToolchain{})
-	addSupportedToolchain(CmakeToolchain{})
-}
+//func init() {
+//addSupportedToolchain(GradleToolchain{})
+//addSupportedToolchain(MavenToolchain{})
+//addSupportedToolchain(CmakeToolchain{})
+//}
 
 func addSupportedToolchain(tchn Toolchain) {
-	supportedToolchains[strings.ToLower(tchn.Name())] = tchn
+	supportedToolchains[strings.ToLower(tchn.GetName())] = tchn
 }
 
 func isSupported(name string) bool {
@@ -94,10 +121,10 @@ func isSupported(name string) bool {
 }
 
 // GetToolchain returns the toolchain instance with the provided name
-func GetToolchain(name string) (Toolchain, error) {
+func GetToolchain(name string) (*Toolchain, error) {
 	tchn, found := supportedToolchains[strings.ToLower(name)]
 	if found {
-		return tchn, nil
+		return &tchn, nil
 	}
 	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
 }
@@ -106,33 +133,34 @@ func GetToolchain(name string) (Toolchain, error) {
 func Names() []string {
 	var names []string
 	for _, tchn := range supportedToolchains {
-		names = append(names, tchn.Name())
+		names = append(names, tchn.Name)
 	}
 	return names
 }
 
 // Reset resets the toolchain with the provided name to its default values
 func Reset(name string) {
-	tchn, found := supportedToolchains[strings.ToLower(name)]
-	if found {
-		tchn.reset()
-	}
+	//_, found := supportedToolchains[strings.ToLower(name)]
+	//if found {
+	// TODO
+	//tchn.reset()
+	//}
 }
 
 // New creates a new toolchain instance with the provided name.
 // The toolchain name is case insensitive.
-func New(name string) (Toolchain, error) {
+func New(name string) (*Toolchain, error) {
 	if name != "" {
 		return GetToolchain(name)
 	}
 	return nil, errors.New("toolchain name not provided")
 }
 
-func runBuild(toolchain Toolchain) error {
+func runBuild(toolchain TchnInterface) error {
 	return runCommand(toolchain.BuildCommandName(), toolchain.BuildCommandArgs())
 }
 
-func runTests(toolchain Toolchain) error {
+func runTests(toolchain TchnInterface) error {
 	return runCommand(toolchain.TestCommandName(), toolchain.TestCommandArgs())
 }
 
@@ -148,4 +176,92 @@ func tuneCommandPath(cmdPath string) string {
 	// TODO handle different types of paths (relative, absolute, no path)
 	wd, _ := os.Getwd()
 	return filepath.Join(wd, cmdPath)
+}
+
+func isBuiltIn(name string) bool {
+	_, found := builtInToolchains[strings.ToLower(name)]
+	return found
+}
+
+func addBuiltInToolchain(tchn Toolchain) error {
+	if tchn.Name == "" {
+		return errors.New("toolchain name cannot be an empty string")
+	}
+	builtInToolchains[strings.ToLower(tchn.Name)] = tchn
+	addSupportedToolchain(tchn)
+	return nil
+}
+
+func (tchn Toolchain) reset() {
+	//TODO implement me
+}
+
+// GetName provides the name of the toolchain
+func (tchn Toolchain) GetName() string {
+	return tchn.Name
+}
+
+// RunBuild runs the build with this toolchain
+func (tchn Toolchain) RunBuild() error {
+	return runBuild(tchn)
+}
+
+// RunTests runs the tests with this toolchain
+func (tchn Toolchain) RunTests() error {
+	return runTests(tchn)
+}
+
+// BuildCommandName returns the build command name for this toolchain
+func (tchn Toolchain) BuildCommandName() string {
+	var cmd = findCompatibleCommand(tchn.BuildCommands)
+	return cmd.Path
+}
+
+// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
+func (tchn Toolchain) BuildCommandArgs() []string {
+	var cmd = findCompatibleCommand(tchn.BuildCommands)
+	return cmd.Arguments
+}
+
+// TestCommandName returns the test command name for this toolchain
+func (tchn Toolchain) TestCommandName() string {
+	var cmd = findCompatibleCommand(tchn.TestCommands)
+	return cmd.Path
+}
+
+// TestCommandArgs returns a table with the list of test command arguments for this toolchain
+func (tchn Toolchain) TestCommandArgs() []string {
+	var cmd = findCompatibleCommand(tchn.TestCommands)
+	return cmd.Arguments
+}
+
+func findCompatibleCommand(commands []Command) *Command {
+	for _, command := range commands {
+		if runsOnLocalMachine(command) {
+			return &command
+		}
+	}
+	return nil
+}
+
+func runsOnLocalMachine(command Command) bool {
+	return runsWithLocalOs(command) && runsWithLocalArch(command)
+}
+
+func runsWithLocalOs(command Command) bool {
+	for _, osName := range command.Os {
+		if string(osName) == runtime.GOOS {
+			return true
+		}
+	}
+	return false
+}
+
+func runsWithLocalArch(command Command) bool {
+	for _, archName := range command.Arch {
+		if string(archName) == runtime.GOARCH {
+			return true
+		}
+	}
+	return false
 }

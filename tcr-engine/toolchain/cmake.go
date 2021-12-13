@@ -22,35 +22,59 @@ SOFTWARE.
 
 package toolchain
 
-// CmakeToolchain is the toolchain implementation for CMake
-type CmakeToolchain struct{}
+import "path/filepath"
 
-func (tchn CmakeToolchain) reset() {
-	//TODO implement me
-}
+func init() {
+	// TODO refactor initialization to remove redundancies
+	// TODO add other architectures than amd64
 
-// Name provides the name of the toolchain
-func (tchn CmakeToolchain) Name() string {
-	return "cmake"
-}
+	var buildWindows = Command{
+		Os:        []OsName{OsWindows},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "cmake.exe"),
+		Arguments: []string{"--build", "build", "--config", "Debug"},
+	}
 
-// RunBuild runs the build with this toolchain
-func (tchn CmakeToolchain) RunBuild() error {
-	return runBuild(tchn)
-}
+	var testWindows = Command{
+		Os:        []OsName{OsWindows},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "ctest.exe"),
+		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
+	}
 
-// RunTests runs the tests with this toolchain
-func (tchn CmakeToolchain) RunTests() error {
-	return runTests(tchn)
-}
+	var buildLinux = Command{
+		Os:        []OsName{OsLinux},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      "build/cmake/cmake-linux-x86_64/bin/cmake",
+		Arguments: []string{"--build", "build", "--config", "Debug"},
+	}
 
-// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
-func (tchn CmakeToolchain) BuildCommandArgs() []string {
-	return []string{"--build", "build", "--config", "Debug"}
-}
+	var testLinux = Command{
+		Os:        []OsName{OsLinux},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      "build/cmake/cmake-linux-x86_64/bin/ctest",
+		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
+	}
 
-// TestCommandArgs returns a table with the list of test command arguments for this toolchain
-func (tchn CmakeToolchain) TestCommandArgs() []string {
-	// Important: This (--test-dir option) requires using cmake 3.20 version or higher
-	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
+	var buildDarwin = Command{
+		Os:        []OsName{OsDarwin},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake",
+		Arguments: []string{"--build", "build", "--config", "Debug"},
+	}
+
+	var testDarwin = Command{
+		Os:        []OsName{OsDarwin},
+		Arch:      []ArchName{ArchAmd64},
+		Path:      "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest",
+		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
+	}
+
+	_ = addBuiltInToolchain(
+		Toolchain{
+			Name:          "cmake",
+			BuildCommands: []Command{buildDarwin, buildLinux, buildWindows},
+			TestCommands:  []Command{testDarwin, testLinux, testWindows},
+		},
+	)
 }

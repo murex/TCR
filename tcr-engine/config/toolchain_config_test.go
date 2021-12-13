@@ -31,11 +31,11 @@ import (
 func Test_can_save_toolchain_configuration(t *testing.T) {
 	//tchn := ToolchainConfig{
 	//	Name: "dummy",
-	//	BuildCommand: ToolchainCommandConfig{
+	//	BuildCommands: ToolchainCommandConfig{
 	//		Command:   "dummy_build_command",
 	//		Arguments: []string{"arg1", "arg2"},
 	//	},
-	//	TestCommand: ToolchainCommandConfig{
+	//	TestCommands: ToolchainCommandConfig{
 	//		Command:   "dummy_test_command",
 	//		Arguments: []string{"arg3", "arg4"},
 	//	},

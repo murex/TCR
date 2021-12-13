@@ -33,15 +33,15 @@ import (
 type FakeLanguage struct {
 }
 
-func (lang FakeLanguage) GetToolchain(t string) (toolchain.Toolchain, error) {
+func (lang FakeLanguage) GetToolchain(t string) (*toolchain.Toolchain, error) {
 	return nil, nil
 }
 
-func (lang FakeLanguage) defaultToolchain() toolchain.Toolchain {
+func (lang FakeLanguage) defaultToolchain() *toolchain.Toolchain {
 	return nil
 }
 
-func (lang FakeLanguage) worksWithToolchain(_ toolchain.Toolchain) bool {
+func (lang FakeLanguage) worksWithToolchain(_ *toolchain.Toolchain) bool {
 	return false
 }
 

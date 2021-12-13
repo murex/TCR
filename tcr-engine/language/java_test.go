@@ -78,17 +78,21 @@ func Test_filenames_recognized_as_java_src(t *testing.T) {
 }
 
 func Test_default_toolchain_for_java(t *testing.T) {
-	assert.Equal(t, Java{}.defaultToolchain(), toolchain.GradleToolchain{})
+	expected, _ := toolchain.GetToolchain("gradle")
+	assert.Equal(t, expected, Java{}.defaultToolchain())
 }
 
 func Test_java_works_with_gradle(t *testing.T) {
-	assert.True(t, Java{}.worksWithToolchain(toolchain.GradleToolchain{}))
+	gradle, _ := toolchain.GetToolchain("gradle")
+	assert.True(t, Java{}.worksWithToolchain(gradle))
 }
 
 func Test_java_works_with_maven(t *testing.T) {
-	assert.True(t, Java{}.worksWithToolchain(toolchain.MavenToolchain{}))
+	maven, _ := toolchain.GetToolchain("maven")
+	assert.True(t, Java{}.worksWithToolchain(maven))
 }
 
 func Test_java_does_not_work_with_cmake(t *testing.T) {
-	assert.False(t, Java{}.worksWithToolchain(toolchain.CmakeToolchain{}))
+	cmake, _ := toolchain.GetToolchain("cmake")
+	assert.False(t, Java{}.worksWithToolchain(cmake))
 }

@@ -87,35 +87,28 @@ func buildYamlFilePath(name string) string {
 	return filepath.Join(toolchainDirPath, filename)
 }
 
-func asToolchainConfig(tchn toolchain.Toolchain) ToolchainConfig {
-	// TODO OS and arch lists should be command-specific
+func asToolchainConfig(tchn *toolchain.Toolchain) ToolchainConfig {
 	return ToolchainConfig{
-		Name: tchn.Name(),
-		BuildCommand: []ToolchainCommandConfig{
-			asToolchainCommandConfig(
-				tchn.BuildCommandName(),
-				tchn.BuildCommandArgs(),
-				toolchain.GetAllOsNames(),
-				toolchain.GetAllArchNames(),
-			),
-		},
-		TestCommand: []ToolchainCommandConfig{
-			asToolchainCommandConfig(
-				tchn.TestCommandName(),
-				tchn.TestCommandArgs(),
-				toolchain.GetAllOsNames(),
-				toolchain.GetAllArchNames(),
-			),
-		},
+		Name:         tchn.GetName(),
+		BuildCommand: asToolchainCommandConfigTable(tchn.BuildCommands),
+		TestCommand:  asToolchainCommandConfigTable(tchn.TestCommands),
 	}
 }
 
-func asToolchainCommandConfig(cmd string, args []string, osNames []toolchain.OsName, archNames []toolchain.ArchName) ToolchainCommandConfig {
+func asToolchainCommandConfigTable(commands []toolchain.Command) []ToolchainCommandConfig {
+	var res []ToolchainCommandConfig
+	for _, command := range commands {
+		res = append(res, asToolchainCommandConfig(command))
+	}
+	return res
+}
+
+func asToolchainCommandConfig(command toolchain.Command) ToolchainCommandConfig {
 	return ToolchainCommandConfig{
-		Os:        asOsTableConfig(osNames),
-		Arch:      asArchTableConfig(archNames),
-		Command:   cmd,
-		Arguments: args,
+		Os:        asOsTableConfig(command.Os),
+		Arch:      asArchTableConfig(command.Arch),
+		Command:   command.Path,
+		Arguments: command.Arguments,
 	}
 }
 

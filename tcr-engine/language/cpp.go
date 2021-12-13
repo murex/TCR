@@ -35,21 +35,22 @@ type Cpp struct {
 // GetToolchain returns the toolchain instance for the provided name.
 // If name is empty, returns C++ default toolchain.
 // If name designs a toolchain not compatible with C++, returns an error.
-func (lang Cpp) GetToolchain(t string) (toolchain.Toolchain, error) {
+func (lang Cpp) GetToolchain(t string) (*toolchain.Toolchain, error) {
 	return getToolchain(lang, t)
 }
 
-func (lang Cpp) worksWithToolchain(t toolchain.Toolchain) bool {
-	switch t {
-	case toolchain.CmakeToolchain{}:
+func (lang Cpp) worksWithToolchain(t *toolchain.Toolchain) bool {
+	switch t.GetName() {
+	case "cmake":
 		return true
 	default:
 		return false
 	}
 }
 
-func (lang Cpp) defaultToolchain() toolchain.Toolchain {
-	return toolchain.CmakeToolchain{}
+func (lang Cpp) defaultToolchain() *toolchain.Toolchain {
+	tchn, _ := toolchain.GetToolchain("cmake")
+	return tchn
 }
 
 // Name returns the language name. This name is used to detect if a directory contains Cpp files

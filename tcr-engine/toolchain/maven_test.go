@@ -27,6 +27,12 @@ import (
 	"testing"
 )
 
+func Test_maven_is_a_built_in_toolchain(t *testing.T) {
+	assert.True(t, isBuiltIn("maven"))
+	assert.True(t, isBuiltIn("Maven"))
+	assert.True(t, isBuiltIn("MAVEN"))
+}
+
 func Test_maven_toolchain_is_supported(t *testing.T) {
 	assert.True(t, isSupported("maven"))
 	assert.True(t, isSupported("Maven"))
@@ -35,60 +41,69 @@ func Test_maven_toolchain_is_supported(t *testing.T) {
 
 func Test_get_maven_toolchain_instance(t *testing.T) {
 	toolchain, err := GetToolchain("maven")
-	assert.Equal(t, MavenToolchain{}, toolchain)
+	assert.Equal(t, "maven", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	tchn, err := New("maven")
-	assert.Equal(t, MavenToolchain{}, tchn)
+	toolchain, err := New("maven")
+	assert.Equal(t, "maven", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_maven_toolchain_name(t *testing.T) {
-	assert.Equal(t, "maven", MavenToolchain{}.Name())
+	toolchain, _ := GetToolchain("maven")
+	assert.Equal(t, "maven", toolchain.GetName())
 }
 
 func Test_maven_toolchain_build_command_name(t *testing.T) {
-	assert.Equal(t, "mvnw", MavenToolchain{}.BuildCommandName())
+	toolchain, _ := GetToolchain("maven")
+	assert.Equal(t, "mvnw", toolchain.BuildCommandName())
 }
 
 func Test_maven_toolchain_build_command_args(t *testing.T) {
-	assert.Equal(t, []string{"test-compile"}, MavenToolchain{}.BuildCommandArgs())
+	toolchain, _ := GetToolchain("maven")
+	assert.Equal(t, []string{"test-compile"}, toolchain.BuildCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
+	toolchain, _ := GetToolchain("maven")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, MavenToolchain{}.RunBuild())
+			assert.NotZero(t, toolchain.RunBuild())
 		})
 }
 
 func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	toolchain, _ := GetToolchain("maven")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
-			assert.Zero(t, MavenToolchain{}.RunBuild())
+			assert.Zero(t, toolchain.RunBuild())
 		})
 }
 
 func Test_maven_toolchain_test_command_name(t *testing.T) {
-	assert.Equal(t, "mvnw", MavenToolchain{}.TestCommandName())
+	toolchain, _ := GetToolchain("maven")
+	assert.Equal(t, "mvnw", toolchain.TestCommandName())
 }
 
 func Test_maven_toolchain_test_command_args(t *testing.T) {
-	assert.Equal(t, []string{"test"}, MavenToolchain{}.TestCommandArgs())
+	toolchain, _ := GetToolchain("maven")
+	assert.Equal(t, []string{"test"}, toolchain.TestCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	toolchain, _ := GetToolchain("maven")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, MavenToolchain{}.RunTests())
+			assert.NotZero(t, toolchain.RunTests())
 		})
 }
 
 func Test_maven_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	toolchain, _ := GetToolchain("maven")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
-			assert.Zero(t, MavenToolchain{}.RunTests())
+			assert.Zero(t, toolchain.RunTests())
 		})
 }

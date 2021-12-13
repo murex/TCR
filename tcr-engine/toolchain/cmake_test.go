@@ -27,6 +27,12 @@ import (
 	"testing"
 )
 
+func Test_cmake_is_a_built_in_toolchain(t *testing.T) {
+	assert.True(t, isBuiltIn("cmake"))
+	assert.True(t, isBuiltIn("Cmake"))
+	assert.True(t, isBuiltIn("CMAKE"))
+}
+
 func Test_cmake_toolchain_is_supported(t *testing.T) {
 	assert.True(t, isSupported("cmake"))
 	assert.True(t, isSupported("Cmake"))
@@ -35,61 +41,70 @@ func Test_cmake_toolchain_is_supported(t *testing.T) {
 
 func Test_get_cmake_toolchain_instance(t *testing.T) {
 	toolchain, err := GetToolchain("cmake")
-	assert.Equal(t, CmakeToolchain{}, toolchain)
+	assert.Equal(t, "cmake", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	tchn, err := New("cmake")
-	assert.Equal(t, CmakeToolchain{}, tchn)
+	toolchain, err := New("cmake")
+	assert.Equal(t, "cmake", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {
-	assert.Equal(t, "cmake", CmakeToolchain{}.Name())
+	toolchain, _ := GetToolchain("cmake")
+	assert.Equal(t, "cmake", toolchain.GetName())
 }
 
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
+	toolchain, _ := GetToolchain("cmake")
 	assert.Equal(t, []string{
 		"--build", "build",
 		"--config", "Debug",
-	}, CmakeToolchain{}.BuildCommandArgs())
+	}, toolchain.BuildCommandArgs())
 }
 
 func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
+	// Note: this passes not due to cmake return value, but due to absence of cmake command
+	toolchain, _ := GetToolchain("cmake")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, CmakeToolchain{}.RunBuild())
+			assert.NotZero(t, toolchain.RunBuild())
 		})
 }
 
 // TODO Figure out a way to provide a cmake wrapper
 //func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
+//  toolchain, _ := GetToolchain("cmake")
 //	runFromDir(t, testDataDirCpp,
 //		func(t *testing.T) {
-//			assert.Zero(t, CmakeToolchain{}.RunBuild())
+//			assert.Zero(t, toolchain.RunBuild())
 //		})
 //}
 
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
+	toolchain, _ := GetToolchain("cmake")
 	assert.Equal(t, []string{
 		"--output-on-failure",
 		"--test-dir", "build",
 		"--build-config", "Debug",
-	}, CmakeToolchain{}.TestCommandArgs())
+	}, toolchain.TestCommandArgs())
 }
 
 func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	// Note: this passes not due to ctest return value, but due to absence of ctest command
+	toolchain, _ := GetToolchain("cmake")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, CmakeToolchain{}.RunTests())
+			assert.NotZero(t, toolchain.RunTests())
 		})
 }
 
 // TODO Figure out a way to provide a cmake wrapper
 //func Test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+//  toolchain, _ := GetToolchain("cmake")
 //	runFromDir(t, testDataDirCpp,
 //		func(t *testing.T) {
-//			assert.Zero(t, CmakeToolchain{}.RunTests())
+//			assert.Zero(t, toolchain.RunTests())
 //		})
 //}

@@ -45,7 +45,7 @@ var (
 	uitf            ui.UserInterface
 	git             vcs.GitInterface
 	lang            language.Language
-	tchn            toolchain.Toolchain
+	tchn            *toolchain.Toolchain
 	sourceTree      filesystem.SourceTree
 	pollingPeriod   time.Duration
 	mobTurnDuration time.Duration
@@ -266,7 +266,7 @@ func revert() {
 func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	d = sourceTree.GetBaseDir()
 	l = lang.Name()
-	t = tchn.Name()
+	t = tchn.GetName()
 	ap = git.IsPushEnabled()
 	b = git.WorkingBranch()
 

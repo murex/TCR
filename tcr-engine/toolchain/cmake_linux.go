@@ -21,13 +21,3 @@ SOFTWARE.
 */
 
 package toolchain
-
-// BuildCommandName returns the build command name for this toolchain
-func (tchn CmakeToolchain) BuildCommandName() string {
-	return "build/cmake/cmake-linux-x86_64/bin/cmake"
-}
-
-// TestCommandName returns the test command name for this toolchain
-func (tchn CmakeToolchain) TestCommandName() string {
-	return "build/cmake/cmake-linux-x86_64/bin/ctest"
-}

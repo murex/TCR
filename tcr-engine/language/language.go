@@ -37,9 +37,9 @@ type Language interface {
 	SrcDirs() []string
 	TestDirs() []string
 	IsSrcFile(filename string) bool
-	defaultToolchain() toolchain.Toolchain
-	worksWithToolchain(t toolchain.Toolchain) bool
-	GetToolchain(t string) (toolchain.Toolchain, error)
+	defaultToolchain() *toolchain.Toolchain
+	worksWithToolchain(t *toolchain.Toolchain) bool
+	GetToolchain(t string) (*toolchain.Toolchain, error)
 }
 
 var (
@@ -95,8 +95,8 @@ func DirsToWatch(baseDir string, lang Language) []string {
 	return dirList
 }
 
-func getToolchain(lang Language, toolchainName string) (toolchain.Toolchain, error) {
-	var tchn toolchain.Toolchain
+func getToolchain(lang Language, toolchainName string) (*toolchain.Toolchain, error) {
+	var tchn *toolchain.Toolchain
 	var err error
 
 	// We first retrieve the toolchain
@@ -118,24 +118,24 @@ func getToolchain(lang Language, toolchainName string) (toolchain.Toolchain, err
 	return tchn, nil
 }
 
-func verifyCompatibility(lang Language, toolchain toolchain.Toolchain) (bool, error) {
-	if toolchain == nil || lang == nil {
+func verifyCompatibility(lang Language, tchn *toolchain.Toolchain) (bool, error) {
+	if tchn == nil || lang == nil {
 		return false, errors.New("toolchain and/or language is unknown")
 	}
-	if !lang.worksWithToolchain(toolchain) {
+	if !lang.worksWithToolchain(tchn) {
 		return false, fmt.Errorf(
 			"%v toolchain does not support %v language",
-			toolchain.Name(), lang.Name(),
+			tchn.GetName(), lang.Name(),
 		)
 	}
 	return true, nil
 }
 
-//func setDefaultToolchain(lang language.Language, tchn Toolchain) {
+//func setDefaultToolchain(lang language.Language, tchn TchnInterface) {
 //	defaultToolchains[lang] = tchn
 //}
 //
-//func getDefaultToolchain(lang language.Language) (Toolchain, error) {
+//func getDefaultToolchain(lang language.Language) (TchnInterface, error) {
 //	if lang == nil {
 //		return nil, errors.New("language is not defined")
 //	}

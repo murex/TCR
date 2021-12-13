@@ -21,17 +21,3 @@ SOFTWARE.
 */
 
 package toolchain
-
-import (
-	"path/filepath"
-)
-
-// BuildCommandName returns the build command name for this toolchain
-func (tchn CmakeToolchain) BuildCommandName() string {
-	return filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "cmake.exe")
-}
-
-// TestCommandName returns the test command name for this toolchain
-func (tchn CmakeToolchain) TestCommandName() string {
-	return filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "ctest.exe")
-}

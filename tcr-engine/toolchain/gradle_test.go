@@ -27,6 +27,12 @@ import (
 	"testing"
 )
 
+func Test_gradle_is_a_built_in_toolchain(t *testing.T) {
+	assert.True(t, isBuiltIn("gradle"))
+	assert.True(t, isBuiltIn("Gradle"))
+	assert.True(t, isBuiltIn("GRADLE"))
+}
+
 func Test_gradle_toolchain_is_supported(t *testing.T) {
 	assert.True(t, isSupported("gradle"))
 	assert.True(t, isSupported("Gradle"))
@@ -35,60 +41,69 @@ func Test_gradle_toolchain_is_supported(t *testing.T) {
 
 func Test_get_gradle_toolchain_instance(t *testing.T) {
 	toolchain, err := GetToolchain("gradle")
-	assert.Equal(t, GradleToolchain{}, toolchain)
+	assert.Equal(t, "gradle", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	tchn, err := New("gradle")
-	assert.Equal(t, GradleToolchain{}, tchn)
+	toolchain, err := New("gradle")
+	assert.Equal(t, "gradle", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_gradle_toolchain_name(t *testing.T) {
-	assert.Equal(t, "gradle", GradleToolchain{}.Name())
+	toolchain, _ := GetToolchain("gradle")
+	assert.Equal(t, "gradle", toolchain.GetName())
 }
 
 func Test_gradle_toolchain_build_command_name(t *testing.T) {
-	assert.Equal(t, "gradlew", GradleToolchain{}.BuildCommandName())
+	toolchain, _ := GetToolchain("gradle")
+	assert.Equal(t, "gradlew", toolchain.BuildCommandName())
 }
 
 func Test_gradle_toolchain_build_command_args(t *testing.T) {
-	assert.Equal(t, []string{"build", "-x", "test"}, GradleToolchain{}.BuildCommandArgs())
+	toolchain, _ := GetToolchain("gradle")
+	assert.Equal(t, []string{"build", "-x", "test"}, toolchain.BuildCommandArgs())
 }
 
 func Test_gradle_toolchain_returns_error_when_build_fails(t *testing.T) {
+	toolchain, _ := GetToolchain("gradle")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, GradleToolchain{}.RunBuild())
+			assert.NotZero(t, toolchain.RunBuild())
 		})
 }
 
 func Test_gradle_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	toolchain, _ := GetToolchain("gradle")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
-			assert.Zero(t, GradleToolchain{}.RunBuild())
+			assert.Zero(t, toolchain.RunBuild())
 		})
 }
 
 func Test_gradle_toolchain_test_command_name(t *testing.T) {
-	assert.Equal(t, "gradlew", GradleToolchain{}.TestCommandName())
+	toolchain, _ := GetToolchain("gradle")
+	assert.Equal(t, "gradlew", toolchain.TestCommandName())
 }
 
 func Test_gradle_toolchain_test_command_args(t *testing.T) {
-	assert.Equal(t, []string{"test"}, GradleToolchain{}.TestCommandArgs())
+	toolchain, _ := GetToolchain("gradle")
+	assert.Equal(t, []string{"test"}, toolchain.TestCommandArgs())
 }
 
 func Test_gradle_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	toolchain, _ := GetToolchain("gradle")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, GradleToolchain{}.RunTests())
+			assert.NotZero(t, toolchain.RunTests())
 		})
 }
 
 func Test_gradle_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	toolchain, _ := GetToolchain("gradle")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
-			assert.Zero(t, GradleToolchain{}.RunTests())
+			assert.Zero(t, toolchain.RunTests())
 		})
 }

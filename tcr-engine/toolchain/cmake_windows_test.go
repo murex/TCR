@@ -29,11 +29,13 @@ import (
 )
 
 func Test_cmake_toolchain_build_command_name(t *testing.T) {
+	toolchain, _ := GetToolchain("cmake")
 	expected := filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "cmake.exe")
-	assert.Equal(t, expected, CmakeToolchain{}.BuildCommandName())
+	assert.Equal(t, expected, toolchain.BuildCommandName())
 }
 
 func Test_cmake_toolchain_test_command_name(t *testing.T) {
+	toolchain, _ := GetToolchain("cmake")
 	expected := filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "ctest.exe")
-	assert.Equal(t, expected, CmakeToolchain{}.TestCommandName())
+	assert.Equal(t, expected, toolchain.TestCommandName())
 }

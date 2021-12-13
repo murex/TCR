@@ -61,3 +61,21 @@ func Test_unrecognized_toolchain_name(t *testing.T) {
 	assert.Zero(t, toolchain)
 	assert.NotZero(t, err)
 }
+
+func Test_can_add_a_built_in_toolchain(t *testing.T) {
+	tchn := Toolchain{
+		Name:          "dummy",
+		BuildCommands: nil,
+		TestCommands:  nil,
+	}
+	assert.False(t, isBuiltIn("dummy"))
+	err := addBuiltInToolchain(tchn)
+	assert.Zero(t, err)
+	assert.True(t, isBuiltIn("dummy"))
+}
+
+func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
+	var tchn = Toolchain{}
+	err := addBuiltInToolchain(tchn)
+	assert.NotZero(t, err)
+}

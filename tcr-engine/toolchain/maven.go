@@ -22,45 +22,22 @@ SOFTWARE.
 
 package toolchain
 
-// MavenToolchain is the toolchain implementation for Maven
-type MavenToolchain struct {
-}
-
-func (tchn MavenToolchain) reset() {
-	//TODO implement me
-}
-
-// Name provides the name of the toolchain
-func (tchn MavenToolchain) Name() string {
-	return "maven"
-}
-
-// RunBuild runs the build with this toolchain
-func (tchn MavenToolchain) RunBuild() error {
-	return runBuild(tchn)
-}
-
-// RunTests runs the tests with this toolchain
-func (tchn MavenToolchain) RunTests() error {
-	return runTests(tchn)
-}
-
-// BuildCommandName returns the build command name for this toolchain
-func (tchn MavenToolchain) BuildCommandName() string {
-	return "mvnw"
-}
-
-// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
-func (tchn MavenToolchain) BuildCommandArgs() []string {
-	return []string{"test-compile"}
-}
-
-// TestCommandName returns the test command name for this toolchain
-func (tchn MavenToolchain) TestCommandName() string {
-	return "mvnw"
-}
-
-// TestCommandArgs returns a table with the list of test command arguments for this toolchain
-func (tchn MavenToolchain) TestCommandArgs() []string {
-	return []string{"test"}
+func init() {
+	_ = addBuiltInToolchain(
+		Toolchain{
+			Name: "maven",
+			BuildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "mvnw",
+				Arguments: []string{"test-compile"},
+			}},
+			TestCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "mvnw",
+				Arguments: []string{"test"},
+			}},
+		},
+	)
 }
