@@ -29,24 +29,20 @@ import (
 
 func Test_cmake_is_a_built_in_toolchain(t *testing.T) {
 	assert.True(t, isBuiltIn("cmake"))
-	assert.True(t, isBuiltIn("Cmake"))
-	assert.True(t, isBuiltIn("CMAKE"))
 }
 
 func Test_cmake_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("cmake"))
+}
+
+func Test_cmake_toolchain_name_is_case_insensitive(t *testing.T) {
 	assert.True(t, isSupported("cmake"))
 	assert.True(t, isSupported("Cmake"))
 	assert.True(t, isSupported("CMAKE"))
 }
 
-func Test_get_cmake_toolchain_instance(t *testing.T) {
-	toolchain, err := GetToolchain("cmake")
-	assert.Equal(t, "cmake", toolchain.GetName())
-	assert.Zero(t, err)
-}
-
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	toolchain, err := New("cmake")
+	toolchain, err := GetToolchain("cmake")
 	assert.Equal(t, "cmake", toolchain.GetName())
 	assert.Zero(t, err)
 }

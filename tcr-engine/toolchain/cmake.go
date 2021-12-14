@@ -22,59 +22,85 @@ SOFTWARE.
 
 package toolchain
 
-import "path/filepath"
-
 func init() {
-	// TODO refactor initialization to remove redundancies
 	// TODO add other architectures than amd64
-
-	var buildWindows = Command{
-		Os:        []OsName{OsWindows},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "cmake.exe"),
-		Arguments: []string{"--build", "build", "--config", "Debug"},
-	}
-
-	var testWindows = Command{
-		Os:        []OsName{OsWindows},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "ctest.exe"),
-		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
-	}
-
-	var buildLinux = Command{
-		Os:        []OsName{OsLinux},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      "build/cmake/cmake-linux-x86_64/bin/cmake",
-		Arguments: []string{"--build", "build", "--config", "Debug"},
-	}
-
-	var testLinux = Command{
-		Os:        []OsName{OsLinux},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      "build/cmake/cmake-linux-x86_64/bin/ctest",
-		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
-	}
-
-	var buildDarwin = Command{
-		Os:        []OsName{OsDarwin},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake",
-		Arguments: []string{"--build", "build", "--config", "Debug"},
-	}
-
-	var testDarwin = Command{
-		Os:        []OsName{OsDarwin},
-		Arch:      []ArchName{ArchAmd64},
-		Path:      "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest",
-		Arguments: []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"},
-	}
 
 	_ = addBuiltInToolchain(
 		Toolchain{
-			Name:          "cmake",
-			BuildCommands: []Command{buildDarwin, buildLinux, buildWindows},
-			TestCommands:  []Command{testDarwin, testLinux, testWindows},
+			Name: "cmake",
+			BuildCommands: []Command{
+				initCmakeCommand(OsDarwin, ArchAmd64),
+				initCmakeCommand(OsLinux, ArchAmd64),
+				initCmakeCommand(OsWindows, ArchAmd64),
+			},
+			TestCommands: []Command{
+				initCtestCommand(OsDarwin, ArchAmd64),
+				initCtestCommand(OsLinux, ArchAmd64),
+				initCtestCommand(OsWindows, ArchAmd64),
+			},
 		},
 	)
+}
+
+func initCmakeCommand(osName OsName, archName ArchName) Command {
+	return Command{
+		Os:        []OsName{osName},
+		Arch:      []ArchName{archName},
+		Path:      initCommandPath("cmake", osName, archName),
+		Arguments: cmakeArguments(),
+	}
+}
+
+func initCtestCommand(osName OsName, archName ArchName) Command {
+	return Command{
+		Os:        []OsName{osName},
+		Arch:      []ArchName{archName},
+		Path:      initCommandPath("ctest", osName, archName),
+		Arguments: ctestArguments(),
+	}
+}
+
+func initCommandPath(cmd string, osName OsName, archName ArchName) string {
+	var cmakeOsArchDirName = "cmake-" + osNameInPath(osName) + "-" + archNameInPath(osName, archName)
+
+	switch osName {
+	case OsDarwin:
+		return "build/cmake/" + cmakeOsArchDirName + "/CMake.app/Contents/bin/" + cmd
+	case OsLinux:
+		return "build/cmake/" + cmakeOsArchDirName + "/bin/" + cmd
+	case OsWindows:
+		return "build\\cmake\\" + cmakeOsArchDirName + "\\bin\\" + cmd + ".exe"
+	default:
+		return ""
+	}
+}
+
+func archNameInPath(osName OsName, archName ArchName) string {
+	switch {
+	case osName == OsDarwin:
+		return "universal"
+	case archName == ArchAmd64:
+		return "x86_64"
+	case archName == Arch386:
+		return "i386"
+	case archName == ArchArm64:
+		return "aarch64"
+	default:
+		return string(archName)
+	}
+}
+
+func osNameInPath(osName OsName) string {
+	if osName == OsDarwin {
+		return "macos"
+	}
+	return string(osName)
+}
+
+func cmakeArguments() []string {
+	return []string{"--build", "build", "--config", "Debug"}
+}
+
+func ctestArguments() []string {
+	return []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}
 }

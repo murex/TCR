@@ -29,24 +29,20 @@ import (
 
 func Test_maven_is_a_built_in_toolchain(t *testing.T) {
 	assert.True(t, isBuiltIn("maven"))
-	assert.True(t, isBuiltIn("Maven"))
-	assert.True(t, isBuiltIn("MAVEN"))
 }
 
 func Test_maven_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("maven"))
+}
+
+func Test_maven_toolchain_name_is_case_insensitive(t *testing.T) {
 	assert.True(t, isSupported("maven"))
 	assert.True(t, isSupported("Maven"))
 	assert.True(t, isSupported("MAVEN"))
 }
 
-func Test_get_maven_toolchain_instance(t *testing.T) {
-	toolchain, err := GetToolchain("maven")
-	assert.Equal(t, "maven", toolchain.GetName())
-	assert.Zero(t, err)
-}
-
 func Test_maven_toolchain_initialization(t *testing.T) {
-	toolchain, err := New("maven")
+	toolchain, err := GetToolchain("maven")
 	assert.Equal(t, "maven", toolchain.GetName())
 	assert.Zero(t, err)
 }

@@ -24,18 +24,34 @@ package toolchain
 
 import (
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
+	"runtime"
 	"testing"
 )
 
-func Test_cmake_toolchain_build_command_name(t *testing.T) {
+func Test_cmake_toolchain_build_command_path_on_windows(t *testing.T) {
 	toolchain, _ := GetToolchain("cmake")
-	expected := filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "cmake.exe")
+	var expected string
+	switch runtime.GOARCH {
+	case ArchAmd64:
+		expected = "build\\cmake\\cmake-windows-x86_64\\bin\\cmake.exe"
+	case Arch386:
+		expected = "build\\cmake\\cmake-windows-i386\\bin\\cmake.exe"
+	default:
+		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
+	}
 	assert.Equal(t, expected, toolchain.BuildCommandName())
 }
 
-func Test_cmake_toolchain_test_command_name(t *testing.T) {
+func Test_cmake_toolchain_test_command_path_on_windows(t *testing.T) {
 	toolchain, _ := GetToolchain("cmake")
-	expected := filepath.Join("build", "cmake", "cmake-windows-x86_64", "bin", "ctest.exe")
+	var expected string
+	switch runtime.GOARCH {
+	case ArchAmd64:
+		expected = "build\\cmake\\cmake-windows-x86_64\\bin\\ctest.exe"
+	case Arch386:
+		expected = "build\\cmake\\cmake-windows-i386\\bin\\ctest.exe"
+	default:
+		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
+	}
 	assert.Equal(t, expected, toolchain.TestCommandName())
 }

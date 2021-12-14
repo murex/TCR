@@ -29,24 +29,20 @@ import (
 
 func Test_gradle_is_a_built_in_toolchain(t *testing.T) {
 	assert.True(t, isBuiltIn("gradle"))
-	assert.True(t, isBuiltIn("Gradle"))
-	assert.True(t, isBuiltIn("GRADLE"))
 }
 
 func Test_gradle_toolchain_is_supported(t *testing.T) {
+	assert.True(t, isSupported("gradle"))
+}
+
+func Test_gradle_toolchain_name_is_case_insensitive(t *testing.T) {
 	assert.True(t, isSupported("gradle"))
 	assert.True(t, isSupported("Gradle"))
 	assert.True(t, isSupported("GRADLE"))
 }
 
-func Test_get_gradle_toolchain_instance(t *testing.T) {
-	toolchain, err := GetToolchain("gradle")
-	assert.Equal(t, "gradle", toolchain.GetName())
-	assert.Zero(t, err)
-}
-
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	toolchain, err := New("gradle")
+	toolchain, err := GetToolchain("gradle")
 	assert.Equal(t, "gradle", toolchain.GetName())
 	assert.Zero(t, err)
 }

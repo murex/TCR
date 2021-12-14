@@ -105,12 +105,6 @@ var (
 	supportedToolchains = make(map[string]Toolchain)
 )
 
-//func init() {
-//addSupportedToolchain(GradleToolchain{})
-//addSupportedToolchain(MavenToolchain{})
-//addSupportedToolchain(CmakeToolchain{})
-//}
-
 func addSupportedToolchain(tchn Toolchain) {
 	supportedToolchains[strings.ToLower(tchn.GetName())] = tchn
 }
@@ -121,7 +115,11 @@ func isSupported(name string) bool {
 }
 
 // GetToolchain returns the toolchain instance with the provided name
+// The toolchain name is case insensitive.
 func GetToolchain(name string) (*Toolchain, error) {
+	if name == "" {
+		return nil, errors.New("toolchain name not provided")
+	}
 	tchn, found := supportedToolchains[strings.ToLower(name)]
 	if found {
 		return &tchn, nil
@@ -145,15 +143,6 @@ func Reset(name string) {
 	// TODO
 	//tchn.reset()
 	//}
-}
-
-// New creates a new toolchain instance with the provided name.
-// The toolchain name is case insensitive.
-func New(name string) (*Toolchain, error) {
-	if name != "" {
-		return GetToolchain(name)
-	}
-	return nil, errors.New("toolchain name not provided")
 }
 
 func runBuild(toolchain TchnInterface) error {
@@ -249,8 +238,12 @@ func runsOnLocalMachine(command Command) bool {
 }
 
 func runsWithLocalOs(command Command) bool {
+	return runsWithOs(command, runtime.GOOS)
+}
+
+func runsWithOs(command Command, os string) bool {
 	for _, osName := range command.Os {
-		if string(osName) == runtime.GOOS {
+		if string(osName) == os {
 			return true
 		}
 	}
@@ -258,8 +251,12 @@ func runsWithLocalOs(command Command) bool {
 }
 
 func runsWithLocalArch(command Command) bool {
+	return runsWithArch(command, runtime.GOARCH)
+}
+
+func runsWithArch(command Command, arch string) bool {
 	for _, archName := range command.Arch {
-		if string(archName) == runtime.GOARCH {
+		if string(archName) == arch {
 			return true
 		}
 	}
