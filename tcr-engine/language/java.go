@@ -49,7 +49,7 @@ func (lang Java) worksWithToolchain(t *toolchain.Toolchain) bool {
 }
 
 func (lang Java) defaultToolchain() *toolchain.Toolchain {
-	tchn, _ := toolchain.GetToolchain("gradle")
+	tchn, _ := toolchain.Get("gradle")
 	return tchn
 }
 

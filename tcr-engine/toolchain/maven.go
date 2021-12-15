@@ -23,7 +23,7 @@ SOFTWARE.
 package toolchain
 
 func init() {
-	_ = addBuiltInToolchain(
+	_ = addBuiltIn(
 		Toolchain{
 			Name: "maven",
 			BuildCommands: []Command{{

@@ -110,21 +110,21 @@ func Test_filenames_recognized_as_cpp_src(t *testing.T) {
 }
 
 func Test_default_toolchain_for_cpp(t *testing.T) {
-	expected, _ := toolchain.GetToolchain("cmake")
+	expected, _ := toolchain.Get("cmake")
 	assert.Equal(t, expected, Cpp{}.defaultToolchain())
 }
 
 func Test_cpp_works_with_cmake(t *testing.T) {
-	cmake, _ := toolchain.GetToolchain("cmake")
+	cmake, _ := toolchain.Get("cmake")
 	assert.True(t, Cpp{}.worksWithToolchain(cmake))
 }
 
 func Test_cpp_does_not_work_with_gradle(t *testing.T) {
-	gradle, _ := toolchain.GetToolchain("gradle")
+	gradle, _ := toolchain.Get("gradle")
 	assert.False(t, Cpp{}.worksWithToolchain(gradle))
 }
 
 func Test_cpp_does_not_work_with_maven(t *testing.T) {
-	maven, _ := toolchain.GetToolchain("maven")
+	maven, _ := toolchain.Get("maven")
 	assert.False(t, Cpp{}.worksWithToolchain(maven))
 }

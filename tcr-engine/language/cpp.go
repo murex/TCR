@@ -49,7 +49,7 @@ func (lang Cpp) worksWithToolchain(t *toolchain.Toolchain) bool {
 }
 
 func (lang Cpp) defaultToolchain() *toolchain.Toolchain {
-	tchn, _ := toolchain.GetToolchain("cmake")
+	tchn, _ := toolchain.Get("cmake")
 	return tchn
 }
 

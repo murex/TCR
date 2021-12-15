@@ -23,19 +23,23 @@ SOFTWARE.
 package toolchain
 
 func init() {
-	// TODO add other architectures than amd64
-
-	_ = addBuiltInToolchain(
+	_ = addBuiltIn(
 		Toolchain{
 			Name: "cmake",
 			BuildCommands: []Command{
 				initCmakeCommand(OsDarwin, ArchAmd64),
+				initCmakeCommand(OsDarwin, ArchArm64),
 				initCmakeCommand(OsLinux, ArchAmd64),
+				initCmakeCommand(OsLinux, ArchArm64),
+				initCmakeCommand(OsWindows, Arch386),
 				initCmakeCommand(OsWindows, ArchAmd64),
 			},
 			TestCommands: []Command{
 				initCtestCommand(OsDarwin, ArchAmd64),
+				initCtestCommand(OsDarwin, ArchArm64),
 				initCtestCommand(OsLinux, ArchAmd64),
+				initCtestCommand(OsLinux, ArchArm64),
+				initCtestCommand(OsWindows, Arch386),
 				initCtestCommand(OsWindows, ArchAmd64),
 			},
 		},

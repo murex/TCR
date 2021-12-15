@@ -57,7 +57,7 @@ func Test_does_not_support_dummy_toolchain_name(t *testing.T) {
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	toolchain, err := GetToolchain("dummy")
+	toolchain, err := Get("dummy")
 	assert.Zero(t, toolchain)
 	assert.NotZero(t, err)
 }
@@ -69,14 +69,14 @@ func Test_can_add_a_built_in_toolchain(t *testing.T) {
 		TestCommands:  nil,
 	}
 	assert.False(t, isBuiltIn("dummy"))
-	err := addBuiltInToolchain(tchn)
+	err := addBuiltIn(tchn)
 	assert.Zero(t, err)
 	assert.True(t, isBuiltIn("dummy"))
 }
 
 func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
 	var tchn = Toolchain{}
-	err := addBuiltInToolchain(tchn)
+	err := addBuiltIn(tchn)
 	assert.NotZero(t, err)
 }
 
@@ -86,7 +86,7 @@ func Test_toolchain_name_is_case_insensitive(t *testing.T) {
 		BuildCommands: nil,
 		TestCommands:  nil,
 	}
-	_ = addBuiltInToolchain(tchn)
+	_ = addBuiltIn(tchn)
 	assert.True(t, isSupported("dummy"))
 	assert.True(t, isSupported("Dummy"))
 	assert.True(t, isSupported("DUMMY"))

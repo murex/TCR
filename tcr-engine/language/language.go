@@ -101,7 +101,7 @@ func getToolchain(lang Language, toolchainName string) (*toolchain.Toolchain, er
 
 	// We first retrieve the toolchain
 	if toolchainName != "" {
-		tchn, err = toolchain.GetToolchain(toolchainName)
+		tchn, err = toolchain.Get(toolchainName)
 		if err != nil {
 			return nil, err
 		}

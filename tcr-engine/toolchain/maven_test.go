@@ -42,28 +42,28 @@ func Test_maven_toolchain_name_is_case_insensitive(t *testing.T) {
 }
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	toolchain, err := GetToolchain("maven")
+	toolchain, err := Get("maven")
 	assert.Equal(t, "maven", toolchain.GetName())
 	assert.Zero(t, err)
 }
 
 func Test_maven_toolchain_name(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	assert.Equal(t, "maven", toolchain.GetName())
 }
 
 func Test_maven_toolchain_build_command_name(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	assert.Equal(t, "mvnw", toolchain.BuildCommandName())
 }
 
 func Test_maven_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	assert.Equal(t, []string{"test-compile"}, toolchain.BuildCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
 			assert.NotZero(t, toolchain.RunBuild())
@@ -71,7 +71,7 @@ func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
 			assert.Zero(t, toolchain.RunBuild())
@@ -79,17 +79,17 @@ func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
 }
 
 func Test_maven_toolchain_test_command_name(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	assert.Equal(t, "mvnw", toolchain.TestCommandName())
 }
 
 func Test_maven_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	assert.Equal(t, []string{"test"}, toolchain.TestCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
 			assert.NotZero(t, toolchain.RunTests())
@@ -97,7 +97,7 @@ func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
 }
 
 func Test_maven_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	toolchain, _ := GetToolchain("maven")
+	toolchain, _ := Get("maven")
 	runFromDir(t, testDataDirJava,
 		func(t *testing.T) {
 			assert.Zero(t, toolchain.RunTests())
