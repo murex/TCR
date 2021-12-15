@@ -27,14 +27,14 @@ func init() {
 		Toolchain{
 			Name: "gradle",
 			BuildCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
 				Path:      "gradlew",
 				Arguments: []string{"build", "-x", "test"},
 			}},
 			TestCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
 				Path:      "gradlew",
 				Arguments: []string{"test"},
 			}},

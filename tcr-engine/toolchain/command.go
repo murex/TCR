@@ -63,49 +63,53 @@ const (
 	ArchArm64 = "arm64"
 )
 
-// GetAllOsNames return the list of all supported OS Names
-func GetAllOsNames() []OsName {
+// getAllOsNames return the list of all supported OS Names
+func getAllOsNames() []OsName {
 	return []OsName{OsDarwin, OsLinux, OsWindows}
 }
 
-// GetAllArchNames return the list of all supported OS Architectures
-func GetAllArchNames() []ArchName {
+// getAllArchNames return the list of all supported OS Architectures
+func getAllArchNames() []ArchName {
 	return []ArchName{Arch386, ArchAmd64, ArchArm64}
 }
 
-func runsOnLocalMachine(command Command) bool {
-	return runsWithLocalOs(command) && runsWithLocalArch(command)
+func (command Command) runsOnLocalMachine() bool {
+	return command.runsOnPlatform(OsName(runtime.GOOS), ArchName(runtime.GOARCH))
 }
 
-func runsWithLocalOs(command Command) bool {
-	return runsWithOs(command, runtime.GOOS)
+func (command Command) runsOnPlatform(os OsName, arch ArchName) bool {
+	return command.runsWithOs(os) && command.runsWithArch(arch)
 }
 
-func runsWithOs(command Command, os string) bool {
+func (command Command) runsWithOs(os OsName) bool {
 	for _, osName := range command.Os {
-		if string(osName) == os {
+		if osName == os {
 			return true
 		}
 	}
 	return false
 }
 
-func runsWithLocalArch(command Command) bool {
-	return runsWithArch(command, runtime.GOARCH)
-}
-
-func runsWithArch(command Command, arch string) bool {
+func (command Command) runsWithArch(arch ArchName) bool {
 	for _, archName := range command.Arch {
-		if string(archName) == arch {
+		if archName == arch {
 			return true
 		}
 	}
 	return false
+}
+
+func (command Command) run() error {
+	output, err := sh.Command(tuneCommandPath(command.Path), command.Arguments).CombinedOutput()
+	if output != nil {
+		report.PostText(string(output))
+	}
+	return err
 }
 
 func findCommand(commands []Command, os OsName, arch ArchName) *Command {
 	for _, cmd := range commands {
-		if runsWithOs(cmd, string(os)) && runsWithArch(cmd, string(arch)) {
+		if cmd.runsOnPlatform(os, arch) {
 			return &cmd
 		}
 	}
@@ -114,19 +118,11 @@ func findCommand(commands []Command, os OsName, arch ArchName) *Command {
 
 func findCompatibleCommand(commands []Command) *Command {
 	for _, command := range commands {
-		if runsOnLocalMachine(command) {
+		if command.runsOnLocalMachine() {
 			return &command
 		}
 	}
 	return nil
-}
-
-func runCommand(cmdPath string, cmdArgs []string) error {
-	output, err := sh.Command(tuneCommandPath(cmdPath), cmdArgs).CombinedOutput()
-	if output != nil {
-		report.PostText(string(output))
-	}
-	return err
 }
 
 func tuneCommandPath(cmdPath string) string {

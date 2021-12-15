@@ -112,36 +112,32 @@ func (tchn Toolchain) GetName() string {
 
 // RunBuild runs the build with this toolchain
 func (tchn Toolchain) RunBuild() error {
-	return runCommand(tchn.BuildCommandName(), tchn.BuildCommandArgs())
+	return findCompatibleCommand(tchn.BuildCommands).run()
 }
 
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() error {
-	return runCommand(tchn.TestCommandName(), tchn.TestCommandArgs())
+	return findCompatibleCommand(tchn.TestCommands).run()
 }
 
-// BuildCommandName returns the build command name for this toolchain
-func (tchn Toolchain) BuildCommandName() string {
-	var cmd = findCompatibleCommand(tchn.BuildCommands)
-	return cmd.Path
+// buildCommandName returns the build command name for this toolchain
+func (tchn Toolchain) buildCommandName() string {
+	return findCompatibleCommand(tchn.BuildCommands).Path
 }
 
-// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
-func (tchn Toolchain) BuildCommandArgs() []string {
-	var cmd = findCompatibleCommand(tchn.BuildCommands)
-	return cmd.Arguments
+// buildCommandArgs returns a table with the list of build command arguments for this toolchain
+func (tchn Toolchain) buildCommandArgs() []string {
+	return findCompatibleCommand(tchn.BuildCommands).Arguments
 }
 
-// TestCommandName returns the test command name for this toolchain
-func (tchn Toolchain) TestCommandName() string {
-	var cmd = findCompatibleCommand(tchn.TestCommands)
-	return cmd.Path
+// testCommandName returns the test command name for this toolchain
+func (tchn Toolchain) testCommandName() string {
+	return findCompatibleCommand(tchn.TestCommands).Path
 }
 
-// TestCommandArgs returns a table with the list of test command arguments for this toolchain
-func (tchn Toolchain) TestCommandArgs() []string {
-	var cmd = findCompatibleCommand(tchn.TestCommands)
-	return cmd.Arguments
+// testCommandArgs returns a table with the list of test command arguments for this toolchain
+func (tchn Toolchain) testCommandArgs() []string {
+	return findCompatibleCommand(tchn.TestCommands).Arguments
 }
 
 func (tchn Toolchain) supportsPlatform(os OsName, arch ArchName) bool {

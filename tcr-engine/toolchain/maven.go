@@ -27,14 +27,14 @@ func init() {
 		Toolchain{
 			Name: "maven",
 			BuildCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
 				Path:      "mvnw",
 				Arguments: []string{"test-compile"},
 			}},
 			TestCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
 				Path:      "mvnw",
 				Arguments: []string{"test"},
 			}},

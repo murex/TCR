@@ -54,12 +54,12 @@ func Test_maven_toolchain_name(t *testing.T) {
 
 func Test_maven_toolchain_build_command_name(t *testing.T) {
 	toolchain, _ := Get("maven")
-	assert.Equal(t, "mvnw", toolchain.BuildCommandName())
+	assert.Equal(t, "mvnw", toolchain.buildCommandName())
 }
 
 func Test_maven_toolchain_build_command_args(t *testing.T) {
 	toolchain, _ := Get("maven")
-	assert.Equal(t, []string{"test-compile"}, toolchain.BuildCommandArgs())
+	assert.Equal(t, []string{"test-compile"}, toolchain.buildCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_build_fails(t *testing.T) {
@@ -80,12 +80,12 @@ func Test_maven_toolchain_returns_ok_when_build_passes(t *testing.T) {
 
 func Test_maven_toolchain_test_command_name(t *testing.T) {
 	toolchain, _ := Get("maven")
-	assert.Equal(t, "mvnw", toolchain.TestCommandName())
+	assert.Equal(t, "mvnw", toolchain.testCommandName())
 }
 
 func Test_maven_toolchain_test_command_args(t *testing.T) {
 	toolchain, _ := Get("maven")
-	assert.Equal(t, []string{"test"}, toolchain.TestCommandArgs())
+	assert.Equal(t, []string{"test"}, toolchain.testCommandArgs())
 }
 
 func Test_maven_toolchain_returns_error_when_tests_fail(t *testing.T) {
