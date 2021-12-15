@@ -80,11 +80,15 @@ func Names() []string {
 
 // Reset resets the toolchain with the provided name to its default values
 func Reset(name string) {
-	//_, found := supportedToolchains[strings.ToLower(name)]
-	//if found {
-	// TODO
-	//tchn.reset()
-	//}
+	_, found := supportedToolchains[strings.ToLower(name)]
+	if found && isBuiltIn(name) {
+		addSupportedToolchain(*getBuiltIn(name))
+	}
+}
+
+func getBuiltIn(name string) *Toolchain {
+	var builtIn, _ = builtInToolchains[strings.ToLower(name)]
+	return &builtIn
 }
 
 func isBuiltIn(name string) bool {
@@ -99,10 +103,6 @@ func addBuiltIn(tchn Toolchain) error {
 	builtInToolchains[strings.ToLower(tchn.Name)] = tchn
 	addSupportedToolchain(tchn)
 	return nil
-}
-
-func (tchn Toolchain) reset() {
-	//TODO implement me
 }
 
 // GetName provides the name of the toolchain
