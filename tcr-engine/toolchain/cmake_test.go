@@ -110,17 +110,17 @@ func Test_cmake_toolchain_supported_platforms(t *testing.T) {
 	toolchain, _ := Get("cmake")
 
 	// Windows platforms
-	assert.True(t, toolchain.supportsPlatform(OsWindows, Arch386))
-	assert.True(t, toolchain.supportsPlatform(OsWindows, ArchAmd64))
-	assert.False(t, toolchain.supportsPlatform(OsWindows, ArchArm64))
+	assert.True(t, toolchain.runsOnPlatform(OsWindows, Arch386))
+	assert.True(t, toolchain.runsOnPlatform(OsWindows, ArchAmd64))
+	assert.False(t, toolchain.runsOnPlatform(OsWindows, ArchArm64))
 
 	// Darwin platforms
-	assert.False(t, toolchain.supportsPlatform(OsDarwin, Arch386))
-	assert.True(t, toolchain.supportsPlatform(OsDarwin, ArchAmd64))
-	assert.True(t, toolchain.supportsPlatform(OsDarwin, ArchArm64))
+	assert.False(t, toolchain.runsOnPlatform(OsDarwin, Arch386))
+	assert.True(t, toolchain.runsOnPlatform(OsDarwin, ArchAmd64))
+	assert.True(t, toolchain.runsOnPlatform(OsDarwin, ArchArm64))
 
 	// Linux platforms
-	assert.False(t, toolchain.supportsPlatform(OsLinux, Arch386))
-	assert.True(t, toolchain.supportsPlatform(OsLinux, ArchAmd64))
-	assert.True(t, toolchain.supportsPlatform(OsLinux, ArchArm64))
+	assert.False(t, toolchain.runsOnPlatform(OsLinux, Arch386))
+	assert.True(t, toolchain.runsOnPlatform(OsLinux, ArchAmd64))
+	assert.True(t, toolchain.runsOnPlatform(OsLinux, ArchArm64))
 }

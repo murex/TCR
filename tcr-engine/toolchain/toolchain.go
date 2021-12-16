@@ -43,16 +43,16 @@ type (
 )
 
 var (
-	builtInToolchains   = make(map[string]Toolchain)
-	supportedToolchains = make(map[string]Toolchain)
+	builtIn    = make(map[string]Toolchain)
+	registered = make(map[string]Toolchain)
 )
 
-func addSupportedToolchain(tchn Toolchain) {
-	supportedToolchains[strings.ToLower(tchn.GetName())] = tchn
+func register(tchn Toolchain) {
+	registered[strings.ToLower(tchn.GetName())] = tchn
 }
 
 func isSupported(name string) bool {
-	_, found := supportedToolchains[strings.ToLower(name)]
+	_, found := registered[strings.ToLower(name)]
 	return found
 }
 
@@ -62,7 +62,7 @@ func Get(name string) (*Toolchain, error) {
 	if name == "" {
 		return nil, errors.New("toolchain name not provided")
 	}
-	tchn, found := supportedToolchains[strings.ToLower(name)]
+	tchn, found := registered[strings.ToLower(name)]
 	if found {
 		return &tchn, nil
 	}
@@ -72,7 +72,7 @@ func Get(name string) (*Toolchain, error) {
 // Names returns the list of available toolchain names
 func Names() []string {
 	var names []string
-	for _, tchn := range supportedToolchains {
+	for _, tchn := range registered {
 		names = append(names, tchn.Name)
 	}
 	return names
@@ -80,19 +80,19 @@ func Names() []string {
 
 // Reset resets the toolchain with the provided name to its default values
 func Reset(name string) {
-	_, found := supportedToolchains[strings.ToLower(name)]
+	_, found := registered[strings.ToLower(name)]
 	if found && isBuiltIn(name) {
-		addSupportedToolchain(*getBuiltIn(name))
+		register(*getBuiltIn(name))
 	}
 }
 
 func getBuiltIn(name string) *Toolchain {
-	var builtIn, _ = builtInToolchains[strings.ToLower(name)]
+	var builtIn, _ = builtIn[strings.ToLower(name)]
 	return &builtIn
 }
 
 func isBuiltIn(name string) bool {
-	_, found := builtInToolchains[strings.ToLower(name)]
+	_, found := builtIn[strings.ToLower(name)]
 	return found
 }
 
@@ -100,8 +100,8 @@ func addBuiltIn(tchn Toolchain) error {
 	if tchn.Name == "" {
 		return errors.New("toolchain name cannot be an empty string")
 	}
-	builtInToolchains[strings.ToLower(tchn.Name)] = tchn
-	addSupportedToolchain(tchn)
+	builtIn[strings.ToLower(tchn.Name)] = tchn
+	register(tchn)
 	return nil
 }
 
@@ -120,8 +120,8 @@ func (tchn Toolchain) RunTests() error {
 	return findCompatibleCommand(tchn.TestCommands).run()
 }
 
-// buildCommandName returns the build command name for this toolchain
-func (tchn Toolchain) buildCommandName() string {
+// buildCommandPath returns the build command name for this toolchain
+func (tchn Toolchain) buildCommandPath() string {
 	return findCompatibleCommand(tchn.BuildCommands).Path
 }
 
@@ -130,8 +130,8 @@ func (tchn Toolchain) buildCommandArgs() []string {
 	return findCompatibleCommand(tchn.BuildCommands).Arguments
 }
 
-// testCommandName returns the test command name for this toolchain
-func (tchn Toolchain) testCommandName() string {
+// testCommandPath returns the test command name for this toolchain
+func (tchn Toolchain) testCommandPath() string {
 	return findCompatibleCommand(tchn.TestCommands).Path
 }
 
@@ -140,7 +140,7 @@ func (tchn Toolchain) testCommandArgs() []string {
 	return findCompatibleCommand(tchn.TestCommands).Arguments
 }
 
-func (tchn Toolchain) supportsPlatform(os OsName, arch ArchName) bool {
+func (tchn Toolchain) runsOnPlatform(os OsName, arch ArchName) bool {
 	return tchn.findBuildCommandFor(os, arch) != nil && tchn.findTestCommandFor(os, arch) != nil
 }
 

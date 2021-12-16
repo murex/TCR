@@ -54,7 +54,7 @@ func Test_gradle_toolchain_name(t *testing.T) {
 
 func Test_gradle_toolchain_build_command_name(t *testing.T) {
 	toolchain, _ := Get("gradle")
-	assert.Equal(t, "gradlew", toolchain.buildCommandName())
+	assert.Equal(t, "gradlew", toolchain.buildCommandPath())
 }
 
 func Test_gradle_toolchain_build_command_args(t *testing.T) {
@@ -80,7 +80,7 @@ func Test_gradle_toolchain_returns_ok_when_build_passes(t *testing.T) {
 
 func Test_gradle_toolchain_test_command_name(t *testing.T) {
 	toolchain, _ := Get("gradle")
-	assert.Equal(t, "gradlew", toolchain.testCommandName())
+	assert.Equal(t, "gradlew", toolchain.testCommandPath())
 }
 
 func Test_gradle_toolchain_test_command_args(t *testing.T) {
