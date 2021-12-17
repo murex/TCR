@@ -102,7 +102,7 @@ func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
 
 func Test_toolchain_name_is_case_insensitive(t *testing.T) {
 	const name = "miXeD-CasE"
-	_ = register(*aToolchain(withName(name)))
+	_ = Register(*aToolchain(withName(name)))
 	assert.True(t, isSupported(name))
 	assert.True(t, isSupported(strings.ToUpper(name)))
 	assert.True(t, isSupported(strings.ToLower(name)))
@@ -112,22 +112,22 @@ func Test_toolchain_name_is_case_insensitive(t *testing.T) {
 func Test_can_register_a_toolchain(t *testing.T) {
 	const name = "new-toolchain"
 	assert.False(t, isSupported(name))
-	assert.NoError(t, register(*aToolchain(withName(name))))
+	assert.NoError(t, Register(*aToolchain(withName(name))))
 	assert.True(t, isSupported(name))
 }
 
 func Test_cannot_register_a_toolchain_with_no_name(t *testing.T) {
-	assert.Error(t, register(*aToolchain(withName(""))))
+	assert.Error(t, Register(*aToolchain(withName(""))))
 }
 
 func Test_cannot_register_a_toolchain_with_no_build_command(t *testing.T) {
 	const name = "no-build-command"
-	assert.Error(t, register(*aToolchain(withName(name), withNoBuildCommand())))
+	assert.Error(t, Register(*aToolchain(withName(name), withNoBuildCommand())))
 	assert.False(t, isSupported(name))
 }
 
 func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
 	const name = "no-test-command"
-	assert.Error(t, register(*aToolchain(withName(name), withNoTestCommand())))
+	assert.Error(t, Register(*aToolchain(withName(name), withNoTestCommand())))
 	assert.False(t, isSupported(name))
 }

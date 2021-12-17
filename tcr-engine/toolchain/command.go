@@ -101,6 +101,7 @@ func (command Command) runsWithArch(arch ArchName) bool {
 }
 
 func (command Command) run() error {
+	//report.PostWarning("Command: ", tuneCommandPath(command.Path))
 	output, err := sh.Command(tuneCommandPath(command.Path), command.Arguments).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
@@ -171,7 +172,18 @@ func findCompatibleCommand(commands []Command) *Command {
 }
 
 func tuneCommandPath(cmdPath string) string {
-	// TODO handle different types of paths (relative, absolute, no path)
+	// If this is an absolute path, we keep it untouched
+	if filepath.IsAbs(cmdPath) {
+		return cmdPath
+	}
+	// If not, we try if it can be a relative path from the current directory.
+	// If the file is found, we return it
 	wd, _ := os.Getwd()
-	return filepath.Join(wd, cmdPath)
+	relativePath := filepath.Join(wd, cmdPath)
+	if _, err := os.Stat(relativePath); err == nil {
+		return relativePath
+	}
+	// As a last resort, we assume it can be retrieved from $PATH
+	// TODO handle different types of paths (relative, absolute, no path)
+	return cmdPath
 }

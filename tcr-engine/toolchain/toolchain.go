@@ -47,7 +47,8 @@ var (
 	registered = make(map[string]Toolchain)
 )
 
-func register(tchn Toolchain) error {
+// Register adds the provided toolchain to the list of supported toolchains
+func Register(tchn Toolchain) error {
 	if err := tchn.checkName(); err != nil {
 		return err
 	}
@@ -113,7 +114,7 @@ func Names() []string {
 func Reset(name string) {
 	_, found := registered[strings.ToLower(name)]
 	if found && isBuiltIn(name) {
-		_ = register(*getBuiltIn(name))
+		_ = Register(*getBuiltIn(name))
 	}
 }
 
@@ -132,7 +133,7 @@ func addBuiltIn(tchn Toolchain) error {
 		return errors.New("toolchain name cannot be an empty string")
 	}
 	builtIn[strings.ToLower(tchn.Name)] = tchn
-	return register(tchn)
+	return Register(tchn)
 
 }
 
