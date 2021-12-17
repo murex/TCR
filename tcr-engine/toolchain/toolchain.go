@@ -47,13 +47,44 @@ var (
 	registered = make(map[string]Toolchain)
 )
 
-func register(tchn Toolchain) {
+func register(tchn Toolchain) error {
+	if err := tchn.checkName(); err != nil {
+		return err
+	}
+	if err := tchn.checkBuildCommand(); err != nil {
+		return err
+	}
+	if err := tchn.checkTestCommand(); err != nil {
+		return err
+	}
 	registered[strings.ToLower(tchn.GetName())] = tchn
+	return nil
 }
 
 func isSupported(name string) bool {
 	_, found := registered[strings.ToLower(name)]
 	return found
+}
+
+func (tchn Toolchain) checkName() error {
+	if tchn.Name == "" {
+		return errors.New("toolchain name is empty")
+	}
+	return nil
+}
+
+func (tchn Toolchain) checkBuildCommand() error {
+	if tchn.BuildCommands == nil {
+		return errors.New("toolchain has no build command")
+	}
+	return nil
+}
+
+func (tchn Toolchain) checkTestCommand() error {
+	if tchn.TestCommands == nil {
+		return errors.New("toolchain has no test command")
+	}
+	return nil
 }
 
 // Get returns the toolchain instance with the provided name
@@ -82,7 +113,7 @@ func Names() []string {
 func Reset(name string) {
 	_, found := registered[strings.ToLower(name)]
 	if found && isBuiltIn(name) {
-		register(*getBuiltIn(name))
+		_ = register(*getBuiltIn(name))
 	}
 }
 
@@ -101,8 +132,8 @@ func addBuiltIn(tchn Toolchain) error {
 		return errors.New("toolchain name cannot be an empty string")
 	}
 	builtIn[strings.ToLower(tchn.Name)] = tchn
-	register(tchn)
-	return nil
+	return register(tchn)
+
 }
 
 // GetName provides the name of the toolchain

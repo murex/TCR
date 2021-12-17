@@ -121,21 +121,21 @@ func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 }
 
 func Test_command_path_cannot_be_empty(t *testing.T) {
-	assert.NotZero(t, aCommand(withPath("")).check())
+	assert.Error(t, aCommand(withPath("")).check())
 }
 
 func Test_command_os_list_cannot_be_empty(t *testing.T) {
-	assert.NotZero(t, aCommand(withNoOs()).check())
+	assert.Error(t, aCommand(withNoOs()).check())
 }
 
 func Test_a_command_os_cannot_be_empty(t *testing.T) {
-	assert.NotZero(t, aCommand(withOs("")).check())
+	assert.Error(t, aCommand(withOs("")).check())
 }
 
 func Test_command_arch_list_cannot_be_empty(t *testing.T) {
-	assert.NotZero(t, aCommand(withNoArch()).check())
+	assert.Error(t, aCommand(withNoArch()).check())
 }
 
 func Test_a_command_arch_cannot_be_empty(t *testing.T) {
-	assert.NotZero(t, aCommand(withArch("")).check())
+	assert.Error(t, aCommand(withArch("")).check())
 }

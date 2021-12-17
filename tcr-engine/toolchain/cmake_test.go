@@ -24,36 +24,42 @@ package toolchain
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
+const (
+	cmakeToolchainName = "cmake"
+)
+
 func Test_cmake_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn("cmake"))
+	assert.True(t, isBuiltIn(cmakeToolchainName))
 }
 
 func Test_cmake_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported("cmake"))
+	assert.True(t, isSupported(cmakeToolchainName))
 }
 
 func Test_cmake_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported("cmake"))
-	assert.True(t, isSupported("Cmake"))
-	assert.True(t, isSupported("CMAKE"))
+	assert.True(t, isSupported(cmakeToolchainName))
+	assert.True(t, isSupported(strings.ToUpper(cmakeToolchainName)))
+	assert.True(t, isSupported(strings.ToLower(cmakeToolchainName)))
+	assert.True(t, isSupported(strings.Title(cmakeToolchainName)))
 }
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get("cmake")
-	assert.Equal(t, "cmake", toolchain.GetName())
-	assert.Zero(t, err)
+	toolchain, err := Get(cmakeToolchainName)
+	assert.NoError(t, err)
+	assert.Equal(t, cmakeToolchainName, toolchain.GetName())
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {
-	toolchain, _ := Get("cmake")
-	assert.Equal(t, "cmake", toolchain.GetName())
+	toolchain, _ := Get(cmakeToolchainName)
+	assert.Equal(t, cmakeToolchainName, toolchain.GetName())
 }
 
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	assert.Equal(t, []string{
 		"--build", "build",
 		"--config", "Debug",
@@ -62,24 +68,24 @@ func Test_cmake_toolchain_build_command_args(t *testing.T) {
 
 func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
 	// Note: this passes not due to cmake return value, but due to absence of cmake command
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, toolchain.RunBuild())
+			assert.Error(t, toolchain.RunBuild())
 		})
 }
 
 // TODO Figure out a way to provide a cmake wrapper
 //func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
-//  toolchain, _ := Get("cmake")
+//  toolchain, _ := Get(cmakeToolchainName)
 //	runFromDir(t, testDataDirCpp,
 //		func(t *testing.T) {
-//			assert.Zero(t, toolchain.RunBuild())
+//			assert.NoError(t, toolchain.RunBuild())
 //		})
 //}
 
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	assert.Equal(t, []string{
 		"--output-on-failure",
 		"--test-dir", "build",
@@ -89,25 +95,25 @@ func Test_cmake_toolchain_test_command_args(t *testing.T) {
 
 func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
 	// Note: this passes not due to ctest return value, but due to absence of ctest command
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	runFromDir(t, testDataRootDir,
 		func(t *testing.T) {
-			assert.NotZero(t, toolchain.RunTests())
+			assert.Error(t, toolchain.RunTests())
 		})
 }
 
 // TODO Figure out a way to provide a cmake wrapper
 //func Test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-//  toolchain, _ := Get("cmake")
+//  toolchain, _ := Get(cmakeToolchainName)
 //	runFromDir(t, testDataDirCpp,
 //		func(t *testing.T) {
-//			assert.Zero(t, toolchain.RunTests())
+//			assert.NoError(t, toolchain.RunTests())
 //		})
 //}
 
 func Test_cmake_toolchain_supported_platforms(t *testing.T) {
 	// Cf. https://cmake.org/download/ for list of cmake supported platforms
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 
 	// Windows platforms
 	assert.True(t, toolchain.runsOnPlatform(OsWindows, Arch386))

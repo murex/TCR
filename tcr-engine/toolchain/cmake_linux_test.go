@@ -29,7 +29,7 @@ import (
 )
 
 func Test_cmake_toolchain_build_command_path_on_linux(t *testing.T) {
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	var expected string
 	switch runtime.GOARCH {
 	case ArchAmd64:
@@ -43,7 +43,7 @@ func Test_cmake_toolchain_build_command_path_on_linux(t *testing.T) {
 }
 
 func Test_cmake_toolchain_test_command_path_on_linux(t *testing.T) {
-	toolchain, _ := Get("cmake")
+	toolchain, _ := Get(cmakeToolchainName)
 	var expected string
 	switch runtime.GOARCH {
 	case ArchAmd64:
