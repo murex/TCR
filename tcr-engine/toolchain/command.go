@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"errors"
 	"github.com/codeskyblue/go-sh"
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
@@ -105,6 +106,50 @@ func (command Command) run() error {
 		report.PostText(string(output))
 	}
 	return err
+}
+
+func (command Command) check() error {
+	if err := command.checkPath(); err != nil {
+		return err
+	}
+	if err := command.checkOsTable(); err != nil {
+		return err
+	}
+	if err := command.checkArchTable(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (command Command) checkPath() error {
+	if command.Path == "" {
+		return errors.New("command path is empty")
+	}
+	return nil
+}
+
+func (command Command) checkOsTable() error {
+	if command.Os == nil {
+		return errors.New("command's OS list is empty")
+	}
+	for _, osName := range command.Os {
+		if osName == "" {
+			return errors.New("a command OS name is empty")
+		}
+	}
+	return nil
+}
+
+func (command Command) checkArchTable() error {
+	if command.Arch == nil {
+		return errors.New("command's architecture list is empty")
+	}
+	for _, archName := range command.Arch {
+		if archName == "" {
+			return errors.New("a command architecture name is empty")
+		}
+	}
+	return nil
 }
 
 func findCommand(commands []Command, os OsName, arch ArchName) *Command {
