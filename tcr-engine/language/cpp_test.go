@@ -115,16 +115,21 @@ func Test_default_toolchain_for_cpp(t *testing.T) {
 }
 
 func Test_cpp_works_with_cmake(t *testing.T) {
-	cmake, _ := toolchain.Get("cmake")
-	assert.True(t, Cpp{}.worksWithToolchain(cmake))
+	tchn, _ := toolchain.Get("cmake")
+	assert.True(t, Cpp{}.worksWithToolchain(tchn))
 }
 
 func Test_cpp_does_not_work_with_gradle(t *testing.T) {
-	gradle, _ := toolchain.Get("gradle")
-	assert.False(t, Cpp{}.worksWithToolchain(gradle))
+	tchn, _ := toolchain.Get("gradle")
+	assert.False(t, Cpp{}.worksWithToolchain(tchn))
 }
 
 func Test_cpp_does_not_work_with_maven(t *testing.T) {
-	maven, _ := toolchain.Get("maven")
-	assert.False(t, Cpp{}.worksWithToolchain(maven))
+	tchn, _ := toolchain.Get("maven")
+	assert.False(t, Cpp{}.worksWithToolchain(tchn))
+}
+
+func Test_cpp_does_not_work_with_maven_wrapper(t *testing.T) {
+	tchn, _ := toolchain.Get("maven-wrapper")
+	assert.False(t, Cpp{}.worksWithToolchain(tchn))
 }

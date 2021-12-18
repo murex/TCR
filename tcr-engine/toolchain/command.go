@@ -102,6 +102,7 @@ func (command Command) runsWithArch(arch ArchName) bool {
 
 func (command Command) run() error {
 	//report.PostWarning("Command: ", tuneCommandPath(command.Path))
+	//fmt.Printf("PATH: %s\n", os.Getenv("PATH"))
 	output, err := sh.Command(tuneCommandPath(command.Path), command.Arguments).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
@@ -184,6 +185,5 @@ func tuneCommandPath(cmdPath string) string {
 		return relativePath
 	}
 	// As a last resort, we assume it can be retrieved from $PATH
-	// TODO handle different types of paths (relative, absolute, no path)
 	return cmdPath
 }

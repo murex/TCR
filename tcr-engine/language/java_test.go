@@ -83,16 +83,21 @@ func Test_default_toolchain_for_java(t *testing.T) {
 }
 
 func Test_java_works_with_gradle(t *testing.T) {
-	gradle, _ := toolchain.Get("gradle")
-	assert.True(t, Java{}.worksWithToolchain(gradle))
+	tchn, _ := toolchain.Get("gradle")
+	assert.True(t, Java{}.worksWithToolchain(tchn))
 }
 
 func Test_java_works_with_maven(t *testing.T) {
-	maven, _ := toolchain.Get("maven")
-	assert.True(t, Java{}.worksWithToolchain(maven))
+	tchn, _ := toolchain.Get("maven")
+	assert.True(t, Java{}.worksWithToolchain(tchn))
+}
+
+func Test_java_works_with_maven_wrapper(t *testing.T) {
+	tchn, _ := toolchain.Get("maven-wrapper")
+	assert.True(t, Java{}.worksWithToolchain(tchn))
 }
 
 func Test_java_does_not_work_with_cmake(t *testing.T) {
-	cmake, _ := toolchain.Get("cmake")
-	assert.False(t, Java{}.worksWithToolchain(cmake))
+	tchn, _ := toolchain.Get("cmake")
+	assert.False(t, Java{}.worksWithToolchain(tchn))
 }

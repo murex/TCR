@@ -81,14 +81,17 @@ func loadToolchainConfigs() {
 	}
 
 	// Loop on all files in toolchain directory
-	trace("Loading toolchain configurations")
+	trace("Loading toolchains configuration")
 	for _, entry := range entries {
 		if entry.IsDir() {
 			break
 		}
 		trace("- ", entry.Name())
 		toolchainCfg := loadFromYaml(filepath.Join(toolchainDirPath, entry.Name()))
-		toolchain.Register(asToolchain(toolchainCfg))
+		err := toolchain.Register(asToolchain(toolchainCfg))
+		if err != nil {
+			trace("Error in ", entry.Name(), ": ", err)
+		}
 	}
 }
 
