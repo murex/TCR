@@ -41,7 +41,7 @@ func (lang Java) GetToolchain(t string) (*toolchain.Toolchain, error) {
 
 func (lang Java) worksWithToolchain(t *toolchain.Toolchain) bool {
 	switch t.GetName() {
-	case "gradle", "maven":
+	case "gradle", "maven", "gradle-wrapper", "maven-wrapper":
 		return true
 	default:
 		return false
@@ -49,7 +49,7 @@ func (lang Java) worksWithToolchain(t *toolchain.Toolchain) bool {
 }
 
 func (lang Java) defaultToolchain() *toolchain.Toolchain {
-	tchn, _ := toolchain.Get("gradle")
+	tchn, _ := toolchain.Get("gradle-wrapper")
 	return tchn
 }
 

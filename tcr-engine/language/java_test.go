@@ -78,12 +78,17 @@ func Test_filenames_recognized_as_java_src(t *testing.T) {
 }
 
 func Test_default_toolchain_for_java(t *testing.T) {
-	expected, _ := toolchain.Get("gradle")
+	expected, _ := toolchain.Get("gradle-wrapper")
 	assert.Equal(t, expected, Java{}.defaultToolchain())
 }
 
 func Test_java_works_with_gradle(t *testing.T) {
 	tchn, _ := toolchain.Get("gradle")
+	assert.True(t, Java{}.worksWithToolchain(tchn))
+}
+
+func Test_java_works_with_gradle_wrapper(t *testing.T) {
+	tchn, _ := toolchain.Get("gradle-wrapper")
 	assert.True(t, Java{}.worksWithToolchain(tchn))
 }
 
