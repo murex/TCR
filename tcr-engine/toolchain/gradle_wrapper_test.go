@@ -23,8 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -33,69 +31,45 @@ const (
 )
 
 func Test_gradle_wrapper_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn(gradleWrapperToolchainName))
+	assertIsABuiltInToolchain(t, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported(gradleWrapperToolchainName))
+	assertIsSupported(t, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported(gradleWrapperToolchainName))
-	assert.True(t, isSupported(strings.ToUpper(gradleWrapperToolchainName)))
-	assert.True(t, isSupported(strings.ToLower(gradleWrapperToolchainName)))
-	assert.True(t, isSupported(strings.Title(gradleWrapperToolchainName)))
+	assertNameIsNotCaseSensitive(t, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get(gradleWrapperToolchainName)
-	assert.NoError(t, err)
-	assert.Equal(t, gradleWrapperToolchainName, toolchain.GetName())
+	assertToolchainInitialization(t, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_name(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	assert.Equal(t, gradleWrapperToolchainName, toolchain.GetName())
+	assertToolchainName(t, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	assert.Equal(t, []string{"build", "-x", "test"}, toolchain.buildCommandArgs())
+	assertBuildCommandArgs(t, []string{"build", "-x", "test"}, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunBuild())
-		})
+	assertErrorWhenBuildFails(t, gradleWrapperToolchainName, testDataRootDir)
 }
 
 func Test_gradle_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	runFromDir(t, testDataDirJava,
-		func(t *testing.T) {
-			assert.NoError(t, toolchain.RunBuild())
-		})
+	assertNoErrorWhenBuildPasses(t, gradleWrapperToolchainName, testDataDirJava)
 }
 
 func Test_gradle_wrapper_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	assert.Equal(t, []string{"test"}, toolchain.testCommandArgs())
+	assertTestCommandArgs(t, []string{"test"}, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunTests())
-		})
+	assertErrorWhenTestFails(t, gradleWrapperToolchainName, testDataRootDir)
 }
 
 func Test_gradle_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	runFromDir(t, testDataDirJava,
-		func(t *testing.T) {
-			assert.NoError(t, toolchain.RunTests())
-		})
+	assertNoErrorWhenTestPasses(t, gradleWrapperToolchainName, testDataDirJava)
 }

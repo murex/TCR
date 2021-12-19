@@ -23,8 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -33,47 +31,37 @@ const (
 )
 
 func Test_gradle_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn(gradleToolchainName))
+	assertIsABuiltInToolchain(t, gradleToolchainName)
 }
 
 func Test_gradle_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported(gradleToolchainName))
+	assertIsSupported(t, gradleToolchainName)
 }
 
 func Test_gradle_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported(gradleToolchainName))
-	assert.True(t, isSupported(strings.ToUpper(gradleToolchainName)))
-	assert.True(t, isSupported(strings.ToLower(gradleToolchainName)))
-	assert.True(t, isSupported(strings.Title(gradleToolchainName)))
+	assertNameIsNotCaseSensitive(t, gradleToolchainName)
 }
 
 func Test_gradle_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get(gradleToolchainName)
-	assert.NoError(t, err)
-	assert.Equal(t, gradleToolchainName, toolchain.GetName())
+	assertToolchainInitialization(t, gradleToolchainName)
 }
 
 func Test_gradle_toolchain_name(t *testing.T) {
-	toolchain, _ := Get(gradleToolchainName)
-	assert.Equal(t, gradleToolchainName, toolchain.GetName())
+	assertToolchainName(t, gradleToolchainName)
 }
 
-func Test_gradle_toolchain_build_command_name(t *testing.T) {
-	toolchain, _ := Get(gradleToolchainName)
-	assert.Equal(t, "gradle", toolchain.buildCommandPath())
+func Test_gradle_toolchain_build_command_path(t *testing.T) {
+	assertBuildCommandPath(t, "gradle", gradleToolchainName)
 }
 
 func Test_gradle_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get(gradleToolchainName)
-	assert.Equal(t, []string{"build", "-x", "test"}, toolchain.buildCommandArgs())
+	assertBuildCommandArgs(t, []string{"build", "-x", "test"}, gradleToolchainName)
 }
 
-func Test_gradle_toolchain_test_command_name(t *testing.T) {
-	toolchain, _ := Get(gradleToolchainName)
-	assert.Equal(t, "gradle", toolchain.testCommandPath())
+func Test_gradle_toolchain_test_command_path(t *testing.T) {
+	assertTestCommandPath(t, "gradle", gradleToolchainName)
 }
 
 func Test_gradle_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get(gradleToolchainName)
-	assert.Equal(t, []string{"test"}, toolchain.testCommandArgs())
+	assertTestCommandArgs(t, []string{"test"}, gradleToolchainName)
 }

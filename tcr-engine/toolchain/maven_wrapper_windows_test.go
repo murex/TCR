@@ -23,16 +23,13 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_maven_wrapper_toolchain_build_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	assert.Equal(t, ".\\mvnw.cmd", toolchain.buildCommandPath())
+	assertBuildCommandPath(t, ".\\mvnw.cmd", mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_test_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	assert.Equal(t, ".\\mvnw.cmd", toolchain.testCommandPath())
+	assertTestCommandPath(t, ".\\mvnw.cmd", mavenWrapperToolchainName)
 }

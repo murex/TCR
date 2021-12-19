@@ -65,16 +65,6 @@ func withNoTestCommand() func(tchn *Toolchain) {
 	return func(tchn *Toolchain) { tchn.TestCommands = nil }
 }
 
-func runFromDir(t *testing.T, testDir string, testFunction func(t *testing.T)) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-	initialDir, _ := os.Getwd()
-	_ = os.Chdir(testDir)
-	testFunction(t)
-	_ = os.Chdir(initialDir)
-}
-
 func Test_does_not_support_empty_toolchain_name(t *testing.T) {
 	assert.False(t, isSupported(""))
 }
@@ -103,10 +93,7 @@ func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
 func Test_toolchain_name_is_case_insensitive(t *testing.T) {
 	const name = "miXeD-CasE"
 	_ = Register(*aToolchain(withName(name)))
-	assert.True(t, isSupported(name))
-	assert.True(t, isSupported(strings.ToUpper(name)))
-	assert.True(t, isSupported(strings.ToLower(name)))
-	assert.True(t, isSupported(strings.Title(name)))
+	assertNameIsNotCaseSensitive(t, name)
 }
 
 func Test_can_register_a_toolchain(t *testing.T) {
@@ -130,4 +117,92 @@ func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
 	const name = "no-test-command"
 	assert.Error(t, Register(*aToolchain(withName(name), withNoTestCommand())))
 	assert.False(t, isSupported(name))
+}
+
+func assertIsABuiltInToolchain(t *testing.T, name string) {
+	assert.True(t, isBuiltIn(name))
+}
+
+func assertIsSupported(t *testing.T, name string) {
+	assert.True(t, isSupported(name))
+}
+
+func assertNameIsNotCaseSensitive(t *testing.T, name string) {
+	assert.True(t, isSupported(name))
+	assert.True(t, isSupported(strings.ToUpper(name)))
+	assert.True(t, isSupported(strings.ToLower(name)))
+	assert.True(t, isSupported(strings.Title(name)))
+}
+
+func assertToolchainInitialization(t *testing.T, name string) {
+	toolchain, err := Get(name)
+	assert.NoError(t, err)
+	assert.Equal(t, name, toolchain.GetName())
+}
+
+func assertToolchainName(t *testing.T, name string) {
+	toolchain, _ := Get(name)
+	assert.Equal(t, name, toolchain.GetName())
+}
+
+func assertBuildCommandPath(t *testing.T, expected string, name string) {
+	toolchain, _ := Get(name)
+	assert.Equal(t, expected, toolchain.buildCommandPath())
+}
+
+func assertBuildCommandArgs(t *testing.T, expected []string, name string) {
+	toolchain, _ := Get(name)
+	assert.Equal(t, expected, toolchain.buildCommandArgs())
+}
+
+func assertTestCommandPath(t *testing.T, expected string, name string) {
+	toolchain, _ := Get(name)
+	assert.Equal(t, expected, toolchain.testCommandPath())
+}
+
+func assertTestCommandArgs(t *testing.T, expected []string, name string) {
+	toolchain, _ := Get(name)
+	assert.Equal(t, expected, toolchain.testCommandArgs())
+}
+
+func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {
+	toolchain, _ := Get(name)
+	runFromDir(t, workDir,
+		func(t *testing.T) {
+			assert.Error(t, toolchain.RunBuild())
+		})
+}
+
+func assertNoErrorWhenBuildPasses(t *testing.T, name string, workDir string) {
+	toolchain, _ := Get(name)
+	runFromDir(t, workDir,
+		func(t *testing.T) {
+			assert.NoError(t, toolchain.RunBuild())
+		})
+}
+
+func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
+	toolchain, _ := Get(name)
+	runFromDir(t, workDir,
+		func(t *testing.T) {
+			assert.Error(t, toolchain.RunTests())
+		})
+}
+
+func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
+	toolchain, _ := Get(name)
+	runFromDir(t, workDir,
+		func(t *testing.T) {
+			assert.NoError(t, toolchain.RunTests())
+		})
+}
+
+func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+	initialDir, _ := os.Getwd()
+	_ = os.Chdir(workDir)
+	testFunction(t)
+	_ = os.Chdir(initialDir)
 }

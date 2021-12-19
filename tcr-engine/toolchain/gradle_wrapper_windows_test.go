@@ -23,16 +23,13 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_gradle_wrapper_toolchain_build_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	assert.Equal(t, ".\\gradlew.bat", toolchain.buildCommandPath())
+	assertBuildCommandPath(t, ".\\gradlew.bat", gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_test_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(gradleWrapperToolchainName)
-	assert.Equal(t, ".\\gradlew.bat", toolchain.testCommandPath())
+	assertTestCommandPath(t, ".\\gradlew.bat", gradleWrapperToolchainName)
 }

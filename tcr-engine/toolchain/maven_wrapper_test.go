@@ -23,8 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -33,69 +31,45 @@ const (
 )
 
 func Test_maven_wrapper_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn(mavenWrapperToolchainName))
+	assertIsABuiltInToolchain(t, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported(mavenWrapperToolchainName))
+	assertIsSupported(t, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported(mavenWrapperToolchainName))
-	assert.True(t, isSupported(strings.ToUpper(mavenWrapperToolchainName)))
-	assert.True(t, isSupported(strings.ToLower(mavenWrapperToolchainName)))
-	assert.True(t, isSupported(strings.Title(mavenWrapperToolchainName)))
+	assertNameIsNotCaseSensitive(t, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get(mavenWrapperToolchainName)
-	assert.NoError(t, err)
-	assert.Equal(t, mavenWrapperToolchainName, toolchain.GetName())
+	assertToolchainInitialization(t, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_name(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	assert.Equal(t, mavenWrapperToolchainName, toolchain.GetName())
+	assertToolchainName(t, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	assert.Equal(t, []string{"test-compile"}, toolchain.buildCommandArgs())
+	assertBuildCommandArgs(t, []string{"test-compile"}, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunBuild())
-		})
+	assertErrorWhenBuildFails(t, mavenWrapperToolchainName, testDataRootDir)
 }
 
 func Test_maven_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	runFromDir(t, testDataDirJava,
-		func(t *testing.T) {
-			assert.NoError(t, toolchain.RunBuild())
-		})
+	assertNoErrorWhenBuildPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }
 
 func Test_maven_wrapper_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	assert.Equal(t, []string{"test"}, toolchain.testCommandArgs())
+	assertTestCommandArgs(t, []string{"test"}, mavenWrapperToolchainName)
 }
 
 func Test_maven_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunTests())
-		})
+	assertErrorWhenTestFails(t, mavenWrapperToolchainName, testDataRootDir)
 }
 
 func Test_maven_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	toolchain, _ := Get(mavenWrapperToolchainName)
-	runFromDir(t, testDataDirJava,
-		func(t *testing.T) {
-			assert.NoError(t, toolchain.RunTests())
-		})
+	assertNoErrorWhenTestPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }

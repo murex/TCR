@@ -23,8 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -33,47 +31,37 @@ const (
 )
 
 func Test_maven_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn(mavenToolchainName))
+	assertIsABuiltInToolchain(t, mavenToolchainName)
 }
 
 func Test_maven_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported(mavenToolchainName))
+	assertIsSupported(t, mavenToolchainName)
 }
 
 func Test_maven_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported(mavenToolchainName))
-	assert.True(t, isSupported(strings.ToUpper(mavenToolchainName)))
-	assert.True(t, isSupported(strings.ToLower(mavenToolchainName)))
-	assert.True(t, isSupported(strings.Title(mavenToolchainName)))
+	assertNameIsNotCaseSensitive(t, mavenToolchainName)
 }
 
 func Test_maven_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get(mavenToolchainName)
-	assert.NoError(t, err)
-	assert.Equal(t, mavenToolchainName, toolchain.GetName())
+	assertToolchainInitialization(t, mavenToolchainName)
 }
 
 func Test_maven_toolchain_name(t *testing.T) {
-	toolchain, _ := Get(mavenToolchainName)
-	assert.Equal(t, mavenToolchainName, toolchain.GetName())
+	assertToolchainName(t, mavenToolchainName)
 }
 
-func Test_maven_toolchain_build_command_name(t *testing.T) {
-	toolchain, _ := Get(mavenToolchainName)
-	assert.Equal(t, "mvn", toolchain.buildCommandPath())
+func Test_maven_toolchain_build_command_path(t *testing.T) {
+	assertBuildCommandPath(t, "mvn", mavenToolchainName)
 }
 
 func Test_maven_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get(mavenToolchainName)
-	assert.Equal(t, []string{"test-compile"}, toolchain.buildCommandArgs())
+	assertBuildCommandArgs(t, []string{"test-compile"}, mavenToolchainName)
 }
 
-func Test_maven_toolchain_test_command_name(t *testing.T) {
-	toolchain, _ := Get(mavenToolchainName)
-	assert.Equal(t, "mvn", toolchain.testCommandPath())
+func Test_maven_toolchain_test_command_path(t *testing.T) {
+	assertTestCommandPath(t, "mvn", mavenToolchainName)
 }
 
 func Test_maven_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get(mavenToolchainName)
-	assert.Equal(t, []string{"test"}, toolchain.testCommandArgs())
+	assertTestCommandArgs(t, []string{"test"}, mavenToolchainName)
 }
