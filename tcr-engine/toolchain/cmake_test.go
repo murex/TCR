@@ -23,8 +23,6 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -33,100 +31,49 @@ const (
 )
 
 func Test_cmake_is_a_built_in_toolchain(t *testing.T) {
-	assert.True(t, isBuiltIn(cmakeToolchainName))
+	assertIsABuiltInToolchain(t, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_is_supported(t *testing.T) {
-	assert.True(t, isSupported(cmakeToolchainName))
+	assertIsSupported(t, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_name_is_case_insensitive(t *testing.T) {
-	assert.True(t, isSupported(cmakeToolchainName))
-	assert.True(t, isSupported(strings.ToUpper(cmakeToolchainName)))
-	assert.True(t, isSupported(strings.ToLower(cmakeToolchainName)))
-	assert.True(t, isSupported(strings.Title(cmakeToolchainName)))
+	assertNameIsNotCaseSensitive(t, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_initialization(t *testing.T) {
-	toolchain, err := Get(cmakeToolchainName)
-	assert.NoError(t, err)
-	assert.Equal(t, cmakeToolchainName, toolchain.GetName())
+	assertToolchainInitialization(t, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_name(t *testing.T) {
-	toolchain, _ := Get(cmakeToolchainName)
-	assert.Equal(t, cmakeToolchainName, toolchain.GetName())
+	assertToolchainName(t, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
-	toolchain, _ := Get(cmakeToolchainName)
-	assert.Equal(t, []string{
-		"--build", "build",
-		"--config", "Debug",
-	}, toolchain.buildCommandArgs())
+	assertBuildCommandArgs(t, []string{"--build", "build", "--config", "Debug"}, cmakeToolchainName)
 }
-
-func Test_cmake_toolchain_returns_error_when_build_fails(t *testing.T) {
-	// Note: this passes not due to cmake return value, but due to absence of cmake command
-	toolchain, _ := Get(cmakeToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunBuild())
-		})
-}
-
-// TODO Figure out a way to provide a cmake wrapper
-//func test_cmake_toolchain_returns_ok_when_build_passes(t *testing.T) {
-//  toolchain, _ := Get(cmakeToolchainName)
-//	runFromDir(t, testDataDirCpp,
-//		func(t *testing.T) {
-//			assert.NoError(t, toolchain.RunBuild())
-//		})
-//}
 
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
-	toolchain, _ := Get(cmakeToolchainName)
-	assert.Equal(t, []string{
+	assertTestCommandArgs(t, []string{
 		"--output-on-failure",
 		"--test-dir", "build",
 		"--build-config", "Debug",
-	}, toolchain.testCommandArgs())
+	}, cmakeToolchainName)
 }
-
-func Test_cmake_toolchain_returns_error_when_tests_fail(t *testing.T) {
-	// Note: this passes not due to ctest return value, but due to absence of ctest command
-	toolchain, _ := Get(cmakeToolchainName)
-	runFromDir(t, testDataRootDir,
-		func(t *testing.T) {
-			assert.Error(t, toolchain.RunTests())
-		})
-}
-
-// TODO Figure out a way to provide a cmake wrapper
-//func Test_cmake_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-//  toolchain, _ := Get(cmakeToolchainName)
-//	runFromDir(t, testDataDirCpp,
-//		func(t *testing.T) {
-//			assert.NoError(t, toolchain.RunTests())
-//		})
-//}
 
 func Test_cmake_toolchain_supported_platforms(t *testing.T) {
 	// Cf. https://cmake.org/download/ for list of cmake supported platforms
-	toolchain, _ := Get(cmakeToolchainName)
 
-	// Windows platforms
-	assert.True(t, toolchain.runsOnPlatform(OsWindows, Arch386))
-	assert.True(t, toolchain.runsOnPlatform(OsWindows, ArchAmd64))
-	assert.False(t, toolchain.runsOnPlatform(OsWindows, ArchArm64))
+	// Windows supported platforms
+	assertRunsOnPlatform(t, cmakeToolchainName, OsWindows, Arch386)
+	assertRunsOnPlatform(t, cmakeToolchainName, OsWindows, ArchAmd64)
 
-	// Darwin platforms
-	assert.False(t, toolchain.runsOnPlatform(OsDarwin, Arch386))
-	assert.True(t, toolchain.runsOnPlatform(OsDarwin, ArchAmd64))
-	assert.True(t, toolchain.runsOnPlatform(OsDarwin, ArchArm64))
+	// Darwin supported platforms
+	assertRunsOnPlatform(t, cmakeToolchainName, OsDarwin, ArchAmd64)
+	assertRunsOnPlatform(t, cmakeToolchainName, OsDarwin, ArchArm64)
 
-	// Linux platforms
-	assert.False(t, toolchain.runsOnPlatform(OsLinux, Arch386))
-	assert.True(t, toolchain.runsOnPlatform(OsLinux, ArchAmd64))
-	assert.True(t, toolchain.runsOnPlatform(OsLinux, ArchArm64))
+	// Linux supported platforms
+	assertRunsOnPlatform(t, cmakeToolchainName, OsLinux, ArchAmd64)
+	assertRunsOnPlatform(t, cmakeToolchainName, OsLinux, ArchArm64)
 }

@@ -23,35 +23,29 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/stretchr/testify/assert"
 	"runtime"
 	"testing"
 )
 
 func Test_cmake_toolchain_build_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(cmakeToolchainName)
-	var expected string
 	switch runtime.GOARCH {
 	case ArchAmd64:
-		expected = "build\\cmake\\cmake-windows-x86_64\\bin\\cmake.exe"
+		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\cmake.exe", cmakeToolchainName)
 	case Arch386:
-		expected = "build\\cmake\\cmake-windows-i386\\bin\\cmake.exe"
+		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\cmake.exe", cmakeToolchainName)
 	default:
 		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
 	}
-	assert.Equal(t, expected, toolchain.buildCommandPath())
+
 }
 
 func Test_cmake_toolchain_test_command_path_on_windows(t *testing.T) {
-	toolchain, _ := Get(cmakeToolchainName)
-	var expected string
 	switch runtime.GOARCH {
 	case ArchAmd64:
-		expected = "build\\cmake\\cmake-windows-x86_64\\bin\\ctest.exe"
+		assertTestCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\ctest.exe", cmakeToolchainName)
 	case Arch386:
-		expected = "build\\cmake\\cmake-windows-i386\\bin\\ctest.exe"
+		assertTestCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\ctest.exe", cmakeToolchainName)
 	default:
 		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
 	}
-	assert.Equal(t, expected, toolchain.testCommandPath())
 }

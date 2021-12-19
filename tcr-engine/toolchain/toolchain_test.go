@@ -206,3 +206,8 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 	testFunction(t)
 	_ = os.Chdir(initialDir)
 }
+
+func assertRunsOnPlatform(t *testing.T, name string, osName OsName, archName ArchName) {
+	toolchain, _ := Get(name)
+	assert.True(t, toolchain.runsOnPlatform(osName, archName))
+}
