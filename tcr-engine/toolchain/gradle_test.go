@@ -65,3 +65,7 @@ func Test_gradle_toolchain_test_command_path(t *testing.T) {
 func Test_gradle_toolchain_test_command_args(t *testing.T) {
 	assertTestCommandArgs(t, []string{"test"}, gradleToolchainName)
 }
+
+func Test_gradle_toolchain_supported_platforms(t *testing.T) {
+	assertRunsOnAllOsWithAmd64(t, gradleToolchainName)
+}

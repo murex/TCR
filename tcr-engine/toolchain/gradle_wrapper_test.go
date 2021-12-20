@@ -73,3 +73,7 @@ func Test_gradle_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
 func Test_gradle_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
 	assertNoErrorWhenTestPasses(t, gradleWrapperToolchainName, testDataDirJava)
 }
+
+func Test_gradle_wrapper_toolchain_supported_platforms(t *testing.T) {
+	assertRunsOnAllOsWithAmd64(t, gradleWrapperToolchainName)
+}

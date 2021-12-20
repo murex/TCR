@@ -65,3 +65,7 @@ func Test_maven_toolchain_test_command_path(t *testing.T) {
 func Test_maven_toolchain_test_command_args(t *testing.T) {
 	assertTestCommandArgs(t, []string{"test"}, mavenToolchainName)
 }
+
+func Test_maven_toolchain_supported_platforms(t *testing.T) {
+	assertRunsOnAllOsWithAmd64(t, mavenToolchainName)
+}

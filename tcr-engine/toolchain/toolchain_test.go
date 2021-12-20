@@ -207,6 +207,13 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 	_ = os.Chdir(initialDir)
 }
 
+func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {
+	// We don't check all platforms, just verifying that at least all OS's with amd64 are supported
+	for _, osName := range getAllOsNames() {
+		assertRunsOnPlatform(t, name, osName, ArchAmd64)
+	}
+}
+
 func assertRunsOnPlatform(t *testing.T, name string, osName OsName, archName ArchName) {
 	toolchain, _ := Get(name)
 	assert.True(t, toolchain.runsOnPlatform(osName, archName))
