@@ -74,7 +74,7 @@ func Test_does_not_support_unregistered_toolchain_name(t *testing.T) {
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	toolchain, err := Get("dummy")
+	toolchain, err := Get("dummy-toolchain")
 	assert.Error(t, err)
 	assert.Zero(t, toolchain)
 }

@@ -29,7 +29,7 @@ import (
 )
 
 type (
-	// Toolchain defines the structure of a toolchain.
+	// Toolchain defines the data structure of a toolchain.
 	// - Name is the name of the toolchain, it must be unique in the list of available toolchains
 	// - BuildCommands is a table of commands that can be called when running the build. The first one
 	// matching the current OS and configuration will be the one to be called.
@@ -134,7 +134,6 @@ func addBuiltIn(tchn Toolchain) error {
 	}
 	builtIn[strings.ToLower(tchn.Name)] = tchn
 	return Register(tchn)
-
 }
 
 // GetName provides the name of the toolchain
