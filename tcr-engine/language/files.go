@@ -23,7 +23,9 @@ SOFTWARE.
 package language
 
 import (
+	"path"
 	"path/filepath"
+	"strings"
 )
 
 type (
@@ -39,5 +41,5 @@ func toLocalPath(input string) string {
 }
 
 func toSlashedPath(input string) string {
-	return filepath.ToSlash(input)
+	return path.Join(strings.Split(input, "\\")...)
 }
