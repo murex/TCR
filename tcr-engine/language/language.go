@@ -189,7 +189,7 @@ func (lang Language) DirsToWatch(baseDir string) []string {
 	dirList := append(lang.SrcFiles.Directories, lang.TestFiles.Directories...)
 
 	for i := 0; i < len(dirList); i++ {
-		dirList[i] = toLocalPath(filepath.Join(baseDir, dirList[i]))
+		dirList[i] = filepath.Join(baseDir, toLocalPath(dirList[i]))
 	}
 	//report.PostInfo(dirList)
 	return dirList

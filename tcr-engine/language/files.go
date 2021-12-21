@@ -37,7 +37,7 @@ type (
 )
 
 func toLocalPath(input string) string {
-	return filepath.FromSlash(input)
+	return filepath.Join(strings.Split(toSlashedPath(input), "/")...)
 }
 
 func toSlashedPath(input string) string {
