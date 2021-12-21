@@ -24,6 +24,11 @@ SOFTWARE.
 
 package language
 
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
 func Test_convert_backslashed_path_to_local_path(t *testing.T) {
 	var input = "some\\path\\with\\backslash"
 	var expected = "some/path/with/backslash"
