@@ -44,7 +44,7 @@ var (
 	mode            runmode.RunMode
 	uitf            ui.UserInterface
 	git             vcs.GitInterface
-	lang            language.Language
+	lang            *language.Language
 	tchn            *toolchain.Toolchain
 	sourceTree      filesystem.SourceTree
 	pollingPeriod   time.Duration
@@ -68,7 +68,7 @@ func Init(u ui.UserInterface, params Params) {
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err)
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
-	lang, err = language.New(params.Language, sourceTree.GetBaseDir())
+	lang, err = language.GetLanguage(params.Language, sourceTree.GetBaseDir())
 	handleError(err)
 	tchn, err = lang.GetToolchain(params.Toolchain)
 	handleError(err)
@@ -213,7 +213,7 @@ func fromBirthTillDeath(
 func waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
 	return sourceTree.Watch(
-		language.DirsToWatch(sourceTree.GetBaseDir(), lang),
+		lang.DirsToWatch(sourceTree.GetBaseDir()),
 		lang.IsSrcFile,
 		interrupt)
 }
@@ -255,6 +255,9 @@ func commit() {
 
 func revert() {
 	// TODO Make revert messages more meaningful when only test code has changed
+
+	// TODO Will probably need to do a file per file revert for languages such as Go where src and test files are together in the same directory
+
 	report.PostWarning("Reverting changes")
 	for _, dir := range lang.SrcDirs() {
 		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
@@ -265,7 +268,7 @@ func revert() {
 // Used mainly by the user interface packages to retrieve and display this information
 func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	d = sourceTree.GetBaseDir()
-	l = lang.Name()
+	l = lang.GetName()
 	t = tchn.GetName()
 	ap = git.IsPushEnabled()
 	b = git.WorkingBranch()

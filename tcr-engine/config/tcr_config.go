@@ -91,8 +91,9 @@ func Init() {
 		trace("No configuration file found")
 	}
 
-	// initialize toolchain configuration
+	// initialize toolchains and languages configuration
 	initToolchainConfig()
+	initLanguageConfig()
 }
 
 func initConfigDirPath() {
@@ -129,8 +130,9 @@ func Save() {
 		}
 	}
 
-	// Save toolchain configurations
+	// Save toolchains and languages configurations
 	saveToolchainConfigs()
+	saveLanguageConfigs()
 }
 
 // Reset resets TCR configuration to default value
@@ -138,6 +140,7 @@ func Reset() {
 	trace("Resetting configuration to default values")
 	Config.reset()
 	resetToolchainConfigs()
+	resetLanguageConfigs()
 	Save()
 }
 
@@ -145,9 +148,13 @@ func Reset() {
 func Show() {
 	keys := viper.AllKeys()
 	sort.Strings(keys)
+	trace()
+	trace("TCR configuration:")
 	for _, key := range keys {
 		trace("- ", key, ": ", viper.Get(key))
 	}
+	showToolchainConfigs()
+	showLanguageConfigs()
 }
 
 func trace(a ...interface{}) {

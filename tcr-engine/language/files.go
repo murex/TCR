@@ -22,22 +22,22 @@ SOFTWARE.
 
 package language
 
-func init() {
-	_ = addBuiltIn(
-		Language{
-			Name: "java",
-			Toolchains: Toolchains{
-				Default:    "gradle-wrapper",
-				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"},
-			},
-			SrcFiles: Files{
-				Directories: []string{"src/main"},
-				Filters:     []string{".java"},
-			},
-			TestFiles: Files{
-				Directories: []string{"src/test"},
-				Filters:     []string{".java"},
-			},
-		},
-	)
+import (
+	"path/filepath"
+)
+
+type (
+	// Files defines the structure for files and directories related to a language
+	Files struct {
+		Directories []string
+		Filters     []string
+	}
+)
+
+func toLocalPath(input string) string {
+	return filepath.FromSlash(input)
+}
+
+func toSlashedPath(input string) string {
+	return filepath.ToSlash(input)
 }

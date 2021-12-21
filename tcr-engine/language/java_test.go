@@ -22,43 +22,50 @@ SOFTWARE.
 
 package language
 
-import (
-	"github.com/murex/tcr/tcr-engine/toolchain"
-	"github.com/stretchr/testify/assert"
+import "testing"
 
-	"path/filepath"
-	"testing"
+const (
+	javaLanguageName = "java"
 )
 
+func Test_java_is_a_built_in_language(t *testing.T) {
+	assertIsABuiltInLanguage(t, javaLanguageName)
+}
+
 func Test_java_language_is_supported(t *testing.T) {
-	assert.True(t, isSupported("java"))
-	assert.True(t, isSupported("Java"))
-	assert.True(t, isSupported("JAVA"))
-}
-
-func Test_get_java_language_instance(t *testing.T) {
-	language, err := getLanguage("java")
-	assert.Equal(t, Java{}, language)
-	assert.Zero(t, err)
-}
-
-func Test_detect_java_language(t *testing.T) {
-	dirPath := filepath.Join("dummy", "java")
-	language, err := detectLanguage(dirPath)
-	assert.Equal(t, Java{}, language)
-	assert.Zero(t, err)
+	assertIsSupported(t, javaLanguageName)
 }
 
 func Test_java_language_name(t *testing.T) {
-	assert.Equal(t, "java", Java{}.Name())
+	assertLanguageName(t, javaLanguageName)
+}
+
+func Test_java_language_name_is_case_insensitive(t *testing.T) {
+	assertNameIsNotCaseSensitive(t, javaLanguageName)
+}
+
+func Test_java_language_initialization(t *testing.T) {
+	assertLanguageInitialization(t, javaLanguageName)
+}
+
+func Test_fallbacks_on_java_dir_name_if_language_is_not_specified(t *testing.T) {
+	assertFallbacksOnDirNameIfLanguageIsNotSpecified(t, javaLanguageName)
 }
 
 func Test_list_of_dirs_to_watch_in_java(t *testing.T) {
-	var expected = []string{
-		filepath.Join("src", "main"),
-		filepath.Join("src", "test"),
-	}
-	assert.Equal(t, expected, DirsToWatch("", Java{}))
+	assertListOfDirsToWatch(t, []string{"src/main", "src/test"}, javaLanguageName)
+}
+
+func Test_java_default_toolchain(t *testing.T) {
+	assertDefaultToolchain(t, "gradle-wrapper", javaLanguageName)
+}
+
+func Test_java_compatible_toolchains(t *testing.T) {
+	assertCompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, javaLanguageName)
+}
+
+func Test_java_incompatible_toolchains(t *testing.T) {
+	assertIncompatibleToolchains(t, []string{"cmake"}, javaLanguageName)
 }
 
 func Test_filenames_recognized_as_java_src(t *testing.T) {
@@ -74,35 +81,5 @@ func Test_filenames_recognized_as_java_src(t *testing.T) {
 		{"Dummy.cpp", false},
 		{"Dummy.sh", false},
 	}
-	assertFilenames(t, expected, Java{})
-}
-
-func Test_default_toolchain_for_java(t *testing.T) {
-	expected, _ := toolchain.Get("gradle-wrapper")
-	assert.Equal(t, expected, Java{}.defaultToolchain())
-}
-
-func Test_java_works_with_gradle(t *testing.T) {
-	tchn, _ := toolchain.Get("gradle")
-	assert.True(t, Java{}.worksWithToolchain(tchn))
-}
-
-func Test_java_works_with_gradle_wrapper(t *testing.T) {
-	tchn, _ := toolchain.Get("gradle-wrapper")
-	assert.True(t, Java{}.worksWithToolchain(tchn))
-}
-
-func Test_java_works_with_maven(t *testing.T) {
-	tchn, _ := toolchain.Get("maven")
-	assert.True(t, Java{}.worksWithToolchain(tchn))
-}
-
-func Test_java_works_with_maven_wrapper(t *testing.T) {
-	tchn, _ := toolchain.Get("maven-wrapper")
-	assert.True(t, Java{}.worksWithToolchain(tchn))
-}
-
-func Test_java_does_not_work_with_cmake(t *testing.T) {
-	tchn, _ := toolchain.Get("cmake")
-	assert.False(t, Java{}.worksWithToolchain(tchn))
+	assertFilenamesMatching(t, expected, javaLanguageName)
 }

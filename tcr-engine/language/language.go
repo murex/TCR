@@ -30,118 +30,227 @@ import (
 	"strings"
 )
 
-// Language is the interface that any supported language implementation must comply with
-// in order to be used by TCR engine
-type Language interface {
-	Name() string
-	SrcDirs() []string
-	TestDirs() []string
-	IsSrcFile(filename string) bool
-	defaultToolchain() *toolchain.Toolchain
-	worksWithToolchain(t *toolchain.Toolchain) bool
-	GetToolchain(t string) (*toolchain.Toolchain, error)
-}
+type (
+	// Toolchains defines the structure for toolchains related to a language
+	Toolchains struct {
+		Default    string
+		Compatible []string
+	}
 
-var (
-	supportedLanguages = make(map[string]Language)
+	// Language defines the data structure of a language.
+	// - Name is the name of the language, it must be unique in the list of available languages
+	Language struct {
+		Name       string
+		Toolchains Toolchains
+		SrcFiles   Files
+		TestFiles  Files
+	}
 )
 
-func init() {
-	addSupportedLanguage(Java{})
-	addSupportedLanguage(Cpp{})
-}
+var (
+	builtIn    = make(map[string]Language)
+	registered = make(map[string]Language)
+)
 
-func addSupportedLanguage(lang Language) {
-	supportedLanguages[strings.ToLower(lang.Name())] = lang
+// Register adds the provided language to the list of supported languages
+func Register(lang Language) error {
+	if err := lang.checkName(); err != nil {
+		return err
+	}
+	if err := lang.checkCompatibleToolchains(); err != nil {
+		return err
+	}
+	if err := lang.checkDefaultToolchain(); err != nil {
+		return err
+	}
+	registered[strings.ToLower(lang.GetName())] = lang
+	return nil
 }
 
 func isSupported(name string) bool {
-	_, found := supportedLanguages[strings.ToLower(name)]
+	_, found := registered[strings.ToLower(name)]
 	return found
 }
 
-func getLanguage(name string) (Language, error) {
-	language, found := supportedLanguages[strings.ToLower(name)]
+// Get returns the language instance with the provided name
+// The language name is case insensitive.
+func Get(name string) (*Language, error) {
+	if name == "" {
+		return nil, errors.New("language name not provided")
+	}
+	lang, found := registered[strings.ToLower(name)]
 	if found {
-		return language, nil
+		return &lang, nil
 	}
 	return nil, errors.New(fmt.Sprint("language not supported: ", name))
 }
 
-// New returns the language to be used in current session. If no value is provided
+// Names returns the list of available language names
+func Names() []string {
+	var names []string
+	for _, lang := range registered {
+		names = append(names, lang.Name)
+	}
+	return names
+}
+
+// Reset resets the language with the provided name to its default values
+func Reset(name string) {
+	_, found := registered[strings.ToLower(name)]
+	if found && isBuiltIn(name) {
+		_ = Register(*getBuiltIn(name))
+	}
+}
+
+func getBuiltIn(name string) *Language {
+	var builtIn, _ = builtIn[strings.ToLower(name)]
+	return &builtIn
+}
+
+func isBuiltIn(name string) bool {
+	_, found := builtIn[strings.ToLower(name)]
+	return found
+}
+
+func addBuiltIn(lang Language) error {
+	if lang.Name == "" {
+		return errors.New("language name cannot be an empty string")
+	}
+	builtIn[strings.ToLower(lang.Name)] = lang
+	return Register(lang)
+}
+
+// GetName provides the name of the toolchain
+func (lang Language) GetName() string {
+	return lang.Name
+}
+
+// GetLanguage returns the language to be used in current session. If no value is provided
 // for language (e.g. empty string), we try to detect the language based on the directory name.
 // Both name and baseDir are case insensitive
-func New(name string, baseDir string) (Language, error) {
+func GetLanguage(name string, baseDir string) (*Language, error) {
 	if name != "" {
-		return getLanguage(name)
+		return getRegisteredLanguage(name)
 	}
-	return detectLanguage(baseDir)
-
+	return detectLanguageFromDirName(baseDir)
 }
 
-// detectLanguage is used to identify the language used in the provided directory. The current implementation
+func getRegisteredLanguage(name string) (*Language, error) {
+	language, found := registered[strings.ToLower(name)]
+	if found {
+		return &language, nil
+	}
+	return nil, errors.New(fmt.Sprint("language not supported: ", name))
+}
+
+// detectLanguageFromDirName is used to identify the language used in the provided directory. The current implementation
 // simply looks at the name of the directory and checks if it matches with one of the supported languages
-func detectLanguage(baseDir string) (Language, error) {
-	return getLanguage(filepath.Base(baseDir))
+func detectLanguageFromDirName(baseDir string) (*Language, error) {
+	return getRegisteredLanguage(filepath.Base(baseDir))
 }
 
-// DirsToWatch returns the list of directories that TCR engine needs to watch for the provided language
-func DirsToWatch(baseDir string, lang Language) []string {
-	dirList := append(lang.SrcDirs(), lang.TestDirs()...)
+func (lang Language) checkName() error {
+	if lang.Name == "" {
+		return errors.New("language name is empty")
+	}
+	return nil
+}
+
+func (lang Language) checkCompatibleToolchains() error {
+	if lang.Toolchains.Compatible == nil {
+		return errors.New("language has no compatible toolchain defined")
+	}
+	return nil
+}
+
+func (lang Language) checkDefaultToolchain() error {
+	if lang.Toolchains.Default == "" {
+		return errors.New("language has no default toolchain defined")
+	} else if !lang.worksWithToolchain(lang.Toolchains.Default) {
+		return errors.New("language's default toolchain " + lang.Toolchains.Default + " is not listed as compatible")
+	}
+	return nil
+}
+
+// IsSrcFile returns true if the provided filename is recognized as a source file for this language
+func (lang Language) IsSrcFile(filename string) bool {
+	extension := strings.ToLower(filepath.Ext(filename))
+	for _, filter := range lang.SrcFiles.Filters {
+		// TODO replace strict equality with pattern matching
+		if strings.ToLower(filter) == extension {
+			return true
+		}
+	}
+	return false
+}
+
+// DirsToWatch returns the list of directories that TCR engine needs to watch for this language
+func (lang Language) DirsToWatch(baseDir string) []string {
+	dirList := append(lang.SrcFiles.Directories, lang.TestFiles.Directories...)
+
 	for i := 0; i < len(dirList); i++ {
-		dirList[i] = filepath.Join(baseDir, dirList[i])
+		dirList[i] = toLocalPath(filepath.Join(baseDir, dirList[i]))
 	}
 	//report.PostInfo(dirList)
 	return dirList
 }
 
-func getToolchain(lang Language, toolchainName string) (*toolchain.Toolchain, error) {
-	var tchn *toolchain.Toolchain
-	var err error
-
+// GetToolchain returns the toolchain instance for this language.
+// - If toolchainName is provided and is compatible with this language, it will be returned.
+// - If toolchainName is provided but is not compatible with this language, an error is returned.
+// - If toolchainName is not provided, the language's default toolchain is returned.
+func (lang Language) GetToolchain(toolchainName string) (tchn *toolchain.Toolchain, err error) {
 	// We first retrieve the toolchain
 	if toolchainName != "" {
+		// If toolchain is specified, we try to get it
 		tchn, err = toolchain.Get(toolchainName)
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		// If no toolchain is specified, we use the default toolchain for this language
-		tchn = lang.defaultToolchain()
+		tchn, err = toolchain.Get(lang.Toolchains.Default)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Then we check language/toolchain compatibility
-	comp, err := verifyCompatibility(lang, tchn)
+	comp, err := lang.verifyCompatibility(tchn)
 	if !comp || err != nil {
 		return nil, err
 	}
 	return tchn, nil
 }
 
-func verifyCompatibility(lang Language, tchn *toolchain.Toolchain) (bool, error) {
-	if tchn == nil || lang == nil {
-		return false, errors.New("toolchain and/or language is unknown")
+func (lang Language) verifyCompatibility(tchn *toolchain.Toolchain) (bool, error) {
+	if tchn == nil {
+		return false, errors.New("toolchain is unknown")
 	}
-	if !lang.worksWithToolchain(tchn) {
+	if !lang.worksWithToolchain(tchn.GetName()) {
 		return false, fmt.Errorf(
-			"%v toolchain does not support %v language",
-			tchn.GetName(), lang.Name(),
+			"%v toolchain is not compatible with %v language",
+			tchn.GetName(), lang.GetName(),
 		)
 	}
 	return true, nil
 }
 
-//func setDefaultToolchain(lang language.Language, tchn TchnInterface) {
-//	defaultToolchains[lang] = tchn
-//}
-//
-//func getDefaultToolchain(lang language.Language) (TchnInterface, error) {
-//	if lang == nil {
-//		return nil, errors.New("language is not defined")
-//	}
-//	tchn, found := defaultToolchains[lang]
-//	if found {
-//		return tchn, nil
-//	}
-//	return nil, errors.New(fmt.Sprint("no supported toolchain for ", lang.Name(), " language"))
-//}
+func (lang Language) worksWithToolchain(toolchainName string) bool {
+	for _, compatible := range lang.Toolchains.Compatible {
+		if compatible == toolchainName {
+			return true
+		}
+	}
+	return false
+}
+
+// SrcDirs returns the list of subdirectories that may contain source files for this language
+func (lang Language) SrcDirs() []string {
+	return lang.SrcFiles.Directories
+}
+
+// TestDirs returns the list of subdirectories that may contain test files for this language
+func (lang Language) TestDirs() []string {
+	return lang.TestFiles.Directories
+}

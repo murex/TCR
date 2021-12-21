@@ -23,43 +23,51 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/tcr-engine/toolchain"
-	"github.com/stretchr/testify/assert"
-
-	"path/filepath"
 	"testing"
 )
 
+const (
+	cppLanguageName = "cpp"
+)
+
+func Test_cpp_is_a_built_in_language(t *testing.T) {
+	assertIsABuiltInLanguage(t, cppLanguageName)
+}
+
 func Test_cpp_language_is_supported(t *testing.T) {
-	assert.True(t, isSupported("cpp"))
-	assert.True(t, isSupported("Cpp"))
-	assert.True(t, isSupported("CPP"))
-}
-
-func Test_get_cpp_language_instance(t *testing.T) {
-	language, err := getLanguage("cpp")
-	assert.Equal(t, Cpp{}, language)
-	assert.Zero(t, err)
-}
-
-func Test_detect_cpp_language(t *testing.T) {
-	dirPath := filepath.Join("dummy", "cpp")
-	language, err := detectLanguage(dirPath)
-	assert.Equal(t, Cpp{}, language)
-	assert.Zero(t, err)
+	assertIsSupported(t, cppLanguageName)
 }
 
 func Test_cpp_language_name(t *testing.T) {
-	assert.Equal(t, "cpp", Cpp{}.Name())
+	assertLanguageName(t, cppLanguageName)
+}
+
+func Test_cpp_language_name_is_case_insensitive(t *testing.T) {
+	assertNameIsNotCaseSensitive(t, cppLanguageName)
+}
+
+func Test_cpp_language_initialization(t *testing.T) {
+	assertLanguageInitialization(t, cppLanguageName)
+}
+
+func Test_fallbacks_on_cpp_dir_name_if_language_is_not_specified(t *testing.T) {
+	assertFallbacksOnDirNameIfLanguageIsNotSpecified(t, cppLanguageName)
 }
 
 func Test_list_of_dirs_to_watch_in_cpp(t *testing.T) {
-	var expected = []string{
-		filepath.Join("src"),
-		filepath.Join("include"),
-		filepath.Join("test"),
-	}
-	assert.Equal(t, expected, DirsToWatch("", Cpp{}))
+	assertListOfDirsToWatch(t, []string{"src", "include", "test"}, cppLanguageName)
+}
+
+func Test_cpp_default_toolchain(t *testing.T) {
+	assertDefaultToolchain(t, "cmake", cppLanguageName)
+}
+
+func Test_cpp_compatible_toolchains(t *testing.T) {
+	assertCompatibleToolchains(t, []string{"cmake"}, cppLanguageName)
+}
+
+func Test_cpp_incompatible_toolchains(t *testing.T) {
+	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, cppLanguageName)
 }
 
 func Test_filenames_recognized_as_cpp_src(t *testing.T) {
@@ -106,35 +114,5 @@ func Test_filenames_recognized_as_cpp_src(t *testing.T) {
 		{"Dummy.sh", false},
 		{"Dummy.swp", false},
 	}
-	assertFilenames(t, expected, Cpp{})
-}
-
-func Test_default_toolchain_for_cpp(t *testing.T) {
-	expected, _ := toolchain.Get("cmake")
-	assert.Equal(t, expected, Cpp{}.defaultToolchain())
-}
-
-func Test_cpp_works_with_cmake(t *testing.T) {
-	tchn, _ := toolchain.Get("cmake")
-	assert.True(t, Cpp{}.worksWithToolchain(tchn))
-}
-
-func Test_cpp_does_not_work_with_gradle(t *testing.T) {
-	tchn, _ := toolchain.Get("gradle")
-	assert.False(t, Cpp{}.worksWithToolchain(tchn))
-}
-
-func Test_cpp_does_not_work_with_gradle_wrapper(t *testing.T) {
-	tchn, _ := toolchain.Get("gradle-wrapper")
-	assert.False(t, Cpp{}.worksWithToolchain(tchn))
-}
-
-func Test_cpp_does_not_work_with_maven(t *testing.T) {
-	tchn, _ := toolchain.Get("maven")
-	assert.False(t, Cpp{}.worksWithToolchain(tchn))
-}
-
-func Test_cpp_does_not_work_with_maven_wrapper(t *testing.T) {
-	tchn, _ := toolchain.Get("maven-wrapper")
-	assert.False(t, Cpp{}.worksWithToolchain(tchn))
+	assertFilenamesMatching(t, expected, cppLanguageName)
 }

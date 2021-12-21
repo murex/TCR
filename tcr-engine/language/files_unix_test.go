@@ -1,3 +1,5 @@
+//go:build !windows
+
 /*
 Copyright (c) 2021 Murex
 
@@ -22,22 +24,14 @@ SOFTWARE.
 
 package language
 
-func init() {
-	_ = addBuiltIn(
-		Language{
-			Name: "java",
-			Toolchains: Toolchains{
-				Default:    "gradle-wrapper",
-				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"},
-			},
-			SrcFiles: Files{
-				Directories: []string{"src/main"},
-				Filters:     []string{".java"},
-			},
-			TestFiles: Files{
-				Directories: []string{"src/test"},
-				Filters:     []string{".java"},
-			},
-		},
-	)
+func Test_convert_backslashed_path_to_local_path(t *testing.T) {
+	var input = "some\\path\\with\\backslash"
+	var expected = "some/path/with/backslash"
+	assert.Equal(t, expected, toLocalPath(input))
+}
+
+func Test_convert_slashed_path_to_local_path(t *testing.T) {
+	var input = "some/path/with/slash"
+	var expected = "some/path/with/slash"
+	assert.Equal(t, expected, toLocalPath(input))
 }

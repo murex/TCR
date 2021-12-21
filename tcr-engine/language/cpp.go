@@ -22,68 +22,22 @@ SOFTWARE.
 
 package language
 
-import (
-	"github.com/murex/tcr/tcr-engine/toolchain"
-	"path/filepath"
-	"strings"
-)
-
-// Cpp is the language implementation for C++
-type Cpp struct {
-}
-
-// GetToolchain returns the toolchain instance for the provided name.
-// If name is empty, returns C++ default toolchain.
-// If name designs a toolchain not compatible with C++, returns an error.
-func (lang Cpp) GetToolchain(t string) (*toolchain.Toolchain, error) {
-	return getToolchain(lang, t)
-}
-
-func (lang Cpp) worksWithToolchain(t *toolchain.Toolchain) bool {
-	switch t.GetName() {
-	case "cmake":
-		return true
-	default:
-		return false
-	}
-}
-
-func (lang Cpp) defaultToolchain() *toolchain.Toolchain {
-	tchn, _ := toolchain.Get("cmake")
-	return tchn
-}
-
-// Name returns the language name. This name is used to detect if a directory contains Cpp files
-func (lang Cpp) Name() string {
-	return "cpp"
-}
-
-// SrcDirs returns the list of subdirectories that may contain Cpp source files
-func (lang Cpp) SrcDirs() []string {
-	return []string{
-		filepath.Join("src"),
-		filepath.Join("include"),
-	}
-}
-
-// TestDirs returns the list of subdirectories that may contain Cpp test files
-func (lang Cpp) TestDirs() []string {
-	return []string{
-		filepath.Join("test"),
-	}
-}
-
-// IsSrcFile returns true if the provided filename is recognized as a Cpp source file
-func (lang Cpp) IsSrcFile(filename string) bool {
-	extension := filepath.Ext(filename)
-	switch strings.ToLower(extension) {
-	case ".cpp", ".hpp":
-		return true
-	case ".c", ".h":
-		return true
-	case ".cc", ".hh":
-		return true
-	default:
-		return false
-	}
+func init() {
+	_ = addBuiltIn(
+		Language{
+			Name: "cpp",
+			Toolchains: Toolchains{
+				Default:    "cmake",
+				Compatible: []string{"cmake"},
+			},
+			SrcFiles: Files{
+				Directories: []string{"src", "include"},
+				Filters:     []string{".cpp", ".hpp", ".c", ".h", ".cc", ".hh"},
+			},
+			TestFiles: Files{
+				Directories: []string{"test"},
+				Filters:     []string{".cpp", ".hpp", ".c", ".h", ".cc", ".hh"},
+			},
+		},
+	)
 }

@@ -23,16 +23,13 @@ SOFTWARE.
 package config
 
 import (
-	"bytes"
 	"github.com/murex/tcr/tcr-engine/toolchain"
-	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
 )
 
 const (
 	toolchainDir = "toolchain"
-	yamlIndent   = 2
 )
 
 var (
@@ -68,12 +65,11 @@ func saveToolchainConfigs() {
 	for _, name := range toolchain.Names() {
 		trace("- ", name)
 		tchn, _ := toolchain.Get(name)
-		saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(name))
+		saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(toolchainDirPath, name))
 	}
 }
 
 func loadToolchainConfigs() {
-
 	entries, err := os.ReadDir(toolchainDirPath)
 	if err != nil || len(entries) == 0 {
 		// If we cannot open toolchain directory or if it's empty, we don't go any further
@@ -87,7 +83,8 @@ func loadToolchainConfigs() {
 			break
 		}
 		trace("- ", entry.Name())
-		toolchainCfg := loadFromYaml(filepath.Join(toolchainDirPath, entry.Name()))
+		var toolchainCfg ToolchainConfig
+		loadFromYaml(filepath.Join(toolchainDirPath, entry.Name()), &toolchainCfg)
 		err := toolchain.Register(asToolchain(toolchainCfg))
 		if err != nil {
 			trace("Error in ", entry.Name(), ": ", err)
@@ -145,11 +142,6 @@ func resetToolchainConfigs() {
 	}
 }
 
-func buildYamlFilePath(name string) string {
-	filename := name + "." + configFileType
-	return filepath.Join(toolchainDirPath, filename)
-}
-
 func asToolchainConfig(tchn *toolchain.Toolchain) ToolchainConfig {
 	return ToolchainConfig{
 		Name:         tchn.GetName(),
@@ -191,52 +183,14 @@ func asArchTableConfig(archNames []toolchain.ArchName) []string {
 	return res
 }
 
-// saveToYaml saves a structure configuration into a YAML file
-func saveToYaml(tchn interface{}, filename string) {
-	// First we marshall the data
-	var b bytes.Buffer
-	yamlEncoder := yaml.NewEncoder(&b)
-	yamlEncoder.SetIndent(yamlIndent)
-	err := yamlEncoder.Encode(&tchn)
-	if err != nil {
-		trace("Error while marshalling configuration data: ", err)
-	}
-	// Then we save it
-	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec // We want people to be able to share this
-	if err != nil {
-		trace("Error while saving configuration: ", err)
-	}
-}
-
-// loadFromYaml loads a structure configuration from a YAML file
-func loadFromYaml(filename string) ToolchainConfig {
-	// In case we need to use variables in yaml configuration files:
-	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
-	// Cf. https://pkg.go.dev/os#Expand
-
-	var tchn ToolchainConfig
-
-	data, err := os.ReadFile(filename)
-	if err != nil {
-		trace("Error while reading configuration file: ", err)
-	}
-	if err := yaml.Unmarshal(data, &tchn); err != nil {
-		trace("Error while unmarshalling configuration data: ", err)
-	}
-	return tchn
-}
-
 func initToolchainConfigDirPath() {
 	toolchainDirPath = filepath.Join(configDirPath, toolchainDir)
 }
 
 func createToolchainConfigDir() {
-	_, err := os.Stat(toolchainDirPath)
-	if os.IsNotExist(err) {
-		trace("Creating TCR toolchain configuration directory: ", toolchainDirPath)
-		err := os.MkdirAll(toolchainDirPath, os.ModePerm)
-		if err != nil {
-			trace("Error creating TCR toolchain configuration directory: ", err)
-		}
-	}
+	createConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
+}
+
+func showToolchainConfigs() {
+	// TODO Implement display of languages configuration
 }
