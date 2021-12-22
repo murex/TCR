@@ -25,7 +25,7 @@ tcr mob [flags]
 ```
   -p, --auto-push           enable git push after every commit
   -b, --base-dir string     indicate the base directory from which TCR is running
-  -c, --config string       config file (default is $HOME/tcr.yaml)
+  -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration   set the duration for role rotation countdown timer
   -l, --language string     indicate the programming language to be used by TCR
   -o, --polling duration    set git polling period when running as navigator
