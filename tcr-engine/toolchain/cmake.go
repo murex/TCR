@@ -26,79 +26,20 @@ func init() {
 	_ = addBuiltIn(
 		Toolchain{
 			Name: "cmake",
-			BuildCommands: []Command{
-				initCmakeCommand(OsDarwin, ArchAmd64),
-				initCmakeCommand(OsDarwin, ArchArm64),
-				initCmakeCommand(OsLinux, ArchAmd64),
-				initCmakeCommand(OsLinux, ArchArm64),
-				initCmakeCommand(OsWindows, Arch386),
-				initCmakeCommand(OsWindows, ArchAmd64),
-			},
-			TestCommands: []Command{
-				initCtestCommand(OsDarwin, ArchAmd64),
-				initCtestCommand(OsDarwin, ArchArm64),
-				initCtestCommand(OsLinux, ArchAmd64),
-				initCtestCommand(OsLinux, ArchArm64),
-				initCtestCommand(OsWindows, Arch386),
-				initCtestCommand(OsWindows, ArchAmd64),
-			},
+			BuildCommands: []Command{{
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
+				Path:      "cmake",
+				Arguments: cmakeArguments(),
+			}},
+			TestCommands: []Command{{
+				Os:        getAllOsNames(),
+				Arch:      getAllArchNames(),
+				Path:      "ctest",
+				Arguments: ctestArguments(),
+			}},
 		},
 	)
-}
-
-func initCmakeCommand(osName OsName, archName ArchName) Command {
-	return Command{
-		Os:        []OsName{osName},
-		Arch:      []ArchName{archName},
-		Path:      initCommandPath("cmake", osName, archName),
-		Arguments: cmakeArguments(),
-	}
-}
-
-func initCtestCommand(osName OsName, archName ArchName) Command {
-	return Command{
-		Os:        []OsName{osName},
-		Arch:      []ArchName{archName},
-		Path:      initCommandPath("ctest", osName, archName),
-		Arguments: ctestArguments(),
-	}
-}
-
-func initCommandPath(cmd string, osName OsName, archName ArchName) string {
-	var cmakeOsArchDirName = "cmake-" + osNameInPath(osName) + "-" + archNameInPath(osName, archName)
-
-	switch osName {
-	case OsDarwin:
-		return "build/cmake/" + cmakeOsArchDirName + "/CMake.app/Contents/bin/" + cmd
-	case OsLinux:
-		return "build/cmake/" + cmakeOsArchDirName + "/bin/" + cmd
-	case OsWindows:
-		return "build\\cmake\\" + cmakeOsArchDirName + "\\bin\\" + cmd + ".exe"
-	default:
-		return ""
-	}
-}
-
-func archNameInPath(osName OsName, archName ArchName) string {
-	switch {
-	case osName == OsDarwin:
-		return "universal"
-	case archName == ArchAmd64:
-		return "x86_64"
-	case archName == Arch386:
-		return "i386"
-	case archName == ArchArm64:
-		return "aarch64"
-	default:
-		return string(archName)
-	}
-}
-
-func osNameInPath(osName OsName) string {
-	if osName == OsDarwin {
-		return "macos"
-	}
-	return string(osName)
 }
 
 func cmakeArguments() []string {

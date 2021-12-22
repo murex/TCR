@@ -50,30 +50,22 @@ func Test_cmake_toolchain_name(t *testing.T) {
 	assertToolchainName(t, cmakeToolchainName)
 }
 
+func Test_cmake_toolchain_build_command_path(t *testing.T) {
+	assertBuildCommandPath(t, "cmake", cmakeToolchainName)
+}
+
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
 	assertBuildCommandArgs(t, []string{"--build", "build", "--config", "Debug"}, cmakeToolchainName)
 }
 
+func Test_cmake_toolchain_test_command_path(t *testing.T) {
+	assertTestCommandPath(t, "ctest", cmakeToolchainName)
+}
+
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{
-		"--output-on-failure",
-		"--test-dir", "build",
-		"--build-config", "Debug",
-	}, cmakeToolchainName)
+	assertTestCommandArgs(t, []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}, cmakeToolchainName)
 }
 
 func Test_cmake_toolchain_supported_platforms(t *testing.T) {
-	// Cf. https://cmake.org/download/ for list of cmake supported platforms
-
-	// Windows supported platforms
-	assertRunsOnPlatform(t, cmakeToolchainName, OsWindows, Arch386)
-	assertRunsOnPlatform(t, cmakeToolchainName, OsWindows, ArchAmd64)
-
-	// Darwin supported platforms
-	assertRunsOnPlatform(t, cmakeToolchainName, OsDarwin, ArchAmd64)
-	assertRunsOnPlatform(t, cmakeToolchainName, OsDarwin, ArchArm64)
-
-	// Linux supported platforms
-	assertRunsOnPlatform(t, cmakeToolchainName, OsLinux, ArchAmd64)
-	assertRunsOnPlatform(t, cmakeToolchainName, OsLinux, ArchArm64)
+	assertRunsOnAllOsWithAmd64(t, cmakeToolchainName)
 }
