@@ -29,6 +29,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 type (
@@ -101,9 +102,8 @@ func (command Command) runsWithArch(arch ArchName) bool {
 }
 
 func (command Command) run() error {
-	//report.PostWarning("Command: ", tuneCommandPath(command.Path))
-	//fmt.Printf("PATH: %s\n", os.Getenv("PATH"))
-	output, err := sh.Command(tuneCommandPath(command.Path), command.Arguments).CombinedOutput()
+	report.PostText(command.asCommandLine())
+	output, err := sh.Command(adjustCommandPath(command.Path), command.Arguments).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
 	}
@@ -154,6 +154,10 @@ func (command Command) checkArchTable() error {
 	return nil
 }
 
+func (command Command) asCommandLine() string {
+	return adjustCommandPath(command.Path) + " " + strings.Join(command.Arguments, " ")
+}
+
 func findCommand(commands []Command, os OsName, arch ArchName) *Command {
 	for _, cmd := range commands {
 		if cmd.runsOnPlatform(os, arch) {
@@ -172,18 +176,19 @@ func findCompatibleCommand(commands []Command) *Command {
 	return nil
 }
 
-func tuneCommandPath(cmdPath string) string {
-	// If this is an absolute path, we keep it untouched
+func adjustCommandPath(cmdPath string) string {
+	// If this is an absolute path, we return it after cleaning it up
 	if filepath.IsAbs(cmdPath) {
-		return cmdPath
+		return filepath.Clean(cmdPath)
 	}
-	// If not, we try if it can be a relative path from the current directory.
+	// If not, we check if it can be a relative path from the current directory.
 	// If the file is found, we return it
 	wd, _ := os.Getwd()
-	relativePath := filepath.Join(wd, cmdPath)
-	if _, err := os.Stat(relativePath); err == nil {
-		return relativePath
+	pathFromWorkingDir := filepath.Join(wd, cmdPath)
+	info, err := os.Stat(pathFromWorkingDir)
+	if err == nil && !info.IsDir() {
+		return pathFromWorkingDir
 	}
-	// As a last resort, we assume it can be retrieved from $PATH
-	return cmdPath
+	// As a last resort, we assume it's available in the $PATH
+	return filepath.Clean(cmdPath)
 }
