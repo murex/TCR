@@ -47,7 +47,7 @@ type (
 
 	// ToolchainConfig defines the structure of a toolchain configuration.
 	ToolchainConfig struct {
-		Name         string
+		Name         string                   `yaml:"-"`
 		BuildCommand []ToolchainCommandConfig `yaml:"build"`
 		TestCommand  []ToolchainCommandConfig `yaml:"test"`
 	}
@@ -82,9 +82,11 @@ func loadToolchainConfigs() {
 		if entry.IsDir() {
 			break
 		}
-		trace("- ", entry.Name())
+		name := extractNameFromYamlFilename(entry.Name())
+		trace("- ", name)
 		var toolchainCfg ToolchainConfig
 		loadFromYaml(filepath.Join(toolchainDirPath, entry.Name()), &toolchainCfg)
+		toolchainCfg.Name = name
 		err := toolchain.Register(asToolchain(toolchainCfg))
 		if err != nil {
 			trace("Error in ", entry.Name(), ": ", err)

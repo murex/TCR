@@ -27,6 +27,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -78,5 +79,13 @@ func createConfigSubDir(dirPath string, description string) {
 }
 
 func buildYamlFilePath(dirPath string, name string) string {
-	return filepath.Join(dirPath, name+"."+yamlExtension)
+	return filepath.Join(dirPath, buildYamlFilename(name))
+}
+
+func buildYamlFilename(name string) string {
+	return strings.ToLower(name + "." + yamlExtension)
+}
+
+func extractNameFromYamlFilename(filename string) string {
+	return strings.TrimSuffix(strings.ToLower(filename), "."+yamlExtension)
 }

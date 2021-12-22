@@ -51,7 +51,7 @@ type (
 
 	// LanguageConfig defines the structure of a language configuration.
 	LanguageConfig struct {
-		Name        string                  `yaml:"name"`
+		Name        string                  `yaml:"-"`
 		Toolchains  LanguageToolchainConfig `yaml:"toolchains"`
 		SourceFiles LanguageFilesConfig     `yaml:"source-files"`
 		TestFiles   LanguageFilesConfig     `yaml:"test-files"`
@@ -87,9 +87,11 @@ func loadLanguageConfigs() {
 		if entry.IsDir() {
 			break
 		}
-		trace("- ", entry.Name())
+		name := extractNameFromYamlFilename(entry.Name())
+		trace("- ", name)
 		var languageCfg LanguageConfig
 		loadFromYaml(filepath.Join(languageDirPath, entry.Name()), &languageCfg)
+		languageCfg.Name = name
 		err := language.Register(asLanguage(languageCfg))
 		if err != nil {
 			trace("Error in ", entry.Name(), ": ", err)
