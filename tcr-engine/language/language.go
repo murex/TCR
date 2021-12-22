@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
+	"sort"
 	"strings"
 )
 
@@ -85,12 +86,13 @@ func Get(name string) (*Language, error) {
 	return nil, errors.New(fmt.Sprint("language not supported: ", name))
 }
 
-// Names returns the list of available language names
+// Names returns the list of available language names sorted alphabetically
 func Names() []string {
 	var names []string
 	for _, lang := range registered {
 		names = append(names, lang.Name)
 	}
+	sort.Strings(names)
 	return names
 }
 

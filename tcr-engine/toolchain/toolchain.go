@@ -25,6 +25,7 @@ package toolchain
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -101,12 +102,13 @@ func Get(name string) (*Toolchain, error) {
 	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
 }
 
-// Names returns the list of available toolchain names
+// Names returns the list of available toolchain names sorted alphabetically
 func Names() []string {
 	var names []string
 	for _, tchn := range registered {
 		names = append(names, tchn.Name)
 	}
+	sort.Strings(names)
 	return names
 }
 
