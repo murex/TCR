@@ -23,13 +23,28 @@ SOFTWARE.
 package toolchain
 
 import (
+	"runtime"
 	"testing"
 )
 
-func Test_cmake_toolchain_build_command_path_on_darwin(t *testing.T) {
-	assertBuildCommandPath(t, "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake", cmakeToolchainName)
+func Test_cmake_local_toolchain_build_command_path_on_linux(t *testing.T) {
+	switch runtime.GOARCH {
+	case ArchAmd64:
+		assertBuildCommandPath(t, "build/cmake/cmake-linux-x86_64/bin/cmake", cmakeLocalToolchainName)
+	case ArchArm64:
+		assertBuildCommandPath(t, "build/cmake/cmake-linux-aarch64/bin/cmake", cmakeLocalToolchainName)
+	default:
+		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
+	}
 }
 
-func Test_cmake_toolchain_test_command_path_on_darwin(t *testing.T) {
-	assertTestCommandPath(t, "build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest", cmakeToolchainName)
+func Test_cmake_local_toolchain_test_command_path_on_linux(t *testing.T) {
+	switch runtime.GOARCH {
+	case ArchAmd64:
+		assertTestCommandPath(t, "build/cmake/cmake-linux-x86_64/bin/ctest", cmakeLocalToolchainName)
+	case ArchArm64:
+		assertTestCommandPath(t, "build/cmake/cmake-linux-aarch64/bin/ctest", cmakeLocalToolchainName)
+	default:
+		t.Error("Architecture ", runtime.GOARCH, " is not supported by ctest on ", runtime.GOOS)
+	}
 }

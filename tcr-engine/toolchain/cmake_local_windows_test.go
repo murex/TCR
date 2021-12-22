@@ -27,24 +27,24 @@ import (
 	"testing"
 )
 
-func Test_cmake_toolchain_build_command_path_on_windows(t *testing.T) {
+func Test_cmake_local_toolchain_build_command_path_on_windows(t *testing.T) {
 	switch runtime.GOARCH {
 	case ArchAmd64:
-		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\cmake.exe", cmakeToolchainName)
+		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\cmake.exe", cmakeLocalToolchainName)
 	case Arch386:
-		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\cmake.exe", cmakeToolchainName)
+		assertBuildCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\cmake.exe", cmakeLocalToolchainName)
 	default:
 		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
 	}
 
 }
 
-func Test_cmake_toolchain_test_command_path_on_windows(t *testing.T) {
+func Test_cmake_local_toolchain_test_command_path_on_windows(t *testing.T) {
 	switch runtime.GOARCH {
 	case ArchAmd64:
-		assertTestCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\ctest.exe", cmakeToolchainName)
+		assertTestCommandPath(t, "build\\cmake\\cmake-windows-x86_64\\bin\\ctest.exe", cmakeLocalToolchainName)
 	case Arch386:
-		assertTestCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\ctest.exe", cmakeToolchainName)
+		assertTestCommandPath(t, "build\\cmake\\cmake-windows-i386\\bin\\ctest.exe", cmakeLocalToolchainName)
 	default:
 		t.Error("Architecture ", runtime.GOARCH, " is not supported by cmake on ", runtime.GOOS)
 	}
