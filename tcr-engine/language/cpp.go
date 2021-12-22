@@ -23,11 +23,7 @@ SOFTWARE.
 package language
 
 func init() {
-	_ = funcName()
-}
-
-func funcName() error {
-	return addBuiltIn(
+	_ = addBuiltIn(
 		Language{
 			Name: "cpp",
 			Toolchains: Toolchains{
