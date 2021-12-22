@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -122,6 +123,17 @@ func addBuiltIn(lang Language) error {
 	return Register(lang)
 }
 
+// buildRegex is a utility function adding flags and markers to a regex pattern
+// so that it ignores character case and has the beginning and end of text markers
+func buildRegex(corePattern string) string {
+	const (
+		ignoreCaseFlag  = "(?i)"
+		beginningMarker = "^"
+		endMarker       = "$"
+	)
+	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
+}
+
 // GetName provides the name of the toolchain
 func (lang Language) GetName() string {
 	return lang.Name
@@ -176,10 +188,9 @@ func (lang Language) checkDefaultToolchain() error {
 
 // IsSrcFile returns true if the provided filename is recognized as a source file for this language
 func (lang Language) IsSrcFile(filename string) bool {
-	extension := strings.ToLower(filepath.Ext(filename))
 	for _, filter := range lang.SrcFiles.Filters {
-		// TODO replace strict equality with pattern matching
-		if strings.ToLower(filter) == extension {
+		re := regexp.MustCompile(filter)
+		if re.MatchString(filename) {
 			return true
 		}
 	}

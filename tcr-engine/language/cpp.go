@@ -23,7 +23,11 @@ SOFTWARE.
 package language
 
 func init() {
-	_ = addBuiltIn(
+	_ = funcName()
+}
+
+func funcName() error {
+	return addBuiltIn(
 		Language{
 			Name: "cpp",
 			Toolchains: Toolchains{
@@ -32,12 +36,19 @@ func init() {
 			},
 			SrcFiles: Files{
 				Directories: []string{"src", "include"},
-				Filters:     []string{".cpp", ".hpp", ".c", ".h", ".cc", ".hh"},
+				Filters:     getCppFilters(),
 			},
 			TestFiles: Files{
 				Directories: []string{"test"},
-				Filters:     []string{".cpp", ".hpp", ".c", ".h", ".cc", ".hh"},
+				Filters:     getCppFilters(),
 			},
 		},
 	)
+}
+
+func getCppFilters() []string {
+	return []string{
+		buildRegex(".*\\.c(c|pp)?"),
+		buildRegex(".*\\.h(h|pp)?"),
+	}
 }

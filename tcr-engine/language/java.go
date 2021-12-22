@@ -32,12 +32,18 @@ func init() {
 			},
 			SrcFiles: Files{
 				Directories: []string{"src/main"},
-				Filters:     []string{".java"},
+				Filters:     getJavaFilters(),
 			},
 			TestFiles: Files{
 				Directories: []string{"src/test"},
-				Filters:     []string{".java"},
+				Filters:     getJavaFilters(),
 			},
 		},
 	)
+}
+
+func getJavaFilters() []string {
+	return []string{
+		buildRegex(".*\\.java"),
+	}
 }
