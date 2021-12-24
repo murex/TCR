@@ -75,7 +75,7 @@ func isSupported(name string) bool {
 }
 
 // Get returns the language instance with the provided name
-// The language name is case insensitive.
+// The language name is case-insensitive.
 func Get(name string) (*Language, error) {
 	if name == "" {
 		return nil, errors.New("language name not provided")
@@ -186,26 +186,59 @@ func (lang Language) checkDefaultToolchain() error {
 	return nil
 }
 
-// IsSrcFile returns true if the provided filename is recognized as a source file for this language
-func (lang Language) IsSrcFile(filename string) bool {
-	for _, filter := range lang.SrcFiles.Filters {
-		re := regexp.MustCompile(filter)
-		if re.MatchString(filename) {
-			return true
+// IsSrcFile returns true if the provided filePath is recognized as a source file for this language
+func (lang Language) IsSrcFile(filepath string) bool {
+	// test files take precedence over source files in case of overlapping (such as with go language)
+	if lang.IsTestFile(filepath) {
+		return false
+	}
+
+	if lang.isInSrcDirs(filepath) {
+		for _, filter := range lang.SrcFiles.Filters {
+			re := regexp.MustCompile(filter)
+			if re.MatchString(filepath) {
+				return true
+			}
 		}
 	}
 	return false
 }
 
-// DirsToWatch returns the list of directories that TCR engine needs to watch for this language
-func (lang Language) DirsToWatch(baseDir string) []string {
-	dirList := append(lang.SrcFiles.Directories, lang.TestFiles.Directories...)
-
-	for i := 0; i < len(dirList); i++ {
-		dirList[i] = filepath.Join(baseDir, toLocalPath(dirList[i]))
+// IsTestFile returns true if the provided filePath is recognized as a test file for this language
+func (lang Language) IsTestFile(filepath string) bool {
+	if lang.isInTestDirs(filepath) {
+		for _, filter := range lang.TestFiles.Filters {
+			re := regexp.MustCompile(filter)
+			if re.MatchString(filepath) {
+				return true
+			}
+		}
 	}
-	//report.PostInfo(dirList)
-	return dirList
+	return false
+}
+
+// IsLanguageFile returns true if the provided filePath is recognized as either a source or a test file for this language
+func (lang Language) IsLanguageFile(filename string) bool {
+	return lang.IsSrcFile(filename) || lang.IsTestFile(filename)
+}
+
+// DirsToWatch returns the list of directories that TCR engine needs to watch for this language
+func (lang Language) DirsToWatch(baseDir string) (dirs []string) {
+	// First we concatenate the 2 lists
+	concat := append(lang.SrcFiles.Directories, lang.TestFiles.Directories...)
+
+	// Then we use a map to remove duplicates
+	unique := make(map[string]int)
+	for _, dir := range concat {
+		unique[dir] = 1
+	}
+
+	// Finally, we prefix each item with baseDir
+	for dir := range unique {
+		dirs = append(dirs, filepath.Join(baseDir, toLocalPath(dir)))
+	}
+	//report.PostInfo(dirs)
+	return dirs
 }
 
 // GetToolchain returns the toolchain instance for this language.
@@ -263,7 +296,17 @@ func (lang Language) SrcDirs() []string {
 	return lang.SrcFiles.Directories
 }
 
+func (lang Language) isInSrcDirs(filepath string) bool {
+	// TODO
+	return true
+}
+
 // TestDirs returns the list of subdirectories that may contain test files for this language
 func (lang Language) TestDirs() []string {
 	return lang.TestFiles.Directories
+}
+
+func (lang Language) isInTestDirs(filepath string) bool {
+	// TODO
+	return false
 }

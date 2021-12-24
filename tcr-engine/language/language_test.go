@@ -179,6 +179,13 @@ func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 	assert.Equal(t, expected, lang.DirsToWatch(baseDir))
 }
 
+func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
+	const dir = "dir"
+	baseDir, _ := os.Getwd()
+	lang := aLanguage(withSourceDir(dir), withSourceDir(dir), withTestDir(dir), withTestDir(dir))
+	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
+}
+
 func assertIsABuiltInLanguage(t *testing.T, name string) {
 	assert.True(t, isBuiltIn(name))
 }
@@ -223,16 +230,30 @@ func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
 	}
 }
 
-type filenameMatching struct {
-	filename string
-	match    bool
+type filePathMatcher struct {
+	filePath   string
+	isSrcFile  bool
+	isTestFile bool
 }
 
-func assertFilenamesMatching(t *testing.T, matchers []filenameMatching, name string) {
+func shouldMatchSrc(filePath string) filePathMatcher {
+	return filePathMatcher{filePath: filePath, isSrcFile: true, isTestFile: false}
+}
+func shouldMatchTest(filePath string) filePathMatcher {
+	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: true}
+}
+
+func shouldNotMatch(filePath string) filePathMatcher {
+	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
+}
+
+func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
 	lang := getBuiltIn(name)
 	for _, matcher := range matchers {
-		assert.Equal(t, matcher.match, lang.IsSrcFile(matcher.filename),
-			"Filename: %v", matcher.filename)
+		assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
+			"Should %v be source file?", matcher.filePath)
+		assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
+			"Should %v be test file?", matcher.filePath)
 	}
 }
 

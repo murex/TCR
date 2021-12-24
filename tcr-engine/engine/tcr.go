@@ -214,7 +214,7 @@ func waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
 	return sourceTree.Watch(
 		lang.DirsToWatch(sourceTree.GetBaseDir()),
-		lang.IsSrcFile,
+		lang.IsLanguageFile,
 		interrupt)
 }
 

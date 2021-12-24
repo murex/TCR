@@ -63,56 +63,65 @@ func Test_cpp_default_toolchain(t *testing.T) {
 }
 
 func Test_cpp_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, []string{"cmake"}, cppLanguageName)
+	assertCompatibleToolchains(t, []string{"cmake", "cmake-local"}, cppLanguageName)
 }
 
 func Test_cpp_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, cppLanguageName)
+	assertIncompatibleToolchains(t, []string{"go-tools"}, cppLanguageName)
 }
 
-func Test_filenames_recognized_as_cpp_src(t *testing.T) {
-	expected := []filenameMatching{
-		{"Dummy.cpp", true},
-		{"Dummy.CPP", true},
-		{"/dummy/Dummy.cpp", true},
-		{"Dummy.cpp~", false},
-		{"Dummy.cpp.swp", false},
+func Test_file_paths_recognized_as_cpp_src(t *testing.T) {
+	expected := []filePathMatcher{
+		shouldMatchSrc("Dummy.cpp"),
+		shouldMatchSrc("Dummy.CPP"),
+		shouldMatchSrc("/dummy/Dummy.cpp"),
 
-		{"Dummy.hpp", true},
-		{"Dummy.HPP", true},
-		{"/dummy/Dummy.hpp", true},
-		{"Dummy.hpp~", false},
-		{"Dummy.hpp.swp", false},
+		shouldNotMatch("Dummy.cpp~"),
+		shouldNotMatch("Dummy.cpp.swp"),
 
-		{"Dummy.cc", true},
-		{"Dummy.CC", true},
-		{"/dummy/Dummy.cc", true},
-		{"Dummy.cc~", false},
-		{"Dummy.cc.swp", false},
+		shouldMatchSrc("Dummy.hpp"),
+		shouldMatchSrc("Dummy.HPP"),
+		shouldMatchSrc("/dummy/Dummy.hpp"),
 
-		{"Dummy.hh", true},
-		{"Dummy.HH", true},
-		{"/dummy/Dummy.hh", true},
-		{"Dummy.hh~", false},
-		{"Dummy.hh.swp", false},
+		shouldNotMatch("Dummy.hpp~"),
+		shouldNotMatch("Dummy.hpp.swp"),
 
-		{"Dummy.c", true},
-		{"Dummy.C", true},
-		{"/dummy/Dummy.c", true},
-		{"Dummy.c~", false},
-		{"Dummy.c.swp", false},
+		shouldMatchSrc("Dummy.cc"),
+		shouldMatchSrc("Dummy.CC"),
+		shouldMatchSrc("/dummy/Dummy.cc"),
 
-		{"Dummy.h", true},
-		{"Dummy.H", true},
-		{"/dummy/Dummy.h", true},
-		{"Dummy.h~", false},
-		{"Dummy.h.swp", false},
+		shouldNotMatch("Dummy.cc~"),
+		shouldNotMatch("Dummy.cc.swp"),
 
-		{"", false},
-		{"dummy", false},
-		{"Dummy.java", false},
-		{"Dummy.sh", false},
-		{"Dummy.swp", false},
+		shouldMatchSrc("Dummy.hh"),
+		shouldMatchSrc("Dummy.HH"),
+		shouldMatchSrc("/dummy/Dummy.hh"),
+
+		shouldNotMatch("Dummy.hh~"),
+		shouldNotMatch("Dummy.hh.swp"),
+
+		shouldMatchSrc("Dummy.c"),
+		shouldMatchSrc("Dummy.C"),
+		shouldMatchSrc("/dummy/Dummy.c"),
+
+		shouldNotMatch("Dummy.c~"),
+		shouldNotMatch("Dummy.c.swp"),
+
+		shouldMatchSrc("Dummy.h"),
+		shouldMatchSrc("Dummy.H"),
+		shouldMatchSrc("/dummy/Dummy.h"),
+
+		shouldNotMatch("Dummy.h~"),
+		shouldNotMatch("Dummy.h.swp"),
+
+		shouldNotMatch(""),
+		shouldNotMatch("dummy"),
+		shouldNotMatch("dummy.java"),
+		shouldNotMatch("dummy.go"),
+
+		shouldNotMatch("Dummy.sh"),
+		shouldNotMatch("Dummy.swp"),
 	}
-	assertFilenamesMatching(t, expected, cppLanguageName)
+	assertFilePathsMatching(t, expected, cppLanguageName)
 }

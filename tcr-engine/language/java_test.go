@@ -65,21 +65,23 @@ func Test_java_compatible_toolchains(t *testing.T) {
 }
 
 func Test_java_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, []string{"cmake"}, javaLanguageName)
+	assertIncompatibleToolchains(t, []string{"cmake", "cmake-local"}, javaLanguageName)
+	assertIncompatibleToolchains(t, []string{"go-tools"}, javaLanguageName)
 }
 
-func Test_filenames_recognized_as_java_src(t *testing.T) {
-	expected := []filenameMatching{
-		{"Dummy.java", true},
-		{"Dummy.JAVA", true},
-		{"/dummy/Dummy.java", true},
-		{"Dummy.java~", false},
-		{"Dummy.java.swp", false},
+func Test_file_paths_recognized_as_java_files(t *testing.T) {
+	expected := []filePathMatcher{
+		shouldMatchSrc("src/main/Dummy.java"),
+		shouldMatchSrc("src/main/Dummy.JAVA"),
+		shouldMatchSrc("src/main/dummy/Dummy.java"),
 
-		{"", false},
-		{"dummy", false},
-		{"Dummy.cpp", false},
-		{"Dummy.sh", false},
+		shouldNotMatch("src/main/Dummy.java~"),
+		shouldNotMatch("src/main/Dummy.java.swp"),
+
+		shouldNotMatch(""),
+		shouldNotMatch("src/main/dummy"),
+		shouldNotMatch("src/main/Dummy.cpp"),
+		shouldNotMatch("src/main/Dummy.sh"),
 	}
-	assertFilenamesMatching(t, expected, javaLanguageName)
+	assertFilePathsMatching(t, expected, javaLanguageName)
 }
