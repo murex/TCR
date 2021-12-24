@@ -28,7 +28,7 @@ func init() {
 			Name: "cpp",
 			Toolchains: Toolchains{
 				Default:    "cmake",
-				Compatible: []string{"cmake"},
+				Compatible: []string{"cmake", "cmake-local"},
 			},
 			SrcFiles: Files{
 				Directories: []string{"src", "include"},
