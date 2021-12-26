@@ -277,6 +277,23 @@ func shouldNotMatch(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
 }
 
+func buildFilePathMatchers(matcher func(string) filePathMatcher, srcDir string, fileBaseName string, ext string) []filePathMatcher {
+	var matchers []filePathMatcher
+	var basePath = filepath.Join(srcDir, fileBaseName)
+	var subDirPath = filepath.Join(srcDir, "subDir", fileBaseName)
+	matchers = append(matchers,
+		shouldNotMatch(basePath),
+		matcher(basePath+strings.ToLower(ext)),
+		matcher(basePath+strings.ToUpper(ext)),
+		matcher(basePath+strings.ToUpper(ext)),
+		shouldNotMatch(subDirPath),
+		matcher(subDirPath+ext),
+		shouldNotMatch(basePath+ext+"~"),
+		shouldNotMatch(basePath+ext+".swp"),
+	)
+	return matchers
+}
+
 func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
 	lang, _ := GetLanguage(name, "")
 	for _, matcher := range matchers {

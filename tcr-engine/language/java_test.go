@@ -69,31 +69,18 @@ func Test_java_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"go-tools"}, javaLanguageName)
 }
 
-func Test_file_paths_recognized_as_java_files(t *testing.T) {
-	expected := []filePathMatcher{
-		shouldMatchSrc("src/main/Dummy.java"),
-		shouldMatchSrc("src/main/Dummy.JAVA"),
-		shouldMatchSrc("src/main/dummy/Dummy.java"),
-
-		shouldNotMatch("src/main/Dummy.java~"),
-		shouldNotMatch("src/main/Dummy.java.swp"),
-
-		shouldNotMatch(""),
-		shouldNotMatch("src/main/dummy"),
-		shouldNotMatch("src/main/Dummy.cpp"),
-		shouldNotMatch("src/main/Dummy.sh"),
-
-		shouldMatchTest("src/test/Dummy.java"),
-		shouldMatchTest("src/test/Dummy.JAVA"),
-		shouldMatchTest("src/test/dummy/Dummy.java"),
-
-		shouldNotMatch("src/test/Dummy.java~"),
-		shouldNotMatch("src/test/Dummy.java.swp"),
-
-		shouldNotMatch(""),
-		shouldNotMatch("src/test/dummy"),
-		shouldNotMatch("src/test/Dummy.cpp"),
-		shouldNotMatch("src/test/Dummy.sh"),
+func Test_java_valid_file_paths(t *testing.T) {
+	languageName := javaLanguageName
+	for _, ext := range []string{".java"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src/main", "SomeSrcFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "src/test", "SomeTestFile", ext), languageName)
 	}
-	assertFilePathsMatching(t, expected, javaLanguageName)
+}
+
+func Test_java_invalid_file_paths(t *testing.T) {
+	languageName := javaLanguageName
+	for _, ext := range []string{".c", ".cc", ".cpp", ".h", ".hpp", ".hh", ".go", ".sh"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/main", "SomeSrcFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/test", "SomeTestFile", ext), languageName)
+	}
 }

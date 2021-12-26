@@ -71,61 +71,20 @@ func Test_cpp_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"go-tools"}, cppLanguageName)
 }
 
-func Test_file_paths_recognized_as_cpp_src(t *testing.T) {
-	expected := []filePathMatcher{
-		shouldMatchSrc("src/Dummy.cpp"),
-		shouldMatchSrc("src/Dummy.CPP"),
-		shouldMatchSrc("src/dummy/Dummy.cpp"),
-
-		shouldNotMatch("src/Dummy.cpp~"),
-		shouldNotMatch("src/Dummy.cpp.swp"),
-
-		shouldMatchSrc("src/Dummy.hpp"),
-		shouldMatchSrc("src/Dummy.HPP"),
-		shouldMatchSrc("src/dummy/Dummy.hpp"),
-
-		shouldNotMatch("src/Dummy.hpp~"),
-		shouldNotMatch("src/Dummy.hpp.swp"),
-
-		shouldMatchSrc("src/Dummy.cc"),
-		shouldMatchSrc("src/Dummy.CC"),
-		shouldMatchSrc("src/dummy/Dummy.cc"),
-
-		shouldNotMatch("src/Dummy.cc~"),
-		shouldNotMatch("src/Dummy.cc.swp"),
-
-		shouldMatchSrc("src/Dummy.hh"),
-		shouldMatchSrc("src/Dummy.HH"),
-		shouldMatchSrc("src/dummy/Dummy.hh"),
-
-		shouldNotMatch("src/Dummy.hh~"),
-		shouldNotMatch("src/Dummy.hh.swp"),
-
-		shouldMatchSrc("src/Dummy.c"),
-		shouldMatchSrc("src/Dummy.C"),
-		shouldMatchSrc("src//dummy/Dummy.c"),
-
-		shouldNotMatch("src/Dummy.c~"),
-		shouldNotMatch("src/Dummy.c.swp"),
-
-		shouldMatchSrc("src/Dummy.h"),
-		shouldMatchSrc("src/Dummy.H"),
-		shouldMatchSrc("src/dummy/Dummy.h"),
-
-		shouldNotMatch("src/Dummy.h~"),
-		shouldNotMatch("src/Dummy.h.swp"),
-
-		shouldNotMatch("src"),
-		shouldNotMatch("src/dummy"),
-		shouldNotMatch("src/dummy.java"),
-		shouldNotMatch("src/dummy.go"),
-
-		shouldNotMatch("src/Dummy.sh"),
-		shouldNotMatch("src/Dummy.swp"),
-
-		shouldMatchSrc("include/Dummy.hpp"),
-
-		shouldMatchTest("test/Dummy.hpp"),
+func Test_cpp_valid_file_paths(t *testing.T) {
+	languageName := cppLanguageName
+	for _, ext := range []string{".c", ".cc", ".cpp", ".h", ".hpp", ".hh"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "include", "SomeIncludeFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "test", "SomeTestFile", ext), languageName)
 	}
-	assertFilePathsMatching(t, expected, cppLanguageName)
+}
+
+func Test_cpp_invalid_file_paths(t *testing.T) {
+	languageName := cppLanguageName
+	for _, ext := range []string{".java", ".go", ".sh"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src", "SomeSrcFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "include", "SomeIncludeFile", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "test", "SomeTestFile", ext), languageName)
+	}
 }

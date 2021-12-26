@@ -69,28 +69,18 @@ func Test_go_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"cmake", "cmake-local"}, goLanguageName)
 }
 
-func Test_file_paths_recognized_as_go_files(t *testing.T) {
-	expected := []filePathMatcher{
-		shouldMatchSrc("dummy.go"),
-		shouldMatchSrc("dummy.GO"),
-		shouldMatchSrc("dummy/dummy.go"),
-
-		shouldNotMatch("dummy.go~"),
-		shouldNotMatch("dummy.go.swp"),
-
-		shouldMatchTest("dummy_test.go"),
-		shouldMatchTest("dummy_test.GO"),
-		shouldMatchTest("dummy/dummy_test.go"),
-
-		shouldNotMatch("dummy_test.go~"),
-		shouldNotMatch("dummy_test.go.swp"),
-
-		shouldNotMatch(""),
-		shouldNotMatch("dummy"),
-		shouldNotMatch("dummy.java"),
-		shouldNotMatch("dummy.cpp"),
-
-		shouldNotMatch("dummy.sh"),
+func Test_go_valid_file_paths(t *testing.T) {
+	languageName := goLanguageName
+	for _, ext := range []string{".go"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, ".", "some_src_file", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, ".", "some_src_file_test", ext), languageName)
 	}
-	assertFilePathsMatching(t, expected, goLanguageName)
+}
+
+func Test_go_invalid_file_paths(t *testing.T) {
+	languageName := goLanguageName
+	for _, ext := range []string{".c", ".cc", ".cpp", ".h", ".hpp", ".hh", ".java", ".sh"} {
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file", ext), languageName)
+		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file_test", ext), languageName)
+	}
 }
