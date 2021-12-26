@@ -73,14 +73,14 @@ func Test_file_paths_recognized_as_go_files(t *testing.T) {
 	expected := []filePathMatcher{
 		shouldMatchSrc("dummy.go"),
 		shouldMatchSrc("dummy.GO"),
-		shouldMatchSrc("/dummy/dummy.go"),
+		shouldMatchSrc("dummy/dummy.go"),
 
 		shouldNotMatch("dummy.go~"),
 		shouldNotMatch("dummy.go.swp"),
 
 		shouldMatchTest("dummy_test.go"),
 		shouldMatchTest("dummy_test.GO"),
-		shouldMatchTest("/dummy/dummy_test.go"),
+		shouldMatchTest("dummy/dummy_test.go"),
 
 		shouldNotMatch("dummy_test.go~"),
 		shouldNotMatch("dummy_test.go.swp"),

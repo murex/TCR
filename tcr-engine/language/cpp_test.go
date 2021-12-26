@@ -73,55 +73,59 @@ func Test_cpp_incompatible_toolchains(t *testing.T) {
 
 func Test_file_paths_recognized_as_cpp_src(t *testing.T) {
 	expected := []filePathMatcher{
-		shouldMatchSrc("Dummy.cpp"),
-		shouldMatchSrc("Dummy.CPP"),
-		shouldMatchSrc("/dummy/Dummy.cpp"),
+		shouldMatchSrc("src/Dummy.cpp"),
+		shouldMatchSrc("src/Dummy.CPP"),
+		shouldMatchSrc("src/dummy/Dummy.cpp"),
 
-		shouldNotMatch("Dummy.cpp~"),
-		shouldNotMatch("Dummy.cpp.swp"),
+		shouldNotMatch("src/Dummy.cpp~"),
+		shouldNotMatch("src/Dummy.cpp.swp"),
 
-		shouldMatchSrc("Dummy.hpp"),
-		shouldMatchSrc("Dummy.HPP"),
-		shouldMatchSrc("/dummy/Dummy.hpp"),
+		shouldMatchSrc("src/Dummy.hpp"),
+		shouldMatchSrc("src/Dummy.HPP"),
+		shouldMatchSrc("src/dummy/Dummy.hpp"),
 
-		shouldNotMatch("Dummy.hpp~"),
-		shouldNotMatch("Dummy.hpp.swp"),
+		shouldNotMatch("src/Dummy.hpp~"),
+		shouldNotMatch("src/Dummy.hpp.swp"),
 
-		shouldMatchSrc("Dummy.cc"),
-		shouldMatchSrc("Dummy.CC"),
-		shouldMatchSrc("/dummy/Dummy.cc"),
+		shouldMatchSrc("src/Dummy.cc"),
+		shouldMatchSrc("src/Dummy.CC"),
+		shouldMatchSrc("src/dummy/Dummy.cc"),
 
-		shouldNotMatch("Dummy.cc~"),
-		shouldNotMatch("Dummy.cc.swp"),
+		shouldNotMatch("src/Dummy.cc~"),
+		shouldNotMatch("src/Dummy.cc.swp"),
 
-		shouldMatchSrc("Dummy.hh"),
-		shouldMatchSrc("Dummy.HH"),
-		shouldMatchSrc("/dummy/Dummy.hh"),
+		shouldMatchSrc("src/Dummy.hh"),
+		shouldMatchSrc("src/Dummy.HH"),
+		shouldMatchSrc("src/dummy/Dummy.hh"),
 
-		shouldNotMatch("Dummy.hh~"),
-		shouldNotMatch("Dummy.hh.swp"),
+		shouldNotMatch("src/Dummy.hh~"),
+		shouldNotMatch("src/Dummy.hh.swp"),
 
-		shouldMatchSrc("Dummy.c"),
-		shouldMatchSrc("Dummy.C"),
-		shouldMatchSrc("/dummy/Dummy.c"),
+		shouldMatchSrc("src/Dummy.c"),
+		shouldMatchSrc("src/Dummy.C"),
+		shouldMatchSrc("src//dummy/Dummy.c"),
 
-		shouldNotMatch("Dummy.c~"),
-		shouldNotMatch("Dummy.c.swp"),
+		shouldNotMatch("src/Dummy.c~"),
+		shouldNotMatch("src/Dummy.c.swp"),
 
-		shouldMatchSrc("Dummy.h"),
-		shouldMatchSrc("Dummy.H"),
-		shouldMatchSrc("/dummy/Dummy.h"),
+		shouldMatchSrc("src/Dummy.h"),
+		shouldMatchSrc("src/Dummy.H"),
+		shouldMatchSrc("src/dummy/Dummy.h"),
 
-		shouldNotMatch("Dummy.h~"),
-		shouldNotMatch("Dummy.h.swp"),
+		shouldNotMatch("src/Dummy.h~"),
+		shouldNotMatch("src/Dummy.h.swp"),
 
-		shouldNotMatch(""),
-		shouldNotMatch("dummy"),
-		shouldNotMatch("dummy.java"),
-		shouldNotMatch("dummy.go"),
+		shouldNotMatch("src"),
+		shouldNotMatch("src/dummy"),
+		shouldNotMatch("src/dummy.java"),
+		shouldNotMatch("src/dummy.go"),
 
-		shouldNotMatch("Dummy.sh"),
-		shouldNotMatch("Dummy.swp"),
+		shouldNotMatch("src/Dummy.sh"),
+		shouldNotMatch("src/Dummy.swp"),
+
+		shouldMatchSrc("include/Dummy.hpp"),
+
+		shouldMatchTest("test/Dummy.hpp"),
 	}
 	assertFilePathsMatching(t, expected, cppLanguageName)
 }

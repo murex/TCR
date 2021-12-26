@@ -82,6 +82,18 @@ func Test_file_paths_recognized_as_java_files(t *testing.T) {
 		shouldNotMatch("src/main/dummy"),
 		shouldNotMatch("src/main/Dummy.cpp"),
 		shouldNotMatch("src/main/Dummy.sh"),
+
+		shouldMatchTest("src/test/Dummy.java"),
+		shouldMatchTest("src/test/Dummy.JAVA"),
+		shouldMatchTest("src/test/dummy/Dummy.java"),
+
+		shouldNotMatch("src/test/Dummy.java~"),
+		shouldNotMatch("src/test/Dummy.java.swp"),
+
+		shouldNotMatch(""),
+		shouldNotMatch("src/test/dummy"),
+		shouldNotMatch("src/test/Dummy.cpp"),
+		shouldNotMatch("src/test/Dummy.sh"),
 	}
 	assertFilePathsMatching(t, expected, javaLanguageName)
 }

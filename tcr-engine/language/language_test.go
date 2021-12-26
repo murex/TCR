@@ -88,6 +88,10 @@ func withTestDir(dirName string) func(lang *Language) {
 	}
 }
 
+func withBaseDir(path string) func(lang *Language) {
+	return func(lang *Language) { lang.setBaseDir(path) }
+}
+
 // =========================================================================================
 
 func Test_does_not_support_empty_language_name(t *testing.T) {
@@ -186,6 +190,32 @@ func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
 	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
 }
 
+func Test_file_path_is_in_src_dirs_tree(t *testing.T) {
+	const srcDir = "src-dir"
+	baseDir, _ := os.Getwd()
+	lang := aLanguage(withBaseDir(""), withSourceDir(srcDir))
+	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
+		okPath := filepath.Join(baseDir, srcDir, dir)
+		koPath := filepath.Join(baseDir, dir)
+		assert.True(t, lang.isInSrcTree(okPath))
+		assert.False(t, lang.isInSrcTree(koPath))
+	}
+}
+
+func Test_file_path_is_in_test_dirs_tree(t *testing.T) {
+	const testDir = "test-dir"
+	baseDir, _ := os.Getwd()
+	lang := aLanguage(withBaseDir(""), withTestDir(testDir))
+	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
+		okPath := filepath.Join(baseDir, testDir, dir)
+		koPath := filepath.Join(baseDir, dir)
+		assert.True(t, lang.isInTestTree(okPath))
+		assert.False(t, lang.isInTestTree(koPath))
+	}
+}
+
+// Assert utility functions for language type
+
 func assertIsABuiltInLanguage(t *testing.T, name string) {
 	assert.True(t, isBuiltIn(name))
 }
@@ -248,12 +278,12 @@ func shouldNotMatch(filePath string) filePathMatcher {
 }
 
 func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
-	lang := getBuiltIn(name)
+	lang, _ := GetLanguage(name, "")
 	for _, matcher := range matchers {
 		assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
-			"Should %v be source file?", matcher.filePath)
+			"Should %v be a source file?", matcher.filePath)
 		assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
-			"Should %v be test file?", matcher.filePath)
+			"Should %v be a test file?", matcher.filePath)
 	}
 }
 

@@ -26,6 +26,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -46,6 +47,7 @@ type (
 		Toolchains Toolchains
 		SrcFiles   Files
 		TestFiles  Files
+		baseDir    string
 	}
 )
 
@@ -141,12 +143,15 @@ func (lang Language) GetName() string {
 
 // GetLanguage returns the language to be used in current session. If no value is provided
 // for language (e.g. empty string), we try to detect the language based on the directory name.
-// Both name and baseDir are case insensitive
-func GetLanguage(name string, baseDir string) (*Language, error) {
+// Both name and baseDir are case-insensitive
+func GetLanguage(name string, baseDir string) (lang *Language, err error) {
 	if name != "" {
-		return getRegisteredLanguage(name)
+		lang, err = getRegisteredLanguage(name)
+	} else {
+		lang, err = detectLanguageFromDirName(baseDir)
 	}
-	return detectLanguageFromDirName(baseDir)
+	lang.setBaseDir(baseDir)
+	return lang, err
 }
 
 func getRegisteredLanguage(name string) (*Language, error) {
@@ -181,7 +186,8 @@ func (lang Language) checkDefaultToolchain() error {
 	if lang.Toolchains.Default == "" {
 		return errors.New("language has no default toolchain defined")
 	} else if !lang.worksWithToolchain(lang.Toolchains.Default) {
-		return errors.New("language's default toolchain " + lang.Toolchains.Default + " is not listed as compatible")
+		return errors.New("language's default toolchain " +
+			lang.Toolchains.Default + " is not listed in compatible toolchains list")
 	}
 	return nil
 }
@@ -193,7 +199,7 @@ func (lang Language) IsSrcFile(filepath string) bool {
 		return false
 	}
 
-	if lang.isInSrcDirs(filepath) {
+	if lang.isInSrcTree(filepath) {
 		for _, filter := range lang.SrcFiles.Filters {
 			re := regexp.MustCompile(filter)
 			if re.MatchString(filepath) {
@@ -206,7 +212,7 @@ func (lang Language) IsSrcFile(filepath string) bool {
 
 // IsTestFile returns true if the provided filePath is recognized as a test file for this language
 func (lang Language) IsTestFile(filepath string) bool {
-	if lang.isInTestDirs(filepath) {
+	if lang.isInTestTree(filepath) {
 		for _, filter := range lang.TestFiles.Filters {
 			re := regexp.MustCompile(filter)
 			if re.MatchString(filepath) {
@@ -296,9 +302,15 @@ func (lang Language) SrcDirs() []string {
 	return lang.SrcFiles.Directories
 }
 
-func (lang Language) isInSrcDirs(filepath string) bool {
-	// TODO
-	return true
+func (lang Language) isInSrcTree(path string) bool {
+	absPath, _ := filepath.Abs(path)
+	for _, dir := range lang.SrcDirs() {
+		srcDir, _ := filepath.Abs(filepath.Join(lang.baseDir, dir))
+		if srcDir == absPath || strings.HasPrefix(absPath, srcDir+string(os.PathSeparator)) {
+			return true
+		}
+	}
+	return false
 }
 
 // TestDirs returns the list of subdirectories that may contain test files for this language
@@ -306,7 +318,17 @@ func (lang Language) TestDirs() []string {
 	return lang.TestFiles.Directories
 }
 
-func (lang Language) isInTestDirs(filepath string) bool {
-	// TODO
+func (lang Language) isInTestTree(path string) bool {
+	absPath, _ := filepath.Abs(path)
+	for _, dir := range lang.TestDirs() {
+		testDir, _ := filepath.Abs(filepath.Join(lang.baseDir, dir))
+		if testDir == absPath || strings.HasPrefix(absPath, testDir+string(os.PathSeparator)) {
+			return true
+		}
+	}
 	return false
+}
+
+func (lang *Language) setBaseDir(dir string) {
+	lang.baseDir, _ = filepath.Abs(dir)
 }
