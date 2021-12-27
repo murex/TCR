@@ -30,13 +30,13 @@ func init() {
 				Default:    "go-tools",
 				Compatible: []string{"go-tools"},
 			},
-			SrcFiles: Files{
+			SrcFiles: FileTreeFilter{
 				Directories: []string{"."},
 				Filters: []string{
 					buildRegex(".*\\.go"),
 				},
 			},
-			TestFiles: Files{
+			TestFiles: FileTreeFilter{
 				Directories: []string{"."},
 				Filters: []string{
 					buildRegex(".*_test\\.go"),

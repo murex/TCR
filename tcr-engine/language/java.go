@@ -30,11 +30,11 @@ func init() {
 				Default:    "gradle-wrapper",
 				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"},
 			},
-			SrcFiles: Files{
+			SrcFiles: FileTreeFilter{
 				Directories: []string{"src/main"},
 				Filters:     getJavaFilters(),
 			},
-			TestFiles: Files{
+			TestFiles: FileTreeFilter{
 				Directories: []string{"src/test"},
 				Filters:     getJavaFilters(),
 			},

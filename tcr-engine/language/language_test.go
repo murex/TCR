@@ -38,11 +38,11 @@ func aLanguage(languageBuilders ...func(lang *Language)) *Language {
 			Default:    "default-toolchain",
 			Compatible: []string{"default-toolchain"},
 		},
-		SrcFiles: Files{
+		SrcFiles: FileTreeFilter{
 			Directories: []string{},
 			Filters:     []string{},
 		},
-		TestFiles: Files{
+		TestFiles: FileTreeFilter{
 			Directories: []string{},
 			Filters:     []string{},
 		},
@@ -76,7 +76,7 @@ func withDefaultToolchain(tchn string) func(lang *Language) {
 	return func(lang *Language) { lang.Toolchains.Default = tchn }
 }
 
-func withSourceDir(dirName string) func(lang *Language) {
+func withSrcDir(dirName string) func(lang *Language) {
 	return func(lang *Language) {
 		lang.SrcFiles.Directories = append(lang.SrcFiles.Directories, dirName)
 	}
@@ -170,7 +170,7 @@ func Test_does_not_detect_language_from_a_dir_name_not_matching_a_known_language
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
-	lang := aLanguage(withSourceDir(srcDir), withTestDir(testDir))
+	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
 	var expected = []string{srcDir, testDir}
 	assert.Equal(t, expected, lang.DirsToWatch(""))
 }
@@ -178,7 +178,7 @@ func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(withSourceDir(srcDir), withTestDir(testDir))
+	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
 	var expected = []string{filepath.Join(baseDir, srcDir), filepath.Join(baseDir, testDir)}
 	assert.Equal(t, expected, lang.DirsToWatch(baseDir))
 }
@@ -186,14 +186,14 @@ func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
 	const dir = "dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(withSourceDir(dir), withSourceDir(dir), withTestDir(dir), withTestDir(dir))
+	lang := aLanguage(withSrcDir(dir), withSrcDir(dir), withTestDir(dir), withTestDir(dir))
 	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
 }
 
 func Test_file_path_is_in_src_dirs_tree(t *testing.T) {
 	const srcDir = "src-dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(withBaseDir(""), withSourceDir(srcDir))
+	lang := aLanguage(withBaseDir(""), withSrcDir(srcDir))
 	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
 		okPath := filepath.Join(baseDir, srcDir, dir)
 		koPath := filepath.Join(baseDir, dir)

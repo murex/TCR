@@ -27,7 +27,7 @@ import (
 	"testing"
 )
 
-func Test_convert_backslashed_path_to_local_path(t *testing.T) {
+func Test_convert_back_slashed_path_to_local_path(t *testing.T) {
 	var input = "some\\path\\with\\backslash"
 	var expected = "some\\path\\with\\backslash"
 	assert.Equal(t, expected, toLocalPath(input))

@@ -1,5 +1,3 @@
-//go:build !windows
-
 /*
 Copyright (c) 2021 Murex
 
@@ -25,18 +23,36 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
 )
 
-func Test_convert_backslashed_path_to_local_path(t *testing.T) {
-	var input = "some\\path\\with\\backslash"
-	var expected = "some/path/with/backslash"
-	assert.Equal(t, expected, toLocalPath(input))
+type (
+	// FileTreeFilter provides filtering mechanisms allowing to determine if a file or directory
+	// is related to a language
+	FileTreeFilter struct {
+		Directories []string
+		Filters     []string
+	}
+)
+
+func toLocalPath(input string) string {
+	return filepath.Join(strings.Split(toSlashedPath(input), "/")...)
 }
 
-func Test_convert_slashed_path_to_local_path(t *testing.T) {
-	var input = "some/path/with/slash"
-	var expected = "some/path/with/slash"
-	assert.Equal(t, expected, toLocalPath(input))
+func toSlashedPath(input string) string {
+	return path.Join(strings.Split(input, "\\")...)
+}
+
+func (files FileTreeFilter) isInFileTree(path string, baseDir string) bool {
+	absPath, _ := filepath.Abs(path)
+	for _, dir := range files.Directories {
+		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
+		if filterAbsPath == absPath || strings.HasPrefix(absPath, filterAbsPath+string(os.PathSeparator)) {
+			return true
+		}
+	}
+	return false
 }

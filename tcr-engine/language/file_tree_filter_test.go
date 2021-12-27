@@ -23,23 +23,18 @@ SOFTWARE.
 package language
 
 import (
-	"path"
-	"path/filepath"
-	"strings"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type (
-	// Files defines the structure for files and directories related to a language
-	Files struct {
-		Directories []string
-		Filters     []string
-	}
-)
-
-func toLocalPath(input string) string {
-	return filepath.Join(strings.Split(toSlashedPath(input), "/")...)
+func Test_convert_back_slashed_path_to_slashed_path(t *testing.T) {
+	var input = "some\\path\\with\\backslash"
+	var expected = "some/path/with/backslash"
+	assert.Equal(t, expected, toSlashedPath(input))
 }
 
-func toSlashedPath(input string) string {
-	return path.Join(strings.Split(input, "\\")...)
+func Test_convert_slashed_path_to_slashed_path(t *testing.T) {
+	var input = "some/path/with/slash"
+	var expected = "some/path/with/slash"
+	assert.Equal(t, expected, toSlashedPath(input))
 }

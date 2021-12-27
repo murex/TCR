@@ -26,7 +26,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -45,8 +44,8 @@ type (
 	Language struct {
 		Name       string
 		Toolchains Toolchains
-		SrcFiles   Files
-		TestFiles  Files
+		SrcFiles   FileTreeFilter
+		TestFiles  FileTreeFilter
 		baseDir    string
 	}
 )
@@ -303,14 +302,7 @@ func (lang Language) SrcDirs() []string {
 }
 
 func (lang Language) isInSrcTree(path string) bool {
-	absPath, _ := filepath.Abs(path)
-	for _, dir := range lang.SrcDirs() {
-		srcDir, _ := filepath.Abs(filepath.Join(lang.baseDir, dir))
-		if srcDir == absPath || strings.HasPrefix(absPath, srcDir+string(os.PathSeparator)) {
-			return true
-		}
-	}
-	return false
+	return lang.SrcFiles.isInFileTree(path, lang.baseDir)
 }
 
 // TestDirs returns the list of subdirectories that may contain test files for this language
@@ -319,14 +311,7 @@ func (lang Language) TestDirs() []string {
 }
 
 func (lang Language) isInTestTree(path string) bool {
-	absPath, _ := filepath.Abs(path)
-	for _, dir := range lang.TestDirs() {
-		testDir, _ := filepath.Abs(filepath.Join(lang.baseDir, dir))
-		if testDir == absPath || strings.HasPrefix(absPath, testDir+string(os.PathSeparator)) {
-			return true
-		}
-	}
-	return false
+	return lang.TestFiles.isInFileTree(path, lang.baseDir)
 }
 
 func (lang *Language) setBaseDir(dir string) {

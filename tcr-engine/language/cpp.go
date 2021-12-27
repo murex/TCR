@@ -30,11 +30,11 @@ func init() {
 				Default:    "cmake",
 				Compatible: []string{"cmake", "cmake-local"},
 			},
-			SrcFiles: Files{
+			SrcFiles: FileTreeFilter{
 				Directories: []string{"src", "include"},
 				Filters:     getCppFilters(),
 			},
-			TestFiles: Files{
+			TestFiles: FileTreeFilter{
 				Directories: []string{"test"},
 				Filters:     getCppFilters(),
 			},

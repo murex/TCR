@@ -1,3 +1,5 @@
+//go:build !windows
+
 /*
 Copyright (c) 2021 Murex
 
@@ -27,14 +29,14 @@ import (
 	"testing"
 )
 
-func Test_convert_backslashed_path_to_slashed_path(t *testing.T) {
+func Test_convert_back_slashed_path_to_local_path(t *testing.T) {
 	var input = "some\\path\\with\\backslash"
 	var expected = "some/path/with/backslash"
-	assert.Equal(t, expected, toSlashedPath(input))
+	assert.Equal(t, expected, toLocalPath(input))
 }
 
-func Test_convert_slashed_path_to_slashed_path(t *testing.T) {
+func Test_convert_slashed_path_to_local_path(t *testing.T) {
 	var input = "some/path/with/slash"
 	var expected = "some/path/with/slash"
-	assert.Equal(t, expected, toSlashedPath(input))
+	assert.Equal(t, expected, toLocalPath(input))
 }

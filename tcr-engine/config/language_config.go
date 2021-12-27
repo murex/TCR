@@ -37,24 +37,24 @@ var (
 )
 
 type (
-	// LanguageToolchainConfig defines the structure for toolchains related to a language
+	// LanguageToolchainConfig defines the structure for toolchains configuration related to a language
 	LanguageToolchainConfig struct {
 		Default    string   `yaml:"default"`
 		Compatible []string `yaml:"compatible-with,flow"`
 	}
 
-	// LanguageFilesConfig defines the structure for files and directories related to a language
-	LanguageFilesConfig struct {
+	// LanguageFileTreeFilterConfig defines the structure for file tree filtering configuration related to a language
+	LanguageFileTreeFilterConfig struct {
 		Directories []string `yaml:"directories,flow"`
 		Filters     []string `yaml:"name-filters,flow"`
 	}
 
 	// LanguageConfig defines the structure of a language configuration.
 	LanguageConfig struct {
-		Name        string                  `yaml:"-"`
-		Toolchains  LanguageToolchainConfig `yaml:"toolchains"`
-		SourceFiles LanguageFilesConfig     `yaml:"source-files"`
-		TestFiles   LanguageFilesConfig     `yaml:"test-files"`
+		Name        string                       `yaml:"-"`
+		Toolchains  LanguageToolchainConfig      `yaml:"toolchains"`
+		SourceFiles LanguageFileTreeFilterConfig `yaml:"source-files"`
+		TestFiles   LanguageFileTreeFilterConfig `yaml:"test-files"`
 	}
 )
 
@@ -103,13 +103,13 @@ func asLanguage(languageCfg LanguageConfig) language.Language {
 	return language.Language{
 		Name:       languageCfg.Name,
 		Toolchains: asLanguageToolchains(languageCfg.Toolchains),
-		SrcFiles:   asLanguageFiles(languageCfg.SourceFiles),
-		TestFiles:  asLanguageFiles(languageCfg.TestFiles),
+		SrcFiles:   asLanguageFileTreeFilter(languageCfg.SourceFiles),
+		TestFiles:  asLanguageFileTreeFilter(languageCfg.TestFiles),
 	}
 }
 
-func asLanguageFiles(filesCfg LanguageFilesConfig) language.Files {
-	return language.Files{
+func asLanguageFileTreeFilter(filesCfg LanguageFileTreeFilterConfig) language.FileTreeFilter {
+	return language.FileTreeFilter{
 		Directories: asLanguageDirectoryTable(filesCfg.Directories),
 		Filters:     asLanguageFilterTable(filesCfg.Filters),
 	}
@@ -147,13 +147,13 @@ func asLanguageConfig(lang *language.Language) LanguageConfig {
 	return LanguageConfig{
 		Name:        lang.GetName(),
 		Toolchains:  asLanguageToolchainsConfig(lang.Toolchains),
-		SourceFiles: asLanguageFilesConfig(lang.SrcFiles),
-		TestFiles:   asLanguageFilesConfig(lang.TestFiles),
+		SourceFiles: asLanguageFileTreeFilterConfig(lang.SrcFiles),
+		TestFiles:   asLanguageFileTreeFilterConfig(lang.TestFiles),
 	}
 }
 
-func asLanguageFilesConfig(files language.Files) LanguageFilesConfig {
-	return LanguageFilesConfig{
+func asLanguageFileTreeFilterConfig(files language.FileTreeFilter) LanguageFileTreeFilterConfig {
+	return LanguageFileTreeFilterConfig{
 		Directories: asLanguageDirectoryTableConfig(files.Directories),
 		Filters:     asLanguageFilterTableConfig(files.Filters),
 	}
