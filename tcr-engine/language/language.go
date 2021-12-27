@@ -27,7 +27,6 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
-	"regexp"
 	"sort"
 	"strings"
 )
@@ -75,8 +74,11 @@ func isSupported(name string) bool {
 	return found
 }
 
-// Get returns the language instance with the provided name
+// Get returns the language instance with the provided name.
 // The language name is case-insensitive.
+// This method does not guarantee that the returned language instance can
+// be used out of the box for file filtering operations as it does not
+// enforce that baseDir is set. Prefer GetLanguage in this case.
 func Get(name string) (*Language, error) {
 	if name == "" {
 		return nil, errors.New("language name not provided")
@@ -122,17 +124,6 @@ func addBuiltIn(lang Language) error {
 	}
 	builtIn[strings.ToLower(lang.Name)] = lang
 	return Register(lang)
-}
-
-// buildRegex is a utility function adding flags and markers to a regex pattern
-// so that it ignores character case and has the beginning and end of text markers
-func buildRegex(corePattern string) string {
-	const (
-		ignoreCaseFlag  = "(?i)"
-		beginningMarker = "^"
-		endMarker       = "$"
-	)
-	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
 }
 
 // GetName provides the name of the toolchain
@@ -197,29 +188,12 @@ func (lang Language) IsSrcFile(filepath string) bool {
 	if lang.IsTestFile(filepath) {
 		return false
 	}
-
-	if lang.isInSrcTree(filepath) {
-		for _, filter := range lang.SrcFiles.Filters {
-			re := regexp.MustCompile(filter)
-			if re.MatchString(filepath) {
-				return true
-			}
-		}
-	}
-	return false
+	return lang.SrcFiles.matches(filepath, lang.baseDir)
 }
 
 // IsTestFile returns true if the provided filePath is recognized as a test file for this language
 func (lang Language) IsTestFile(filepath string) bool {
-	if lang.isInTestTree(filepath) {
-		for _, filter := range lang.TestFiles.Filters {
-			re := regexp.MustCompile(filter)
-			if re.MatchString(filepath) {
-				return true
-			}
-		}
-	}
-	return false
+	return lang.TestFiles.matches(filepath, lang.baseDir)
 }
 
 // IsLanguageFile returns true if the provided filePath is recognized as either a source or a test file for this language
@@ -303,11 +277,6 @@ func (lang Language) SrcDirs() []string {
 
 func (lang Language) isInSrcTree(path string) bool {
 	return lang.SrcFiles.isInFileTree(path, lang.baseDir)
-}
-
-// TestDirs returns the list of subdirectories that may contain test files for this language
-func (lang Language) TestDirs() []string {
-	return lang.TestFiles.Directories
 }
 
 func (lang Language) isInTestTree(path string) bool {

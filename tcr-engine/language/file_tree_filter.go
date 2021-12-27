@@ -26,6 +26,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -46,13 +47,36 @@ func toSlashedPath(input string) string {
 	return path.Join(strings.Split(input, "\\")...)
 }
 
-func (files FileTreeFilter) isInFileTree(path string, baseDir string) bool {
+func (treeFilter FileTreeFilter) isInFileTree(path string, baseDir string) bool {
 	absPath, _ := filepath.Abs(path)
-	for _, dir := range files.Directories {
+	for _, dir := range treeFilter.Directories {
 		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
 		if filterAbsPath == absPath || strings.HasPrefix(absPath, filterAbsPath+string(os.PathSeparator)) {
 			return true
 		}
 	}
 	return false
+}
+
+func (treeFilter FileTreeFilter) matches(filepath string, baseDir string) bool {
+	if treeFilter.isInFileTree(filepath, baseDir) {
+		for _, filter := range treeFilter.Filters {
+			re := regexp.MustCompile(filter)
+			if re.MatchString(filepath) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// buildRegex is a utility function adding flags and markers to a regex pattern
+// so that it ignores character case and has the beginning and end of text markers
+func buildRegex(corePattern string) string {
+	const (
+		ignoreCaseFlag  = "(?i)"
+		beginningMarker = "^"
+		endMarker       = "$"
+	)
+	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
 }

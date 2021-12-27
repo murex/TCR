@@ -171,16 +171,18 @@ func Test_does_not_detect_language_from_a_dir_name_not_matching_a_known_language
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
-	var expected = []string{srcDir, testDir}
-	assert.Equal(t, expected, lang.DirsToWatch(""))
+	dirs := lang.DirsToWatch("")
+	assert.Contains(t, dirs, srcDir)
+	assert.Contains(t, dirs, testDir)
 }
 
 func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	baseDir, _ := os.Getwd()
 	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
-	var expected = []string{filepath.Join(baseDir, srcDir), filepath.Join(baseDir, testDir)}
-	assert.Equal(t, expected, lang.DirsToWatch(baseDir))
+	dirs := lang.DirsToWatch(baseDir)
+	assert.Contains(t, dirs, filepath.Join(baseDir, srcDir))
+	assert.Contains(t, dirs, filepath.Join(baseDir, testDir))
 }
 
 func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
@@ -277,21 +279,22 @@ func shouldNotMatch(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
 }
 
-func buildFilePathMatchers(matcher func(string) filePathMatcher, srcDir string, fileBaseName string, ext string) []filePathMatcher {
-	var matchers []filePathMatcher
-	var basePath = filepath.Join(srcDir, fileBaseName)
-	var subDirPath = filepath.Join(srcDir, "subDir", fileBaseName)
-	matchers = append(matchers,
-		shouldNotMatch(basePath),
-		matcher(basePath+strings.ToLower(ext)),
-		matcher(basePath+strings.ToUpper(ext)),
-		matcher(basePath+strings.ToUpper(ext)),
+// buildFilePathMatchers is a convenience method building a set of matching tests with the provided
+// dir, fileBaseName and fileExt.
+// Among other things, it checks that extension matching is case-insensitive, that temporary files with
+// "~" or ".swp" are excluded, and that matching should pass with files in subdirectories from parentDir
+func buildFilePathMatchers(matcher func(string) filePathMatcher, parentDir string, fileBase string, fileExt string) []filePathMatcher {
+	var fileBasePath = filepath.Join(parentDir, fileBase)
+	var subDirPath = filepath.Join(parentDir, "subDir", fileBase)
+	return []filePathMatcher{
+		shouldNotMatch(fileBasePath),
+		matcher(fileBasePath + strings.ToLower(fileExt)),
+		matcher(fileBasePath + strings.ToUpper(fileExt)),
 		shouldNotMatch(subDirPath),
-		matcher(subDirPath+ext),
-		shouldNotMatch(basePath+ext+"~"),
-		shouldNotMatch(basePath+ext+".swp"),
-	)
-	return matchers
+		matcher(subDirPath + fileExt),
+		shouldNotMatch(fileBasePath + fileExt + "~"),
+		shouldNotMatch(fileBasePath + fileExt + ".swp"),
+	}
 }
 
 func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
