@@ -32,13 +32,13 @@ func init() {
 			},
 			SrcFiles: FileTreeFilter{
 				Directories: []string{"."},
-				Filters: []string{
+				FilePatterns: []string{
 					buildRegex(".*\\.go"),
 				},
 			},
 			TestFiles: FileTreeFilter{
 				Directories: []string{"."},
-				Filters: []string{
+				FilePatterns: []string{
 					buildRegex(".*_test\\.go"),
 				},
 			},

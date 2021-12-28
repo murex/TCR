@@ -45,8 +45,8 @@ type (
 
 	// LanguageFileTreeFilterConfig defines the structure for file tree filtering configuration related to a language
 	LanguageFileTreeFilterConfig struct {
-		Directories []string `yaml:"directories,flow"`
-		Filters     []string `yaml:"name-filters,flow"`
+		Directories  []string `yaml:"directories,flow"`
+		FilePatterns []string `yaml:"patterns,flow"`
 	}
 
 	// LanguageConfig defines the structure of a language configuration.
@@ -110,8 +110,8 @@ func asLanguage(languageCfg LanguageConfig) language.Language {
 
 func asLanguageFileTreeFilter(filesCfg LanguageFileTreeFilterConfig) language.FileTreeFilter {
 	return language.FileTreeFilter{
-		Directories: asLanguageDirectoryTable(filesCfg.Directories),
-		Filters:     asLanguageFilterTable(filesCfg.Filters),
+		Directories:  asLanguageDirectoryTable(filesCfg.Directories),
+		FilePatterns: asLanguageFilePatternTable(filesCfg.FilePatterns),
 	}
 }
 
@@ -130,8 +130,8 @@ func asLanguageDirectoryTable(directoryTableCfg []string) []string {
 	return append([]string(nil), directoryTableCfg...)
 }
 
-func asLanguageFilterTable(fileFilterTableCfg []string) []string {
-	return append([]string(nil), fileFilterTableCfg...)
+func asLanguageFilePatternTable(filePatternTableCfg []string) []string {
+	return append([]string(nil), filePatternTableCfg...)
 }
 
 func resetLanguageConfigs() {
@@ -154,8 +154,8 @@ func asLanguageConfig(lang *language.Language) LanguageConfig {
 
 func asLanguageFileTreeFilterConfig(files language.FileTreeFilter) LanguageFileTreeFilterConfig {
 	return LanguageFileTreeFilterConfig{
-		Directories: asLanguageDirectoryTableConfig(files.Directories),
-		Filters:     asLanguageFilterTableConfig(files.Filters),
+		Directories:  asLanguageDirectoryTableConfig(files.Directories),
+		FilePatterns: asLanguageFilePatternTableConfig(files.FilePatterns),
 	}
 }
 
@@ -174,8 +174,8 @@ func asLanguageDirectoryTableConfig(directoryTable []string) []string {
 	return append([]string(nil), directoryTable...)
 }
 
-func asLanguageFilterTableConfig(fileFilterTable []string) []string {
-	return append([]string(nil), fileFilterTable...)
+func asLanguageFilePatternTableConfig(filePatternTable []string) []string {
+	return append([]string(nil), filePatternTable...)
 }
 
 func initLanguageConfigDirPath() {

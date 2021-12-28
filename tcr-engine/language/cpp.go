@@ -31,12 +31,12 @@ func init() {
 				Compatible: []string{"cmake", "cmake-local"},
 			},
 			SrcFiles: FileTreeFilter{
-				Directories: []string{"src", "include"},
-				Filters:     getCppFilters(),
+				Directories:  []string{"src", "include"},
+				FilePatterns: getCppFilters(),
 			},
 			TestFiles: FileTreeFilter{
-				Directories: []string{"test"},
-				Filters:     getCppFilters(),
+				Directories:  []string{"test"},
+				FilePatterns: getCppFilters(),
 			},
 		},
 	)

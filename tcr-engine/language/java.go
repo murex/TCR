@@ -31,12 +31,12 @@ func init() {
 				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"},
 			},
 			SrcFiles: FileTreeFilter{
-				Directories: []string{"src/main"},
-				Filters:     getJavaFilters(),
+				Directories:  []string{"src/main"},
+				FilePatterns: getJavaFilters(),
 			},
 			TestFiles: FileTreeFilter{
-				Directories: []string{"src/test"},
-				Filters:     getJavaFilters(),
+				Directories:  []string{"src/test"},
+				FilePatterns: getJavaFilters(),
 			},
 		},
 	)

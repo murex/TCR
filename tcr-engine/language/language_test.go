@@ -237,6 +237,20 @@ func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
 	}
 }
 
+func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
+	lang := getBuiltIn(name)
+	for _, toolchain := range expected {
+		assert.True(t, lang.worksWithToolchain(toolchain))
+	}
+}
+
+func assertIncompatibleToolchains(t *testing.T, expected []string, name string) {
+	lang := getBuiltIn(name)
+	for _, toolchain := range expected {
+		assert.False(t, lang.worksWithToolchain(toolchain))
+	}
+}
+
 type filePathMatcher struct {
 	filePath   string
 	isSrcFile  bool
@@ -246,10 +260,10 @@ type filePathMatcher struct {
 func shouldMatchSrc(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: true, isTestFile: false}
 }
+
 func shouldMatchTest(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: true}
 }
-
 func shouldNotMatch(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
 }
@@ -279,19 +293,5 @@ func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name stri
 			"Should %v be a source file?", matcher.filePath)
 		assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
 			"Should %v be a test file?", matcher.filePath)
-	}
-}
-
-func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
-	lang := getBuiltIn(name)
-	for _, toolchain := range expected {
-		assert.True(t, lang.worksWithToolchain(toolchain))
-	}
-}
-
-func assertIncompatibleToolchains(t *testing.T, expected []string, name string) {
-	lang := getBuiltIn(name)
-	for _, toolchain := range expected {
-		assert.False(t, lang.worksWithToolchain(toolchain))
 	}
 }

@@ -34,8 +34,8 @@ type (
 	// FileTreeFilter provides filtering mechanisms allowing to determine if a file or directory
 	// is related to a language
 	FileTreeFilter struct {
-		Directories []string
-		Filters     []string
+		Directories  []string
+		FilePatterns []string
 	}
 )
 
@@ -49,18 +49,36 @@ func toSlashedPath(input string) string {
 
 func (treeFilter FileTreeFilter) isInFileTree(path string, baseDir string) bool {
 	absPath, _ := filepath.Abs(path)
+	// If no directory is configured, any path that is under baseDir path is ok
+	if treeFilter.Directories == nil || len(treeFilter.Directories) == 0 {
+		if isSubPathOf(absPath, baseDir) {
+			return true
+		}
+	}
+
 	for _, dir := range treeFilter.Directories {
 		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
-		if filterAbsPath == absPath || strings.HasPrefix(absPath, filterAbsPath+string(os.PathSeparator)) {
+		if isSubPathOf(absPath, filterAbsPath) {
 			return true
 		}
 	}
 	return false
 }
 
+func isSubPathOf(path string, refPath string) bool {
+	if refPath == path || strings.HasPrefix(path, refPath+string(os.PathSeparator)) {
+		return true
+	}
+	return false
+}
+
 func (treeFilter FileTreeFilter) matches(filepath string, baseDir string) bool {
 	if treeFilter.isInFileTree(filepath, baseDir) {
-		for _, filter := range treeFilter.Filters {
+		// If no pattern is set, any file matches as long as it's in the file tree
+		if treeFilter.FilePatterns == nil || len(treeFilter.FilePatterns) == 0 {
+			return true
+		}
+		for _, filter := range treeFilter.FilePatterns {
 			re := regexp.MustCompile(filter)
 			if re.MatchString(filepath) {
 				return true
