@@ -275,13 +275,13 @@ func (lang Language) SrcDirs() []string {
 	return lang.SrcFiles.Directories
 }
 
-func (lang Language) isInSrcTree(path string) bool {
-	return lang.SrcFiles.isInFileTree(path, lang.baseDir)
-}
-
-func (lang Language) isInTestTree(path string) bool {
-	return lang.TestFiles.isInFileTree(path, lang.baseDir)
-}
+//func (lang Language) isInSrcTree(path string) bool {
+//	return lang.SrcFiles.isInFileTree(path, lang.baseDir)
+//}
+//
+//func (lang Language) isInTestTree(path string) bool {
+//	return lang.TestFiles.isInFileTree(path, lang.baseDir)
+//}
 
 func (lang *Language) setBaseDir(dir string) {
 	lang.baseDir, _ = filepath.Abs(dir)

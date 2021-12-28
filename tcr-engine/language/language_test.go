@@ -38,14 +38,8 @@ func aLanguage(languageBuilders ...func(lang *Language)) *Language {
 			Default:    "default-toolchain",
 			Compatible: []string{"default-toolchain"},
 		},
-		SrcFiles: FileTreeFilter{
-			Directories: []string{},
-			Filters:     []string{},
-		},
-		TestFiles: FileTreeFilter{
-			Directories: []string{},
-			Filters:     []string{},
-		},
+		SrcFiles:  *aFileTreeFilter(),
+		TestFiles: *aFileTreeFilter(),
 	}
 
 	for _, build := range languageBuilders {
@@ -76,21 +70,17 @@ func withDefaultToolchain(tchn string) func(lang *Language) {
 	return func(lang *Language) { lang.Toolchains.Default = tchn }
 }
 
-func withSrcDir(dirName string) func(lang *Language) {
-	return func(lang *Language) {
-		lang.SrcFiles.Directories = append(lang.SrcFiles.Directories, dirName)
-	}
+func withSrcFiles(filter *FileTreeFilter) func(lang *Language) {
+	return func(lang *Language) { lang.SrcFiles = *filter }
 }
 
-func withTestDir(dirName string) func(lang *Language) {
-	return func(lang *Language) {
-		lang.TestFiles.Directories = append(lang.TestFiles.Directories, dirName)
-	}
+func withTestFiles(filter *FileTreeFilter) func(lang *Language) {
+	return func(lang *Language) { lang.TestFiles = *filter }
 }
 
-func withBaseDir(path string) func(lang *Language) {
-	return func(lang *Language) { lang.setBaseDir(path) }
-}
+//func withBaseDir(path string) func(lang *Language) {
+//	return func(lang *Language) { lang.setBaseDir(path) }
+//}
 
 // =========================================================================================
 
@@ -170,7 +160,10 @@ func Test_does_not_detect_language_from_a_dir_name_not_matching_a_known_language
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
-	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
+	lang := aLanguage(
+		withSrcFiles(aFileTreeFilter(withDirectory(srcDir))),
+		withTestFiles(aFileTreeFilter(withDirectory(testDir))),
+	)
 	dirs := lang.DirsToWatch("")
 	assert.Contains(t, dirs, srcDir)
 	assert.Contains(t, dirs, testDir)
@@ -179,7 +172,10 @@ func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(withSrcDir(srcDir), withTestDir(testDir))
+	lang := aLanguage(
+		withSrcFiles(aFileTreeFilter(withDirectory(srcDir))),
+		withTestFiles(aFileTreeFilter(withDirectory(testDir))),
+	)
 	dirs := lang.DirsToWatch(baseDir)
 	assert.Contains(t, dirs, filepath.Join(baseDir, srcDir))
 	assert.Contains(t, dirs, filepath.Join(baseDir, testDir))
@@ -188,32 +184,11 @@ func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
 	const dir = "dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(withSrcDir(dir), withSrcDir(dir), withTestDir(dir), withTestDir(dir))
+	lang := aLanguage(
+		withSrcFiles(aFileTreeFilter(withDirectory(dir), withDirectory(dir))),
+		withTestFiles(aFileTreeFilter(withDirectory(dir), withDirectory(dir))),
+	)
 	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
-}
-
-func Test_file_path_is_in_src_dirs_tree(t *testing.T) {
-	const srcDir = "src-dir"
-	baseDir, _ := os.Getwd()
-	lang := aLanguage(withBaseDir(""), withSrcDir(srcDir))
-	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
-		okPath := filepath.Join(baseDir, srcDir, dir)
-		koPath := filepath.Join(baseDir, dir)
-		assert.True(t, lang.isInSrcTree(okPath))
-		assert.False(t, lang.isInSrcTree(koPath))
-	}
-}
-
-func Test_file_path_is_in_test_dirs_tree(t *testing.T) {
-	const testDir = "test-dir"
-	baseDir, _ := os.Getwd()
-	lang := aLanguage(withBaseDir(""), withTestDir(testDir))
-	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
-		okPath := filepath.Join(baseDir, testDir, dir)
-		koPath := filepath.Join(baseDir, dir)
-		assert.True(t, lang.isInTestTree(okPath))
-		assert.False(t, lang.isInTestTree(koPath))
-	}
 }
 
 // Assert utility functions for language type

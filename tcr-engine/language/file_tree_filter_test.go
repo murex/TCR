@@ -24,8 +24,29 @@ package language
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+// aFileTreeFilter is a test data builder for type FileTreeFilter
+func aFileTreeFilter(builders ...func(filter *FileTreeFilter)) *FileTreeFilter {
+	filter := &FileTreeFilter{
+		Directories: []string{},
+		Filters:     []string{},
+	}
+
+	for _, build := range builders {
+		build(filter)
+	}
+	return filter
+}
+
+func withDirectory(dirName string) func(filter *FileTreeFilter) {
+	return func(filter *FileTreeFilter) {
+		filter.Directories = append(filter.Directories, dirName)
+	}
+}
 
 func Test_convert_back_slashed_path_to_slashed_path(t *testing.T) {
 	var input = "some\\path\\with\\backslash"
@@ -37,4 +58,16 @@ func Test_convert_slashed_path_to_slashed_path(t *testing.T) {
 	var input = "some/path/with/slash"
 	var expected = "some/path/with/slash"
 	assert.Equal(t, expected, toSlashedPath(input))
+}
+
+func Test_file_path_is_in_file_tree(t *testing.T) {
+	const srcDir = "dir"
+	baseDir, _ := os.Getwd()
+	filter := aFileTreeFilter(withDirectory(srcDir))
+	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
+		okPath := filepath.Join(baseDir, srcDir, dir)
+		assert.True(t, filter.isInFileTree(okPath, baseDir))
+		koPath := filepath.Join(baseDir, dir)
+		assert.False(t, filter.isInFileTree(koPath, baseDir))
+	}
 }
