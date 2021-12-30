@@ -23,7 +23,7 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/tcr-engine/report"
+	"errors"
 	"os"
 	"path"
 	"path/filepath"
@@ -100,12 +100,11 @@ func buildRegex(corePattern string) string {
 	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
 }
 
-func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string) {
+func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
 	for _, dir := range treeFilter.Directories {
 		err := filepath.Walk(dir, func(path string, fi os.FileInfo, err error) error {
 			if err != nil {
-				report.PostWarning("Something wrong with ", path)
-				return err
+				return errors.New("Something wrong with " + path)
 			}
 			if fi.IsDir() {
 				return nil
@@ -118,8 +117,8 @@ func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []s
 			return nil
 		})
 		if err != nil {
-			report.PostWarning("filepath.Walk(", dir, "): ", err)
+			return nil, err
 		}
 	}
-	return files
+	return files, nil
 }

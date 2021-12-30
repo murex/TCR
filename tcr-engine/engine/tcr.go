@@ -23,7 +23,6 @@ SOFTWARE.
 package engine
 
 import (
-	//	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/report"
@@ -257,7 +256,11 @@ func revert() {
 	// TODO Make revert messages more meaningful when only test code has changed
 
 	report.PostWarning("Reverting changes")
-	for _, file := range lang.AllSrcFiles() {
+	filesToRevert, err := lang.AllSrcFiles()
+	if err != nil {
+		report.PostWarning(err)
+	}
+	for _, file := range filesToRevert {
 		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), file))
 	}
 }

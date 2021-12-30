@@ -278,27 +278,37 @@ func (lang Language) SrcDirs() []string {
 // AllSrcFiles returns the list of source files for this language.
 // If there is an overlap between source and test files patterns, test files
 // are excluded from the returned list
-func (lang Language) AllSrcFiles() (srcFiles []string) {
-	testFiles := make(map[string]bool)
-	for _, path := range lang.allMatchingTestFiles() {
-		testFiles[path] = true
+func (lang Language) AllSrcFiles() (result []string, err error) {
+	var srcFiles, testFiles []string
+
+	testFilesMap := make(map[string]bool)
+	testFiles, err = lang.allMatchingTestFiles()
+	if err != nil {
+		return nil, err
+	}
+	for _, path := range testFiles {
+		testFilesMap[path] = true
 	}
 
-	for _, path := range lang.allMatchingSrcFiles() {
-		if !testFiles[path] {
-			srcFiles = append(srcFiles, path)
+	srcFiles, err = lang.allMatchingSrcFiles()
+	if err != nil {
+		return nil, err
+	}
+	for _, path := range srcFiles {
+		if !testFilesMap[path] {
+			result = append(result, path)
 		}
 	}
-	return srcFiles
+	return result, nil
 }
 
 // allMatchingSrcFiles returns the list of source files matching for this language
-func (lang Language) allMatchingSrcFiles() []string {
+func (lang Language) allMatchingSrcFiles() ([]string, error) {
 	return lang.SrcFiles.findAllMatchingFiles(lang.baseDir)
 }
 
 // allMatchingTestFiles returns the list of test files matching for this language
-func (lang Language) allMatchingTestFiles() []string {
+func (lang Language) allMatchingTestFiles() ([]string, error) {
 	return lang.TestFiles.findAllMatchingFiles(lang.baseDir)
 }
 
