@@ -275,13 +275,32 @@ func (lang Language) SrcDirs() []string {
 	return lang.SrcFiles.Directories
 }
 
-//func (lang Language) isInSrcTree(path string) bool {
-//	return lang.SrcFiles.isInFileTree(path, lang.baseDir)
-//}
-//
-//func (lang Language) isInTestTree(path string) bool {
-//	return lang.TestFiles.isInFileTree(path, lang.baseDir)
-//}
+// AllSrcFiles returns the list of source files for this language.
+// If there is an overlap between source and test files patterns, test files
+// are excluded from the returned list
+func (lang Language) AllSrcFiles() (srcFiles []string) {
+	testFiles := make(map[string]bool)
+	for _, path := range lang.allMatchingTestFiles() {
+		testFiles[path] = true
+	}
+
+	for _, path := range lang.allMatchingSrcFiles() {
+		if !testFiles[path] {
+			srcFiles = append(srcFiles, path)
+		}
+	}
+	return srcFiles
+}
+
+// allMatchingSrcFiles returns the list of source files matching for this language
+func (lang Language) allMatchingSrcFiles() []string {
+	return lang.SrcFiles.findAllMatchingFiles(lang.baseDir)
+}
+
+// allMatchingTestFiles returns the list of test files matching for this language
+func (lang Language) allMatchingTestFiles() []string {
+	return lang.TestFiles.findAllMatchingFiles(lang.baseDir)
+}
 
 func (lang *Language) setBaseDir(dir string) {
 	lang.baseDir, _ = filepath.Abs(dir)

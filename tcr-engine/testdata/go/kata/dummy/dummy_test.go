@@ -28,5 +28,5 @@ import (
 )
 
 func Test_acceptance_test(t *testing.T) {
-	assert.Equal(t, 42, doSomething())
+	assert.Equal(t, 40, doSomething())
 }

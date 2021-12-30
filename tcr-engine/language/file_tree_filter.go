@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"path"
 	"path/filepath"
@@ -97,4 +98,28 @@ func buildRegex(corePattern string) string {
 		endMarker       = "$"
 	)
 	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
+}
+
+func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string) {
+	for _, dir := range treeFilter.Directories {
+		err := filepath.Walk(dir, func(path string, fi os.FileInfo, err error) error {
+			if err != nil {
+				report.PostWarning("Something wrong with ", path)
+				return err
+			}
+			if fi.IsDir() {
+				return nil
+			}
+			// If the filename matches the file pattern, we add it to the list of files
+			if treeFilter.matches(path, baseDir) {
+				files = append(files, path)
+				return err
+			}
+			return nil
+		})
+		if err != nil {
+			report.PostWarning("filepath.Walk(", dir, "): ", err)
+		}
+	}
+	return files
 }

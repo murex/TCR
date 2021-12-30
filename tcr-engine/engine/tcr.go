@@ -256,11 +256,10 @@ func commit() {
 func revert() {
 	// TODO Make revert messages more meaningful when only test code has changed
 
-	// TODO Will probably need to do a file per file revert for languages such as Go where src and test files are together in the same directory
-
 	report.PostWarning("Reverting changes")
-	for _, dir := range lang.SrcDirs() {
-		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), dir))
+	for _, file := range lang.AllSrcFiles() {
+		report.PostWarning("- ", file)
+		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), file))
 	}
 }
 
