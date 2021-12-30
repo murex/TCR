@@ -67,6 +67,10 @@ func (treeFilter FileTreeFilter) isInFileTree(path string, baseDir string) bool 
 }
 
 func isSubPathOf(path string, refPath string) bool {
+	// If refPath is empty, we consider it as being the root, thus path is a sub-path of refPath
+	if refPath == "" {
+		return true
+	}
 	if refPath == path || strings.HasPrefix(path, refPath+string(os.PathSeparator)) {
 		return true
 	}
