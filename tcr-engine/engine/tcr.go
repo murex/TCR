@@ -258,7 +258,6 @@ func revert() {
 
 	report.PostWarning("Reverting changes")
 	for _, file := range lang.AllSrcFiles() {
-		report.PostWarning("- ", file)
 		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), file))
 	}
 }
