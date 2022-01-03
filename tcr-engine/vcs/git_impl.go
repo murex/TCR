@@ -138,7 +138,7 @@ func (g *GitImpl) Commit() error {
 	// git command call
 	// TODO When gitignore rules are implemented, use go-git.Commit()
 
-	_ = runGitCommand([]string{"commit", "-am", g.commitMessage})
+	_ = runGitCommand([]string{"commit", "--no-gpg-sign", "-am", g.commitMessage})
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit
 	return nil
