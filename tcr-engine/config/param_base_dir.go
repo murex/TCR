@@ -38,7 +38,7 @@ func AddBaseDirParam(cmd *cobra.Command) *StringParam {
 			cobraSettings: cobraSettings{
 				name:       "base-dir",
 				shorthand:  "b",
-				usage:      "indicate the base directory from which TCR is running",
+				usage:      "indicate the base directory from which TCR is running (default: current directory)",
 				persistent: true,
 			},
 		},
