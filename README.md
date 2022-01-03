@@ -47,53 +47,67 @@ If you are a technical coach, you can advise participants to your coaching sessi
 1. Have [git](https://git-scm.com/) installed on your machine
 2. Have a clone of the git repository containing the code you intend to work on
 3. Supported platforms: macOS, Linux and Windows. Refer to [TCR releases page](https://github.com/murex/TCR/releases)
-   for supported architectures
-4. Supported languages: TCR tool currently works with Java and C++ out of the box (more to come in the future)
-5. Have [Java JDK](https://jdk.java.net/archive/) 11 or later installed for java, or a working C++ compiler
-6. Build toolchains:
-    - [Gradle](https://gradle.org/) and [Maven](https://maven.apache.org/index.html) for Java
-    - [CMake](https://cmake.org/) for C++
-7. If you're using an IDE, make sure that **your IDE's auto-save is turned off**. TCR is constantly watching for file
-   changes in your code, and for this reason it does not get along well with IDE's auto-save features.
+   for a complete list of supported platforms/architectures
 
-### Directory Layout
+### Languages and toolchains
 
-The TCR tool needs to know where both production code and test code are located.
+TCR can potentially work with any programming language. The only things it needs to know for a language are the
+following:
 
-For this reason it makes some assumptions on the code directory structure.
+- Where to find, and how to recognize source files
+- Where to find, and how to recognize test files
+- How to build the code
+- How to run the tests
+
+The 2 first points are defined through a `language` setting
+
+The 2 other points are defined through a `toolchain` setting
+
+TCR comes with a few built-in languages and toolchains.
+
+You can customize these built-in settings if needed. You can also add your own languages and toolchains if they are not
+provided as built-in.
+
+#### Built-in languages and toolchains
+
+| Language | Toolchains                                   | Default        |
+|----------|----------------------------------------------|----------------|
+| java     | gradle, gradle-wrapper, maven, maven-wrapper | gradle-wrapper |
+| cpp      | cmake, cmake-local                           | cmake          |
+| go       | go-tools                                     | go-tools       |
+
+### Base directory
+
+In order to know which files and directories to watch, TCR needs to know on which part of the filesystem it should work.
+This is what we call the `base directory`.
+
+- The base directory can be specified when starting TCR using the `-b` (or `--base-dir`) command line option.
+- When the base directory is not provided, TCR assumes that the current directory is the base directory.
+
+### Configuration directory
+
+If you want to save non-default TCR configuration options, customize a built-in language or toolchain, or add your own
+language/toolchain, TCR needs to know where it should save them. This is the purpose of the `configuration directory`.
+
+- The configuration directory can be specified when starting TCR using the `-c` (or `--config-dir`) command line option.
+- When the configuration directory is not provided, TCR assumes that the current directory is the configuration
+  directory.
 
 <details>
-  <summary>Directory Layout for Java</summary>
+  <summary>Configuration directory layout</summary>
 
-- TCR expects that the root directory for java code is named `java`
-- Under the root directory, TCR assumes that the code
-  follows [Maven's Standard Directory Layout](https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html)
-- If you intend to use Gradle as the build toolchain, make sure to
-  install [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) under the root directory
-- If you intend to use Maven as the build toolchain, install [Maven Wrapper](https://github.com/takari/maven-wrapper)
-  under the root directory
-
-In case of doubt you can have a look at [this example](./tcr-engine/testdata/java)
-
-</details>
-
-<details>
-  <summary>Directory Layout for C++</summary>
-
-- TCR expects that the root directory for C++ code is named `cpp`
-- Under the root directory, TCR assumes that the code is organized into 4 subdirectories:
-    - `src` - Source code
-    - `include` - Header files
-    - `test` - Test code
-    - `build` - Build files and directories
-- TCR expects to find a `CMakeLists.txt` under the root directory
-
-We advise you to have a look at [this example](./tcr-engine/testdata/cpp) to get a better idea of what TCR tool is
-expecting to find.
-
-The provided script [cpp_easy_setup.sh](./tcr-engine/testdata/cpp/cpp_easy_setup.sh) should help you have everything
-setup and running before running TCR. Among other things it downloads under the `build` directory a working version
-of `CMake` that will then be used by the TCR tool.
+- `configuration directory`/
+    - `.tcr`/
+        - `config.yml` - contains all TCR configuration settings
+        - `language`/ - subdirectory containing all language configurations
+            - `java.yml` - configuration for Java language
+            - `cpp.yml` - configuration for C++ language
+            - etc.
+        - `toolchain`/ - subdirectory containing all toolchain configurations
+            - `gradle.yml` - configuration for Gradle toolchain
+            - `gradle-wrapper.yml` - configuration for Gradle wrapper toolchain
+            - `cmake.yml` - configuration for CMake toolchain
+            - etc.
 
 </details>
 
@@ -104,17 +118,16 @@ of `CMake` that will then be used by the TCR tool.
 
 1. Download the latest version of TCR for Darwin from [here](https://github.com/murex/TCR/releases)
 
-2. Extract TCR executable
+2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    $ # Replace "0.8.0" with the appropriate version
-    $ tar zxf tcr_0.8.0_Darwin_x86_64.tar.gz
+    tar zxf tcr_0.9.0_Darwin_x86_64.tar.gz
     ```
 
 3. Launch TCR
 
     ```shell
-    $ ./tcr -b <path to the code root directory>
+    ./tcr -b <base-directory> -l <language> -t <toolchain>
     ```
 
 </details>
@@ -124,17 +137,16 @@ of `CMake` that will then be used by the TCR tool.
 
 1. Download the latest version of TCR for Linux from [here](https://github.com/murex/TCR/releases)
 
-2. Extract TCR executable
+2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    $ # Replace "0.8.0" with the appropriate version
-    $ tar zxf tcr_0.8.0_Linux_x86_64.tar.gz
+    tar zxf tcr_0.9.0_Linux_x86_64.tar.gz
     ```
 
 3. Launch TCR
 
     ```shell
-    $ ./tcr -b <path to the code root directory>
+    ./tcr -b <base-directory> -l <language> -t <toolchain>
     ```
 
 </details>
@@ -144,22 +156,151 @@ of `CMake` that will then be used by the TCR tool.
 
 1. Download the latest version of TCR for Windows from [here](https://github.com/murex/TCR/releases)
 
-2. Extract TCR executable
+2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    $ # Replace "0.8.0" with the appropriate version
-    $ tar zxf tcr_0.8.0_Windows_x86_64.tar.gz
+    tar zxf tcr_0.9.0_Windows_x86_64.tar.gz
     ```
 
 3. Launch TCR
 
     ```shell
-    $ ./tcr.exe -b <path to the code root directory>
+    ./tcr.exe -b <base-directory> -l <language> -t <toolchain>
     ```
 
 </details>
 
-#### Command line help (all platforms)
+### Using TCR configuration
+
+TCR runs by default without any local configuration, using either built-in settings or settings defined through command
+line options.
+
+If you prefer to use your own custom settings, you have the possibility to save them locally without the need to provide
+them every time you run TCR. This can be achieved through the `tcr config` subcommand.
+
+All configuration settings are saved in YAML format. Thus you can edit them later using a text editor.
+
+<details><summary>Expand for usage examples</summary>
+
+- To save TCR configuration in your HOME directory (using the default settings):
+
+    ```shell
+    ./tcr config save -c $HOME
+    ```
+- To save TCR configuration in the current directory, setting the timer duration to 10m, the language to java and the
+  toolchain to maven:
+
+    ```shell
+    ./tcr config save -d 10m -l java -t maven
+    ```
+
+- To show the current TCR configuration settings (previously saved in the current directory)
+
+    ```shell
+    ./tcr config show
+    ```
+
+- To reset TCR configuration settings to their default values (in the current directory)
+
+    ```shell
+    ./tcr config reset
+    ```
+
+</details>
+
+### Adding a new language and toolchain
+
+New languages and toolchains can be added through adding related configuration files in the configuration directory.
+
+<details><summary>Expand for details</summary>
+
+We're assuming in this example that the configuration directory is your HOME directory. Replace `$HOME` in the examples
+below if you prefer to use a different location.
+
+Suppose you want to run TCR with Javascript language and yarn toolchain. Here is what you would do:
+
+1. Create the TCR configuration directory structure (you can skip this step if you saved TCR configuration before)
+
+    ```shell
+    tcr config save -c $HOME
+    ```
+
+2. Create `yarn.yml` toolchain configuration file from an existing toolchain configuration
+
+    ```shell
+    cd $HOME/.tcr/toolchain
+    cp gradle.yml yarn.yml
+    ```
+
+3. Adjust `yarn.yml` contents
+
+   Edit `yarn.yml` with your favorite editor and adjust the contents as follows.
+
+   We're assuming here that yarn is installed and that `yarn build` and `yarn test`
+   are set up so that they run respectively the build and test.
+
+    ```yaml
+    build:
+    - os: [darwin, linux, windows]
+      arch: ["386", amd64, arm64]
+      command: yarn
+      arguments: [build]
+    test:
+    - os: [darwin, linux, windows]
+      arch: ["386", amd64, arm64]
+      command: yarn
+      arguments: [test]
+    ```
+
+4. Create `javascript.yml` language configuration file from an existing language configuration
+
+    ```shell
+    cd $HOME/.tcr/language
+    cp java.yml javascript.yml
+    ```
+
+5. Adjust `javascript.yml` contents
+
+   Edit `javascript.yml` with your favorite editor and adjust the contents as follows:
+
+   We're assuming here that all source files are under `src` subdirectory and are named `*.js`, and that all test files
+   are under `test` subdirectory and are named
+   `*.test.js`.
+
+    ```yaml
+    toolchains:
+      default: yarn
+      compatible-with: [yarn]
+    source-files:
+      directories: [src]
+      patterns: ['(?i)^.*\.js$']
+    test-files:
+      directories: [test]
+      patterns: ['(?i)^.*\.test\.js$']
+    ```
+
+   > ***Regex on filenames***
+   >
+   > TCR complies with [RE2](https://github.com/google/re2/wiki/Syntax)
+   > for pattern matching on filenames.
+
+6. Run TCR with the newly configured language and toolchain
+
+   ```shell
+   cd <base-directory>
+   tcr -c $HOME -l javascript -t yarn
+   ```
+
+   > ***Language's Default Toolchain***
+   >
+   > Each language has a default toolchain, which is the one
+   > that will be used with this language if no toolchain is specified on
+   > the command line.
+   > In the above example, `-t yarn` could actually be skipped.
+
+</details>
+
+### Command line help (all platforms)
 
 Refer to [here](./doc/tcr.md) for TCR command line help and additional options.
 
