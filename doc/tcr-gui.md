@@ -18,7 +18,7 @@ tcr-gui [flags]
 
 ```
   -p, --auto-push           enable git push after every commit
-  -b, --base-dir string     indicate the base directory from which TCR is running
+  -b, --base-dir string     indicate the base directory from which TCR is running (default: current directory)
   -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration   set the duration for role rotation countdown timer
   -h, --help                help for tcr-gui
