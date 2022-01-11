@@ -170,6 +170,24 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 
 </details>
 
+> ***Note***
+>
+> <details><summary>TCR and git commits signing</summary>
+>
+> Some users prefer to set up their git configuration so that each of their commits is
+> signed and verified through a GPG passphrase as described
+> [here](https://git-scm.com/book/en/v2/Git-Tools-Signing-Your-Work).
+>
+> TCR automatically performs a significant number of commits.
+> It would become unusable if the user had to enter a passphrase at each commit.
+>
+> For this reason, ***TCR commits are deliberately  not signed***.
+>
+> If signing every commit is important to you, you can still do it when you're done
+> working with TCR, when reworking git history and squashing TCR commits into meaningful ones.
+>
+> </details>
+
 ### Using TCR configuration
 
 TCR runs by default without any local configuration, using either built-in settings or settings defined through command
