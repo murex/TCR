@@ -271,6 +271,7 @@ func (term *Terminal) Start() {
 		// When running TCR in solo mode, there's no
 		// selection menu: we directly enter driver mode, and quit when done
 		term.startAs(role.Driver{})
+		stty.Restore()
 		engine.Quit()
 	case runmode.Mob{}:
 		// When running TCR in mob mode, every participant
