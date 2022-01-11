@@ -63,7 +63,7 @@ func Test_cpp_default_toolchain(t *testing.T) {
 }
 
 func Test_cpp_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, []string{"cmake", "cmake-local"}, cppLanguageName)
+	assertCompatibleToolchains(t, []string{"cmake"}, cppLanguageName)
 }
 
 func Test_cpp_incompatible_toolchains(t *testing.T) {

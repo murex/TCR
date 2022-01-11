@@ -73,7 +73,7 @@ provided as built-in.
 | Language | Toolchains                                   | Default        |
 |----------|----------------------------------------------|----------------|
 | java     | gradle, gradle-wrapper, maven, maven-wrapper | gradle-wrapper |
-| cpp      | cmake, cmake-local                           | cmake          |
+| cpp      | cmake                                        | cmake          |
 | go       | go-tools                                     | go-tools       |
 
 ### Base directory

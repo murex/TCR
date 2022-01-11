@@ -66,7 +66,7 @@ func Test_go_compatible_toolchains(t *testing.T) {
 
 func Test_go_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, goLanguageName)
-	assertIncompatibleToolchains(t, []string{"cmake", "cmake-local"}, goLanguageName)
+	assertIncompatibleToolchains(t, []string{"cmake"}, goLanguageName)
 }
 
 func Test_go_valid_file_paths(t *testing.T) {
