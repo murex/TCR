@@ -140,8 +140,10 @@ func GetLanguage(name string, baseDir string) (lang *Language, err error) {
 	} else {
 		lang, err = detectLanguageFromDirName(baseDir)
 	}
-	lang.setBaseDir(baseDir)
-	return lang, err
+	if lang != nil {
+		lang.setBaseDir(baseDir)
+	}
+	return
 }
 
 func getRegisteredLanguage(name string) (*Language, error) {
