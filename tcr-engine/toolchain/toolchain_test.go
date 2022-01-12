@@ -39,32 +39,6 @@ var (
 	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
 )
 
-// aToolchain is a test data builder for type Toolchain
-func aToolchain(toolchainBuilders ...func(tchn *Toolchain)) *Toolchain {
-	tchn := &Toolchain{
-		Name:          "default-toolchain",
-		BuildCommands: []Command{*aCommand(withPath("build-path"))},
-		TestCommands:  []Command{*aCommand(withPath("test-path"))},
-	}
-
-	for _, build := range toolchainBuilders {
-		build(tchn)
-	}
-	return tchn
-}
-
-func withName(name string) func(tchn *Toolchain) {
-	return func(tchn *Toolchain) { tchn.Name = name }
-}
-
-func withNoBuildCommand() func(tchn *Toolchain) {
-	return func(tchn *Toolchain) { tchn.BuildCommands = nil }
-}
-
-func withNoTestCommand() func(tchn *Toolchain) {
-	return func(tchn *Toolchain) { tchn.TestCommands = nil }
-}
-
 func Test_does_not_support_empty_toolchain_name(t *testing.T) {
 	assert.False(t, isSupported(""))
 }
@@ -82,40 +56,40 @@ func Test_unrecognized_toolchain_name(t *testing.T) {
 func Test_can_add_a_built_in_toolchain(t *testing.T) {
 	const name = "new-built-in-toolchain"
 	assert.False(t, isBuiltIn(name))
-	assert.NoError(t, addBuiltIn(*aToolchain(withName(name))))
+	assert.NoError(t, addBuiltIn(*AToolchain(WithName(name))))
 	assert.True(t, isBuiltIn(name))
 }
 
 func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
-	assert.Error(t, addBuiltIn(*aToolchain(withName(""))))
+	assert.Error(t, addBuiltIn(*AToolchain(WithName(""))))
 }
 
 func Test_toolchain_name_is_case_insensitive(t *testing.T) {
 	const name = "miXeD-CasE"
-	_ = Register(*aToolchain(withName(name)))
+	_ = Register(*AToolchain(WithName(name)))
 	assertNameIsNotCaseSensitive(t, name)
 }
 
 func Test_can_register_a_toolchain(t *testing.T) {
 	const name = "new-toolchain"
 	assert.False(t, isSupported(name))
-	assert.NoError(t, Register(*aToolchain(withName(name))))
+	assert.NoError(t, Register(*AToolchain(WithName(name))))
 	assert.True(t, isSupported(name))
 }
 
 func Test_cannot_register_a_toolchain_with_no_name(t *testing.T) {
-	assert.Error(t, Register(*aToolchain(withName(""))))
+	assert.Error(t, Register(*AToolchain(WithName(""))))
 }
 
 func Test_cannot_register_a_toolchain_with_no_build_command(t *testing.T) {
 	const name = "no-build-command"
-	assert.Error(t, Register(*aToolchain(withName(name), withNoBuildCommand())))
+	assert.Error(t, Register(*AToolchain(WithName(name), WithNoBuildCommand())))
 	assert.False(t, isSupported(name))
 }
 
 func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
 	const name = "no-test-command"
-	assert.Error(t, Register(*aToolchain(withName(name), withNoTestCommand())))
+	assert.Error(t, Register(*AToolchain(WithName(name), WithNoTestCommand())))
 	assert.False(t, isSupported(name))
 }
 
@@ -209,7 +183,7 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 
 func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {
 	// We don't check all platforms, just verifying that at least all OS's with amd64 are supported
-	for _, osName := range getAllOsNames() {
+	for _, osName := range GetAllOsNames() {
 		assertRunsOnPlatform(t, name, osName, ArchAmd64)
 	}
 }

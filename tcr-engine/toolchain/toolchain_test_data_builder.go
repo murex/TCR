@@ -1,5 +1,7 @@
+//go:build test_helper
+
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package toolchain
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
-			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
-			},
-		},
-	)
+// AToolchain is a test data builder for type Toolchain
+func AToolchain(toolchainBuilders ...func(tchn *Toolchain)) *Toolchain {
+	tchn := &Toolchain{
+		name:          "default-toolchain",
+		buildCommands: []Command{*ACommand()},
+		testCommands:  []Command{*ACommand()},
+	}
+
+	for _, build := range toolchainBuilders {
+		build(tchn)
+	}
+	return tchn
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+// WithName sets the name of the created toolchain to name
+func WithName(name string) func(tchn *Toolchain) {
+	return func(tchn *Toolchain) { tchn.name = name }
+}
+
+// WithNoBuildCommand creates a toolchain with no build command defined
+func WithNoBuildCommand() func(tchn *Toolchain) {
+	return func(tchn *Toolchain) { tchn.buildCommands = nil }
+}
+
+// WithNoTestCommand creates a toolchain with no test command defined
+func WithNoTestCommand() func(tchn *Toolchain) {
+	return func(tchn *Toolchain) { tchn.testCommands = nil }
 }

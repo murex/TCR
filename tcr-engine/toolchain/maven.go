@@ -25,16 +25,16 @@ package toolchain
 func init() {
 	_ = addBuiltIn(
 		Toolchain{
-			Name: "maven",
-			BuildCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			name: "maven",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "mvn",
 				Arguments: []string{"test-compile"},
 			}},
-			TestCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			testCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "mvn",
 				Arguments: []string{"test"},
 			}},

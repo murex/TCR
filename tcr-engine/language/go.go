@@ -24,19 +24,19 @@ package language
 
 func init() {
 	_ = addBuiltIn(
-		Language{
-			Name: "go",
-			Toolchains: Toolchains{
+		&Language{
+			name: "go",
+			toolchains: Toolchains{
 				Default:    "go-tools",
 				Compatible: []string{"go-tools"},
 			},
-			SrcFiles: FileTreeFilter{
+			srcFileFilter: FileTreeFilter{
 				Directories: []string{"."},
 				FilePatterns: []string{
 					buildRegex(".*\\.go"),
 				},
 			},
-			TestFiles: FileTreeFilter{
+			testFileFilter: FileTreeFilter{
 				Directories: []string{"."},
 				FilePatterns: []string{
 					buildRegex(".*_test\\.go"),

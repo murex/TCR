@@ -14,47 +14,47 @@ jobs:
       matrix:
         os: [ macos-latest, ubuntu-latest, windows-latest ]
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.17
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
 
-    - name: Set up Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '11'
-        check-latest: true
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+          check-latest: true
 
-    - name: Install CGO Libraries
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
-        sudo apt-get update
-        sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+      - name: Install CGO Libraries
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
 
-    - name: Test tcr-engine module
-      run: |
-        cd tcr-engine
-        go test -v ./...
+      - name: Test tcr-engine module
+        run: |
+          cd tcr-engine
+          go test -v -tags=test_helper ./...
 
-    - name: Test tcr-cli module
-      run: |
-        cd tcr-cli
-        go test -v ./...
+      - name: Test tcr-cli module
+        run: |
+          cd tcr-cli
+          go test -v -tags=test_helper ./...
 
-    - name: Build tcr-cli application
-      run: |
-        cd tcr-cli
-        go build -v ./...
+      - name: Build tcr-cli application
+        run: |
+          cd tcr-cli
+          go build -v ./...
 
-    - name: Test tcr-gui module
-      run: |
-        cd tcr-gui
-        go test -v ./...
+      - name: Test tcr-gui module
+        run: |
+          cd tcr-gui
+          go test -v -tags=test_helper ./...
 
-    - name: Build tcr-gui application
-      run: |
-        cd tcr-gui
-        go build -v ./...
+      - name: Build tcr-gui application
+        run: |
+          cd tcr-gui
+          go build -v ./...

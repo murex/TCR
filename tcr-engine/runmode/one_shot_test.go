@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package runmode
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
-			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
-			},
-		},
-	)
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_one_shot_mode_name(t *testing.T) {
+	assert.Equal(t, "one-shot", OneShot{}.Name())
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+func Test_one_shot_mode_default_auto_push_if_false(t *testing.T) {
+	assert.False(t, OneShot{}.AutoPushDefault())
+}
+
+func Test_one_shot_mode_does_not_require_a_countdown_timer(t *testing.T) {
+	assert.False(t, OneShot{}.NeedsCountdownTimer())
+}
+
+func Test_one_shot_mode_allows_user_interactions(t *testing.T) {
+	assert.False(t, OneShot{}.IsInteractive())
 }

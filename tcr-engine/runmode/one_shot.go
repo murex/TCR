@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,28 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package runmode
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
-			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
-			},
-		},
-	)
+// OneShot is a type of run mode allowing to run a single TCR cycle and exit
+type OneShot struct {
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+// Name returns the name of this run mode
+func (mode OneShot) Name() string {
+	return "one-shot"
+}
+
+// AutoPushDefault returns the default value of git auto-push option with this run mode
+func (mode OneShot) AutoPushDefault() bool {
+	return false
+}
+
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (mode OneShot) NeedsCountdownTimer() bool {
+	return false
+}
+
+// IsInteractive indicates if this run mode allows user interaction
+func (mode OneShot) IsInteractive() bool {
+	return false
 }

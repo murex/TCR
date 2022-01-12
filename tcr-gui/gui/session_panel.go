@@ -48,7 +48,7 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 
 	sp.modeLabel = widget.NewLabel("Mode")
 	sp.modeSelect = widget.NewSelect(
-		runmode.Names(),
+		runmode.InteractiveModes(),
 		func(selected string) {
 			var newMode = runmode.Map()[selected]
 			gui.setRunMode(newMode)

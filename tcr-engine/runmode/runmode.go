@@ -27,17 +27,20 @@ type RunMode interface {
 	Name() string
 	AutoPushDefault() bool
 	NeedsCountdownTimer() bool
+	IsInteractive() bool
 }
 
 var (
-	allModes = []RunMode{Mob{}, Solo{}}
+	allModes = []RunMode{Mob{}, Solo{}, OneShot{}}
 )
 
-// Names returns the list of available run mode names
-func Names() []string {
+// InteractiveModes returns the list of names of available interactive run modes
+func InteractiveModes() []string {
 	var names []string
 	for _, mode := range allModes {
-		names = append(names, mode.Name())
+		if mode.IsInteractive() {
+			names = append(names, mode.Name())
+		}
 	}
 	return names
 }

@@ -40,3 +40,8 @@ func (mode Mob) AutoPushDefault() bool {
 func (mode Mob) NeedsCountdownTimer() bool {
 	return true
 }
+
+// IsInteractive indicates if this run mode allows user interaction
+func (mode Mob) IsInteractive() bool {
+	return true
+}

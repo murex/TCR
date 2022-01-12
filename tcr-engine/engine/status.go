@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package engine
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
-			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
-			},
-		},
-	)
+// Status is used for describing the current TCR engine status
+type Status struct {
+	rc int
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+// List of TCR engine possible status values
+var (
+	StatusOk          = Status{rc: 0} // Build and Test Passed and changes were committed with no error
+	StatusBuildFailed = Status{rc: 1} // Build failed
+	StatusTestFailed  = Status{rc: 2} // Build passed, one or more test failed, and changes were reverted
+	StatusConfigError = Status{rc: 3} // Error in configuration or parameters
+	StatusGitError    = Status{rc: 4} // Git error
+	StatusOtherError  = Status{rc: 5} // Any other error
+)
+
+var currentState Status
+
+func recordState(state Status) {
+	currentState = state
+}
+
+func getCurrentState() Status {
+	return currentState
+}
+
+func getReturnCode() int {
+	return currentState.rc
 }

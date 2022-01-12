@@ -24,17 +24,17 @@ package language
 
 func init() {
 	_ = addBuiltIn(
-		Language{
-			Name: "java",
-			Toolchains: Toolchains{
+		&Language{
+			name: "java",
+			toolchains: Toolchains{
 				Default:    "gradle-wrapper",
 				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"},
 			},
-			SrcFiles: FileTreeFilter{
+			srcFileFilter: FileTreeFilter{
 				Directories:  []string{"src/main"},
 				FilePatterns: getJavaFilters(),
 			},
-			TestFiles: FileTreeFilter{
+			testFileFilter: FileTreeFilter{
 				Directories:  []string{"src/test"},
 				FilePatterns: getJavaFilters(),
 			},

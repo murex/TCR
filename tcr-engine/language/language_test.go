@@ -30,55 +30,7 @@ import (
 	"testing"
 )
 
-// aLanguage is a test data builder for type Language
-func aLanguage(languageBuilders ...func(lang *Language)) *Language {
-	lang := &Language{
-		Name: "default-language",
-		Toolchains: Toolchains{
-			Default:    "default-toolchain",
-			Compatible: []string{"default-toolchain"},
-		},
-		SrcFiles:  *aFileTreeFilter(),
-		TestFiles: *aFileTreeFilter(),
-	}
-
-	for _, build := range languageBuilders {
-		build(lang)
-	}
-	return lang
-}
-
-func withName(name string) func(lang *Language) {
-	return func(lang *Language) { lang.Name = name }
-}
-
-func withNoCompatibleToolchain() func(lang *Language) {
-	return func(lang *Language) { lang.Toolchains.Compatible = nil }
-}
-
-func withCompatibleToolchain(tchn string) func(lang *Language) {
-	return func(lang *Language) {
-		lang.Toolchains.Compatible = append(lang.Toolchains.Compatible, tchn)
-	}
-}
-
-func withNoDefaultToolchain() func(lang *Language) {
-	return func(lang *Language) { lang.Toolchains.Default = "" }
-}
-
-func withDefaultToolchain(tchn string) func(lang *Language) {
-	return func(lang *Language) { lang.Toolchains.Default = tchn }
-}
-
-func withSrcFiles(filter *FileTreeFilter) func(lang *Language) {
-	return func(lang *Language) { lang.SrcFiles = *filter }
-}
-
-func withTestFiles(filter *FileTreeFilter) func(lang *Language) {
-	return func(lang *Language) { lang.TestFiles = *filter }
-}
-
-//func withBaseDir(path string) func(lang *Language) {
+//func WithBaseDir(path string) func(lang *Language) {
 //	return func(lang *Language) { lang.setBaseDir(path) }
 //}
 
@@ -101,53 +53,53 @@ func Test_unrecognized_language_name(t *testing.T) {
 func Test_can_add_a_built_in_language(t *testing.T) {
 	const name = "new-built-in-language"
 	assert.False(t, isBuiltIn(name))
-	assert.NoError(t, addBuiltIn(*aLanguage(withName(name))))
+	assert.NoError(t, addBuiltIn(ALanguage(WithName(name))))
 	assert.True(t, isBuiltIn(name))
 }
 
 func Test_cannot_add_a_built_in_language_with_no_name(t *testing.T) {
-	assert.Error(t, addBuiltIn(*aLanguage(withName(""))))
+	assert.Error(t, addBuiltIn(ALanguage(WithName(""))))
 }
 
 func Test_language_name_is_case_insensitive(t *testing.T) {
 	const name = "miXeD-CasE"
-	_ = Register(*aLanguage(withName(name)))
+	_ = Register(ALanguage(WithName(name)))
 	assertNameIsNotCaseSensitive(t, name)
 }
 
 func Test_can_register_a_language(t *testing.T) {
 	const name = "new-language"
 	assert.False(t, isSupported(name))
-	assert.NoError(t, Register(*aLanguage(
-		withName(name),
-		withDefaultToolchain("default-toolchain"),
-		withCompatibleToolchain("default-toolchain"),
+	assert.NoError(t, Register(ALanguage(
+		WithName(name),
+		WithDefaultToolchain("default-toolchain"),
+		WithCompatibleToolchain("default-toolchain"),
 	)))
 	assert.True(t, isSupported(name))
 }
 
 func Test_cannot_register_a_language_with_no_name(t *testing.T) {
-	assert.Error(t, Register(*aLanguage(withName(""))))
+	assert.Error(t, Register(ALanguage(WithName(""))))
 }
 
 func Test_cannot_register_a_language_with_no_compatible_toolchain(t *testing.T) {
 	const name = "no-compatible-toolchain"
-	assert.Error(t, Register(*aLanguage(withName(name), withNoCompatibleToolchain())))
+	assert.Error(t, Register(ALanguage(WithName(name), WithNoCompatibleToolchain())))
 	assert.False(t, isSupported(name))
 }
 
 func Test_cannot_register_a_language_with_no_default_toolchain(t *testing.T) {
 	const name = "no-default-toolchain"
-	assert.Error(t, Register(*aLanguage(withName(name), withNoDefaultToolchain())))
+	assert.Error(t, Register(ALanguage(WithName(name), WithNoDefaultToolchain())))
 	assert.False(t, isSupported(name))
 }
 
 func Test_cannot_register_a_language_with_default_toolchain_not_compatible(t *testing.T) {
 	const name = "default-toolchain-not-compatible"
-	assert.Error(t, Register(*aLanguage(
-		withName(name),
-		withDefaultToolchain("toolchain1"),
-		withCompatibleToolchain("toolchain2"),
+	assert.Error(t, Register(ALanguage(
+		WithName(name),
+		WithDefaultToolchain("toolchain1"),
+		WithCompatibleToolchain("toolchain2"),
 	)))
 	assert.False(t, isSupported(name))
 }
@@ -160,9 +112,9 @@ func Test_does_not_detect_language_from_a_dir_name_not_matching_a_known_language
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
-	lang := aLanguage(
-		withSrcFiles(aFileTreeFilter(withDirectory(srcDir))),
-		withTestFiles(aFileTreeFilter(withDirectory(testDir))),
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(srcDir))),
+		WithTestFiles(AFileTreeFilter(WithDirectory(testDir))),
 	)
 	dirs := lang.DirsToWatch("")
 	assert.Contains(t, dirs, srcDir)
@@ -172,9 +124,9 @@ func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(
-		withSrcFiles(aFileTreeFilter(withDirectory(srcDir))),
-		withTestFiles(aFileTreeFilter(withDirectory(testDir))),
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(srcDir))),
+		WithTestFiles(AFileTreeFilter(WithDirectory(testDir))),
 	)
 	dirs := lang.DirsToWatch(baseDir)
 	assert.Contains(t, dirs, filepath.Join(baseDir, srcDir))
@@ -184,9 +136,9 @@ func Test_dirs_to_watch_should_be_prefixed_with_workdir_path(t *testing.T) {
 func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
 	const dir = "dir"
 	baseDir, _ := os.Getwd()
-	lang := aLanguage(
-		withSrcFiles(aFileTreeFilter(withDirectory(dir), withDirectory(dir))),
-		withTestFiles(aFileTreeFilter(withDirectory(dir), withDirectory(dir))),
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(dir), WithDirectory(dir))),
+		WithTestFiles(AFileTreeFilter(WithDirectory(dir), WithDirectory(dir))),
 	)
 	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
 }
@@ -221,7 +173,7 @@ func assertLanguageName(t *testing.T, name string) {
 
 func assertDefaultToolchain(t *testing.T, expected string, name string) {
 	lang, _ := Get(name)
-	assert.Equal(t, expected, lang.Toolchains.Default)
+	assert.Equal(t, expected, lang.GetToolchains().Default)
 }
 
 func assertFallbacksOnDirNameIfLanguageIsNotSpecified(t *testing.T, dirName string) {

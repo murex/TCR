@@ -40,3 +40,8 @@ func (mode Solo) AutoPushDefault() bool {
 func (mode Solo) NeedsCountdownTimer() bool {
 	return false
 }
+
+// IsInteractive indicates if this run mode allows user interaction
+func (mode Solo) IsInteractive() bool {
+	return true
+}

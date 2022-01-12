@@ -25,16 +25,16 @@ package toolchain
 func init() {
 	_ = addBuiltIn(
 		Toolchain{
-			Name: "gradle",
-			BuildCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			name: "gradle",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "gradle",
 				Arguments: []string{"build", "-x", "test"},
 			}},
-			TestCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			testCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "gradle",
 				Arguments: []string{"test"},
 			}},

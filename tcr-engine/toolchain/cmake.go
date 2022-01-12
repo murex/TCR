@@ -25,16 +25,16 @@ package toolchain
 func init() {
 	_ = addBuiltIn(
 		Toolchain{
-			Name: "cmake",
-			BuildCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			name: "cmake",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "cmake",
 				Arguments: cmakeArguments(),
 			}},
-			TestCommands: []Command{{
-				Os:        getAllOsNames(),
-				Arch:      getAllArchNames(),
+			testCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
 				Path:      "ctest",
 				Arguments: ctestArguments(),
 			}},

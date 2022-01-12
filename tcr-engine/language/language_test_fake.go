@@ -1,5 +1,7 @@
+//go:build test_helper
+
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +24,31 @@ SOFTWARE.
 
 package language
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
+type (
+	// FakeLanguage is a Language fake that makes sure there is no filesystem
+	// access. It overwrites AllSrcFiles() so that it always returns a non-empty
+	// list of filenames
+	FakeLanguage struct {
+		Language
+	}
+)
+
+// NewFakeLanguage creates a new Language instance compatible with the provided toolchain
+func NewFakeLanguage(toolchainName string) *FakeLanguage {
+	return &FakeLanguage{
+		Language: Language{
+			name: "fake-language",
 			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
+				Default:    toolchainName,
+				Compatible: []string{toolchainName},
 			},
 		},
-	)
+	}
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+// AllSrcFiles returns the list of source files for this language.
+// Always returns a list of 2 fake filenames.
+func (lang *FakeLanguage) AllSrcFiles() (result []string, err error) {
+	result = []string{"fake-file1", "fake-file2"}
+	return
 }

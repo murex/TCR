@@ -29,51 +29,6 @@ import (
 	"testing"
 )
 
-// aFileTreeFilter is a test data builder for type FileTreeFilter
-func aFileTreeFilter(builders ...func(filter *FileTreeFilter)) *FileTreeFilter {
-	filter := &FileTreeFilter{
-		Directories:  []string{},
-		FilePatterns: []string{},
-	}
-
-	for _, build := range builders {
-		build(filter)
-	}
-	return filter
-}
-
-func withDirectory(dirName string) func(filter *FileTreeFilter) {
-	return func(filter *FileTreeFilter) {
-		filter.Directories = append(filter.Directories, dirName)
-	}
-}
-
-func withNoDirectory() func(filter *FileTreeFilter) {
-	return func(filter *FileTreeFilter) {
-		filter.Directories = nil
-	}
-}
-
-func withPattern(pattern string) func(filter *FileTreeFilter) {
-	return func(filter *FileTreeFilter) {
-		filter.FilePatterns = append(filter.FilePatterns, pattern)
-	}
-}
-
-func withOpenPattern() func(filter *FileTreeFilter) {
-	return withPattern("^.*$")
-}
-
-func withClosedPattern() func(filter *FileTreeFilter) {
-	return withPattern("^$")
-}
-
-func withNoPattern() func(filter *FileTreeFilter) {
-	return func(filter *FileTreeFilter) {
-		filter.FilePatterns = nil
-	}
-}
-
 func Test_convert_back_slashed_path_to_slashed_path(t *testing.T) {
 	var input = "some\\path\\with\\backslash"
 	var expected = "some/path/with/backslash"
@@ -87,25 +42,25 @@ func Test_convert_slashed_path_to_slashed_path(t *testing.T) {
 }
 
 func Test_file_tree_filter_with_no_directory(t *testing.T) {
-	filter := aFileTreeFilter(withNoDirectory(), withOpenPattern())
+	filter := AFileTreeFilter(WithNoDirectory(), WithOpenPattern())
 	assert.True(t, filter.matches("some_file.ext", ""))
 	assert.True(t, filter.matches("some_dir/some_file.ext", ""))
 }
 
 func Test_file_tree_filter_with_no_pattern(t *testing.T) {
-	filter := aFileTreeFilter(withNoPattern())
+	filter := AFileTreeFilter(WithNoPattern())
 	assert.True(t, filter.matches("some_file.ext", ""))
 	assert.True(t, filter.matches("some_dir/some_file.ext", ""))
 }
 
 func Test_file_tree_filter_with_open_pattern(t *testing.T) {
-	filter := aFileTreeFilter(withOpenPattern())
+	filter := AFileTreeFilter(WithOpenPattern())
 	assert.True(t, filter.matches("some_file.ext", ""))
 	assert.True(t, filter.matches("some_dir/some_file.ext", ""))
 }
 
 func Test_file_tree_filter_with_closed_pattern(t *testing.T) {
-	filter := aFileTreeFilter(withClosedPattern())
+	filter := AFileTreeFilter(WithClosedPattern())
 	assert.False(t, filter.matches("some_file.ext", ""))
 	assert.False(t, filter.matches("some_dir/some_file.ext", ""))
 }
@@ -113,7 +68,7 @@ func Test_file_tree_filter_with_closed_pattern(t *testing.T) {
 func Test_file_path_is_in_file_tree(t *testing.T) {
 	const matchDir = "some_dir"
 	baseDir, _ := os.Getwd()
-	filter := aFileTreeFilter(withDirectory(matchDir), withOpenPattern())
+	filter := AFileTreeFilter(WithDirectory(matchDir), WithOpenPattern())
 	for _, dir := range []string{"", ".", "./x", "x", "x/y", "x/y/z"} {
 		okPath := filepath.Join(baseDir, matchDir, dir, "some_file")
 		assert.True(t, filter.isInFileTree(okPath, baseDir), okPath)
@@ -123,13 +78,13 @@ func Test_file_path_is_in_file_tree(t *testing.T) {
 }
 
 func Test_file_tree_filter_with_one_file_pattern(t *testing.T) {
-	filter := aFileTreeFilter(withPattern(".*\\.ext"))
+	filter := AFileTreeFilter(WithPattern(".*\\.ext"))
 	assert.True(t, filter.matches("base.ext", ""))
 	assert.False(t, filter.matches("base.other_ext", ""))
 }
 
 func Test_file_tree_filter_with_multiple_file_patterns(t *testing.T) {
-	filter := aFileTreeFilter(withDirectory(""), withPattern(".*\\.ext1"), withPattern(".*\\.ext2"))
+	filter := AFileTreeFilter(WithDirectory(""), WithPattern(".*\\.ext1"), WithPattern(".*\\.ext2"))
 	assert.True(t, filter.matches("base.ext1", ""))
 	assert.True(t, filter.matches("base.ext2", ""))
 	assert.False(t, filter.matches("base.ext3", ""))

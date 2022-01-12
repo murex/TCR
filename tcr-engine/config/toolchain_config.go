@@ -94,12 +94,12 @@ func loadToolchainConfigs() {
 	}
 }
 
-func asToolchain(toolchainCfg ToolchainConfig) toolchain.Toolchain {
-	return toolchain.Toolchain{
-		Name:          toolchainCfg.Name,
-		BuildCommands: asToolchainCommandTable(toolchainCfg.BuildCommand),
-		TestCommands:  asToolchainCommandTable(toolchainCfg.TestCommand),
-	}
+func asToolchain(toolchainCfg ToolchainConfig) *toolchain.Toolchain {
+	return toolchain.New(
+		toolchainCfg.Name,
+		asToolchainCommandTable(toolchainCfg.BuildCommand),
+		asToolchainCommandTable(toolchainCfg.TestCommand),
+	)
 }
 
 func asToolchainCommandTable(commandsCfg []ToolchainCommandConfig) []toolchain.Command {
@@ -144,11 +144,11 @@ func resetToolchainConfigs() {
 	}
 }
 
-func asToolchainConfig(tchn *toolchain.Toolchain) ToolchainConfig {
+func asToolchainConfig(tchn toolchain.TchnInterface) ToolchainConfig {
 	return ToolchainConfig{
 		Name:         tchn.GetName(),
-		BuildCommand: asToolchainCommandConfigTable(tchn.BuildCommands),
-		TestCommand:  asToolchainCommandConfigTable(tchn.TestCommands),
+		BuildCommand: asToolchainCommandConfigTable(tchn.GetBuildCommands()),
+		TestCommand:  asToolchainCommandConfigTable(tchn.GetTestCommands()),
 	}
 }
 

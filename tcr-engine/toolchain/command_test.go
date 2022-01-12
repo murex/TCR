@@ -27,91 +27,56 @@ import (
 	"testing"
 )
 
-// aCommand is a test data builder for type Command
-func aCommand(commandBuilders ...func(command *Command)) *Command {
-	command := &Command{
-		Os:        getAllOsNames(),
-		Arch:      getAllArchNames(),
-		Path:      "default-path",
-		Arguments: []string{},
-	}
-
-	for _, build := range commandBuilders {
-		build(command)
-	}
-	return command
-}
-
-func withPath(path string) func(command *Command) {
-	return func(command *Command) { command.Path = path }
-}
-
-func withOs(os OsName) func(command *Command) {
-	return func(command *Command) { command.Os = append(command.Os, os) }
-}
-
-func withNoOs() func(command *Command) {
-	return func(command *Command) { command.Os = nil }
-}
-
-func withArch(arch ArchName) func(command *Command) {
-	return func(command *Command) { command.Arch = append(command.Arch, arch) }
-}
-
-func withNoArch() func(command *Command) {
-	return func(command *Command) { command.Arch = nil }
-}
-
 func Test_os_darwin_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllOsNames(), OsName("darwin"))
+	assert.Contains(t, GetAllOsNames(), OsName("darwin"))
 }
 
 func Test_os_linux_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllOsNames(), OsName("linux"))
+	assert.Contains(t, GetAllOsNames(), OsName("linux"))
 }
 
 func Test_os_windows_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllOsNames(), OsName("windows"))
+	assert.Contains(t, GetAllOsNames(), OsName("windows"))
 }
 
 func Test_arch_386_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllArchNames(), ArchName("386"))
+	assert.Contains(t, GetAllArchNames(), ArchName("386"))
 }
 
 func Test_arch_amd64_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllArchNames(), ArchName("amd64"))
+	assert.Contains(t, GetAllArchNames(), ArchName("amd64"))
 }
 
 func Test_arch_arm64_is_recognized(t *testing.T) {
-	assert.Contains(t, getAllArchNames(), ArchName("arm64"))
+	assert.Contains(t, GetAllArchNames(), ArchName("arm64"))
 }
 
 func Test_unrecognized_os(t *testing.T) {
-	assert.False(t, aCommand().runsWithOs(OsName("dummy")))
+	assert.False(t, ACommand().runsWithOs(OsName("dummy")))
 }
 
 func Test_unrecognized_architecture(t *testing.T) {
-	assert.False(t, aCommand().runsWithArch(ArchName("dummy")))
+	assert.False(t, ACommand().runsWithArch(ArchName("dummy")))
 }
 
 func Test_unrecognized_platform(t *testing.T) {
 	dummyOs, dummyArch := OsName("dummy"), ArchName("dummy")
 
-	assert.False(t, aCommand().runsOnPlatform(dummyOs, dummyArch))
+	assert.False(t, ACommand().runsOnPlatform(dummyOs, dummyArch))
 
-	assert.False(t, aCommand().runsOnPlatform(OsDarwin, dummyArch))
-	assert.False(t, aCommand().runsOnPlatform(OsWindows, dummyArch))
-	assert.False(t, aCommand().runsOnPlatform(OsLinux, dummyArch))
+	assert.False(t, ACommand().runsOnPlatform(OsDarwin, dummyArch))
+	assert.False(t, ACommand().runsOnPlatform(OsWindows, dummyArch))
+	assert.False(t, ACommand().runsOnPlatform(OsLinux, dummyArch))
 
-	assert.False(t, aCommand().runsOnPlatform(dummyOs, Arch386))
-	assert.False(t, aCommand().runsOnPlatform(dummyOs, ArchAmd64))
-	assert.False(t, aCommand().runsOnPlatform(dummyOs, ArchArm64))
+	assert.False(t, ACommand().runsOnPlatform(dummyOs, Arch386))
+	assert.False(t, ACommand().runsOnPlatform(dummyOs, ArchAmd64))
+	assert.False(t, ACommand().runsOnPlatform(dummyOs, ArchArm64))
 }
 
 func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 	myOs, myArch := OsName("my-os"), ArchName("my-arch")
 	anotherOs, anotherArch := OsName("another-os"), ArchName("another-arch")
-	myCommand := aCommand(withOs(myOs), withArch(myArch))
+	myCommand := ACommand(WithOs(myOs), WithArch(myArch))
 	commands := []Command{*myCommand}
 
 	assert.Equal(t, findCommand(commands, myOs, myArch), myCommand)
@@ -121,21 +86,21 @@ func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 }
 
 func Test_command_path_cannot_be_empty(t *testing.T) {
-	assert.Error(t, aCommand(withPath("")).check())
+	assert.Error(t, ACommand(WithPath("")).check())
 }
 
 func Test_command_os_list_cannot_be_empty(t *testing.T) {
-	assert.Error(t, aCommand(withNoOs()).check())
+	assert.Error(t, ACommand(WithNoOs()).check())
 }
 
 func Test_a_command_os_cannot_be_empty(t *testing.T) {
-	assert.Error(t, aCommand(withOs("")).check())
+	assert.Error(t, ACommand(WithOs("")).check())
 }
 
 func Test_command_arch_list_cannot_be_empty(t *testing.T) {
-	assert.Error(t, aCommand(withNoArch()).check())
+	assert.Error(t, ACommand(WithNoArch()).check())
 }
 
 func Test_a_command_arch_cannot_be_empty(t *testing.T) {
-	assert.Error(t, aCommand(withArch("")).check())
+	assert.Error(t, ACommand(WithArch("")).check())
 }

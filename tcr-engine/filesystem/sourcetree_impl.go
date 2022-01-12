@@ -48,22 +48,15 @@ func New(dir string) (SourceTree, error) {
 	return &st, nil
 }
 
-func (st *SourceTreeImpl) changeDir(dir string) (string, error) {
+func (st *SourceTreeImpl) changeDir(dir string) (wd string, err error) {
 	if dir != "" {
-		_, err := os.Stat(dir)
-		switch {
-		case os.IsNotExist(err):
-			report.PostError("Directory ", dir, " does not exist")
-			return "", err
-		case os.IsPermission(err):
-			report.PostError("Can't access directory ", dir)
-			return "", err
+		_, err = os.Stat(dir)
+		if err != nil {
+			return
 		}
-
 		err = os.Chdir(dir)
 		if err != nil {
-			report.PostError("Failed to change directory to ", dir)
-			return "", err
+			return
 		}
 	}
 	return os.Getwd()

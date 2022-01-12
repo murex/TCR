@@ -7,7 +7,7 @@ deps:
 
 .PHONY: lint
 lint:
-	@golangci-lint run -v
+	@golangci-lint run --build-tags=test_helper -v
 
 .PHONY: vet
 vet:

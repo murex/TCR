@@ -107,7 +107,7 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 	}, refs), nil
 }
 
-// rootDir Returns the local clone's root directory of provided repository
+// rootDir returns the local clone's root directory of provided repository
 func rootDir(r *git.Repository) (string, error) {
 	// Try to grab the repository Storer
 	s, ok := r.Storer.(*filesystem.Storage)
@@ -141,6 +141,8 @@ func (g *GitImpl) Commit() error {
 	_ = runGitCommand([]string{"commit", "--no-gpg-sign", "-am", g.commitMessage})
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit
+	// TODO find a way to check beforehand if there is something to commit
+	// ("git diff --exit-code --quiet HEAD" seems to do the trick)
 	return nil
 }
 
@@ -156,12 +158,7 @@ func (g *GitImpl) Restore(dir string) error {
 	// TODO When available, replace git call with go-git restore function
 
 	report.PostInfo("Restoring ", dir)
-
-	err := runGitCommand([]string{"checkout", "HEAD", "--", dir})
-	if err != nil {
-		report.PostError(err)
-	}
-	return err
+	return runGitCommand([]string{"checkout", "HEAD", "--", dir})
 }
 
 // Push runs a git push operation.
@@ -173,18 +170,8 @@ func (g *GitImpl) Push() error {
 	}
 
 	report.PostInfo("Pushing changes to origin/", g.workingBranch)
-
-	// TODO Look if there is a way to leverage on git credentials
-
-	err := runGitCommand([]string{
-		"push",
-		"--no-recurse-submodules",
-		g.remoteName,
-		g.workingBranch,
-	})
-	if err != nil {
-		report.PostError(err)
-	} else {
+	err := runGitCommand([]string{"push", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+	if err == nil {
 		g.workingBranchExistsOnRemote = true
 	}
 	return err
@@ -198,24 +185,11 @@ func (g *GitImpl) Pull() error {
 		return nil
 	}
 
-	report.PostInfo("Pulling latest changes from ",
-		g.remoteName, "/", g.workingBranch)
-
-	// TODO Look if there is a way to leverage on git credentials
-
-	err := runGitCommand([]string{
-		"pull",
-		"--no-recurse-submodules",
-		g.remoteName,
-		g.workingBranch,
-	})
-	if err != nil {
-		report.PostError(err)
-	}
-	return err
+	report.PostInfo("Pulling latest changes from ", g.remoteName, "/", g.workingBranch)
+	return runGitCommand([]string{"pull", "--no-recurse-submodules", g.remoteName, g.workingBranch})
 }
 
-// EnablePush Set a flag allowing to turn on/off git push operations
+// EnablePush sets a flag allowing to turn on/off git push operations
 func (g *GitImpl) EnablePush(flag bool) {
 	if g.pushEnabled == flag {
 		return
@@ -228,12 +202,12 @@ func (g *GitImpl) EnablePush(flag bool) {
 	report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
 }
 
-// IsPushEnabled Indicates if git push operations are turned on
+// IsPushEnabled indicates if git push operations are turned on
 func (g *GitImpl) IsPushEnabled() bool {
 	return g.pushEnabled
 }
 
-// runGitCommand Calls git command in a separate process
+// runGitCommand calls git command in a separate process
 func runGitCommand(params []string) error {
 	gitCommand := "git"
 	output, err := sh.Command(gitCommand, params).CombinedOutput()

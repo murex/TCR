@@ -25,31 +25,31 @@ package toolchain
 func init() {
 	_ = addBuiltIn(
 		Toolchain{
-			Name: "gradle-wrapper",
-			BuildCommands: []Command{
+			name: "gradle-wrapper",
+			buildCommands: []Command{
 				{
 					Os:        []OsName{OsDarwin, OsLinux},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      "./gradlew",
 					Arguments: []string{"build", "-x", "test"},
 				},
 				{
 					Os:        []OsName{OsWindows},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      ".\\gradlew.bat",
 					Arguments: []string{"build", "-x", "test"},
 				},
 			},
-			TestCommands: []Command{
+			testCommands: []Command{
 				{
 					Os:        []OsName{OsDarwin, OsLinux},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      "./gradlew",
 					Arguments: []string{"test"},
 				},
 				{
 					Os:        []OsName{OsWindows},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      ".\\gradlew.bat",
 					Arguments: []string{"test"},
 				},

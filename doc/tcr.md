@@ -32,5 +32,6 @@ tcr [flags]
 * [tcr config](tcr_config.md)	 - Manage TCR configuration
 * [tcr info](tcr_info.md)	 - Display TCR build information
 * [tcr mob](tcr_mob.md)	 - Run TCR in mob mode
+* [tcr one-shot](tcr_one-shot.md)	 - Run one TCR cycle and exit
 * [tcr solo](tcr_solo.md)	 - Run TCR in solo mode
 

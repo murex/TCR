@@ -43,8 +43,8 @@ var (
 	mode            runmode.RunMode
 	uitf            ui.UserInterface
 	git             vcs.GitInterface
-	lang            *language.Language
-	tchn            *toolchain.Toolchain
+	lang            language.LangInterface
+	tchn            toolchain.TchnInterface
 	sourceTree      filesystem.SourceTree
 	pollingPeriod   time.Duration
 	mobTurnDuration time.Duration
@@ -56,7 +56,7 @@ var (
 // This function should be called only once during the lifespan of the application
 func Init(u ui.UserInterface, params Params) {
 	var err error
-
+	recordState(StatusOk)
 	uitf = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
@@ -65,31 +65,36 @@ func Init(u ui.UserInterface, params Params) {
 	pollingPeriod = params.PollingPeriod
 
 	sourceTree, err = filesystem.New(params.BaseDir)
-	handleError(err)
+	handleError(err, true, StatusConfigError)
 	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
 	lang, err = language.GetLanguage(params.Language, sourceTree.GetBaseDir())
-	handleError(err)
+	handleError(err, true, StatusConfigError)
 	tchn, err = lang.GetToolchain(params.Toolchain)
-	handleError(err)
+	handleError(err, true, StatusConfigError)
 	git, err = vcs.New(sourceTree.GetBaseDir())
-	handleError(err)
+	handleError(err, true, StatusGitError)
 	git.EnablePush(params.AutoPush)
 
-	if settings.EnableMobTimer {
+	if settings.EnableMobTimer && mode.NeedsCountdownTimer() {
 		mobTurnDuration = params.MobTurnDuration
 		report.PostInfo("Timer duration is ", mobTurnDuration)
 	}
 
 	uitf.ShowRunningMode(mode)
 	uitf.ShowSessionInfo()
-	warnIfOnRootBranch(git.WorkingBranch())
+	warnIfOnRootBranch(git.WorkingBranch(), mode.IsInteractive())
 }
 
-func warnIfOnRootBranch(branch string) {
+func warnIfOnRootBranch(branch string, interactive bool) {
 	for _, b := range []string{"main", "master"} {
 		if b == branch {
-			if !uitf.Confirm("Running "+settings.ApplicationName+" on branch \""+branch+"\" is not recommended", false) {
-				Quit()
+			message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
+			if interactive {
+				if !uitf.Confirm(message, false) {
+					Quit()
+				}
+			} else {
+				report.PostWarning(message)
 			}
 			break
 		}
@@ -122,7 +127,7 @@ func RunAsDriver() {
 		func() {
 			currentRole = role.Driver{}
 			uitf.NotifyRoleStarting(currentRole)
-			_ = git.Pull()
+			handleError(git.Pull(), false, StatusGitError)
 			if settings.EnableMobTimer {
 				mobTimer.Start()
 			}
@@ -133,7 +138,7 @@ func RunAsDriver() {
 			if waitForChange(interrupt) {
 				// Some file changes were detected
 				inactivityTeaser.Reset()
-				runTCR()
+				RunTCRCycle()
 				inactivityTeaser.Start()
 				return true
 			}
@@ -165,7 +170,7 @@ func RunAsNavigator() {
 			case <-interrupt:
 				return false
 			default:
-				_ = git.Pull()
+				handleError(git.Pull(), false, StatusGitError)
 				time.Sleep(pollingPeriod)
 				return true
 			}
@@ -202,11 +207,7 @@ func fromBirthTillDeath(
 		death()
 		return nil
 	})
-
-	err := tmb.Wait()
-	if err != nil {
-		report.PostError("tmb.Wait(): ", err)
-	}
+	handleError(tmb.Wait(), true, StatusOtherError)
 }
 
 func waitForChange(interrupt <-chan bool) bool {
@@ -217,7 +218,9 @@ func waitForChange(interrupt <-chan bool) bool {
 		interrupt)
 }
 
-func runTCR() {
+// RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
+func RunTCRCycle() {
+	recordState(StatusOk)
 	if build() != nil {
 		return
 	}
@@ -232,6 +235,7 @@ func build() error {
 	report.PostInfo("Launching Build")
 	err := tchn.RunBuild()
 	if err != nil {
+		recordState(StatusBuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
 	}
 	return err
@@ -241,6 +245,7 @@ func test() error {
 	report.PostInfo("Running Tests")
 	err := tchn.RunTests()
 	if err != nil {
+		recordState(StatusTestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
 	return err
@@ -248,20 +253,20 @@ func test() error {
 
 func commit() {
 	report.PostInfo("Committing changes on branch ", git.WorkingBranch())
-	_ = git.Commit()
-	_ = git.Push()
+	err := git.Commit()
+	handleError(err, false, StatusGitError)
+	if err == nil {
+		handleError(git.Push(), false, StatusGitError)
+	}
 }
 
 func revert() {
 	// TODO Make revert messages more meaningful when only test code has changed
-
 	report.PostWarning("Reverting changes")
 	filesToRevert, err := lang.AllSrcFiles()
-	if err != nil {
-		report.PostWarning(err)
-	}
+	handleError(err, false, StatusOtherError)
 	for _, file := range filesToRevert {
-		_ = git.Restore(filepath.Join(sourceTree.GetBaseDir(), file))
+		handleError(git.Restore(filepath.Join(sourceTree.GetBaseDir(), file)), false, StatusGitError)
 	}
 }
 
@@ -293,13 +298,20 @@ func SetRunMode(m runmode.RunMode) {
 func Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
-	os.Exit(0)
+	os.Exit(getReturnCode())
 }
 
-func handleError(err error) {
+func handleError(err error, fatal bool, status Status) {
 	if err != nil {
-		report.PostError(err)
-		time.Sleep(1 * time.Millisecond)
-		os.Exit(1)
+		recordState(status)
+		if fatal {
+			report.PostError(err)
+			time.Sleep(1 * time.Millisecond)
+			os.Exit(getReturnCode())
+		} else {
+			report.PostWarning(err)
+		}
+	} else {
+		recordState(StatusOk)
 	}
 }

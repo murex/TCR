@@ -260,16 +260,17 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 
 // Start runs the terminal session
 func (term *Terminal) Start() {
-
 	term.initTcrEngine()
 
-	_ = stty.SetRaw()
-	defer stty.Restore()
+	if term.params.Mode.IsInteractive() {
+		_ = stty.SetRaw()
+		defer stty.Restore()
+	}
 
 	switch term.params.Mode {
 	case runmode.Solo{}:
-		// When running TCR in solo mode, there's no
-		// selection menu: we directly enter driver mode, and quit when done
+		// When running TCR in solo mode, there's no selection menu:
+		// we directly enter driver mode, and quit when done
 		term.startAs(role.Driver{})
 		stty.Restore()
 		engine.Quit()
@@ -278,6 +279,11 @@ func (term *Terminal) Start() {
 		// is given the possibility to switch between
 		// driver and navigator modes
 		term.mainMenu()
+	case runmode.OneShot{}:
+		// When running TCR in one-shot mode, there's no selection menu:
+		// we directly ask TCR engine to run one cycle and quit when done
+		engine.RunTCRCycle()
+		engine.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)
 	}

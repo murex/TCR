@@ -99,13 +99,13 @@ func loadLanguageConfigs() {
 	}
 }
 
-func asLanguage(languageCfg LanguageConfig) language.Language {
-	return language.Language{
-		Name:       languageCfg.Name,
-		Toolchains: asLanguageToolchains(languageCfg.Toolchains),
-		SrcFiles:   asLanguageFileTreeFilter(languageCfg.SourceFiles),
-		TestFiles:  asLanguageFileTreeFilter(languageCfg.TestFiles),
-	}
+func asLanguage(languageCfg LanguageConfig) *language.Language {
+	return language.New(
+		languageCfg.Name,
+		asLanguageToolchains(languageCfg.Toolchains),
+		asLanguageFileTreeFilter(languageCfg.SourceFiles),
+		asLanguageFileTreeFilter(languageCfg.TestFiles),
+	)
 }
 
 func asLanguageFileTreeFilter(filesCfg LanguageFileTreeFilterConfig) language.FileTreeFilter {
@@ -143,12 +143,12 @@ func resetLanguageConfigs() {
 	}
 }
 
-func asLanguageConfig(lang *language.Language) LanguageConfig {
+func asLanguageConfig(lang language.LangInterface) LanguageConfig {
 	return LanguageConfig{
 		Name:        lang.GetName(),
-		Toolchains:  asLanguageToolchainsConfig(lang.Toolchains),
-		SourceFiles: asLanguageFileTreeFilterConfig(lang.SrcFiles),
-		TestFiles:   asLanguageFileTreeFilterConfig(lang.TestFiles),
+		Toolchains:  asLanguageToolchainsConfig(lang.GetToolchains()),
+		SourceFiles: asLanguageFileTreeFilterConfig(lang.GetSrcFileFilter()),
+		TestFiles:   asLanguageFileTreeFilterConfig(lang.GetTestFileFilter()),
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package engine
 
-func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "cpp",
-			toolchains: Toolchains{
-				Default:    "cmake",
-				Compatible: []string{"cmake"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src", "include"},
-				FilePatterns: getCppFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"test"},
-				FilePatterns: getCppFilters(),
-			},
-		},
-	)
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_return_code_when_no_error(t *testing.T) {
+	recordState(StatusOk)
+	assert.Equal(t, 0, getReturnCode())
 }
 
-func getCppFilters() []string {
-	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
-	}
+func Test_return_code_on_build_failure(t *testing.T) {
+	recordState(StatusBuildFailed)
+	assert.Equal(t, 1, getReturnCode())
+}
+
+func Test_return_code_on_test_failure(t *testing.T) {
+	recordState(StatusTestFailed)
+	assert.Equal(t, 2, getReturnCode())
+}
+
+func Test_return_code_on_config_error(t *testing.T) {
+	recordState(StatusConfigError)
+	assert.Equal(t, 3, getReturnCode())
+}
+
+func Test_return_code_on_git_error(t *testing.T) {
+	recordState(StatusGitError)
+	assert.Equal(t, 4, getReturnCode())
+}
+
+func Test_return_code_on_miscellaneous_error(t *testing.T) {
+	recordState(StatusOtherError)
+	assert.Equal(t, 5, getReturnCode())
 }

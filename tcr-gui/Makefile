@@ -7,7 +7,7 @@ deps:
 
 .PHONY: lint
 lint:
-	@golangci-lint run -v
+	@golangci-lint run --build-tags=test_helper -v
 
 .PHONY: vet
 vet:
@@ -15,7 +15,7 @@ vet:
 
 .PHONY: test
 test:
-	@go test -coverprofile=cover.out -v ./...
+	@go test -coverprofile=cover.out -tags=test_helper -v ./...
 
 .PHONY: cov
 cov:

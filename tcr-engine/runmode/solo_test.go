@@ -38,3 +38,7 @@ func Test_solo_mode_default_auto_push_if_false(t *testing.T) {
 func Test_solo_mode_does_not_require_a_countdown_timer(t *testing.T) {
 	assert.False(t, Solo{}.NeedsCountdownTimer())
 }
+
+func Test_solo_mode_allows_user_interactions(t *testing.T) {
+	assert.True(t, Solo{}.IsInteractive())
+}

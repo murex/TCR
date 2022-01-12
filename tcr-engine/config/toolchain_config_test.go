@@ -30,7 +30,7 @@ import (
 
 func Test_can_save_toolchain_configuration(t *testing.T) {
 	//tchn := ToolchainConfig{
-	//	Name: "dummy",
+	//	name: "dummy",
 	//	BuildCommands: ToolchainCommandConfig{
 	//		Command:   "dummy_build_command",
 	//		Arguments: []string{"arg1", "arg2"},

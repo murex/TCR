@@ -65,13 +65,13 @@ const (
 	ArchArm64 = "arm64"
 )
 
-// getAllOsNames return the list of all supported OS Names
-func getAllOsNames() []OsName {
+// GetAllOsNames return the list of all supported OS Names
+func GetAllOsNames() []OsName {
 	return []OsName{OsDarwin, OsLinux, OsWindows}
 }
 
-// getAllArchNames return the list of all supported OS Architectures
-func getAllArchNames() []ArchName {
+// GetAllArchNames return the list of all supported OS Architectures
+func GetAllArchNames() []ArchName {
 	return []ArchName{Arch386, ArchAmd64, ArchArm64}
 }
 

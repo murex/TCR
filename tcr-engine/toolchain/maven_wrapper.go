@@ -25,31 +25,31 @@ package toolchain
 func init() {
 	_ = addBuiltIn(
 		Toolchain{
-			Name: "maven-wrapper",
-			BuildCommands: []Command{
+			name: "maven-wrapper",
+			buildCommands: []Command{
 				{
 					Os:        []OsName{OsDarwin, OsLinux},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      "./mvnw",
 					Arguments: []string{"test-compile"},
 				},
 				{
 					Os:        []OsName{OsWindows},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      ".\\mvnw.cmd",
 					Arguments: []string{"test-compile"},
 				},
 			},
-			TestCommands: []Command{
+			testCommands: []Command{
 				{
 					Os:        []OsName{OsDarwin, OsLinux},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      "./mvnw",
 					Arguments: []string{"test"},
 				},
 				{
 					Os:        []OsName{OsWindows},
-					Arch:      getAllArchNames(),
+					Arch:      GetAllArchNames(),
 					Path:      ".\\mvnw.cmd",
 					Arguments: []string{"test"},
 				},
