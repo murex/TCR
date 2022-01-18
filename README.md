@@ -70,11 +70,11 @@ provided as built-in.
 
 #### Built-in languages and toolchains
 
-| Language | Toolchains                                   | Default        |
-|----------|----------------------------------------------|----------------|
-| java     | gradle, gradle-wrapper, maven, maven-wrapper | gradle-wrapper |
-| cpp      | cmake                                        | cmake          |
-| go       | go-tools                                     | go-tools       |
+| Language | Toolchains                                         | Default        |
+|----------|----------------------------------------------------|----------------|
+| java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
+| cpp      | cmake, make                                        | cmake          |
+| go       | go-tools, make                                     | go-tools       |
 
 ### Base directory
 

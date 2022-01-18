@@ -28,7 +28,7 @@ func init() {
 			name: "go",
 			toolchains: Toolchains{
 				Default:    "go-tools",
-				Compatible: []string{"go-tools"},
+				Compatible: []string{"go-tools", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories: []string{"."},

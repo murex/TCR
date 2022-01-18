@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package toolchain
 
 func init() {
 	_ = addBuiltIn(
-		&Language{
-			name: "java",
-			toolchains: Toolchains{
-				Default:    "gradle-wrapper",
-				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories:  []string{"src/main"},
-				FilePatterns: getJavaFilters(),
-			},
-			testFileFilter: FileTreeFilter{
-				Directories:  []string{"src/test"},
-				FilePatterns: getJavaFilters(),
-			},
+		Toolchain{
+			name: "make",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "make",
+				Arguments: []string{"build"},
+			}},
+			testCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "make",
+				Arguments: []string{"test"},
+			}},
 		},
 	)
-}
-
-func getJavaFilters() []string {
-	return []string{
-		buildRegex(".*\\.java"),
-	}
 }

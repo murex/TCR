@@ -62,6 +62,7 @@ func Test_java_default_toolchain(t *testing.T) {
 
 func Test_java_compatible_toolchains(t *testing.T) {
 	assertCompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, javaLanguageName)
+	assertCompatibleToolchains(t, []string{"make"}, javaLanguageName)
 }
 
 func Test_java_incompatible_toolchains(t *testing.T) {

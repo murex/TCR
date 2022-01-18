@@ -62,6 +62,7 @@ func Test_go_default_toolchain(t *testing.T) {
 
 func Test_go_compatible_toolchains(t *testing.T) {
 	assertCompatibleToolchains(t, []string{"go-tools"}, goLanguageName)
+	assertCompatibleToolchains(t, []string{"make"}, goLanguageName)
 }
 
 func Test_go_incompatible_toolchains(t *testing.T) {

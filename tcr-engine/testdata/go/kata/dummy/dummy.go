@@ -23,5 +23,5 @@ SOFTWARE.
 package dummy
 
 func doSomething() int {
-	return 40
+	return 42
 }
