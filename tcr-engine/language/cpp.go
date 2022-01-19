@@ -44,7 +44,7 @@ func init() {
 
 func getCppFilters() []string {
 	return []string{
-		buildRegex(".*\\.c(c|pp)?"),
-		buildRegex(".*\\.h(h|pp)?"),
+		buildRegex(".*\\.c(c|pp|xx)?"),
+		buildRegex(".*\\.h(h|pp|xx)?"),
 	}
 }

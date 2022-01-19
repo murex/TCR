@@ -74,7 +74,7 @@ func Test_cpp_incompatible_toolchains(t *testing.T) {
 
 func Test_cpp_valid_file_paths(t *testing.T) {
 	languageName := cppLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".h", ".hpp", ".hh"} {
+	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx"} {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "include", "SomeIncludeFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "test", "SomeTestFile", ext), languageName)
