@@ -212,7 +212,7 @@ func runGitCommand(params []string) error {
 	gitCommand := "git"
 	output, err := sh.Command(gitCommand, params).CombinedOutput()
 
-	if output != nil {
+	if len(output) > 0 {
 		report.PostText(string(output))
 	}
 	return err
