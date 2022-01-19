@@ -21,3 +21,7 @@ cov:
 tidy:
 	@go mod tidy
 
+.PHONY: build
+build:
+	@go build -v ./...
+
