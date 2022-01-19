@@ -26,7 +26,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -39,108 +38,33 @@ var (
 	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
 )
 
-func Test_does_not_support_empty_toolchain_name(t *testing.T) {
-	assert.False(t, isSupported(""))
-}
-
-func Test_does_not_support_unregistered_toolchain_name(t *testing.T) {
-	assert.False(t, isSupported("unregistered-toolchain"))
-}
-
-func Test_unrecognized_toolchain_name(t *testing.T) {
-	toolchain, err := Get("dummy-toolchain")
-	assert.Error(t, err)
-	assert.Zero(t, toolchain)
-}
-
-func Test_can_add_a_built_in_toolchain(t *testing.T) {
-	const name = "new-built-in-toolchain"
-	assert.False(t, isBuiltIn(name))
-	assert.NoError(t, addBuiltIn(*AToolchain(WithName(name))))
-	assert.True(t, isBuiltIn(name))
-}
-
-func Test_cannot_add_a_built_in_toolchain_with_no_name(t *testing.T) {
-	assert.Error(t, addBuiltIn(*AToolchain(WithName(""))))
-}
-
-func Test_toolchain_name_is_case_insensitive(t *testing.T) {
-	const name = "miXeD-CasE"
-	_ = Register(*AToolchain(WithName(name)))
-	assertNameIsNotCaseSensitive(t, name)
-}
-
-func Test_can_register_a_toolchain(t *testing.T) {
-	const name = "new-toolchain"
-	assert.False(t, isSupported(name))
-	assert.NoError(t, Register(*AToolchain(WithName(name))))
-	assert.True(t, isSupported(name))
-}
-
-func Test_cannot_register_a_toolchain_with_no_name(t *testing.T) {
-	assert.Error(t, Register(*AToolchain(WithName(""))))
-}
-
-func Test_cannot_register_a_toolchain_with_no_build_command(t *testing.T) {
-	const name = "no-build-command"
-	assert.Error(t, Register(*AToolchain(WithName(name), WithNoBuildCommand())))
-	assert.False(t, isSupported(name))
-}
-
-func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
-	const name = "no-test-command"
-	assert.Error(t, Register(*AToolchain(WithName(name), WithNoTestCommand())))
-	assert.False(t, isSupported(name))
-}
-
-func assertIsABuiltInToolchain(t *testing.T, name string) {
-	assert.True(t, isBuiltIn(name))
-}
-
-func assertIsSupported(t *testing.T, name string) {
-	assert.True(t, isSupported(name))
-}
-
-func assertNameIsNotCaseSensitive(t *testing.T, name string) {
-	assert.True(t, isSupported(name))
-	assert.True(t, isSupported(strings.ToUpper(name)))
-	assert.True(t, isSupported(strings.ToLower(name)))
-	assert.True(t, isSupported(strings.Title(name)))
-}
-
-func assertToolchainInitialization(t *testing.T, name string) {
-	toolchain, err := Get(name)
-	assert.NoError(t, err)
-	assert.Equal(t, name, toolchain.GetName())
-}
-
 func assertToolchainName(t *testing.T, name string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, name, toolchain.GetName())
 }
 
 func assertBuildCommandPath(t *testing.T, expected string, name string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, expected, toolchain.buildCommandPath())
 }
 
 func assertBuildCommandArgs(t *testing.T, expected []string, name string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, expected, toolchain.buildCommandArgs())
 }
 
 func assertTestCommandPath(t *testing.T, expected string, name string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, expected, toolchain.testCommandPath())
 }
 
 func assertTestCommandArgs(t *testing.T, expected []string, name string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, expected, toolchain.testCommandArgs())
 }
 
 func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.Error(t, toolchain.RunBuild())
@@ -148,7 +72,7 @@ func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {
 }
 
 func assertNoErrorWhenBuildPasses(t *testing.T, name string, workDir string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.NoError(t, toolchain.RunBuild())
@@ -156,7 +80,7 @@ func assertNoErrorWhenBuildPasses(t *testing.T, name string, workDir string) {
 }
 
 func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.Error(t, toolchain.RunTests())
@@ -164,7 +88,7 @@ func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
 }
 
 func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.NoError(t, toolchain.RunTests())
@@ -189,6 +113,6 @@ func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {
 }
 
 func assertRunsOnPlatform(t *testing.T, name string, osName OsName, archName ArchName) {
-	toolchain, _ := Get(name)
+	toolchain, _ := GetToolchain(name)
 	assert.True(t, toolchain.runsOnPlatform(osName, archName))
 }

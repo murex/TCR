@@ -166,13 +166,13 @@ func (lang *Language) GetToolchain(toolchainName string) (tchn toolchain.TchnInt
 	// We first retrieve the toolchain
 	if toolchainName != "" {
 		// If toolchain is specified, we try to get it
-		tchn, err = toolchain.Get(toolchainName)
+		tchn, err = toolchain.GetToolchain(toolchainName)
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		// If no toolchain is specified, we use the default toolchain for this language
-		tchn, err = toolchain.Get(lang.GetToolchains().Default)
+		tchn, err = toolchain.GetToolchain(lang.GetToolchains().Default)
 		if err != nil {
 			return nil, err
 		}

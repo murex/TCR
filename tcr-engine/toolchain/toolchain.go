@@ -24,9 +24,6 @@ package toolchain
 
 import (
 	"errors"
-	"fmt"
-	"sort"
-	"strings"
 )
 
 type (
@@ -60,11 +57,6 @@ type (
 	}
 )
 
-var (
-	builtIn    = make(map[string]TchnInterface)
-	registered = make(map[string]TchnInterface)
-)
-
 // New creates a new Toolchain instance with the provided name, buildCommands and testCommands
 func New(name string, buildCommands, testCommands []Command) *Toolchain {
 	return &Toolchain{
@@ -72,26 +64,6 @@ func New(name string, buildCommands, testCommands []Command) *Toolchain {
 		buildCommands: buildCommands,
 		testCommands:  testCommands,
 	}
-}
-
-// Register adds the provided toolchain to the list of supported toolchains
-func Register(tchn TchnInterface) error {
-	if err := tchn.checkName(); err != nil {
-		return err
-	}
-	if err := tchn.checkBuildCommand(); err != nil {
-		return err
-	}
-	if err := tchn.checkTestCommand(); err != nil {
-		return err
-	}
-	registered[strings.ToLower(tchn.GetName())] = tchn
-	return nil
-}
-
-func isSupported(name string) bool {
-	_, found := registered[strings.ToLower(name)]
-	return found
 }
 
 func (tchn Toolchain) checkName() error {
@@ -113,55 +85,6 @@ func (tchn Toolchain) checkTestCommand() error {
 		return errors.New("toolchain has no test command")
 	}
 	return nil
-}
-
-// Get returns the toolchain instance with the provided name
-// The toolchain name is case insensitive.
-func Get(name string) (TchnInterface, error) {
-	if name == "" {
-		return nil, errors.New("toolchain name not provided")
-	}
-	tchn, found := registered[strings.ToLower(name)]
-	if found {
-		return tchn, nil
-	}
-	return nil, errors.New(fmt.Sprint("toolchain not supported: ", name))
-}
-
-// Names returns the list of available toolchain names sorted alphabetically
-func Names() []string {
-	var names []string
-	for _, tchn := range registered {
-		names = append(names, tchn.GetName())
-	}
-	sort.Strings(names)
-	return names
-}
-
-// Reset resets the toolchain with the provided name to its default values
-func Reset(name string) {
-	_, found := registered[strings.ToLower(name)]
-	if found && isBuiltIn(name) {
-		_ = Register(*getBuiltIn(name))
-	}
-}
-
-func getBuiltIn(name string) *TchnInterface {
-	var builtIn, _ = builtIn[strings.ToLower(name)]
-	return &builtIn
-}
-
-func isBuiltIn(name string) bool {
-	_, found := builtIn[strings.ToLower(name)]
-	return found
-}
-
-func addBuiltIn(tchn TchnInterface) error {
-	if tchn.GetName() == "" {
-		return errors.New("toolchain name cannot be an empty string")
-	}
-	builtIn[strings.ToLower(tchn.GetName())] = tchn
-	return Register(tchn)
 }
 
 // GetName provides the name of the toolchain

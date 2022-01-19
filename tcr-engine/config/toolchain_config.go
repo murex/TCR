@@ -64,7 +64,7 @@ func saveToolchainConfigs() {
 	// Loop on all existing toolchains
 	for _, name := range toolchain.Names() {
 		trace("- ", name)
-		tchn, _ := toolchain.Get(name)
+		tchn, _ := toolchain.GetToolchain(name)
 		saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(toolchainDirPath, name))
 	}
 }
