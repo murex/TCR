@@ -27,8 +27,6 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"path/filepath"
-	"sort"
-	"strings"
 )
 
 type (
@@ -68,11 +66,6 @@ type (
 	}
 )
 
-var (
-	builtIn    = make(map[string]LangInterface)
-	registered = make(map[string]LangInterface)
-)
-
 // New creates a new Language instance with the provided name, toolchains, srcFiles and testFiles
 func New(name string, toolchains Toolchains, srcFiles FileTreeFilter, testFiles FileTreeFilter) *Language {
 	return &Language{
@@ -81,107 +74,6 @@ func New(name string, toolchains Toolchains, srcFiles FileTreeFilter, testFiles 
 		srcFileFilter:  srcFiles,
 		testFileFilter: testFiles,
 	}
-}
-
-// Register adds the provided language to the list of supported languages
-func Register(lang LangInterface) error {
-	if err := lang.checkName(); err != nil {
-		return err
-	}
-	if err := lang.checkCompatibleToolchains(); err != nil {
-		return err
-	}
-	if err := lang.checkDefaultToolchain(); err != nil {
-		return err
-	}
-	registered[strings.ToLower(lang.GetName())] = lang
-	return nil
-}
-
-func isSupported(name string) bool {
-	_, found := registered[strings.ToLower(name)]
-	return found
-}
-
-// Get returns the language instance with the provided name.
-// The language name is case-insensitive.
-// This method does not guarantee that the returned language instance can
-// be used out of the box for file filtering operations as it does not
-// enforce that baseDir is set. Prefer GetLanguage in this case.
-func Get(name string) (LangInterface, error) {
-	if name == "" {
-		return nil, errors.New("language name not provided")
-	}
-	lang, found := registered[strings.ToLower(name)]
-	if found {
-		return lang, nil
-	}
-	return nil, errors.New(fmt.Sprint("language not supported: ", name))
-}
-
-// Names returns the list of available language names sorted alphabetically
-func Names() []string {
-	var names []string
-	for _, lang := range registered {
-		names = append(names, lang.GetName())
-	}
-	sort.Strings(names)
-	return names
-}
-
-// Reset resets the language with the provided name to its default values
-func Reset(name string) {
-	_, found := registered[strings.ToLower(name)]
-	if found && isBuiltIn(name) {
-		_ = Register(getBuiltIn(name))
-	}
-}
-
-func getBuiltIn(name string) LangInterface {
-	var builtIn, _ = builtIn[strings.ToLower(name)]
-	return builtIn
-}
-
-func isBuiltIn(name string) bool {
-	_, found := builtIn[strings.ToLower(name)]
-	return found
-}
-
-func addBuiltIn(lang LangInterface) error {
-	if lang.GetName() == "" {
-		return errors.New("language name cannot be an empty string")
-	}
-	builtIn[strings.ToLower(lang.GetName())] = lang
-	return Register(lang)
-}
-
-// GetLanguage returns the language to be used in current session. If no value is provided
-// for language (e.g. empty string), we try to detect the language based on the directory name.
-// Both name and baseDir are case-insensitive
-func GetLanguage(name string, baseDir string) (lang LangInterface, err error) {
-	if name != "" {
-		lang, err = getRegisteredLanguage(name)
-	} else {
-		lang, err = detectLanguageFromDirName(baseDir)
-	}
-	if lang != nil {
-		lang.setBaseDir(baseDir)
-	}
-	return
-}
-
-func getRegisteredLanguage(name string) (LangInterface, error) {
-	language, found := registered[strings.ToLower(name)]
-	if found {
-		return language, nil
-	}
-	return nil, errors.New(fmt.Sprint("language not supported: ", name))
-}
-
-// detectLanguageFromDirName is used to identify the language used in the provided directory. The current implementation
-// simply looks at the name of the directory and checks if it matches with one of the supported languages
-func detectLanguageFromDirName(baseDir string) (LangInterface, error) {
-	return getRegisteredLanguage(filepath.Base(baseDir))
 }
 
 // GetName provides the name of the toolchain
