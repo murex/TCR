@@ -45,6 +45,7 @@ const (
 	failRestore
 	failPush
 	failPull
+	failDiff
 )
 
 func (fs failures) contains(f failure) bool {
@@ -91,9 +92,19 @@ func Test_run_commit_operation_with_push_failure(t *testing.T) {
 	assertOperationEndState(t, commit, StatusGitError)
 }
 
-func Test_run_revert_operation_with_no_failure(t *testing.T) {
+func Test_run_revert_operation_with_no_changes_in_src_files(t *testing.T) {
 	initTcrEngineWithFakes(failures{})
 	assertOperationEndState(t, revert, StatusOk)
+}
+
+func Test_run_revert_operation_with_changes_in_src_files(t *testing.T) {
+	initTcrEngineWithFakes(failures{})
+	assertOperationEndState(t, revert, StatusOk)
+}
+
+func Test_run_revert_operation_with_diff_failure(t *testing.T) {
+	initTcrEngineWithFakes(failures{failDiff})
+	assertOperationEndState(t, revert, StatusGitError)
 }
 
 func Test_run_revert_operation_with_restore_failure(t *testing.T) {
@@ -126,6 +137,11 @@ func Test_run_tcr_cycle_with_push_failing(t *testing.T) {
 	assertOperationEndState(t, RunTCRCycle, StatusGitError)
 }
 
+func Test_run_tcr_cycle_with_test_and_diff_failing(t *testing.T) {
+	initTcrEngineWithFakes(failures{failTest, failDiff})
+	assertOperationEndState(t, RunTCRCycle, StatusGitError)
+}
+
 func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
 	initTcrEngineWithFakes(failures{failTest, failRestore})
 	assertOperationEndState(t, RunTCRCycle, StatusGitError)
@@ -140,6 +156,7 @@ func initTcrEngineWithFakes(f failures) {
 		f.contains(failRestore),
 		f.contains(failPush),
 		f.contains(failPull),
+		f.contains(failDiff),
 	)
 }
 
@@ -159,8 +176,8 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(failingCommit, failingRestore, failingPush, failingPull bool) {
-	git, _ = vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull)
+func replaceGitImplWithFake(failingCommit, failingRestore, failingPush, failingPull, failDiff bool) {
+	git, _ = vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff, []string{"fake-src"})
 }
 
 func assertCommandEndState(t *testing.T, operation func() error, endState Status, expectError bool) {

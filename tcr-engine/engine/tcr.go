@@ -35,7 +35,6 @@ import (
 	"github.com/murex/tcr/tcr-engine/vcs"
 	"gopkg.in/tomb.v2"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -261,13 +260,32 @@ func commit() {
 }
 
 func revert() {
-	// TODO Make revert messages more meaningful when only test code has changed
-	report.PostWarning("Reverting changes")
-	filesToRevert, err := lang.AllSrcFiles()
-	handleError(err, false, StatusOtherError)
-	for _, file := range filesToRevert {
-		handleError(git.Restore(filepath.Join(sourceTree.GetBaseDir(), file)), false, StatusGitError)
+	changedFiles, err := git.ListChanges()
+	handleError(err, false, StatusGitError)
+	if err != nil {
+		return
 	}
+
+	var reverted int
+	for _, file := range changedFiles {
+		if lang.IsSrcFile(file) {
+			err := revertFile(file)
+			handleError(err, false, StatusGitError)
+			if err == nil {
+				reverted++
+			}
+		}
+	}
+
+	if reverted > 0 {
+		report.PostWarning(reverted, " file(s) reverted")
+	} else {
+		report.PostInfo("No file reverted (only test files were updated since last commit)")
+	}
+}
+
+func revertFile(file string) error {
+	return git.Restore(file)
 }
 
 // GetSessionInfo provides the information (as strings) related to the current TCR session.

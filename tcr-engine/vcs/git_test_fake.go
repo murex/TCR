@@ -30,20 +30,24 @@ import (
 
 // GitFake provides a fake implementation of the git interface
 type GitFake struct {
-	failCommit  bool
-	failRestore bool
-	failPush    bool
-	failPull    bool
+	failCommit   bool
+	failRestore  bool
+	failPush     bool
+	failPull     bool
+	failDiff     bool
+	changedFiles []string
 }
 
 // NewGitFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
-func NewGitFake(failCommit, failRestore, failPush, failPull bool) (GitInterface, error) {
+func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, changedFiles []string) (GitInterface, error) {
 	return &GitFake{
-		failCommit:  failCommit,
-		failRestore: failRestore,
-		failPush:    failPush,
-		failPull:    failPull,
+		failCommit:   failCommit,
+		failRestore:  failRestore,
+		failPush:     failPush,
+		failPull:     failPull,
+		failDiff:     failDiff,
+		changedFiles: changedFiles,
 	}, nil
 }
 
@@ -52,24 +56,29 @@ func (g GitFake) WorkingBranch() string {
 	return ""
 }
 
-// Commit restores to last commit.
+// Commit does nothing. Returns an error if failCommit flag is set
 func (g GitFake) Commit() error {
 	return fakeOperation("commit", g.failCommit)
 }
 
-// Restore restores to last commit for everything under dir.
+// Restore does nothing. Returns an error if failRestore flag is set
 func (g GitFake) Restore(_ string) error {
 	return fakeOperation("restore", g.failRestore)
 }
 
-// Push runs a git push operation.
+// Push does nothing. Returns an error if failPush flag is set
 func (g GitFake) Push() error {
 	return fakeOperation("push", g.failPush)
 }
 
-// Pull runs a git pull operation.
+// Pull does nothing. Returns an error if failPull flag is set
 func (g GitFake) Pull() error {
 	return fakeOperation("pull", g.failPull)
+}
+
+// ListChanges returns the list of changed files configured at fake initialization
+func (g *GitFake) ListChanges() (files []string, err error) {
+	return g.changedFiles, fakeOperation("diff", g.failDiff)
 }
 
 // EnablePush does nothing

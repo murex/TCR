@@ -52,3 +52,8 @@ func (lang *FakeLanguage) AllSrcFiles() (result []string, err error) {
 	result = []string{"fake-file1", "fake-file2"}
 	return
 }
+
+// IsSrcFile returns true if the provided filePath is recognized as a source file for this language
+func (lang *FakeLanguage) IsSrcFile(filepath string) bool {
+	return true
+}

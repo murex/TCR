@@ -23,6 +23,8 @@ SOFTWARE.
 package vcs
 
 import (
+	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/codeskyblue/go-sh"
@@ -132,13 +134,7 @@ func (g *GitImpl) WorkingBranch() string {
 // Commit restores to last commit.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Commit() error {
-	// go-git Add function does not use .gitignore contents
-	// when applied on a directory.
-	// Until this is implemented we rely instead on a direct
-	// git command call
-	// TODO When gitignore rules are implemented, use go-git.Commit()
-
-	_ = runGitCommand([]string{"commit", "--no-gpg-sign", "-am", g.commitMessage})
+	_ = traceGitCommand([]string{"commit", "--no-gpg-sign", "-am", g.commitMessage})
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit
 	// TODO find a way to check beforehand if there is something to commit
@@ -146,19 +142,11 @@ func (g *GitImpl) Commit() error {
 	return nil
 }
 
-// Restore restores to last commit for everything under dir.
+// Restore restores to last commit for the provided path.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Restore(dir string) error {
-	// Currently, go-git does not allow to checkout a subset of the
-	// files related to a branch or commit.
-	// There's a pending PR that should allow this, that we could use
-	// once it's merged and packaged into go-git.
-	// Cf. https://github.com/go-git/go-git/pull/343
-	// In the meantime, we use direct call to git checkout HEAD
-	// TODO When available, replace git call with go-git restore function
-
-	report.PostInfo("Restoring ", dir)
-	return runGitCommand([]string{"checkout", "HEAD", "--", dir})
+func (g *GitImpl) Restore(path string) error {
+	report.PostWarning("Reverting ", path)
+	return traceGitCommand([]string{"checkout", "HEAD", "--", path})
 }
 
 // Push runs a git push operation.
@@ -170,7 +158,7 @@ func (g *GitImpl) Push() error {
 	}
 
 	report.PostInfo("Pushing changes to origin/", g.workingBranch)
-	err := runGitCommand([]string{"push", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+	err := traceGitCommand([]string{"push", "--no-recurse-submodules", g.remoteName, g.workingBranch})
 	if err == nil {
 		g.workingBranchExistsOnRemote = true
 	}
@@ -184,9 +172,23 @@ func (g *GitImpl) Pull() error {
 		report.PostInfo("Working locally on branch ", g.workingBranch)
 		return nil
 	}
-
 	report.PostInfo("Pulling latest changes from ", g.remoteName, "/", g.workingBranch)
-	return runGitCommand([]string{"pull", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+	return traceGitCommand([]string{"pull", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+}
+
+// ListChanges returns the list of files modified since last commit
+// Current implementation uses a direct call to git
+func (g *GitImpl) ListChanges() (files []string, err error) {
+	var gitOutput []byte
+	gitOutput, err = runGitCommand([]string{"diff", "--name-only"})
+	if err != nil {
+		return nil, err
+	}
+	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))
+	for scanner.Scan() {
+		files = append(files, filepath.Join(g.rootDir, scanner.Text()))
+	}
+	return
 }
 
 // EnablePush sets a flag allowing to turn on/off git push operations
@@ -207,13 +209,16 @@ func (g *GitImpl) IsPushEnabled() bool {
 	return g.pushEnabled
 }
 
-// runGitCommand calls git command in a separate process
-func runGitCommand(params []string) error {
-	gitCommand := "git"
-	output, err := sh.Command(gitCommand, params).CombinedOutput()
-
+// traceGitCommand calls git command and reports its output
+func traceGitCommand(params []string) error {
+	output, err := runGitCommand(params)
 	if len(output) > 0 {
 		report.PostText(string(output))
 	}
 	return err
+}
+
+// runGitCommand calls git command in a separate process
+func runGitCommand(params []string) (output []byte, err error) {
+	return sh.Command("git", params).CombinedOutput()
 }
