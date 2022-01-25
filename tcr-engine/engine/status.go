@@ -29,17 +29,23 @@ type Status struct {
 
 // List of TCR engine possible status values
 var (
-	StatusOk          = Status{rc: 0} // Build and Test Passed and changes were committed with no error
-	StatusBuildFailed = Status{rc: 1} // Build failed
-	StatusTestFailed  = Status{rc: 2} // Build passed, one or more test failed, and changes were reverted
-	StatusConfigError = Status{rc: 3} // Error in configuration or parameters
-	StatusGitError    = Status{rc: 4} // Git error
-	StatusOtherError  = Status{rc: 5} // Any other error
+	StatusOk          = NewStatus(0) // Build and Test Passed and changes were committed with no error
+	StatusBuildFailed = NewStatus(1) // Build failed
+	StatusTestFailed  = NewStatus(2) // Build passed, one or more test failed, and changes were reverted
+	StatusConfigError = NewStatus(3) // Error in configuration or parameters
+	StatusGitError    = NewStatus(4) // Git error
+	StatusOtherError  = NewStatus(5) // Any other error
 )
 
 var currentState Status
 
-func recordState(state Status) {
+// NewStatus creates a new application status
+func NewStatus(rc int) Status {
+	return Status{rc: rc}
+}
+
+// RecordState records the state to be returned as return code by the application
+func RecordState(state Status) {
 	currentState = state
 }
 
@@ -47,6 +53,7 @@ func getCurrentState() Status {
 	return currentState
 }
 
-func getReturnCode() int {
-	return currentState.rc
+// GetReturnCode provides the application's return code
+func GetReturnCode() int {
+	return getCurrentState().rc
 }

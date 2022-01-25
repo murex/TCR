@@ -32,12 +32,14 @@ import (
 // SourceTreeImpl is the implementation of Source Tree interface
 type SourceTreeImpl struct {
 	baseDir string
+	valid   bool
 	watcher *fsnotify.Watcher
 	matcher func(filename string) bool
 }
 
 // New creates a new instance of source tree implementation with a root directory set as dir.
-// The method returns an error if the root directory does not exist or cannot be accessed
+// The method returns an error if the root directory does not exist or cannot be accessed.
+// Beware that this function, if successful, changes the working directory to the base directory!
 func New(dir string) (SourceTree, error) {
 	var st = SourceTreeImpl{}
 	var err error
@@ -45,7 +47,13 @@ func New(dir string) (SourceTree, error) {
 	if err != nil {
 		return nil, err
 	}
+	st.valid = true
 	return &st, nil
+}
+
+// IsValid indicates that the source tree instance is valid
+func (st *SourceTreeImpl) IsValid() bool {
+	return st.valid
 }
 
 func (st *SourceTreeImpl) changeDir(dir string) (wd string, err error) {

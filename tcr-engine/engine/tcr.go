@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,12 +55,17 @@ var (
 // This function should be called only once during the lifespan of the application
 func Init(u ui.UserInterface, params Params) {
 	var err error
-	recordState(StatusOk)
+	RecordState(StatusOk)
 	uitf = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
 	SetRunMode(params.Mode)
+	if !mode.IsActive() {
+		uitf.ShowRunningMode(mode)
+		return
+	}
+
 	pollingPeriod = params.PollingPeriod
 
 	sourceTree, err = filesystem.New(params.BaseDir)
@@ -81,21 +86,18 @@ func Init(u ui.UserInterface, params Params) {
 
 	uitf.ShowRunningMode(mode)
 	uitf.ShowSessionInfo()
-	warnIfOnRootBranch(git.WorkingBranch(), mode.IsInteractive())
+	warnIfOnRootBranch(git.GetWorkingBranch(), mode.IsInteractive())
 }
 
 func warnIfOnRootBranch(branch string, interactive bool) {
-	for _, b := range []string{"main", "master"} {
-		if b == branch {
-			message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
-			if interactive {
-				if !uitf.Confirm(message, false) {
-					Quit()
-				}
-			} else {
-				report.PostWarning(message)
+	if vcs.IsRootBranch(branch) {
+		message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
+		if interactive {
+			if !uitf.Confirm(message, false) {
+				Quit()
 			}
-			break
+		} else {
+			report.PostWarning(message)
 		}
 	}
 }
@@ -219,7 +221,7 @@ func waitForChange(interrupt <-chan bool) bool {
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
 func RunTCRCycle() {
-	recordState(StatusOk)
+	RecordState(StatusOk)
 	if build() != nil {
 		return
 	}
@@ -234,7 +236,7 @@ func build() error {
 	report.PostInfo("Launching Build")
 	err := tchn.RunBuild()
 	if err != nil {
-		recordState(StatusBuildFailed)
+		RecordState(StatusBuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
 	}
 	return err
@@ -244,14 +246,14 @@ func test() error {
 	report.PostInfo("Running Tests")
 	err := tchn.RunTests()
 	if err != nil {
-		recordState(StatusTestFailed)
+		RecordState(StatusTestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
 	return err
 }
 
 func commit() {
-	report.PostInfo("Committing changes on branch ", git.WorkingBranch())
+	report.PostInfo("Committing changes on branch ", git.GetWorkingBranch())
 	err := git.Commit()
 	handleError(err, false, StatusGitError)
 	if err == nil {
@@ -295,7 +297,7 @@ func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
 	l = lang.GetName()
 	t = tchn.GetName()
 	ap = git.IsPushEnabled()
-	b = git.WorkingBranch()
+	b = git.GetWorkingBranch()
 
 	return d, l, t, ap, b
 }
@@ -316,20 +318,20 @@ func SetRunMode(m runmode.RunMode) {
 func Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
-	os.Exit(getReturnCode())
+	os.Exit(GetReturnCode())
 }
 
 func handleError(err error, fatal bool, status Status) {
 	if err != nil {
-		recordState(status)
+		RecordState(status)
 		if fatal {
 			report.PostError(err)
 			time.Sleep(1 * time.Millisecond)
-			os.Exit(getReturnCode())
+			os.Exit(GetReturnCode())
 		} else {
 			report.PostWarning(err)
 		}
 	} else {
-		recordState(StatusOk)
+		RecordState(StatusOk)
 	}
 }

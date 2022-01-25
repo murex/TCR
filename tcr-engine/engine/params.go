@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,11 +30,11 @@ import (
 // Params contains the main parameter values that TCR engine is using
 type Params struct {
 	ConfigDir       string
+	BaseDir         string
 	Language        string
 	Toolchain       string
-	AutoPush        bool
-	BaseDir         string
-	Mode            runmode.RunMode
-	PollingPeriod   time.Duration
 	MobTurnDuration time.Duration
+	AutoPush        bool
+	PollingPeriod   time.Duration
+	Mode            runmode.RunMode
 }

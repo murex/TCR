@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,4 +41,8 @@ func Test_mob_mode_requires_a_countdown_timer(t *testing.T) {
 
 func Test_mob_mode_allows_user_interactions(t *testing.T) {
 	assert.True(t, Mob{}.IsInteractive())
+}
+
+func Test_mob_mode_is_an_active_mode(t *testing.T) {
+	assert.True(t, Mob{}.IsActive())
 }

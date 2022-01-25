@@ -47,11 +47,11 @@ type (
 		RunBuild() error
 		RunTests() error
 		checkName() error
-		buildCommandPath() string
-		buildCommandArgs() []string
+		BuildCommandPath() string
+		BuildCommandArgs() []string
 		checkBuildCommand() error
-		testCommandPath() string
-		testCommandArgs() []string
+		TestCommandPath() string
+		TestCommandArgs() []string
 		checkTestCommand() error
 		runsOnPlatform(os OsName, arch ArchName) bool
 	}
@@ -112,23 +112,23 @@ func (tchn Toolchain) RunTests() error {
 	return findCompatibleCommand(tchn.testCommands).run()
 }
 
-// buildCommandPath returns the build command name for this toolchain
-func (tchn Toolchain) buildCommandPath() string {
+// BuildCommandPath returns the build command path for this toolchain
+func (tchn Toolchain) BuildCommandPath() string {
 	return findCompatibleCommand(tchn.buildCommands).Path
 }
 
-// buildCommandArgs returns a table with the list of build command arguments for this toolchain
-func (tchn Toolchain) buildCommandArgs() []string {
+// BuildCommandArgs returns a table with the list of build command arguments for this toolchain
+func (tchn Toolchain) BuildCommandArgs() []string {
 	return findCompatibleCommand(tchn.buildCommands).Arguments
 }
 
-// testCommandPath returns the test command name for this toolchain
-func (tchn Toolchain) testCommandPath() string {
+// TestCommandPath returns the test command path for this toolchain
+func (tchn Toolchain) TestCommandPath() string {
 	return findCompatibleCommand(tchn.testCommands).Path
 }
 
-// testCommandArgs returns a table with the list of test command arguments for this toolchain
-func (tchn Toolchain) testCommandArgs() []string {
+// TestCommandArgs returns a table with the list of test command arguments for this toolchain
+func (tchn Toolchain) TestCommandArgs() []string {
 	return findCompatibleCommand(tchn.testCommands).Arguments
 }
 

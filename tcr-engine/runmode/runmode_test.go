@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,4 +22,13 @@ SOFTWARE.
 
 package runmode
 
-// TODO Add run mode related test cases
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_interactive_run_mode_list_should_only_contain_interactive_ones(t *testing.T) {
+	for _, name := range InteractiveModes() {
+		assert.True(t, Map()[name].IsInteractive())
+	}
+}

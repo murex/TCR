@@ -1,0 +1,9 @@
+toolchains:
+  default: go-tools
+  compatible-with: [go-tools]
+source-files:
+  directories: [.]
+  patterns: ['(?i)^.*\.go$']
+test-files:
+  directories: [.]
+  patterns: ['(?i)^.*_test\.go$']

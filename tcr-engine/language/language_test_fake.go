@@ -49,7 +49,14 @@ func NewFakeLanguage(toolchainName string) *FakeLanguage {
 // AllSrcFiles returns the list of source files for this language.
 // Always returns a list of 2 fake filenames.
 func (lang *FakeLanguage) AllSrcFiles() (result []string, err error) {
-	result = []string{"fake-file1", "fake-file2"}
+	result = []string{"fake-src-file1", "fake-src-file2"}
+	return
+}
+
+// AllTestFiles returns the list of test files for this language.
+// Always returns a list of 2 fake filenames.
+func (lang *FakeLanguage) AllTestFiles() (result []string, err error) {
+	result = []string{"fake-test-file1", "fake-test-file2"}
 	return
 }
 

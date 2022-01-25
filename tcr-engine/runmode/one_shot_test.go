@@ -39,6 +39,10 @@ func Test_one_shot_mode_does_not_require_a_countdown_timer(t *testing.T) {
 	assert.False(t, OneShot{}.NeedsCountdownTimer())
 }
 
-func Test_one_shot_mode_allows_user_interactions(t *testing.T) {
+func Test_one_shot_mode_does_not_allow_user_interactions(t *testing.T) {
 	assert.False(t, OneShot{}.IsInteractive())
+}
+
+func Test_one_shot_mode_is_an_active_mode(t *testing.T) {
+	assert.True(t, OneShot{}.IsActive())
 }

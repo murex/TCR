@@ -45,22 +45,22 @@ func assertToolchainName(t *testing.T, name string) {
 
 func assertBuildCommandPath(t *testing.T, expected string, name string) {
 	toolchain, _ := GetToolchain(name)
-	assert.Equal(t, expected, toolchain.buildCommandPath())
+	assert.Equal(t, expected, toolchain.BuildCommandPath())
 }
 
 func assertBuildCommandArgs(t *testing.T, expected []string, name string) {
 	toolchain, _ := GetToolchain(name)
-	assert.Equal(t, expected, toolchain.buildCommandArgs())
+	assert.Equal(t, expected, toolchain.BuildCommandArgs())
 }
 
 func assertTestCommandPath(t *testing.T, expected string, name string) {
 	toolchain, _ := GetToolchain(name)
-	assert.Equal(t, expected, toolchain.testCommandPath())
+	assert.Equal(t, expected, toolchain.TestCommandPath())
 }
 
 func assertTestCommandArgs(t *testing.T, expected []string, name string) {
 	toolchain, _ := GetToolchain(name)
-	assert.Equal(t, expected, toolchain.testCommandArgs())
+	assert.Equal(t, expected, toolchain.TestCommandArgs())
 }
 
 func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {

@@ -28,31 +28,31 @@ import (
 )
 
 func Test_return_code_when_no_error(t *testing.T) {
-	recordState(StatusOk)
-	assert.Equal(t, 0, getReturnCode())
+	RecordState(StatusOk)
+	assert.Equal(t, 0, GetReturnCode())
 }
 
 func Test_return_code_on_build_failure(t *testing.T) {
-	recordState(StatusBuildFailed)
-	assert.Equal(t, 1, getReturnCode())
+	RecordState(StatusBuildFailed)
+	assert.Equal(t, 1, GetReturnCode())
 }
 
 func Test_return_code_on_test_failure(t *testing.T) {
-	recordState(StatusTestFailed)
-	assert.Equal(t, 2, getReturnCode())
+	RecordState(StatusTestFailed)
+	assert.Equal(t, 2, GetReturnCode())
 }
 
 func Test_return_code_on_config_error(t *testing.T) {
-	recordState(StatusConfigError)
-	assert.Equal(t, 3, getReturnCode())
+	RecordState(StatusConfigError)
+	assert.Equal(t, 3, GetReturnCode())
 }
 
 func Test_return_code_on_git_error(t *testing.T) {
-	recordState(StatusGitError)
-	assert.Equal(t, 4, getReturnCode())
+	RecordState(StatusGitError)
+	assert.Equal(t, 4, GetReturnCode())
 }
 
 func Test_return_code_on_miscellaneous_error(t *testing.T) {
-	recordState(StatusOtherError)
-	assert.Equal(t, 5, getReturnCode())
+	RecordState(StatusOtherError)
+	assert.Equal(t, 5, GetReturnCode())
 }

@@ -106,9 +106,9 @@ func buildRegex(corePattern string) string {
 
 func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
 	for _, dir := range treeFilter.Directories {
-		err := filepath.Walk(dir, func(path string, fi os.FileInfo, err error) error {
+		err := filepath.Walk(filepath.Join(baseDir, dir), func(path string, fi os.FileInfo, err error) error {
 			if err != nil {
-				return errors.New("Something wrong with " + path)
+				return errors.New("something wrong with " + path)
 			}
 			if fi.IsDir() {
 				return nil

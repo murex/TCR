@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,5 +43,10 @@ func (mode Mob) NeedsCountdownTimer() bool {
 
 // IsInteractive indicates if this run mode allows user interaction
 func (mode Mob) IsInteractive() bool {
+	return true
+}
+
+// IsActive indicates if this run mode is actively running TCR
+func (mode Mob) IsActive() bool {
 	return true
 }

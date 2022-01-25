@@ -1,0 +1,9 @@
+toolchains:
+  default: gradle-wrapper
+  compatible-with: [gradle, gradle-wrapper, maven, maven-wrapper]
+source-files:
+  directories: [src/main]
+  patterns: ['(?i)^.*\.java$']
+test-files:
+  directories: [src/test]
+  patterns: ['(?i)^.*\.java$']

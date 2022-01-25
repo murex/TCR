@@ -302,11 +302,21 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
    > TCR complies with [RE2](https://github.com/google/re2/wiki/Syntax)
    > for pattern matching on filenames.
 
-6. Try running TCR with the newly configured language and toolchain
+6. Check TCR settings with the newly configured language and toolchain
+
+   TCR's `check` subcommand performs a number of checks on configuration, parameters and local environment without
+   triggering the TCR cycle. It helps you quickly tune your configuration and command line parameters. Make sure that
+   there is no error checkpoint in the trace displayed before proceeding any further.
+
+   ```shell
+   cd <base-directory>
+   tcr check -c $HOME -l javascript -t yarn
+   ```
+
+7. Try running TCR with the newly configured language and toolchain
 
    TCR's `one-shot` subcommand runs one single TCR cycle then exits. Through checking
-   its [return code](doc/tcr_one-shot.md) you can quickly verify that the newly configured language and toolchain are
-   set up properly.
+   its [return code](doc/tcr_one-shot.md) you can quickly verify that everything works as expected.
 
    ```shell
    cd <base-directory>

@@ -24,7 +24,6 @@ package config
 
 import (
 	"github.com/murex/tcr/tcr-engine/language"
-	"os"
 	"path/filepath"
 )
 
@@ -74,27 +73,23 @@ func saveLanguageConfigs() {
 	}
 }
 
-func loadLanguageConfigs() {
-	entries, err := os.ReadDir(languageDirPath)
-	if err != nil || len(entries) == 0 {
-		// If we cannot open language directory or if it's empty, we don't go any further
-		return
-	}
+// GetLanguageConfigFileList returns the list of language configuration files found in language directory
+func GetLanguageConfigFileList() (list []string) {
+	return listYamlFilesIn(languageDirPath)
+}
 
-	// Loop on all files in language directory
+func loadLanguageConfigs() {
+	// Loop on all YAML files in language directory
 	trace("Loading languages configuration")
-	for _, entry := range entries {
-		if entry.IsDir() {
-			break
-		}
-		name := extractNameFromYamlFilename(entry.Name())
-		trace("- ", name)
+	for _, entry := range GetLanguageConfigFileList() {
+		name := extractNameFromYamlFilename(entry)
+		//trace("- ", name)
 		var languageCfg LanguageConfig
-		loadFromYaml(filepath.Join(languageDirPath, entry.Name()), &languageCfg)
+		loadFromYaml(filepath.Join(languageDirPath, entry), &languageCfg)
 		languageCfg.Name = name
 		err := language.Register(asLanguage(languageCfg))
 		if err != nil {
-			trace("Error in ", entry.Name(), ": ", err)
+			trace("Error in ", entry, ": ", err)
 		}
 	}
 }
@@ -184,6 +179,11 @@ func initLanguageConfigDirPath() {
 
 func createLanguageConfigDir() {
 	createConfigSubDir(languageDirPath, "TCR language configuration directory")
+}
+
+// GetLanguageConfigDirPath returns the path to the language configuration directory
+func GetLanguageConfigDirPath() string {
+	return languageDirPath
 }
 
 func showLanguageConfigs() {

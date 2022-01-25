@@ -34,7 +34,9 @@ const (
 // GitInterface provides the interface that a git implementation must satisfy for TCR engine to be
 // able to interact with git
 type GitInterface interface {
-	WorkingBranch() string
+	GetRootDir() string
+	GetRemoteName() string
+	GetWorkingBranch() string
 	Commit() error
 	Restore(dir string) error
 	Push() error
@@ -42,4 +44,15 @@ type GitInterface interface {
 	ListChanges() (files []string, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
+}
+
+// IsRootBranch tells if the provided branch is a root branch or not. Current implementation
+// is a trivial one, that returns true if the branch is called "main" or "master"
+func IsRootBranch(branch string) bool {
+	for _, b := range []string{"main", "master"} {
+		if b == branch {
+			return true
+		}
+	}
+	return false
 }

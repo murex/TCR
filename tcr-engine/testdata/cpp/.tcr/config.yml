@@ -1,0 +1,9 @@
+config:
+  git:
+    auto-push: true
+    polling-period: 2s
+  mob-timer:
+    duration: 5m0s
+  tcr:
+    language: cpp
+    toolchain: cmake-kata

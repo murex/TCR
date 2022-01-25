@@ -24,7 +24,6 @@ package config
 
 import (
 	"github.com/murex/tcr/tcr-engine/toolchain"
-	"os"
 	"path/filepath"
 )
 
@@ -69,27 +68,23 @@ func saveToolchainConfigs() {
 	}
 }
 
-func loadToolchainConfigs() {
-	entries, err := os.ReadDir(toolchainDirPath)
-	if err != nil || len(entries) == 0 {
-		// If we cannot open toolchain directory or if it's empty, we don't go any further
-		return
-	}
+// GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
+func GetToolchainConfigFileList() (list []string) {
+	return listYamlFilesIn(toolchainDirPath)
+}
 
-	// Loop on all files in toolchain directory
+func loadToolchainConfigs() {
+	// Loop on all YAML files in toolchain directory
 	trace("Loading toolchains configuration")
-	for _, entry := range entries {
-		if entry.IsDir() {
-			break
-		}
-		name := extractNameFromYamlFilename(entry.Name())
-		trace("- ", name)
+	for _, entry := range GetToolchainConfigFileList() {
+		name := extractNameFromYamlFilename(entry)
+		//trace("- ", name)
 		var toolchainCfg ToolchainConfig
-		loadFromYaml(filepath.Join(toolchainDirPath, entry.Name()), &toolchainCfg)
+		loadFromYaml(filepath.Join(toolchainDirPath, entry), &toolchainCfg)
 		toolchainCfg.Name = name
 		err := toolchain.Register(asToolchain(toolchainCfg))
 		if err != nil {
-			trace("Error in ", entry.Name(), ": ", err)
+			trace("Error in ", entry, ": ", err)
 		}
 	}
 }
@@ -189,10 +184,15 @@ func initToolchainConfigDirPath() {
 	toolchainDirPath = filepath.Join(configDirPath, toolchainDir)
 }
 
+// GetToolchainConfigDirPath returns the path to the toolchain configuration directory
+func GetToolchainConfigDirPath() string {
+	return toolchainDirPath
+}
+
 func createToolchainConfigDir() {
 	createConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
 }
 
 func showToolchainConfigs() {
-	// TODO Implement display of languages configuration
+	// TODO Implement display of toolchains configuration
 }

@@ -25,6 +25,7 @@ package cli
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-cli/desktop"
+	"github.com/murex/tcr/tcr-engine/checker"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
@@ -283,6 +284,11 @@ func (term *Terminal) Start() {
 		// When running TCR in one-shot mode, there's no selection menu:
 		// we directly ask TCR engine to run one cycle and quit when done
 		engine.RunTCRCycle()
+		engine.Quit()
+	case runmode.Check{}:
+		// When running TCR in check mode, there's no selection menu:
+		// we directly ask TCR engine to run a check and quit when done
+		checker.Run(term.params)
 		engine.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)

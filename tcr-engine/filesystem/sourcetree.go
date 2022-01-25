@@ -26,6 +26,7 @@ package filesystem
 // by TCR engine
 type SourceTree interface {
 	GetBaseDir() string
+	IsValid() bool
 	Watch(
 		dirList []string,
 		filenameMatcher func(filename string) bool,

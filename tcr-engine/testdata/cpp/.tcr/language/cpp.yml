@@ -1,0 +1,9 @@
+toolchains:
+  default: cmake-kata
+  compatible-with: [cmake, cmake-kata]
+source-files:
+  directories: [src, include]
+  patterns: ['(?i)^.*\.c(c|pp)?$', '(?i)^.*\.h(h|pp)?$']
+test-files:
+  directories: [test]
+  patterns: ['(?i)^.*\.c(c|pp)?$', '(?i)^.*\.h(h|pp)?$']

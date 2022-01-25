@@ -45,3 +45,8 @@ func (mode OneShot) NeedsCountdownTimer() bool {
 func (mode OneShot) IsInteractive() bool {
 	return false
 }
+
+// IsActive indicates if this run mode is actively running TCR
+func (mode OneShot) IsActive() bool {
+	return true
+}

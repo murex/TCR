@@ -58,6 +58,7 @@ type (
 		IsTestFile(filepath string) bool
 		IsLanguageFile(filename string) bool
 		AllSrcFiles() ([]string, error)
+		AllTestFiles() ([]string, error)
 		checkName() error
 		checkCompatibleToolchains() error
 		checkDefaultToolchain() error
@@ -238,6 +239,11 @@ func (lang *Language) AllSrcFiles() (result []string, err error) {
 		}
 	}
 	return result, nil
+}
+
+// AllTestFiles returns the list of test files for this language.
+func (lang *Language) AllTestFiles() (result []string, err error) {
+	return lang.allMatchingTestFiles()
 }
 
 // allMatchingSrcFiles returns the list of source files matching for this language

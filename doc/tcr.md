@@ -29,6 +29,7 @@ tcr [flags]
 
 ### SEE ALSO
 
+* [tcr check](tcr_check.md)	 - Check TCR configuration and parameters and exit
 * [tcr config](tcr_config.md)	 - Manage TCR configuration
 * [tcr info](tcr_info.md)	 - Display TCR build information
 * [tcr mob](tcr_mob.md)	 - Run TCR in mob mode

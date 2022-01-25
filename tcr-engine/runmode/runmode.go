@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,11 @@ type RunMode interface {
 	AutoPushDefault() bool
 	NeedsCountdownTimer() bool
 	IsInteractive() bool
+	IsActive() bool
 }
 
 var (
-	allModes = []RunMode{Mob{}, Solo{}, OneShot{}}
+	allModes = []RunMode{Mob{}, Solo{}, OneShot{}, Check{}}
 )
 
 // InteractiveModes returns the list of names of available interactive run modes

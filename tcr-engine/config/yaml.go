@@ -89,3 +89,18 @@ func buildYamlFilename(name string) string {
 func extractNameFromYamlFilename(filename string) string {
 	return strings.TrimSuffix(strings.ToLower(filename), "."+yamlExtension)
 }
+
+func listYamlFilesIn(dirPath string) (list []string) {
+	entries, err := os.ReadDir(dirPath)
+	if err != nil || len(entries) == 0 {
+		// If we cannot open the directory or if it's empty, we don't go any further
+		return
+	}
+	// Loop on all YAML files in the directory
+	for _, entry := range entries {
+		if !entry.IsDir() && filepath.Ext(entry.Name()) == "."+yamlExtension {
+			list = append(list, entry.Name())
+		}
+	}
+	return
+}

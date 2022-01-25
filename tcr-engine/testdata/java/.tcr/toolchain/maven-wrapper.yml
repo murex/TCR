@@ -1,0 +1,18 @@
+build:
+  - os: [darwin, linux]
+    arch: ["386", amd64, arm64]
+    command: ./mvnw
+    arguments: [test-compile]
+  - os: [windows]
+    arch: ["386", amd64, arm64]
+    command: .\mvnw.cmd
+    arguments: [test-compile]
+test:
+  - os: [darwin, linux]
+    arch: ["386", amd64, arm64]
+    command: ./mvnw
+    arguments: [test]
+  - os: [windows]
+    arch: ["386", amd64, arm64]
+    command: .\mvnw.cmd
+    arguments: [test]

@@ -52,5 +52,5 @@ func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
 
 func Test_can_retrieve_working_branch(t *testing.T) {
 	git, _ := New(".")
-	assert.NotZero(t, git.WorkingBranch())
+	assert.NotZero(t, git.GetWorkingBranch())
 }

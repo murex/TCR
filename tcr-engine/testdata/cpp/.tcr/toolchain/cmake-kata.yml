@@ -1,0 +1,50 @@
+build:
+  - os: [darwin]
+    arch: [amd64]
+    command: build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake
+    arguments: [--build, build, --config, Debug]
+  - os: [darwin]
+    arch: [arm64]
+    command: build/cmake/cmake-macos-universal/CMake.app/Contents/bin/cmake
+    arguments: [--build, build, --config, Debug]
+  - os: [linux]
+    arch: [amd64]
+    command: build/cmake/cmake-linux-x86_64/bin/cmake
+    arguments: [--build, build, --config, Debug]
+  - os: [linux]
+    arch: [arm64]
+    command: build/cmake/cmake-linux-aarch64/bin/cmake
+    arguments: [--build, build, --config, Debug]
+  - os: [windows]
+    arch: ["386"]
+    command: build\cmake\cmake-windows-i386\bin\cmake.exe
+    arguments: [--build, build, --config, Debug]
+  - os: [windows]
+    arch: [amd64]
+    command: build\cmake\cmake-windows-x86_64\bin\cmake.exe
+    arguments: [--build, build, --config, Debug]
+test:
+  - os: [darwin]
+    arch: [amd64]
+    command: build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+  - os: [darwin]
+    arch: [arm64]
+    command: build/cmake/cmake-macos-universal/CMake.app/Contents/bin/ctest
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+  - os: [linux]
+    arch: [amd64]
+    command: build/cmake/cmake-linux-x86_64/bin/ctest
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+  - os: [linux]
+    arch: [arm64]
+    command: build/cmake/cmake-linux-aarch64/bin/ctest
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+  - os: [windows]
+    arch: ["386"]
+    command: build\cmake\cmake-windows-i386\bin\ctest.exe
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+  - os: [windows]
+    arch: [amd64]
+    command: build\cmake\cmake-windows-x86_64\bin\ctest.exe
+    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]

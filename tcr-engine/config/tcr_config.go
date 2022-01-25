@@ -105,6 +105,11 @@ func initConfigDirPath() {
 	}
 }
 
+// GetConfigDirPath returns the configuration directory path
+func GetConfigDirPath() string {
+	return configDirPath
+}
+
 func createConfigDir() {
 	_, err := os.Stat(configDirPath)
 	if os.IsNotExist(err) {
@@ -161,7 +166,7 @@ func trace(a ...interface{}) {
 	_, _ = fmt.Fprintln(os.Stderr, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
 }
 
-// AddParameters add parameter to the provided command cmd
+// AddParameters adds parameter to the provided command cmd
 func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
 	Config.BaseDir = AddBaseDirParamWithDefault(cmd, defaultBaseDir)
 	Config.ConfigDir = AddConfigDirParam(cmd)

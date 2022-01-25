@@ -51,8 +51,18 @@ func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, chan
 	}, nil
 }
 
-// WorkingBranch returns an empty working branch
-func (g GitFake) WorkingBranch() string {
+// GetRootDir returns an empty root directory path
+func (g GitFake) GetRootDir() string {
+	return ""
+}
+
+// GetRemoteName returns an empty remote name
+func (g GitFake) GetRemoteName() string {
+	return ""
+}
+
+// GetWorkingBranch returns an empty working branch
+func (g GitFake) GetWorkingBranch() string {
 	return ""
 }
 

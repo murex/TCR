@@ -27,7 +27,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/codeskyblue/go-sh"
 	"github.com/go-git/go-billy/v5/helper/chroot"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -66,7 +65,7 @@ func New(dir string) (GitInterface, error) {
 	if err != nil {
 		return nil, err
 	}
-	r, _ := rootDir(repo)
+	r, _ := findRootDir(repo)
 	gitImpl.rootDir = filepath.Dir(r)
 
 	head, err := repo.Head()
@@ -82,7 +81,7 @@ func New(dir string) (GitInterface, error) {
 
 // isBranchOnRemote returns true is the provided branch exists on provided remote
 func isBranchOnRemote(repo *git.Repository, branch, remote string) (bool, error) {
-	remoteName := fmt.Sprintf("%v/%v", remote, branch)
+	remoteBranchName := fmt.Sprintf("%v/%v", remote, branch)
 	branches, err := remoteBranches(repo.Storer)
 	if err != nil {
 		return false, err
@@ -90,7 +89,7 @@ func isBranchOnRemote(repo *git.Repository, branch, remote string) (bool, error)
 
 	var found = false
 	_ = branches.ForEach(func(branch *plumbing.Reference) error {
-		found = found || strings.HasSuffix(branch.Name().Short(), remoteName)
+		found = found || strings.HasSuffix(branch.Name().Short(), remoteBranchName)
 		return nil
 	})
 	return found, nil
@@ -109,25 +108,37 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 	}, refs), nil
 }
 
-// rootDir returns the local clone's root directory of provided repository
-func rootDir(r *git.Repository) (string, error) {
+// findRootDir returns the local clone's root directory of provided repository
+func findRootDir(r *git.Repository) (dir string, err error) {
 	// Try to grab the repository Storer
-	s, ok := r.Storer.(*filesystem.Storage)
+	storage, ok := r.Storer.(*filesystem.Storage)
 	if !ok {
-		return "", errors.New("repository storage is not filesystem.Storage")
+		err = errors.New("repository storage is not filesystem.Storage")
+		return
 	}
 
 	// Try to get the underlying billy.Filesystem
-	fs, ok := s.Filesystem().(*chroot.ChrootHelper)
+	fs, ok := storage.Filesystem().(*chroot.ChrootHelper)
 	if !ok {
-		return "", errors.New("filesystem is not chroot.ChrootHelper")
+		err = errors.New("filesystem is not chroot.ChrootHelper")
+		return
 	}
-
-	return fs.Root(), nil
+	dir = fs.Root()
+	return
 }
 
-// WorkingBranch returns the current git working branch
-func (g *GitImpl) WorkingBranch() string {
+// GetRootDir returns the root directory path
+func (g *GitImpl) GetRootDir() string {
+	return g.rootDir
+}
+
+// GetRemoteName returns the current git remote name
+func (g *GitImpl) GetRemoteName() string {
+	return g.remoteName
+}
+
+// GetWorkingBranch returns the current git working branch
+func (g *GitImpl) GetWorkingBranch() string {
 	return g.workingBranch
 }
 
@@ -157,7 +168,7 @@ func (g *GitImpl) Push() error {
 		return nil
 	}
 
-	report.PostInfo("Pushing changes to origin/", g.workingBranch)
+	report.PostInfo("Pushing changes to ", g.remoteName, "/", g.workingBranch)
 	err := traceGitCommand([]string{"push", "--no-recurse-submodules", g.remoteName, g.workingBranch})
 	if err == nil {
 		g.workingBranchExistsOnRemote = true
@@ -207,18 +218,4 @@ func (g *GitImpl) EnablePush(flag bool) {
 // IsPushEnabled indicates if git push operations are turned on
 func (g *GitImpl) IsPushEnabled() bool {
 	return g.pushEnabled
-}
-
-// traceGitCommand calls git command and reports its output
-func traceGitCommand(params []string) error {
-	output, err := runGitCommand(params)
-	if len(output) > 0 {
-		report.PostText(string(output))
-	}
-	return err
-}
-
-// runGitCommand calls git command in a separate process
-func runGitCommand(params []string) (output []byte, err error) {
-	return sh.Command("git", params).CombinedOutput()
 }
