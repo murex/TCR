@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,17 +31,14 @@ import (
 )
 
 const (
-	defaultLinePrefix = ""
-
-	horizontalLineCharacter = "-"
-
-	// Default terminal width if current terminal is not recognized
-	defaultTerminalWidth = 80
+	horizontalLineCharacter = "-" // Character used for printing horizontal lines
+	defaultTerminalWidth    = 80  // Default terminal width if current terminal is not recognized
 )
 
 var (
-	colorizer  = aurora.NewAurora(true)
-	linePrefix = defaultLinePrefix
+	colorizer       = aurora.NewAurora(true)
+	linePrefix      = ""
+	tputCmdDisabled = false
 )
 
 func setLinePrefix(value string) {
@@ -76,24 +73,27 @@ func printUntouched(a ...interface{}) {
 }
 
 func printHorizontalLine() {
-	termWidth := getTerminalColumns()
-	prefixWidth := len(linePrefix) + 1
-	lineWidth := termWidth - prefixWidth - 1
+	lineWidth := getTerminalColumns() - len(linePrefix) - 2
 	if lineWidth < 0 {
 		lineWidth = 0
 	}
-	horizontalLine := strings.Repeat(horizontalLineCharacter, lineWidth)
-	printInCyan(horizontalLine)
+	printInCyan(strings.Repeat(horizontalLineCharacter, lineWidth))
 }
 
+// getTerminalColumns returns the terminal's current number of column. If anything goes wrong (for
+// example when running from Windows PowerShell), we fallback on a fixed number of columns
 func getTerminalColumns() int {
-	output, err := sh.Command("tput", "cols").Output()
-	if err != nil {
+	if tputCmdDisabled {
 		return defaultTerminalWidth
 	}
-
+	output, err := sh.Command("tput", "cols").Output()
+	if err != nil {
+		tputCmdDisabled = true
+		return defaultTerminalWidth
+	}
 	columns, err := strconv.Atoi(strings.TrimSpace(string(output)))
 	if err != nil {
+		tputCmdDisabled = true
 		return defaultTerminalWidth
 	}
 	return columns

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,26 @@ import (
 )
 
 func setupConsole() {
+	// Cf. https://docs.microsoft.com/en-us/windows/console/setconsolemode
+	setupWindowsConsoleStdout()
+	setupWindowsConsoleStdin()
+}
+
+func setupWindowsConsoleStdin() {
+	// This enforces that we do not wait for enter key and do not have keystrokes echo-ed on console output
+	stdin := windows.Handle(os.Stdin.Fd())
+	var originalMode uint32
+	_ = windows.GetConsoleMode(stdin, &originalMode)
+	_ = windows.SetConsoleMode(stdin, originalMode&^
+		uint32(windows.ENABLE_LINE_INPUT)&^
+		uint32(windows.ENABLE_ECHO_INPUT))
+}
+
+func setupWindowsConsoleStdout() {
 	// This enforces that ANSI color codes are properly interpreted when running on Windows OS
 	stdout := windows.Handle(os.Stdout.Fd())
 	var originalMode uint32
-
 	_ = windows.GetConsoleMode(stdout, &originalMode)
-	_ = windows.SetConsoleMode(stdout, originalMode|windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
+	_ = windows.SetConsoleMode(stdout, originalMode|
+		windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING)
 }
