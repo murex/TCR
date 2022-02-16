@@ -100,6 +100,11 @@ func (g GitFake) IsPushEnabled() bool {
 	return false
 }
 
+// CheckRemoteAccess always returns false
+func (g GitFake) CheckRemoteAccess() bool {
+	return false
+}
+
 func fakeOperation(operation string, shouldFail bool) (err error) {
 	//fmt.Printf("faking git %v operation (failure=%v)\n", operation, shouldFail)
 	if shouldFail {

@@ -31,6 +31,7 @@ import (
 type Params struct {
 	ConfigDir       string
 	BaseDir         string
+	WorkDir         string
 	Language        string
 	Toolchain       string
 	MobTurnDuration time.Duration

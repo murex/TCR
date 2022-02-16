@@ -33,7 +33,7 @@ func Test_check_config_directory_returns_ok_when_set_and_exists(t *testing.T) {
 }
 
 func Test_check_config_directory_returns_ok_when_not_set(t *testing.T) {
-	// When not set, config dir is automatically initialized to the current working directory
+	// When not set, config dir is automatically initialized to the current directory
 	t.Skip("need to provide fake configuration settings for tests")
 	assertOk(t, checkConfigDirectory, *engine.AParamSet(engine.WithConfigDir("")))
 }

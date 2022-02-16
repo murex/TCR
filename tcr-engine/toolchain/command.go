@@ -27,6 +27,7 @@ import (
 	"github.com/codeskyblue/go-sh"
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -103,7 +104,8 @@ func (command Command) runsWithArch(arch ArchName) bool {
 
 func (command Command) run() error {
 	report.PostText(command.asCommandLine())
-	output, err := sh.Command(adjustCommandPath(command.Path), command.Arguments).CombinedOutput()
+	session := sh.NewSession().SetDir(GetWorkDir())
+	output, err := session.Command(command.Path, command.Arguments).CombinedOutput()
 	if output != nil {
 		report.PostText(string(output))
 	}
@@ -155,7 +157,7 @@ func (command Command) checkArchTable() error {
 }
 
 func (command Command) asCommandLine() string {
-	return adjustCommandPath(command.Path) + " " + strings.Join(command.Arguments, " ")
+	return command.Path + " " + strings.Join(command.Arguments, " ")
 }
 
 func findCommand(commands []Command, os OsName, arch ArchName) *Command {
@@ -181,14 +183,20 @@ func adjustCommandPath(cmdPath string) string {
 	if filepath.IsAbs(cmdPath) {
 		return filepath.Clean(cmdPath)
 	}
-	// If not, we check if it can be a relative path from the current directory.
+	// If not, we check if it can be a relative path from the work directory.
 	// If the file is found, we return it
-	wd, _ := os.Getwd()
-	pathFromWorkingDir := filepath.Join(wd, cmdPath)
-	info, err := os.Stat(pathFromWorkingDir)
+	pathFromWorkDir := filepath.Join(GetWorkDir(), cmdPath)
+	info, err := os.Stat(pathFromWorkDir)
 	if err == nil && !info.IsDir() {
-		return pathFromWorkingDir
+		return pathFromWorkDir
 	}
 	// As a last resort, we assume it's available in the $PATH
 	return filepath.Clean(cmdPath)
+}
+
+func checkCommandPath(cmdPath string) (string, error) {
+	if cmdPath == "" {
+		return "", errors.New("command path is empty")
+	}
+	return exec.LookPath(adjustCommandPath(cmdPath))
 }

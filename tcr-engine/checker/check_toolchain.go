@@ -39,18 +39,21 @@ func checkToolchain(params engine.Params) (cr *CheckResults) {
 
 	if checkEnv.tchn != nil {
 		cr.ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
-		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandArgs()))
-		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandArgs()))
+		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine()))
+		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine()))
 	}
 	return
 }
 
-func checkCommandLine(name string, cmdPath string, cmdArgs []string) (cp []CheckPoint) {
-	commandLine := cmdPath
-	for _, arg := range cmdArgs {
-		commandLine += " " + arg
+func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []CheckPoint) {
+	cp = append(cp, okCheckPoint(name, " command line: ", cmdLine))
+
+	path, err := checkEnv.tchn.CheckCommandAccess(cmdPath)
+	if err != nil {
+		cp = append(cp, errorCheckPoint("cannot access ", name, " command: ", cmdPath))
+	} else {
+		cp = append(cp, okCheckPoint(name, " command path: ", path))
 	}
-	cp = append(cp, okCheckPoint(name, " command: ", commandLine))
 	return
 }
 

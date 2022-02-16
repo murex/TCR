@@ -56,14 +56,6 @@ func GetGitUserName() string {
 	return getGitConfigValue("user.name")
 }
 
-// TryGitRemoteAccess returns true if git remote can be accessed. This is currently done through
-// checking the return value of "git push --dry-run". This very likely does not guarantee that
-// git remote commands will work, but already gives an indication.
-func TryGitRemoteAccess() bool {
-	_, err := runGitCommand([]string{"push", "--dry-run"})
-	return err == nil
-}
-
 func getGitConfigValue(variable string) string {
 	gitOutput, err := runGitCommand([]string{"config", variable})
 	if err != nil || gitOutput == nil || len(gitOutput) == 0 {
@@ -74,7 +66,7 @@ func getGitConfigValue(variable string) string {
 	return scanner.Text()
 }
 
-// traceGitCommand calls git command and reports its output
+// traceGitCommand calls git command and reports its output traces
 func traceGitCommand(params []string) error {
 	output, err := runGitCommand(params)
 	if len(output) > 0 {
@@ -83,7 +75,7 @@ func traceGitCommand(params []string) error {
 	return err
 }
 
-// runGitCommand calls git command in a separate process
+// runGitCommand calls git command in a separate process and returns its output traces
 func runGitCommand(params []string) (output []byte, err error) {
 	return sh.Command("git", params).CombinedOutput()
 }

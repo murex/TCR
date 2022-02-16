@@ -34,6 +34,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 	params := &Params{
 		ConfigDir:       "",
 		BaseDir:         "",
+		WorkDir:         "",
 		Language:        "",
 		Toolchain:       "",
 		MobTurnDuration: 0,
@@ -52,6 +53,13 @@ func AParamSet(builders ...func(params *Params)) *Params {
 func WithBaseDir(dirName string) func(params *Params) {
 	return func(params *Params) {
 		params.BaseDir = dirName
+	}
+}
+
+// WithWorkDir sets the provided dirName as the work directory
+func WithWorkDir(dirName string) func(params *Params) {
+	return func(params *Params) {
+		params.WorkDir = dirName
 	}
 }
 

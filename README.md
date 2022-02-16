@@ -84,6 +84,17 @@ This is what we call the `base directory`.
 - The base directory can be specified when starting TCR using the `-b` (or `--base-dir`) command line option.
 - When the base directory is not provided, TCR assumes that the current directory is the base directory.
 
+### Work directory
+
+TCR `work directory` is the directory from which build and test commands are launched. In most cases using the same
+value as the `base directory` is sufficient.
+
+In some situations (for instance on multi-component projects), it might be necessary to run build and test tools from a
+different directory than the one where source and test files are located.
+
+- The root directory can be specified when starting TCR using the `-w` (or `--work-dir`) command line option.
+- When the work directory is not provided, TCR assumes that the current directory is the work directory.
+
 ### Configuration directory
 
 If you want to save non-default TCR configuration options, customize a built-in language or toolchain, or add your own
@@ -127,7 +138,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 3. Launch TCR
 
     ```shell
-    ./tcr -b <base-directory> -l <language> -t <toolchain>
+    ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
     ```
 
 </details>
@@ -146,7 +157,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 3. Launch TCR
 
     ```shell
-    ./tcr -b <base-directory> -l <language> -t <toolchain>
+    ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
     ```
 
 </details>
@@ -165,7 +176,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 3. Launch TCR
 
     ```shell
-    ./tcr.exe -b <base-directory> -l <language> -t <toolchain>
+    ./tcr.exe -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
     ```
 
 </details>

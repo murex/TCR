@@ -28,21 +28,44 @@ import (
 )
 
 func Test_check_language_returns_ok_when_set_and_recognized(t *testing.T) {
-	assertOk(t, checkLanguage, *engine.AParamSet(engine.WithBaseDir(testDataDirJava), engine.WithLanguage("java")))
+	assertOk(t, checkLanguage,
+		*engine.AParamSet(
+			engine.WithBaseDir(testDataDirJava),
+			engine.WithLanguage("java"),
+		),
+	)
 }
 
 func Test_check_language_returns_error_when_set_but_unknown(t *testing.T) {
-	assertError(t, checkLanguage, *engine.AParamSet(engine.WithLanguage("unknown-language")))
+	assertError(t, checkLanguage,
+		*engine.AParamSet(
+			engine.WithLanguage("unknown-language"),
+		),
+	)
 }
 
 func Test_check_language_returns_error_when_not_set_and_no_base_dir(t *testing.T) {
-	assertError(t, checkLanguage, *engine.AParamSet(engine.WithLanguage("")))
+	assertError(t, checkLanguage,
+		*engine.AParamSet(
+			engine.WithLanguage(""),
+		),
+	)
 }
 
 func Test_check_language_returns_ok_when_not_set_but_with_valid_base_dir(t *testing.T) {
-	assertOk(t, checkLanguage, *engine.AParamSet(engine.WithLanguage(""), engine.WithBaseDir(testDataDirJava)))
+	assertOk(t, checkLanguage,
+		*engine.AParamSet(
+			engine.WithLanguage(""),
+			engine.WithBaseDir(testDataDirJava),
+		),
+	)
 }
 
 func Test_check_language_returns_error_when_not_set_and_with_invalid_base_dir(t *testing.T) {
-	assertError(t, checkLanguage, *engine.AParamSet(engine.WithLanguage(""), engine.WithBaseDir("invalid-base-dir")))
+	assertError(t, checkLanguage,
+		*engine.AParamSet(
+			engine.WithLanguage(""),
+			engine.WithBaseDir("invalid-base-dir"),
+		),
+	)
 }

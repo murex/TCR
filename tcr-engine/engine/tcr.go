@@ -70,11 +70,18 @@ func Init(u ui.UserInterface, params Params) {
 
 	sourceTree, err = filesystem.New(params.BaseDir)
 	handleError(err, true, StatusConfigError)
-	report.PostInfo("Working directory is ", sourceTree.GetBaseDir())
+	report.PostInfo("Base directory is ", sourceTree.GetBaseDir())
+
 	lang, err = language.GetLanguage(params.Language, sourceTree.GetBaseDir())
 	handleError(err, true, StatusConfigError)
+
 	tchn, err = lang.GetToolchain(params.Toolchain)
 	handleError(err, true, StatusConfigError)
+
+	err = toolchain.SetWorkDir(params.WorkDir)
+	handleError(err, true, StatusConfigError)
+	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
+
 	git, err = vcs.New(sourceTree.GetBaseDir())
 	handleError(err, true, StatusGitError)
 	git.EnablePush(params.AutoPush)
@@ -290,16 +297,17 @@ func revertFile(file string) error {
 	return git.Restore(file)
 }
 
-// GetSessionInfo provides the information (as strings) related to the current TCR session.
+// GetSessionInfo provides the information related to the current TCR session.
 // Used mainly by the user interface packages to retrieve and display this information
-func GetSessionInfo() (d string, l string, t string, ap bool, b string) {
-	d = sourceTree.GetBaseDir()
-	l = lang.GetName()
-	t = tchn.GetName()
-	ap = git.IsPushEnabled()
-	b = git.GetWorkingBranch()
-
-	return d, l, t, ap, b
+func GetSessionInfo() SessionInfo {
+	return SessionInfo{
+		BaseDir:       sourceTree.GetBaseDir(),
+		WorkDir:       toolchain.GetWorkDir(),
+		LanguageName:  lang.GetName(),
+		ToolchainName: tchn.GetName(),
+		AutoPush:      git.IsPushEnabled(),
+		BranchName:    git.GetWorkingBranch(),
+	}
 }
 
 // ReportMobTimerStatus reports the status of the mob timer

@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
-This application runs within a GUI.`,
+This application runs TCR graphical user interface.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		config.UpdateEngineParams(&params)
 	},
@@ -63,7 +63,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(config.Init)
-	// When running TCR-GUI, default base dir is empty to make sure we always start the application
+	// When running TCR-GUI, default work and base dir is empty to make sure we always start the application
 	config.AddParameters(rootCmd, "")
 }
 

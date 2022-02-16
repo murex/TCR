@@ -57,7 +57,7 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 
 	sp.languageLabel = widget.NewLabel("Language")
 	sp.toolchainLabel = widget.NewLabel("Toolchain")
-	sp.branchLabel = widget.NewLabel("Branch")
+	sp.branchLabel = widget.NewLabel("BranchName")
 
 	sp.autoPushToggle = widget.NewCheck("Auto-Push",
 		func(checked bool) {
@@ -97,7 +97,7 @@ func (sp *SessionPanel) setToolchain(toolchain string) {
 }
 
 func (sp *SessionPanel) setBranch(branch string) {
-	sp.branchLabel.SetText(fmt.Sprintf("Branch: %v", branch))
+	sp.branchLabel.SetText(fmt.Sprintf("BranchName: %v", branch))
 }
 
 func (sp *SessionPanel) setGitAutoPush(autoPush bool) {

@@ -20,34 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package gui
+package config
 
 import (
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/dialog"
+	"github.com/spf13/cobra"
 )
 
-// BaseDirSelectionDialog allows selecting base directory. The dialog shows only when
-// there is no valid directory defined at startup
-type BaseDirSelectionDialog struct {
-	selectionDialog *dialog.FileDialog
+// AddWorkDirParam adds TCR work directory parameter to the provided command
+func AddWorkDirParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "work-dir",
+				shorthand:  "w",
+				usage:      "indicate the directory from which TCR is running (default: current directory)",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }
 
-// NewBaseDirSelectionDialog crates an instance of base dir selection dialog
-func NewBaseDirSelectionDialog(cbAction func(baseDir string), parent fyne.Window) BaseDirSelectionDialog {
-	dlg := BaseDirSelectionDialog{}
-
-	dlg.selectionDialog = dialog.NewFolderOpen(func(uri fyne.ListableURI, e error) {
-		var selected string
-		if uri != nil {
-			selected = uri.Path()
-		}
-		cbAction(selected)
-	}, parent)
-
-	return dlg
-}
-
-func (dlg BaseDirSelectionDialog) show() {
-	dlg.selectionDialog.Show()
+// AddWorkDirParamWithDefault adds TCR work directory parameter to the provided command, with a default value
+func AddWorkDirParamWithDefault(cmd *cobra.Command, defaultValue string) *StringParam {
+	param := AddWorkDirParam(cmd)
+	param.v.defaultValue = defaultValue
+	return param
 }

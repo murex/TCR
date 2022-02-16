@@ -23,6 +23,7 @@ SOFTWARE.
 package filesystem
 
 import (
+	"errors"
 	"github.com/fsnotify/fsnotify"
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
@@ -39,16 +40,15 @@ type SourceTreeImpl struct {
 
 // New creates a new instance of source tree implementation with a root directory set as dir.
 // The method returns an error if the root directory does not exist or cannot be accessed.
-// Beware that this function, if successful, changes the working directory to the base directory!
 func New(dir string) (SourceTree, error) {
-	var st = SourceTreeImpl{}
+	var impl = &SourceTreeImpl{}
 	var err error
-	st.baseDir, err = st.changeDir(dir)
+	impl.baseDir, err = checkDir(dir)
 	if err != nil {
 		return nil, err
 	}
-	st.valid = true
-	return &st, nil
+	impl.valid = true
+	return impl, nil
 }
 
 // IsValid indicates that the source tree instance is valid
@@ -56,18 +56,20 @@ func (st *SourceTreeImpl) IsValid() bool {
 	return st.valid
 }
 
-func (st *SourceTreeImpl) changeDir(dir string) (wd string, err error) {
-	if dir != "" {
-		_, err = os.Stat(dir)
+// checkDir returns the absolute path for the provided directory.
+// Returns an error if the directory cannot be accessed or is not a directory
+func checkDir(dir string) (string, error) {
+	absPath, err := filepath.Abs(dir)
+	if err == nil {
+		info, err := os.Stat(absPath)
 		if err != nil {
-			return
+			return "", errors.New("cannot access " + absPath)
 		}
-		err = os.Chdir(dir)
-		if err != nil {
-			return
+		if !info.IsDir() {
+			return "", errors.New(absPath + " exists but is not a directory")
 		}
 	}
-	return os.Getwd()
+	return absPath, nil
 }
 
 // GetBaseDir returns the base directory for the source tree instance

@@ -44,6 +44,7 @@ type GitInterface interface {
 	ListChanges() (files []string, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
+	CheckRemoteAccess() bool
 }
 
 // IsRootBranch tells if the provided branch is a root branch or not. Current implementation

@@ -68,25 +68,38 @@ func New(dir string) (GitInterface, error) {
 	r, _ := findRootDir(repo)
 	gitImpl.rootDir = filepath.Dir(r)
 
+	remoteOk, err := isRemoteDefined(repo, gitImpl.GetRemoteName())
+	if !remoteOk {
+		return nil, err
+	}
+
 	head, err := repo.Head()
 	if err != nil {
 		return nil, err
 	}
-
 	gitImpl.workingBranch = head.Name().Short()
-	gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.workingBranch, gitImpl.remoteName)
+	gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.GetWorkingBranch(), gitImpl.GetRemoteName())
 
 	return &gitImpl, err
 }
 
-// isBranchOnRemote returns true is the provided branch exists on provided remote
-func isBranchOnRemote(repo *git.Repository, branch, remote string) (bool, error) {
-	remoteBranchName := fmt.Sprintf("%v/%v", remote, branch)
+// isRemoteDefined returns true is the provided remote is defined in the repository
+func isRemoteDefined(repo *git.Repository, remoteName string) (bool, error) {
+	_, err := repo.Remote(remoteName)
+	if err != nil {
+		return false, errors.New("git remote " + remoteName + " is not set")
+	}
+	return true, nil
+}
+
+// isBranchOnRemote returns true is the provided branch exists in the repository for the provided remote
+func isBranchOnRemote(repo *git.Repository, branchName, remoteName string) (bool, error) {
 	branches, err := remoteBranches(repo.Storer)
 	if err != nil {
 		return false, err
 	}
 
+	remoteBranchName := fmt.Sprintf("%v/%v", remoteName, branchName)
 	var found = false
 	_ = branches.ForEach(func(branch *plumbing.Reference) error {
 		found = found || strings.HasSuffix(branch.Name().Short(), remoteBranchName)
@@ -145,7 +158,7 @@ func (g *GitImpl) GetWorkingBranch() string {
 // Commit restores to last commit.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Commit() error {
-	_ = traceGitCommand([]string{"commit", "--no-gpg-sign", "-am", g.commitMessage})
+	_ = g.traceGit("commit", "--no-gpg-sign", "-am", g.commitMessage)
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit
 	// TODO find a way to check beforehand if there is something to commit
@@ -157,7 +170,7 @@ func (g *GitImpl) Commit() error {
 // Current implementation uses a direct call to git
 func (g *GitImpl) Restore(path string) error {
 	report.PostWarning("Reverting ", path)
-	return traceGitCommand([]string{"checkout", "HEAD", "--", path})
+	return g.traceGit("checkout", "HEAD", "--", path)
 }
 
 // Push runs a git push operation.
@@ -168,8 +181,8 @@ func (g *GitImpl) Push() error {
 		return nil
 	}
 
-	report.PostInfo("Pushing changes to ", g.remoteName, "/", g.workingBranch)
-	err := traceGitCommand([]string{"push", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+	report.PostInfo("Pushing changes to ", g.GetRemoteName(), "/", g.GetWorkingBranch())
+	err := g.traceGit("push", "--no-recurse-submodules", g.GetRemoteName(), g.GetWorkingBranch())
 	if err == nil {
 		g.workingBranchExistsOnRemote = true
 	}
@@ -180,18 +193,18 @@ func (g *GitImpl) Push() error {
 // Current implementation uses a direct call to git
 func (g *GitImpl) Pull() error {
 	if !g.workingBranchExistsOnRemote {
-		report.PostInfo("Working locally on branch ", g.workingBranch)
+		report.PostInfo("Working locally on branch ", g.GetWorkingBranch())
 		return nil
 	}
-	report.PostInfo("Pulling latest changes from ", g.remoteName, "/", g.workingBranch)
-	return traceGitCommand([]string{"pull", "--no-recurse-submodules", g.remoteName, g.workingBranch})
+	report.PostInfo("Pulling latest changes from ", g.GetRemoteName(), "/", g.GetWorkingBranch())
+	return g.traceGit("pull", "--no-recurse-submodules", g.GetRemoteName(), g.GetWorkingBranch())
 }
 
 // ListChanges returns the list of files modified since last commit
 // Current implementation uses a direct call to git
 func (g *GitImpl) ListChanges() (files []string, err error) {
 	var gitOutput []byte
-	gitOutput, err = runGitCommand([]string{"diff", "--name-only"})
+	gitOutput, err = g.runGit("diff", "--name-only")
 	if err != nil {
 		return nil, err
 	}
@@ -218,4 +231,24 @@ func (g *GitImpl) EnablePush(flag bool) {
 // IsPushEnabled indicates if git push operations are turned on
 func (g *GitImpl) IsPushEnabled() bool {
 	return g.pushEnabled
+}
+
+// CheckRemoteAccess returns true if git remote can be accessed. This is currently done through
+// checking the return value of "git push --dry-run". This very likely does not guarantee that
+// git remote commands will work, but already gives an indication.
+func (g *GitImpl) CheckRemoteAccess() bool {
+	_, err := g.runGit("push", "--dry-run", g.GetRemoteName(), g.GetWorkingBranch())
+	return err == nil
+}
+
+// traceGit runs a git command and traces its output.
+// The command is launched from the git root directory
+func (g *GitImpl) traceGit(args ...string) error {
+	return traceGitCommand(append([]string{"-C", g.GetRootDir()}, args...))
+}
+
+// runGit calls git command in a separate process and returns its output traces
+// The command is launched from the git root directory
+func (g *GitImpl) runGit(args ...string) (output []byte, err error) {
+	return runGitCommand(append([]string{"-C", g.GetRootDir()}, args...))
 }

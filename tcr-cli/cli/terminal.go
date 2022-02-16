@@ -215,17 +215,18 @@ func (term *Terminal) ShowRunningMode(mode runmode.RunMode) {
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (term *Terminal) ShowSessionInfo() {
-	d, l, t, ap, b := engine.GetSessionInfo()
+	info := engine.GetSessionInfo()
 
-	term.title("Working Directory: ", d)
-	term.info("Language=", l, ", Toolchain=", t)
+	term.title("Base Directory: ", info.BaseDir)
+	term.info("Work Directory: ", info.WorkDir)
+	term.info("Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 
 	autoPush := "disabled"
-	if ap {
+	if info.AutoPush {
 		autoPush = "enabled"
 	}
 	term.info(
-		"Running on git branch \"", b,
+		"Running on git branch \"", info.BranchName,
 		"\" with auto-push ", autoPush)
 }
 

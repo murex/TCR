@@ -28,29 +28,68 @@ import (
 )
 
 func Test_check_toolchain_returns_ok_when_set_and_recognized(t *testing.T) {
-	assertOk(t, checkToolchain, *engine.AParamSet(engine.WithToolchain("make"), engine.WithLanguage("go")))
+	assertOk(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain("make"),
+			engine.WithLanguage("go"),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_error_when_set_but_unknown(t *testing.T) {
-	assertError(t, checkToolchain, *engine.AParamSet(engine.WithToolchain("unknown-toolchain")))
+	assertError(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain("unknown-toolchain"),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_error_when_set_but_language_incompatible(t *testing.T) {
-	assertError(t, checkToolchain, *engine.AParamSet(engine.WithToolchain("gradlew"), engine.WithLanguage("go")))
+	assertError(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain("gradlew"),
+			engine.WithLanguage("go"),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_ok_when_deduced_from_language(t *testing.T) {
-	assertOk(t, checkToolchain, *engine.AParamSet(engine.WithToolchain(""), engine.WithLanguage("go")))
+	assertOk(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain(""),
+			engine.WithLanguage("go"),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_error_when_cannot_be_deduced_from_language(t *testing.T) {
-	assertError(t, checkToolchain, *engine.AParamSet(engine.WithToolchain(""), engine.WithLanguage("unknown-language")))
+	assertError(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain(""),
+			engine.WithLanguage("unknown-language"),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_ok_when_deduced_from_base_dir_name(t *testing.T) {
-	assertOk(t, checkToolchain, *engine.AParamSet(engine.WithToolchain(""), engine.WithLanguage(""), engine.WithBaseDir(testDataDirJava)))
+	assertOk(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain(""),
+			engine.WithLanguage(""),
+			engine.WithWorkDir(testDataDirJava),
+			engine.WithBaseDir(testDataDirJava),
+		),
+	)
 }
 
 func Test_check_toolchain_returns_error_when_cannot_be_deduced_from_language_nor_base_dir_name(t *testing.T) {
-	assertError(t, checkToolchain, *engine.AParamSet(engine.WithToolchain(""), engine.WithLanguage(""), engine.WithBaseDir("")))
+	assertError(t, checkToolchain,
+		*engine.AParamSet(
+			engine.WithToolchain(""),
+			engine.WithLanguage(""),
+			engine.WithBaseDir(""),
+		),
+	)
 }
+
+// TODO test that the build and test commands can be found

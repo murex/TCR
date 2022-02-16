@@ -59,6 +59,8 @@ type CheckResults struct {
 var checkEnv struct {
 	configDir     string
 	configDirErr  error
+	workDir       string
+	workDirErr    error
 	sourceTree    filesystem.SourceTree
 	sourceTreeErr error
 	lang          language.LangInterface
@@ -77,6 +79,7 @@ func Run(params engine.Params) {
 	checkers := []func(engine.Params) *CheckResults{
 		checkConfigDirectory,
 		checkBaseDirectory,
+		checkWorkDirectory,
 		checkLanguage,
 		checkToolchain,
 		checkGitEnvironment,
@@ -106,13 +109,8 @@ func recordCheckState(status CheckStatus) {
 func initCheckEnv(params engine.Params) {
 	recordCheckState(CheckStatusOk)
 
-	startDir, _ := os.Getwd()
 	checkEnv.configDir = config.GetConfigDirPath()
 	checkEnv.sourceTree, checkEnv.sourceTreeErr = filesystem.New(params.BaseDir)
-	// Temporary workaround to make sure test cases do not influence each other due to change of
-	// current directory, having an impact on relative paths handling
-	// TODO change TCR behavior so that we don't have to change working directory to base directory
-	_ = os.Chdir(startDir)
 
 	if checkEnv.sourceTreeErr == nil {
 		checkEnv.lang, checkEnv.langErr = language.GetLanguage(params.Language, checkEnv.sourceTree.GetBaseDir())
@@ -125,6 +123,9 @@ func initCheckEnv(params engine.Params) {
 	} else {
 		checkEnv.tchn, checkEnv.tchnErr = toolchain.GetToolchain(params.Toolchain)
 	}
+
+	checkEnv.workDirErr = toolchain.SetWorkDir(params.WorkDir)
+	checkEnv.workDir = toolchain.GetWorkDir()
 
 	if checkEnv.sourceTreeErr == nil {
 		checkEnv.git, checkEnv.gitErr = vcs.New(checkEnv.sourceTree.GetBaseDir())

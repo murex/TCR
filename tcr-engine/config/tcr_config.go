@@ -36,6 +36,7 @@ import (
 // TcrConfig wraps all possible TCR configuration parameters
 type TcrConfig struct {
 	BaseDir          *StringParam
+	WorkDir          *StringParam
 	ConfigDir        *StringParam
 	Language         *StringParam
 	Toolchain        *StringParam
@@ -167,8 +168,9 @@ func trace(a ...interface{}) {
 }
 
 // AddParameters adds parameter to the provided command cmd
-func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
-	Config.BaseDir = AddBaseDirParamWithDefault(cmd, defaultBaseDir)
+func AddParameters(cmd *cobra.Command, defaultDir string) {
+	Config.BaseDir = AddBaseDirParamWithDefault(cmd, defaultDir)
+	Config.WorkDir = AddWorkDirParamWithDefault(cmd, defaultDir)
 	Config.ConfigDir = AddConfigDirParam(cmd)
 	Config.Language = AddLanguageParam(cmd)
 	Config.Toolchain = AddToolchainParam(cmd)
@@ -180,6 +182,7 @@ func AddParameters(cmd *cobra.Command, defaultBaseDir string) {
 // UpdateEngineParams updates TCR engine parameters based on configuration values
 func UpdateEngineParams(params *engine.Params) {
 	params.BaseDir = Config.BaseDir.GetValue()
+	params.WorkDir = Config.WorkDir.GetValue()
 	params.ConfigDir = Config.ConfigDir.GetValue()
 	params.MobTurnDuration = Config.MobTimerDuration.GetValue()
 	params.Language = Config.Language.GetValue()

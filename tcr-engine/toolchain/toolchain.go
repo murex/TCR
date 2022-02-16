@@ -24,6 +24,8 @@ package toolchain
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
 )
 
 type (
@@ -47,15 +49,47 @@ type (
 		RunBuild() error
 		RunTests() error
 		checkName() error
+		BuildCommandLine() string
 		BuildCommandPath() string
 		BuildCommandArgs() []string
 		checkBuildCommand() error
+		TestCommandLine() string
 		TestCommandPath() string
 		TestCommandArgs() []string
 		checkTestCommand() error
 		runsOnPlatform(os OsName, arch ArchName) bool
+		CheckCommandAccess(cmdPath string) (string, error)
 	}
 )
+
+var workDir string
+
+// SetWorkDir sets the work directory from which toolchain commands will be launched
+func SetWorkDir(dir string) (err error) {
+	workDir, err = dirAbsPath(dir)
+	return
+}
+
+// dirAbsPath returns the absolute path for the provided directory.
+// Returns an error if the directory cannot be accessed or is not a directory
+func dirAbsPath(dir string) (string, error) {
+	absPath, err := filepath.Abs(dir)
+	if err == nil {
+		info, err := os.Stat(absPath)
+		if err != nil {
+			return "", errors.New("cannot access " + absPath)
+		}
+		if !info.IsDir() {
+			return "", errors.New(absPath + " exists but is not a directory")
+		}
+	}
+	return absPath, nil
+}
+
+// GetWorkDir returns the work directory from which toolchain commands will be launched
+func GetWorkDir() string {
+	return workDir
+}
 
 // New creates a new Toolchain instance with the provided name, buildCommands and testCommands
 func New(name string, buildCommands, testCommands []Command) *Toolchain {
@@ -122,6 +156,11 @@ func (tchn Toolchain) BuildCommandArgs() []string {
 	return findCompatibleCommand(tchn.buildCommands).Arguments
 }
 
+// BuildCommandLine returns the toolchain's build command line as a string
+func (tchn Toolchain) BuildCommandLine() string {
+	return findCompatibleCommand(tchn.buildCommands).asCommandLine()
+}
+
 // TestCommandPath returns the test command path for this toolchain
 func (tchn Toolchain) TestCommandPath() string {
 	return findCompatibleCommand(tchn.testCommands).Path
@@ -130,6 +169,11 @@ func (tchn Toolchain) TestCommandPath() string {
 // TestCommandArgs returns a table with the list of test command arguments for this toolchain
 func (tchn Toolchain) TestCommandArgs() []string {
 	return findCompatibleCommand(tchn.testCommands).Arguments
+}
+
+// TestCommandLine returns the toolchain's test command line as a string
+func (tchn Toolchain) TestCommandLine() string {
+	return findCompatibleCommand(tchn.testCommands).asCommandLine()
 }
 
 func (tchn Toolchain) runsOnPlatform(os OsName, arch ArchName) bool {
@@ -142,4 +186,10 @@ func (tchn Toolchain) findBuildCommandFor(os OsName, arch ArchName) *Command {
 
 func (tchn Toolchain) findTestCommandFor(os OsName, arch ArchName) *Command {
 	return findCommand(tchn.testCommands, os, arch)
+}
+
+// CheckCommandAccess verifies if the provided command path can be accessed. Returns the path as
+// an absolute command path if found. Returns an empty path otherwise, together with the corresponding error
+func (tchn Toolchain) CheckCommandAccess(cmdPath string) (string, error) {
+	return checkCommandPath(cmdPath)
 }

@@ -145,12 +145,12 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (gui *GUI) ShowSessionInfo() {
-	d, l, t, ap, b := engine.GetSessionInfo()
-	gui.win.SetTitle(fmt.Sprintf("%v - %v", settings.ApplicationName, d))
-	gui.sessionPanel.setLanguage(l)
-	gui.sessionPanel.setToolchain(t)
-	gui.sessionPanel.setBranch(b)
-	gui.sessionPanel.setGitAutoPush(ap)
+	info := engine.GetSessionInfo()
+	gui.win.SetTitle(fmt.Sprintf("%v - %v", settings.ApplicationName, info.BaseDir))
+	gui.sessionPanel.setLanguage(info.LanguageName)
+	gui.sessionPanel.setToolchain(info.ToolchainName)
+	gui.sessionPanel.setBranch(info.BranchName)
+	gui.sessionPanel.setGitAutoPush(info.AutoPush)
 }
 
 func (gui *GUI) info(a ...interface{}) {

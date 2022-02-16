@@ -71,7 +71,7 @@ func checkGitRepository() (cp []CheckPoint) {
 
 	cp = append(cp, okCheckPoint("git remote name is ", checkEnv.git.GetRemoteName()))
 
-	if vcs.TryGitRemoteAccess() {
+	if checkEnv.git.CheckRemoteAccess() {
 		cp = append(cp, okCheckPoint("git remote access seems to be working"))
 	} else {
 		cp = append(cp, errorCheckPoint("git remote access does not seem to be working"))

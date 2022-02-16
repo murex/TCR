@@ -42,6 +42,7 @@ The main checkpoints are organized in sections as follows:
 
 - Configuration directory
 - Base directory
+- Work Directory
 - Language settings
 - Toolchain settings
 - Git environment
