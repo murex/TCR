@@ -47,8 +47,8 @@ func TestMain(m *testing.M) {
 		testTickPeriod = 40 * time.Millisecond
 	} else {
 		fmt.Println("Running tests with long timers")
-		testTimeout = 2000 * time.Millisecond
-		testTickPeriod = 800 * time.Millisecond
+		testTimeout = 3000 * time.Millisecond
+		testTickPeriod = 1200 * time.Millisecond
 	}
 	// Run tests
 	exitVal := m.Run()
@@ -187,7 +187,9 @@ func Test_callback_function_can_know_timestamp(t *testing.T) {
 		case StartEvent:
 			tsStart = ctx.timestamp
 		case PeriodicEvent:
-			tsPeriodic[ctx.index] = ctx.timestamp
+			if ctx.index < 2 {
+				tsPeriodic[ctx.index] = ctx.timestamp
+			}
 		case TimeoutEvent:
 			tsTimeout = ctx.timestamp
 		}
