@@ -81,7 +81,7 @@ func Test_go_valid_file_paths(t *testing.T) {
 
 func Test_go_invalid_file_paths(t *testing.T) {
 	languageName := goLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".java", ".cs", ".sh"} {
+	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".java", ".cs", ".csx", ".sh"} {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file_test", ext), languageName)
 	}

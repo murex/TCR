@@ -44,6 +44,6 @@ func init() {
 
 func getCsharpFilters() []string {
 	return []string{
-		buildRegex(".*\\.cs"),
+		buildRegex(".*\\.cs(x)?"),
 	}
 }

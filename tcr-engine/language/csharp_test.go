@@ -73,7 +73,7 @@ func Test_csharp_incompatible_toolchains(t *testing.T) {
 
 func Test_csharp_valid_file_paths(t *testing.T) {
 	languageName := csharpLanguageName
-	for _, ext := range []string{".cs"} {
+	for _, ext := range []string{".cs", ".csx"} {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "tests", "SomeTestFile", ext), languageName)
 	}
