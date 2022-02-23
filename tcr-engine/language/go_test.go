@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,7 @@ func Test_go_compatible_toolchains(t *testing.T) {
 func Test_go_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, goLanguageName)
 	assertIncompatibleToolchains(t, []string{"cmake"}, goLanguageName)
+	assertIncompatibleToolchains(t, []string{"dotnet"}, goLanguageName)
 }
 
 func Test_go_valid_file_paths(t *testing.T) {
@@ -80,7 +81,7 @@ func Test_go_valid_file_paths(t *testing.T) {
 
 func Test_go_invalid_file_paths(t *testing.T) {
 	languageName := goLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".h", ".hpp", ".hh", ".java", ".sh"} {
+	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".java", ".cs", ".sh"} {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file_test", ext), languageName)
 	}

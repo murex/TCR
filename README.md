@@ -75,6 +75,7 @@ provided as built-in.
 | java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 | cpp      | cmake, make                                        | cmake          |
 | go       | go-tools, make                                     | go-tools       |
+| csharp   | dotnet, make                                       | dotnet         |
 
 ### Base directory
 
@@ -132,7 +133,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.9.0_Darwin_x86_64.tar.gz
+    tar zxf tcr_0.12.0_Darwin_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -151,7 +152,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.9.0_Linux_x86_64.tar.gz
+    tar zxf tcr_0.12.0_Linux_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -170,7 +171,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.9.0_Windows_x86_64.tar.gz
+    tar zxf tcr_0.12.0_Windows_x86_64.tar.gz
     ```
 
 3. Launch TCR
