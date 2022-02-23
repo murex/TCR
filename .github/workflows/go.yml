@@ -28,11 +28,12 @@ jobs:
           java-version: '11'
           check-latest: true
 
-      - name: Install CGO Libraries
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: |
-          sudo apt-get update
-          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+      # Not needed as long as tcr-gui build and test is turned off
+      #      - name: Install CGO Libraries
+      #        if: ${{ matrix.os == 'ubuntu-latest' }}
+      #        run: |
+      #          sudo apt-get update
+      #          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
 
       - name: Test tcr-engine module
         run: |
@@ -49,12 +50,13 @@ jobs:
           cd tcr-cli
           go build -v ./...
 
-      - name: Test tcr-gui module
-        run: |
-          cd tcr-gui
-          go test -v -tags=test_helper ./...
-
-      - name: Build tcr-gui application
-        run: |
-          cd tcr-gui
-          go build -v ./...
+# Turn off tcr-gui build and test for now (time consuming and not included in the releases)
+#      - name: Test tcr-gui module
+#        run: |
+#          cd tcr-gui
+#          go test -v -tags=test_helper ./...
+#
+#      - name: Build tcr-gui application
+#        run: |
+#          cd tcr-gui
+#          go build -v ./...
