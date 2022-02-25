@@ -73,17 +73,9 @@ func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 	assert.Equal(t, 0, engine.GetReturnCode())
 }
 
-func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
-	Run(*engine.AParamSet(
-		engine.WithConfigDir("invalid-dir"),
-		engine.WithBaseDir("invalid-dir"),
-		engine.WithWorkDir("invalid-dir"),
-	))
-	assert.Equal(t, 2, engine.GetReturnCode())
-}
-
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 	// The warning is triggered by the mob timer duration being under the min threshold
+	t.Skip("disabled due to git remote access check failing when running from CI")
 	Run(*engine.AParamSet(
 		engine.WithConfigDir(testDataDirJava),
 		engine.WithBaseDir(testDataDirJava),
@@ -91,4 +83,13 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 		engine.WithMobTimerDuration(1*time.Second),
 	))
 	assert.Equal(t, 1, engine.GetReturnCode())
+}
+
+func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
+	Run(*engine.AParamSet(
+		engine.WithConfigDir("invalid-dir"),
+		engine.WithBaseDir("invalid-dir"),
+		engine.WithWorkDir("invalid-dir"),
+	))
+	assert.Equal(t, 2, engine.GetReturnCode())
 }
