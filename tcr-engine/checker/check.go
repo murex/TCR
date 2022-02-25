@@ -229,5 +229,6 @@ func (cp CheckPoint) print() {
 		report.PostWarning("\t● ", cp.description)
 	case CheckStatusError:
 		report.PostError("\t▼ ", cp.description)
+		//fmt.Println("EEE - ", cp.description)
 	}
 }
