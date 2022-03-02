@@ -100,7 +100,11 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 		t.Skip("skipping test in short mode.")
 	}
 	initialDir, _ := os.Getwd()
-	_ = os.Chdir(workDir)
+	err := os.Chdir(workDir)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	testFunction(t)
 	_ = os.Chdir(initialDir)
 }
