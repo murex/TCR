@@ -15,7 +15,7 @@ vet:
 
 .PHONY: test
 test:
-	@go test -coverprofile=cover.out -tags=test_helper -v ./...
+	@RICHGO_FORCE_COLOR=1 richgo test -coverprofile=cover.out -tags=test_helper -v ./...
 
 .PHONY: cov
 cov:

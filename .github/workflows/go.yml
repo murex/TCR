@@ -36,15 +36,19 @@ jobs:
       #          sudo apt-get update
       #          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
 
+      - name: Install richgo
+        run: |
+          go install github.com/kyoh86/richgo@latest
+
       - name: Test tcr-engine module
         run: |
           cd tcr-engine
-          go test -v -tags=test_helper ./...
+          make test
 
       - name: Test tcr-cli module
         run: |
           cd tcr-cli
-          go test -v -tags=test_helper ./...
+          make test
 
       - name: Build tcr-cli application
         run: |
@@ -55,7 +59,7 @@ jobs:
 #      - name: Test tcr-gui module
 #        run: |
 #          cd tcr-gui
-#          go test -v -tags=test_helper ./...
+#          make test
 #
 #      - name: Build tcr-gui application
 #        run: |
