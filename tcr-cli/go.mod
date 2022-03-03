@@ -12,7 +12,7 @@ require (
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/sys v0.0.0-20211210111614-af8b64212486
+	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
 )
 
 require (
