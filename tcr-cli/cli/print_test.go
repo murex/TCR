@@ -56,45 +56,28 @@ func Test_print_untouched_function_does_not_alter_data(t *testing.T) {
 }
 
 func Test_print_in_cyan_function_formatting(t *testing.T) {
-	prefix := "PREFIX"
-	msg := "Message"
-	setLinePrefix(prefix)
-	out := capturer.CaptureStdout(func() {
-		printInCyan(msg)
-	})
-	expected := ansiCyanFg + prefix + ansiEscape + " " + ansiCyanFg + msg + ansiEscape + newline
-	assert.Equal(t, expected, out)
+	assertPrintFormatting(t, printInCyan, ansiCyanFg)
 }
 
 func Test_print_in_green_function_formatting(t *testing.T) {
-	prefix := "PREFIX"
-	msg := "Message"
-	setLinePrefix(prefix)
-	out := capturer.CaptureStdout(func() {
-		printInGreen(msg)
-	})
-	expected := ansiGreenFg + prefix + ansiEscape + " " + ansiGreenFg + msg + ansiEscape + newline
-	assert.Equal(t, expected, out)
+	assertPrintFormatting(t, printInGreen, ansiGreenFg)
 }
 
 func Test_print_in_yellow_function_formatting(t *testing.T) {
-	prefix := "PREFIX"
-	msg := "Message"
-	setLinePrefix(prefix)
-	out := capturer.CaptureStdout(func() {
-		printInYellow(msg)
-	})
-	expected := ansiYellowFg + prefix + ansiEscape + " " + ansiYellowFg + msg + ansiEscape + newline
-	assert.Equal(t, expected, out)
+	assertPrintFormatting(t, printInYellow, ansiYellowFg)
 }
 
 func Test_print_in_red_function_formatting(t *testing.T) {
-	prefix := "PREFIX"
-	msg := "Message"
+	assertPrintFormatting(t, printInRed, ansiRedFg)
+}
+
+func assertPrintFormatting(t *testing.T, printFunc func(a ...interface{}), ansiCode string) {
+	prefix := "TCR"
+	msg := "Some Message"
 	setLinePrefix(prefix)
 	out := capturer.CaptureStdout(func() {
-		printInRed(msg)
+		printFunc(msg)
 	})
-	expected := ansiRedFg + prefix + ansiEscape + " " + ansiRedFg + msg + ansiEscape + newline
+	expected := ansiCode + prefix + ansiEscape + " " + ansiCode + msg + ansiEscape + newline
 	assert.Equal(t, expected, out)
 }
