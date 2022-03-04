@@ -24,6 +24,6 @@ SOFTWARE.
 
 package cli
 
-func setupConsole() {
+func setupTerminal() {
 	// Nothing to do when running on non-Windows OS
 }
