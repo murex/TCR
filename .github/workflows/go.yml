@@ -45,23 +45,56 @@ jobs:
           cd tcr-engine
           make test
 
+      - name: Send tcr-engine coverage
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          working-directory: tcr-engine
+          path-to-profile: coverage.out
+          flag-name: tcr-engine-${{ matrix.os }}
+          parallel: true
+
       - name: Test tcr-cli module
         run: |
           cd tcr-cli
           make test
+
+      - name: Send tcr-cli coverage
+        uses: shogo82148/actions-goveralls@v1
+        with:
+          working-directory: tcr-cli
+          path-to-profile: coverage.out
+          flag-name: tcr-cli-${{ matrix.os }}
+          parallel: true
 
       - name: Build tcr-cli application
         run: |
           cd tcr-cli
           go build -v ./...
 
-# Turn off tcr-gui build and test for now (time consuming and not included in the releases)
-#      - name: Test tcr-gui module
-#        run: |
-#          cd tcr-gui
-#          make test
-#
-#      - name: Build tcr-gui application
-#        run: |
-#          cd tcr-gui
-#          go build -v ./...
+  # Turn off tcr-gui build and test for now (time consuming and not included in the releases)
+  #      - name: Test tcr-gui module
+  #        run: |
+  #          cd tcr-gui
+  #          make test
+  #
+  #        - name: Send tcr-gui coverage
+  #          uses: shogo82148/actions-goveralls@v1
+  #          with:
+  #            working-directory: tcr-gui
+  #            path-to-profile: coverage.out
+  #            flag-name: tcr-gui-${{ matrix.os }}
+  #            parallel: true
+  #
+  #      - name: Build tcr-gui application
+  #        run: |
+  #          cd tcr-gui
+  #          go build -v ./...
+
+  # notifies coverall.io that all test jobs are finished.
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true
