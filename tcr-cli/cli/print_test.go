@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package cli
 import (
 	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -55,29 +56,34 @@ func Test_print_untouched_function_does_not_alter_data(t *testing.T) {
 	assert.Equal(t, msg+"\n", out)
 }
 
+func assertPrintInColor(t *testing.T, printInColorFunc func(a ...interface{}), ansiCode string) {
+	msg := "Some message in color"
+	assertPrintFormatting(t, func() { printInColorFunc(msg) }, ansiCode, "TCR", msg)
+}
+
+func assertPrintFormatting(t *testing.T, printFunc func(), ansiCode string, prefix string, msg string) {
+	setLinePrefix(prefix)
+	out := capturer.CaptureStdout(printFunc)
+	expected := ansiCode + prefix + ansiEscape + " " + ansiCode + msg + ansiEscape + newline
+	assert.Equal(t, expected, out)
+}
+
 func Test_print_in_cyan_function_formatting(t *testing.T) {
-	assertPrintFormatting(t, printInCyan, ansiCyanFg)
+	assertPrintInColor(t, printInCyan, ansiCyanFg)
 }
 
 func Test_print_in_green_function_formatting(t *testing.T) {
-	assertPrintFormatting(t, printInGreen, ansiGreenFg)
+	assertPrintInColor(t, printInGreen, ansiGreenFg)
 }
 
 func Test_print_in_yellow_function_formatting(t *testing.T) {
-	assertPrintFormatting(t, printInYellow, ansiYellowFg)
+	assertPrintInColor(t, printInYellow, ansiYellowFg)
 }
 
 func Test_print_in_red_function_formatting(t *testing.T) {
-	assertPrintFormatting(t, printInRed, ansiRedFg)
+	assertPrintInColor(t, printInRed, ansiRedFg)
 }
 
-func assertPrintFormatting(t *testing.T, printFunc func(a ...interface{}), ansiCode string) {
-	prefix := "TCR"
-	msg := "Some Message"
-	setLinePrefix(prefix)
-	out := capturer.CaptureStdout(func() {
-		printFunc(msg)
-	})
-	expected := ansiCode + prefix + ansiEscape + " " + ansiCode + msg + ansiEscape + newline
-	assert.Equal(t, expected, out)
+func Test_print_horizontal_line_when_terminal_width_is_unknown(t *testing.T) {
+	assertPrintFormatting(t, printHorizontalLine, ansiCyanFg, "TCR", strings.Repeat("-", 75))
 }

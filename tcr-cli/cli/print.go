@@ -24,9 +24,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/codeskyblue/go-sh"
 	"github.com/logrusorgru/aurora"
-	"strconv"
 	"strings"
 )
 
@@ -46,7 +44,7 @@ func setLinePrefix(value string) {
 }
 
 func printPrefixedAndColored(fgColor aurora.Color, message string) {
-	setupConsole()
+	setupTerminal()
 	fmt.Println(
 		colorizer.Colorize(linePrefix, fgColor),
 		colorizer.Colorize(message, fgColor))
@@ -78,23 +76,4 @@ func printHorizontalLine() {
 		lineWidth = 0
 	}
 	printInCyan(strings.Repeat(horizontalLineCharacter, lineWidth))
-}
-
-// getTerminalColumns returns the terminal's current number of column. If anything goes wrong (for
-// example when running from Windows PowerShell), we fallback on a fixed number of columns
-func getTerminalColumns() int {
-	if tputCmdDisabled {
-		return defaultTerminalWidth
-	}
-	output, err := sh.Command("tput", "cols").Output()
-	if err != nil {
-		tputCmdDisabled = true
-		return defaultTerminalWidth
-	}
-	columns, err := strconv.Atoi(strings.TrimSpace(string(output)))
-	if err != nil {
-		tputCmdDisabled = true
-		return defaultTerminalWidth
-	}
-	return columns
 }

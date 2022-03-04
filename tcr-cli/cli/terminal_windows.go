@@ -27,13 +27,13 @@ import (
 	"os"
 )
 
-func setupConsole() {
+func setupTerminal() {
 	// Cf. https://docs.microsoft.com/en-us/windows/console/setconsolemode
-	setupWindowsConsoleStdout()
-	setupWindowsConsoleStdin()
+	setupWindowsStdout()
+	setupWindowsStdin()
 }
 
-func setupWindowsConsoleStdin() {
+func setupWindowsStdin() {
 	// This enforces that we do not wait for enter key and do not have keystrokes echo-ed on console output
 	stdin := windows.Handle(os.Stdin.Fd())
 	var originalMode uint32
@@ -43,7 +43,7 @@ func setupWindowsConsoleStdin() {
 		uint32(windows.ENABLE_ECHO_INPUT))
 }
 
-func setupWindowsConsoleStdout() {
+func setupWindowsStdout() {
 	// This enforces that ANSI color codes are properly interpreted when running on Windows OS
 	stdout := windows.Handle(os.Stdout.Fd())
 	var originalMode uint32

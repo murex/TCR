@@ -1,5 +1,7 @@
+//go:build !windows
+
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package stty
+package cli
 
-// TODO add unit tests for stty package
+func setupConsole() {
+	// Nothing to do when running on non-Windows OS
+}
