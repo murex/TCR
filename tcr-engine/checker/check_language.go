@@ -47,12 +47,16 @@ func checkLanguage(params engine.Params) (cr *CheckResults) {
 	return
 }
 
+func languageInText() string {
+	return checkEnv.lang.GetName() + " language"
+}
+
 func checkpointsWhenLanguageIsSet(name string) (cp []CheckPoint) {
 	cp = append(cp, okCheckPoint("language parameter is set to ", name))
 	if checkEnv.langErr != nil {
 		cp = append(cp, errorCheckPoint(checkEnv.langErr))
 	} else {
-		cp = append(cp, okCheckPoint(checkEnv.lang.GetName(), " language is valid"))
+		cp = append(cp, okCheckPoint(languageInText()+" is valid"))
 	}
 	return
 }
@@ -77,7 +81,7 @@ func checkpointsWhenLanguageIsNotSet() (cp []CheckPoint) {
 func checkSrcDirectories() []CheckPoint {
 	return checkpointsForList(
 		"source directories:",
-		"no source directory defined for "+checkEnv.lang.GetName()+" language",
+		"no source directory defined for "+languageInText(),
 		checkEnv.lang.GetSrcFileFilter().Directories,
 	)
 }
@@ -85,7 +89,7 @@ func checkSrcDirectories() []CheckPoint {
 func checkSrcPatterns() []CheckPoint {
 	return checkpointsForList(
 		"source filename matching patterns:",
-		"no source filename pattern defined for "+checkEnv.lang.GetName()+" language",
+		"no source filename pattern defined for "+languageInText(),
 		checkEnv.lang.GetSrcFileFilter().FilePatterns,
 	)
 }
@@ -106,7 +110,7 @@ func checkSrcFiles() (cp []CheckPoint) {
 func checkTestDirectories() []CheckPoint {
 	return checkpointsForList(
 		"test directories:",
-		"no test directory defined for "+checkEnv.lang.GetName()+" language",
+		"no test directory defined for "+languageInText(),
 		checkEnv.lang.GetTestFileFilter().Directories,
 	)
 }
@@ -114,7 +118,7 @@ func checkTestDirectories() []CheckPoint {
 func checkTestPatterns() []CheckPoint {
 	return checkpointsForList(
 		"test filename matching patterns:",
-		"no test filename pattern defined for "+checkEnv.lang.GetName()+" language",
+		"no test filename pattern defined for "+languageInText(),
 		checkEnv.lang.GetTestFileFilter().FilePatterns,
 	)
 }

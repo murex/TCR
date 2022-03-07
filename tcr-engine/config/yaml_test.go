@@ -24,22 +24,29 @@ package config
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
+const (
+	baseName  = "a-name"
+	extension = ".yml"
+)
+
 func Test_can_retrieve_name_from_yaml_filename(t *testing.T) {
-	assert.Equal(t, "a-name", extractNameFromYamlFilename("a-name.yml"))
+	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToLower(baseName)+strings.ToLower(extension)))
 }
 
 func Test_name_from_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, "a-name", extractNameFromYamlFilename("A-NAME.yml"))
-	assert.Equal(t, "a-name", extractNameFromYamlFilename("a-name.YML"))
+	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToUpper(baseName)+strings.ToLower(extension)))
+	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToLower(baseName)+strings.ToUpper(extension)))
+	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToUpper(baseName)+strings.ToUpper(extension)))
 }
 
 func Test_can_retrieve_yaml_filename_from_name(t *testing.T) {
-	assert.Equal(t, "a-name.yml", buildYamlFilename("a-name"))
+	assert.Equal(t, baseName+extension, buildYamlFilename(baseName))
 }
 
 func Test_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, "a-name.yml", buildYamlFilename("A-NAME"))
+	assert.Equal(t, baseName+extension, buildYamlFilename(strings.ToUpper(baseName)))
 }

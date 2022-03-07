@@ -86,10 +86,11 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
+	const invalidDir = "invalid-dir"
 	Run(*engine.AParamSet(
-		engine.WithConfigDir("invalid-dir"),
-		engine.WithBaseDir("invalid-dir"),
-		engine.WithWorkDir("invalid-dir"),
+		engine.WithConfigDir(invalidDir),
+		engine.WithBaseDir(invalidDir),
+		engine.WithWorkDir(invalidDir),
 	))
 	assert.Equal(t, 2, engine.GetReturnCode())
 }
