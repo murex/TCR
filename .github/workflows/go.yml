@@ -45,7 +45,7 @@ jobs:
           cd tcr-engine
           make test
 
-      - name: Send tcr-engine coverage
+      - name: Send tcr-engine coverage to coveralls.io
         uses: shogo82148/actions-goveralls@v1
         with:
           working-directory: tcr-engine
@@ -58,7 +58,7 @@ jobs:
           cd tcr-cli
           make test
 
-      - name: Send tcr-cli coverage
+      - name: Send tcr-cli coverage to coveralls.io
         uses: shogo82148/actions-goveralls@v1
         with:
           working-directory: tcr-cli
@@ -71,26 +71,34 @@ jobs:
           cd tcr-cli
           go build -v ./...
 
-  # Turn off tcr-gui build and test for now (time consuming and not included in the releases)
-  #      - name: Test tcr-gui module
-  #        run: |
-  #          cd tcr-gui
-  #          make test
-  #
-  #        - name: Send tcr-gui coverage
-  #          uses: shogo82148/actions-goveralls@v1
-  #          with:
-  #            working-directory: tcr-gui
-  #            path-to-profile: coverage.out
-  #            flag-name: tcr-gui-${{ matrix.os }}
-  #            parallel: true
-  #
-  #      - name: Build tcr-gui application
-  #        run: |
-  #          cd tcr-gui
-  #          go build -v ./...
+      # Turn off tcr-gui build and test for now (time consuming and not included in the releases)
+      #      - name: Test tcr-gui module
+      #        run: |
+      #          cd tcr-gui
+      #          make test
+      #
+      #        - name: Send tcr-gui coverage
+      #          uses: shogo82148/actions-goveralls@v1
+      #          with:
+      #            working-directory: tcr-gui
+      #            path-to-profile: coverage.out
+      #            flag-name: tcr-gui-${{ matrix.os }}
+      #            parallel: true
+      #
+      #      - name: Build tcr-gui application
+      #        run: |
+      #          cd tcr-gui
+      #          go build -v ./...
 
-  # notifies coverall.io that all test jobs are finished.
+      # This step must be executed after the test steps so that coverage data is sent to SonarCloud
+      - name: SonarCloud Scan
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # notifies coveralls.io that all test jobs are finished.
   finish:
     needs: build
     runs-on: ubuntu-latest
