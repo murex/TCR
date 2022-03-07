@@ -208,13 +208,14 @@ func (cr *CheckResults) getStatus() (status CheckStatus) {
 
 func (cr *CheckResults) print() {
 	report.PostInfo()
+	const messagePrefix = "➤ checking "
 	switch cr.getStatus() {
 	case CheckStatusOk:
-		report.PostInfo("➤ checking ", cr.topic)
+		report.PostInfo(messagePrefix, cr.topic)
 	case CheckStatusWarning:
-		report.PostWarning("➤ checking ", cr.topic)
+		report.PostWarning(messagePrefix, cr.topic)
 	case CheckStatusError:
-		report.PostError("➤ checking ", cr.topic)
+		report.PostError(messagePrefix, cr.topic)
 	}
 	for _, check := range cr.checkPoints {
 		check.print()
