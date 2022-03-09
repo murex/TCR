@@ -33,7 +33,8 @@ const messagePrefix = "(Mob Timer) "
 
 // NewMobTurnCountdown creates a PeriodicReminder that starts when entering driver mode, and
 // then sends a countdown message periodically until the driver turn expires, after which it
-// sends a message notifying the end of driver's turn
+// sends a message notifying the end of driver's turn.
+// If the mode does not require a mob timer, this function returns nil
 func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicReminder {
 	if mode.NeedsCountdownTimer() {
 		tickPeriod := findBestTickPeriodFor(timeout)
@@ -54,7 +55,7 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 			},
 		)
 	}
-	return NewPeriodicReminder(0, 0, func(ctx ReminderContext) {})
+	return nil
 }
 
 func findBestTickPeriodFor(timeout time.Duration) time.Duration {
