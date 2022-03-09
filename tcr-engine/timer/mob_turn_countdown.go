@@ -73,6 +73,9 @@ func fmtDuration(d time.Duration) string {
 	if strings.HasSuffix(s, "m0s") {
 		s = s[:len(s)-2]
 	}
+	if strings.HasSuffix(s, "h0m") {
+		s = s[:len(s)-2]
+	}
 	return s
 }
 

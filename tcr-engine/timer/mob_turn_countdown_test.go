@@ -23,25 +23,64 @@ SOFTWARE.
 package timer
 
 import (
+	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
-func Test_tick_period_for_timeout_lower_than_10s_is_1s(t *testing.T) {
-	expected := 1 * time.Second
-	assert.Equal(t, expected, findBestTickPeriodFor(1*time.Second))
-	assert.Equal(t, expected, findBestTickPeriodFor(10*time.Second))
+func Test_best_tick_period_for_timeout(t *testing.T) {
+	var tickTests = []struct {
+		timeout  time.Duration
+		expected time.Duration
+	}{
+		{1 * time.Second, 1 * time.Second},
+		{10 * time.Second, 1 * time.Second},
+		{11 * time.Second, 10 * time.Second},
+		{1 * time.Minute, 10 * time.Second},
+		{1*time.Minute + 1*time.Second, 1 * time.Minute},
+		{10 * time.Minute, 1 * time.Minute},
+	}
+
+	for _, tt := range tickTests {
+		t.Run(tt.timeout.String()+"->"+tt.expected.String(), func(t *testing.T) {
+			assert.Equal(t, tt.expected, findBestTickPeriodFor(tt.timeout))
+		})
+	}
 }
 
-func Test_tick_period_for_timeout_between_10s_and_1m_is_10s(t *testing.T) {
-	expected := 10 * time.Second
-	assert.Equal(t, expected, findBestTickPeriodFor(11*time.Second))
-	assert.Equal(t, expected, findBestTickPeriodFor(1*time.Minute))
+func Test_format_duration(t *testing.T) {
+	var fmtTests = []struct {
+		d        time.Duration
+		expected string
+	}{
+		{0 * time.Second, "0s"},
+		{59 * time.Second, "59s"},
+		{60 * time.Second, "1m"},
+		{61 * time.Second, "1m1s"},
+		{1 * time.Hour, "1h"},
+		{1*time.Hour + 1*time.Second, "1h0m1s"},
+		{1*time.Hour + 1*time.Minute, "1h1m"},
+	}
+	for _, tt := range fmtTests {
+		t.Run(tt.expected, func(t *testing.T) {
+			assert.Equal(t, tt.expected, fmtDuration(tt.d))
+		})
+	}
 }
 
-func Test_tick_period_for_timeout_between_1m_and_10m_is_1m(t *testing.T) {
-	expected := 1 * time.Minute
-	assert.Equal(t, expected, findBestTickPeriodFor(1*time.Minute+1*time.Second))
-	assert.Equal(t, expected, findBestTickPeriodFor(10*time.Minute))
+func Test_mob_turn_countdown_creation_in_mob_runmode(t *testing.T) {
+	assert.NotZero(t, NewMobTurnCountdown(runmode.Mob{}, defaultTimeout))
+}
+
+func Test_mob_turn_countdown_creation_in_solo_runmode(t *testing.T) {
+	assert.Zero(t, NewMobTurnCountdown(runmode.Solo{}, defaultTimeout))
+}
+
+func Test_mob_turn_countdown_creation_in_check_runmode(t *testing.T) {
+	assert.Zero(t, NewMobTurnCountdown(runmode.Check{}, defaultTimeout))
+}
+
+func Test_mob_turn_countdown_creation_in_one_shot_runmode(t *testing.T) {
+	assert.Zero(t, NewMobTurnCountdown(runmode.OneShot{}, defaultTimeout))
 }
