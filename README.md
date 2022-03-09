@@ -1,5 +1,7 @@
 [![Go](https://github.com/murex/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go.yml)
 [![Go lint](https://github.com/murex/tcr/actions/workflows/golangci_lint.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/golangci_lint.yml)
+[![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=murex_TCR&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=murex_TCR)
+[![Coveralls](https://coveralls.io/repos/github/murex/TCR/badge.svg?branch=main)](https://coveralls.io/github/murex/TCR?branch=main)
 [![goreleaser](https://github.com/murex/tcr/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/goreleaser.yml)
 [![Add contributors](https://github.com/murex/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/add_contributors.yml)
 
