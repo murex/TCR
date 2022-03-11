@@ -68,9 +68,13 @@ func saveLanguageConfigs() {
 	// Loop on all existing languages
 	for _, name := range language.Names() {
 		trace("- ", name)
-		lang, _ := language.Get(name)
-		saveToYaml(asLanguageConfig(lang), buildYamlFilePath(languageDirPath, name))
+		saveLanguageConfig(name)
 	}
+}
+
+func saveLanguageConfig(name string) {
+	lang, _ := language.Get(name)
+	saveToYaml(asLanguageConfig(lang), buildYamlFilePath(languageDirPath, name))
 }
 
 // GetLanguageConfigFileList returns the list of language configuration files found in language directory
@@ -79,19 +83,21 @@ func GetLanguageConfigFileList() (list []string) {
 }
 
 func loadLanguageConfigs() {
-	// Loop on all YAML files in language directory
 	trace("Loading languages configuration")
+	// Loop on all YAML files in language directory
 	for _, entry := range GetLanguageConfigFileList() {
-		name := extractNameFromYamlFilename(entry)
-		//trace("- ", name)
-		var languageCfg LanguageConfig
-		loadFromYaml(filepath.Join(languageDirPath, entry), &languageCfg)
-		languageCfg.Name = name
-		err := language.Register(asLanguage(languageCfg))
+		err := language.Register(asLanguage(*loadLanguageConfig(entry)))
 		if err != nil {
 			trace("Error in ", entry, ": ", err)
 		}
 	}
+}
+
+func loadLanguageConfig(yamlFilename string) *LanguageConfig {
+	var languageCfg LanguageConfig
+	loadFromYaml(filepath.Join(languageDirPath, yamlFilename), &languageCfg)
+	languageCfg.Name = extractNameFromYamlFilename(yamlFilename)
+	return &languageCfg
 }
 
 func asLanguage(languageCfg LanguageConfig) *language.Language {
@@ -187,5 +193,21 @@ func GetLanguageConfigDirPath() string {
 }
 
 func showLanguageConfigs() {
-	// TODO Implement display of languages configuration
+	trace("Configured languages:")
+	entries := GetLanguageConfigFileList()
+	if len(entries) == 0 {
+		trace("- none (will use built-in languages)")
+	}
+	for _, entry := range entries {
+		loadLanguageConfig(entry).show()
+	}
+}
+
+func (l LanguageConfig) show() {
+	trace("- language.", l.Name, ".toolchains.default: "+l.Toolchains.Default)
+	trace("- language.", l.Name, ".toolchains.compatible-with: ", l.Toolchains.Compatible)
+	trace("- language.", l.Name, ".source-files.directories: ", l.SourceFiles.Directories)
+	trace("- language.", l.Name, ".source-files.patterns: ", l.SourceFiles.FilePatterns)
+	trace("- language.", l.Name, ".test-files.directories: ", l.TestFiles.Directories)
+	trace("- language.", l.Name, ".test-files.patterns: ", l.TestFiles.FilePatterns)
 }

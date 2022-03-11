@@ -63,9 +63,13 @@ func saveToolchainConfigs() {
 	// Loop on all existing toolchains
 	for _, name := range toolchain.Names() {
 		trace("- ", name)
-		tchn, _ := toolchain.GetToolchain(name)
-		saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(toolchainDirPath, name))
+		saveToolchainConfig(name)
 	}
+}
+
+func saveToolchainConfig(name string) {
+	tchn, _ := toolchain.GetToolchain(name)
+	saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(toolchainDirPath, name))
 }
 
 // GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
@@ -74,19 +78,21 @@ func GetToolchainConfigFileList() (list []string) {
 }
 
 func loadToolchainConfigs() {
-	// Loop on all YAML files in toolchain directory
 	trace("Loading toolchains configuration")
+	// Loop on all YAML files in toolchain directory
 	for _, entry := range GetToolchainConfigFileList() {
-		name := extractNameFromYamlFilename(entry)
-		//trace("- ", name)
-		var toolchainCfg ToolchainConfig
-		loadFromYaml(filepath.Join(toolchainDirPath, entry), &toolchainCfg)
-		toolchainCfg.Name = name
-		err := toolchain.Register(asToolchain(toolchainCfg))
+		err := toolchain.Register(asToolchain(*loadToolchainConfig(entry)))
 		if err != nil {
 			trace("Error in ", entry, ": ", err)
 		}
 	}
+}
+
+func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
+	var toolchainCfg ToolchainConfig
+	loadFromYaml(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
+	toolchainCfg.Name = extractNameFromYamlFilename(yamlFilename)
+	return &toolchainCfg
 }
 
 func asToolchain(toolchainCfg ToolchainConfig) *toolchain.Toolchain {
@@ -194,5 +200,28 @@ func createToolchainConfigDir() {
 }
 
 func showToolchainConfigs() {
-	// TODO Implement display of toolchains configuration
+	trace("Configured toolchains:")
+	entries := GetToolchainConfigFileList()
+	if len(entries) == 0 {
+		trace("- none (will use built-in toolchains)")
+	}
+	for _, entry := range entries {
+		loadToolchainConfig(entry).show()
+	}
+}
+
+func (t ToolchainConfig) show() {
+	for _, cmd := range t.BuildCommand {
+		cmd.show("toolchain." + t.Name + ".build")
+	}
+	for _, cmd := range t.TestCommand {
+		cmd.show("toolchain." + t.Name + ".test")
+	}
+}
+
+func (c ToolchainCommandConfig) show(prefix string) {
+	trace("- ", prefix, ".os: ", c.Os)
+	trace("- ", prefix, ".arch: ", c.Arch)
+	trace("- ", prefix, ".command: ", c.Command)
+	trace("- ", prefix, ".args: ", c.Arguments)
 }
