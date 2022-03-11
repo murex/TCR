@@ -11,7 +11,7 @@ replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 require (
 	github.com/murex/tcr/tcr-cli v0.0.0-00010101000000-000000000000
 	github.com/murex/tcr/tcr-gui v0.0.0-00010101000000-000000000000
-	github.com/spf13/cobra v1.3.0
+	github.com/spf13/cobra v1.4.0
 )
 
 require (
