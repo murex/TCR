@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -204,10 +204,18 @@ func showLanguageConfigs() {
 }
 
 func (l LanguageConfig) show() {
-	trace("- language.", l.Name, ".toolchains.default: "+l.Toolchains.Default)
-	trace("- language.", l.Name, ".toolchains.compatible-with: ", l.Toolchains.Compatible)
-	trace("- language.", l.Name, ".source-files.directories: ", l.SourceFiles.Directories)
-	trace("- language.", l.Name, ".source-files.patterns: ", l.SourceFiles.FilePatterns)
-	trace("- language.", l.Name, ".test-files.directories: ", l.TestFiles.Directories)
-	trace("- language.", l.Name, ".test-files.patterns: ", l.TestFiles.FilePatterns)
+	prefix := "language." + l.Name
+	l.Toolchains.show(prefix + ".toolchains")
+	l.SourceFiles.show(prefix + ".source-files")
+	l.TestFiles.show(prefix + ".test-files")
+}
+
+func (lt LanguageToolchainConfig) show(prefix string) {
+	showConfigValue(prefix+".default", lt.Default)
+	showConfigValue(prefix+".compatible-with", lt.Compatible)
+}
+
+func (ftf LanguageFileTreeFilterConfig) show(prefix string) {
+	showConfigValue(prefix+".directories", ftf.Directories)
+	showConfigValue(prefix+".patterns", ftf.FilePatterns)
 }

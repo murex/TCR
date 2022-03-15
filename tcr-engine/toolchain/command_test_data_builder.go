@@ -39,11 +39,6 @@ func ACommand(commandBuilders ...func(command *Command)) *Command {
 	return command
 }
 
-// WithPath sets the command path for the created command
-func WithPath(path string) func(command *Command) {
-	return func(command *Command) { command.Path = path }
-}
-
 // WithOs adds the provided OS to the list of supported OS's for this command
 func WithOs(os OsName) func(command *Command) {
 	return func(command *Command) { command.Os = append(command.Os, os) }
@@ -62,4 +57,14 @@ func WithArch(arch ArchName) func(command *Command) {
 // WithNoArch creates a command with no supported OS architecture
 func WithNoArch() func(command *Command) {
 	return func(command *Command) { command.Arch = nil }
+}
+
+// WithPath sets the command path for the created command
+func WithPath(path string) func(command *Command) {
+	return func(command *Command) { command.Path = path }
+}
+
+// WithArgs sets the command arguments for the created command
+func WithArgs(args []string) func(command *Command) {
+	return func(command *Command) { command.Arguments = args }
 }

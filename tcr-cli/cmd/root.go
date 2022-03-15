@@ -62,7 +62,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(config.Init)
+	cobra.OnInitialize(config.StandardInit)
 	// When running TCR-CLI, default base and work dir is the current directory
 	config.AddParameters(rootCmd, ".")
 }

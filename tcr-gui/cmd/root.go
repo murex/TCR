@@ -62,7 +62,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(config.Init)
+	cobra.OnInitialize(config.StandardInit)
 	// When running TCR-GUI, default work and base dir is empty to make sure we always start the application
 	config.AddParameters(rootCmd, "")
 }

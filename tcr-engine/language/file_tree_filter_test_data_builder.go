@@ -44,6 +44,13 @@ func WithDirectory(dirName string) func(filter *FileTreeFilter) {
 	}
 }
 
+// WithDirectories sets the list of directories covered by the created FileTreeFilter
+func WithDirectories(dirs ...string) func(filter *FileTreeFilter) {
+	return func(filter *FileTreeFilter) {
+		filter.Directories = dirs
+	}
+}
+
 // WithNoDirectory enforces that the created FileTreeFilter has no directory configured
 func WithNoDirectory() func(filter *FileTreeFilter) {
 	return func(filter *FileTreeFilter) {
@@ -55,6 +62,13 @@ func WithNoDirectory() func(filter *FileTreeFilter) {
 func WithPattern(pattern string) func(filter *FileTreeFilter) {
 	return func(filter *FileTreeFilter) {
 		filter.FilePatterns = append(filter.FilePatterns, pattern)
+	}
+}
+
+// WithPatterns sets the list of filename patterns recognized by the created FileTreeFilter
+func WithPatterns(patterns ...string) func(filter *FileTreeFilter) {
+	return func(filter *FileTreeFilter) {
+		filter.FilePatterns = patterns
 	}
 }
 

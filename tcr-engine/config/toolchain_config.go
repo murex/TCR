@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -220,8 +220,8 @@ func (t ToolchainConfig) show() {
 }
 
 func (c ToolchainCommandConfig) show(prefix string) {
-	trace("- ", prefix, ".os: ", c.Os)
-	trace("- ", prefix, ".arch: ", c.Arch)
-	trace("- ", prefix, ".command: ", c.Command)
-	trace("- ", prefix, ".args: ", c.Arguments)
+	showConfigValue(prefix+".os", c.Os)
+	showConfigValue(prefix+".arch", c.Arch)
+	showConfigValue(prefix+".command", c.Command)
+	showConfigValue(prefix+".args", c.Arguments)
 }
