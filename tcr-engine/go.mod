@@ -12,7 +12,7 @@ require (
 	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/matryer/is v1.4.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/xanzy/ssh-agent v0.3.1 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
 	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect

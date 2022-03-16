@@ -11,7 +11,7 @@ require (
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
 )
 
