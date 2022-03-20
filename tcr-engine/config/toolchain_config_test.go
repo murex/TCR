@@ -94,3 +94,26 @@ func Test_reset_toolchain_configs_with_no_saved_config(t *testing.T) {
 		},
 	)
 }
+
+func Test_show_toolchain_config(t *testing.T) {
+	tchn := toolchain.AToolchain()
+	cfg := asToolchainConfig(tchn)
+	prefix := "- toolchain." + cfg.Name
+	buildCmd := cfg.BuildCommand[0]
+	testCmd := cfg.TestCommand[0]
+	expected := []string{
+		fmt.Sprintf("%v.build.os: %v", prefix, buildCmd.Os),
+		fmt.Sprintf("%v.build.arch: %v", prefix, buildCmd.Arch),
+		fmt.Sprintf("%v.build.command: %v", prefix, buildCmd.Command),
+		fmt.Sprintf("%v.build.args: %v", prefix, buildCmd.Arguments),
+		fmt.Sprintf("%v.test.os: %v", prefix, testCmd.Os),
+		fmt.Sprintf("%v.test.arch: %v", prefix, testCmd.Arch),
+		fmt.Sprintf("%v.test.command: %v", prefix, testCmd.Command),
+		fmt.Sprintf("%v.test.args: %v", prefix, testCmd.Arguments),
+	}
+	assertConfigTrace(t, expected,
+		func() {
+			cfg.show()
+		},
+	)
+}

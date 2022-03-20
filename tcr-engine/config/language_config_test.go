@@ -23,6 +23,7 @@ SOFTWARE.
 package config
 
 import (
+	"fmt"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -120,6 +121,25 @@ func Test_reset_language_configs_with_no_saved_config(t *testing.T) {
 	assertConfigTrace(t, expected,
 		func() {
 			resetLanguageConfigs()
+		},
+	)
+}
+
+func Test_show_language_config(t *testing.T) {
+	lang := language.ALanguage()
+	cfg := asLanguageConfig(lang)
+	prefix := "- language." + cfg.Name
+	expected := []string{
+		fmt.Sprintf("%v.toolchains.default: %v", prefix, cfg.Toolchains.Default),
+		fmt.Sprintf("%v.toolchains.compatible-with: %v", prefix, cfg.Toolchains.Compatible),
+		fmt.Sprintf("%v.source-files.directories: %v", prefix, cfg.SourceFiles.Directories),
+		fmt.Sprintf("%v.source-files.patterns: %v", prefix, cfg.SourceFiles.FilePatterns),
+		fmt.Sprintf("%v.test-files.directories: %v", prefix, cfg.TestFiles.Directories),
+		fmt.Sprintf("%v.test-files.patterns: %v", prefix, cfg.TestFiles.FilePatterns),
+	}
+	assertConfigTrace(t, expected,
+		func() {
+			cfg.show()
 		},
 	)
 }
