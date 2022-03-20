@@ -24,6 +24,7 @@ package config
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/toolchain"
@@ -32,6 +33,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func assertConfigTrace(t *testing.T, expected []string, operation func()) {
@@ -167,4 +169,21 @@ func NewCobraTestCmd() *cobra.Command {
 
 func InitForTest() {
 	initConfig(nil)
+}
+
+func Test_show_tcr_config_with_default_values(t *testing.T) {
+	prefix := "- config"
+	expected := []string{
+		"TCR configuration:",
+		fmt.Sprintf("%v.git.auto-push: %v", prefix, false),
+		fmt.Sprintf("%v.git.polling-period: %v", prefix, 2*time.Second),
+		fmt.Sprintf("%v.mob-timer.duration: %v", prefix, 5*time.Minute),
+		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),
+		fmt.Sprintf("%v.tcr.toolchain: %v", prefix, ""),
+	}
+	assertConfigTrace(t, expected,
+		func() {
+			showTrcConfig()
+		},
+	)
 }
