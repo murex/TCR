@@ -95,7 +95,7 @@ value as the `base directory` is sufficient.
 In some situations (for instance on multi-component projects), it might be necessary to run build and test tools from a
 different directory than the one where source and test files are located.
 
-- The root directory can be specified when starting TCR using the `-w` (or `--work-dir`) command line option.
+- The work directory can be specified when starting TCR using the `-w` (or `--work-dir`) command line option.
 - When the work directory is not provided, TCR assumes that the current directory is the work directory.
 
 ### Configuration directory
