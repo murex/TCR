@@ -36,6 +36,15 @@ import (
 	"time"
 )
 
+const (
+	testDataRootDir = "../testdata"
+)
+
+var (
+	testDataDirJava = filepath.Join(testDataRootDir, "java")
+	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
+)
+
 func assertConfigTrace(t *testing.T, expected []string, operation func()) {
 	var output bytes.Buffer
 	setConfigTrace(&output)
@@ -45,6 +54,28 @@ func assertConfigTrace(t *testing.T, expected []string, operation func()) {
 		expectedWithWrapping += "[TCR] " + line + "\n"
 	}
 	assert.Equal(t, expectedWithWrapping, output.String())
+}
+
+func Test_get_config_dir_path_when_not_set(t *testing.T) {
+	initConfigDirPath()
+	assert.Equal(t, ".tcr", GetConfigDirPath())
+}
+
+func Test_get_config_dir_path_when_set(t *testing.T) {
+	d, _ := os.MkdirTemp("", "tcr-config-dir")
+	defer func() {
+		_ = os.RemoveAll(configDirPath)
+	}()
+
+	cmd := NewCobraTestCmd()
+	cmd.Run = func(cmd *cobra.Command, args []string) {
+		InitForTest()
+	}
+	AddParameters(cmd, d)
+	cmd.SetArgs([]string{"--config-dir", d})
+	_ = cmd.Execute()
+
+	assert.Equal(t, filepath.Join(d, ".tcr"), GetConfigDirPath())
 }
 
 func Test_config_trace_format(t *testing.T) {
@@ -122,6 +153,44 @@ func Test_reset_tcr_config_with_no_saved_config(t *testing.T) {
 	)
 }
 
+func Test_save_tcr_config_with_no_saved_config(t *testing.T) {
+	d, _ := os.MkdirTemp("", "tcr-save-dir")
+	defer func() {
+		_ = os.RemoveAll(d)
+	}()
+	expected := []string{
+		"Creating TCR configuration directory: " + filepath.Join(d, ".tcr"),
+		"No configuration file found",
+		"Loading toolchains configuration",
+		"Loading languages configuration",
+		"Saving configuration: " + filepath.Join(d, ".tcr", "config.yml"),
+	}
+
+	expected = append(expected, "Creating TCR toolchain configuration directory: "+filepath.Join(d, ".tcr", "toolchain"))
+	expected = append(expected, "Saving toolchains configuration")
+	for _, builtinTchn := range toolchain.Names() {
+		expected = append(expected, "- "+builtinTchn)
+	}
+
+	expected = append(expected, "Creating TCR language configuration directory: "+filepath.Join(d, ".tcr", "language"))
+	expected = append(expected, "Saving languages configuration")
+	for _, builtinLang := range language.Names() {
+		expected = append(expected, "- "+builtinLang)
+	}
+	assertConfigTrace(t, expected,
+		func() {
+			cmd := NewCobraTestCmd()
+			cmd.Run = func(cmd *cobra.Command, args []string) {
+				InitForTest()
+				Save()
+			}
+			AddParameters(cmd, d)
+			cmd.SetArgs([]string{"--config-dir", d})
+			_ = cmd.Execute()
+		},
+	)
+}
+
 func Test_init_tcr_config_with_no_config_file(t *testing.T) {
 	expected := []string{"No configuration file found"}
 	assertConfigTrace(t, expected,
@@ -139,6 +208,27 @@ func Test_cobra_command_init_with_no_saved_config(t *testing.T) {
 	expected := []string{
 		"Creating TCR configuration directory: " + filepath.Join(d, ".tcr"),
 		"No configuration file found",
+		"Loading toolchains configuration",
+		"Loading languages configuration",
+	}
+	assertConfigTrace(t, expected,
+		func() {
+			cmd := NewCobraTestCmd()
+			cmd.Run = func(cmd *cobra.Command, args []string) {
+				InitForTest()
+			}
+			AddParameters(cmd, d)
+			cmd.SetArgs([]string{"--config-dir", d})
+			_ = cmd.Execute()
+		},
+	)
+}
+
+func Test_cobra_command_init_with_saved_config(t *testing.T) {
+	d := testDataDirJava
+
+	expected := []string{
+		"Loading configuration: " + filepath.Join(d, ".tcr", "config.yml"),
 		"Loading toolchains configuration",
 		"Loading languages configuration",
 	}

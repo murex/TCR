@@ -106,6 +106,7 @@ func Test_show_language_configs_with_no_saved_config(t *testing.T) {
 	}
 	assertConfigTrace(t, expected,
 		func() {
+			languageDirPath = ""
 			showLanguageConfigs()
 		},
 	)

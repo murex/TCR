@@ -76,6 +76,7 @@ func Test_show_toolchain_configs_with_no_saved_config(t *testing.T) {
 	}
 	assertConfigTrace(t, expected,
 		func() {
+			toolchainDirPath = ""
 			showToolchainConfigs()
 		},
 	)
