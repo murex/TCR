@@ -1,6 +1,6 @@
 module github.com/murex/tcr/tcr-cli
 
-go 1.17
+go 1.18
 
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
