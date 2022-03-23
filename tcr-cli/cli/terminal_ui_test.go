@@ -23,6 +23,7 @@ SOFTWARE.
 package cli
 
 import (
+	"github.com/kami-zh/go-capturer"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -80,4 +81,58 @@ func mockStdin(t *testing.T, input []byte) *os.File {
 	}
 	_ = w.Close()
 	return r
+}
+
+func Test_terminal_tracing_methods(t *testing.T) {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+
+	var testFlags = []struct {
+		desc     string
+		method   func()
+		expected string
+	}{
+		{
+			"info method",
+			func() {
+				term.info("Some info message")
+			},
+			"\x1b[36mTCR\x1b[0m \x1b[36mSome info message\x1b[0m\n",
+		},
+		{
+			"warning method",
+			func() {
+				term.warning("Some warning message")
+			},
+			"\x1b[33mTCR\x1b[0m \x1b[33mSome warning message\x1b[0m\n",
+		},
+		{
+			"error method",
+			func() {
+				term.error("Some error message")
+			},
+			"\x1b[31mTCR\x1b[0m \x1b[31mSome error message\x1b[0m\n",
+		},
+		{
+			"trace method",
+			func() {
+				term.trace("Some trace message")
+			},
+			"Some trace message\n",
+		},
+		{
+			"title method",
+			func() {
+				term.title("Some title")
+			},
+			"\x1b[36mTCR\x1b[0m \x1b[36m---------------------------------------------------------------------------\x1b[0m\n" +
+				"\x1b[36mTCR\x1b[0m \x1b[36mSome title\x1b[0m\n",
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
+		})
+	}
 }
