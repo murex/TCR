@@ -38,6 +38,22 @@ import (
 	"time"
 )
 
+// TcrInterface provides the API for accession TCR engine
+type TcrInterface interface {
+	Init(u ui.UserInterface, params Params)
+	ToggleAutoPush()
+	SetAutoPush(ap bool)
+	GetCurrentRole() role.Role
+	RunAsDriver()
+	RunAsNavigator()
+	Stop()
+	RunTCRCycle()
+	GetSessionInfo() SessionInfo
+	ReportMobTimerStatus()
+	SetRunMode(m runmode.RunMode)
+	Quit()
+}
+
 var (
 	mode            runmode.RunMode
 	uitf            ui.UserInterface
@@ -342,4 +358,74 @@ func handleError(err error, fatal bool, status Status) {
 	} else {
 		RecordState(StatusOk)
 	}
+}
+
+// =========================================================================
+
+// TcrEngine is the engine running all TCR operations
+type TcrEngine struct {
+}
+
+func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
+	//TODO implement me
+	Init(u, params)
+}
+
+func (tcr *TcrEngine) ToggleAutoPush() {
+	//TODO implement me
+	ToggleAutoPush()
+}
+
+func (tcr *TcrEngine) SetAutoPush(ap bool) {
+	//TODO implement me
+	SetAutoPush(ap)
+}
+
+func (tcr *TcrEngine) GetCurrentRole() role.Role {
+	//TODO implement me
+	return GetCurrentRole()
+}
+
+func (tcr *TcrEngine) RunAsDriver() {
+	//TODO implement me
+	RunAsDriver()
+}
+
+func (tcr *TcrEngine) RunAsNavigator() {
+	//TODO implement me
+	RunAsNavigator()
+}
+
+func (tcr *TcrEngine) Stop() {
+	//TODO implement me
+	Stop()
+}
+
+func (tcr *TcrEngine) RunTCRCycle() {
+	//TODO implement me
+	RunTCRCycle()
+}
+
+func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
+	//TODO implement me
+	return GetSessionInfo()
+}
+
+func (tcr *TcrEngine) ReportMobTimerStatus() {
+	//TODO implement me
+	ReportMobTimerStatus()
+}
+
+func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
+	//TODO implement me
+	SetRunMode(m)
+}
+
+func (tcr *TcrEngine) Quit() {
+	//TODO implement me
+	Quit()
+}
+
+func NewTcrEngine() TcrInterface {
+	return &TcrEngine{}
 }

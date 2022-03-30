@@ -50,7 +50,7 @@ This application runs TCR graphical user interface.`,
 		// so that the user can decide what they want to do
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		u := gui.New(params)
+		u := gui.New(params, engine.NewTcrEngine())
 		u.Start()
 	},
 }

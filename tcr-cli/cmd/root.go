@@ -49,7 +49,7 @@ This application runs within a terminal.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			params.Mode = runmode.Mob{}
 			params.AutoPush = params.Mode.AutoPushDefault()
-			u := cli.New(params)
+			u := cli.New(params, engine.NewTcrEngine())
 			u.Start()
 		},
 	}

@@ -24,11 +24,11 @@ package cmd
 
 import (
 	"github.com/murex/tcr/tcr-cli/cli"
+	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/spf13/cobra"
 )
 
-// soloCmd represents the solo command
 var soloCmd = &cobra.Command{
 	Use:   "solo",
 	Short: "Run TCR in solo mode",
@@ -40,7 +40,7 @@ This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params.Mode = runmode.Solo{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		u := cli.New(params)
+		u := cli.New(params, engine.NewTcrEngine())
 		u.Start()
 	},
 }

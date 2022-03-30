@@ -39,6 +39,7 @@ import (
 // TerminalUI is the user interface implementation when using the Command Line Interface
 type TerminalUI struct {
 	reportingChannel chan bool
+	tcr              engine.TcrInterface
 	params           engine.Params
 }
 
@@ -48,9 +49,9 @@ const (
 )
 
 // New creates a new instance of terminal
-func New(p engine.Params) ui.UserInterface {
+func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
-	var term = TerminalUI{params: p}
+	var term = TerminalUI{params: p, tcr: tcr}
 	term.StartReporting()
 	return &term
 }
@@ -136,12 +137,12 @@ func (term *TerminalUI) mainMenu() {
 			term.startAs(role.Navigator{})
 			term.whatShallWeDo()
 		case 'p', 'P':
-			engine.ToggleAutoPush()
+			term.tcr.ToggleAutoPush()
 			term.ShowSessionInfo()
 			term.whatShallWeDo()
 		case 'q', 'Q':
 			Restore()
-			engine.Quit()
+			term.tcr.Quit()
 		case enterKey:
 			// We ignore enter key press
 			continue
@@ -161,9 +162,9 @@ func (term *TerminalUI) startAs(r role.Role) {
 	// We ask TCR engine to start...
 	switch r {
 	case role.Navigator{}:
-		engine.RunAsNavigator()
+		term.tcr.RunAsNavigator()
 	case role.Driver{}:
-		engine.RunAsDriver()
+		term.tcr.RunAsDriver()
 	default:
 		term.warning("No action defined for role ", r.Name())
 	}
@@ -180,7 +181,7 @@ func (term *TerminalUI) startAs(r role.Role) {
 		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
-			engine.Stop()
+			term.tcr.Stop()
 		case 't', 'T':
 			term.showTimerStatus()
 		case enterKey:
@@ -198,8 +199,8 @@ func (term *TerminalUI) keyNotRecognizedMessage() {
 
 func (term *TerminalUI) showTimerStatus() {
 	if settings.EnableMobTimer {
-		if r := engine.GetCurrentRole(); r != nil && r.RunsWithTimer() {
-			engine.ReportMobTimerStatus()
+		if r := term.tcr.GetCurrentRole(); r != nil && r.RunsWithTimer() {
+			term.tcr.ReportMobTimerStatus()
 		} else {
 			term.keyNotRecognizedMessage()
 		}
@@ -214,7 +215,7 @@ func (term *TerminalUI) ShowRunningMode(mode runmode.RunMode) {
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (term *TerminalUI) ShowSessionInfo() {
-	info := engine.GetSessionInfo()
+	info := term.tcr.GetSessionInfo()
 
 	term.title("Base Directory: ", info.BaseDir)
 	term.info("Work Directory: ", info.WorkDir)
@@ -274,7 +275,7 @@ func (term *TerminalUI) Start() {
 		// we directly enter driver mode, and quit when done
 		term.startAs(role.Driver{})
 		Restore()
-		engine.Quit()
+		term.tcr.Quit()
 	case runmode.Mob{}:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
@@ -283,20 +284,20 @@ func (term *TerminalUI) Start() {
 	case runmode.OneShot{}:
 		// When running TCR in one-shot mode, there's no selection menu:
 		// we directly ask TCR engine to run one cycle and quit when done
-		engine.RunTCRCycle()
-		engine.Quit()
+		term.tcr.RunTCRCycle()
+		term.tcr.Quit()
 	case runmode.Check{}:
 		// When running TCR in check mode, there's no selection menu:
 		// we directly ask TCR engine to run a check and quit when done
 		checker.Run(term.params)
-		engine.Quit()
+		term.tcr.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)
 	}
 }
 
 func (term *TerminalUI) initTcrEngine() {
-	engine.Init(term, term.params)
+	term.tcr.Init(term, term.params)
 }
 
 func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{}) {
@@ -314,7 +315,7 @@ func (term *TerminalUI) listMainMenuOptions(title string) {
 
 func (term *TerminalUI) listRoleMenuOptions(title string) {
 	term.title(title)
-	r := engine.GetCurrentRole()
+	r := term.tcr.GetCurrentRole()
 	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}

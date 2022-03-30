@@ -24,6 +24,7 @@ package cmd
 
 import (
 	"github.com/murex/tcr/tcr-cli/cli"
+	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +41,7 @@ This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params.Mode = runmode.Mob{}
 		params.AutoPush = params.Mode.AutoPushDefault()
-		u := cli.New(params)
+		u := cli.New(params, engine.NewTcrEngine())
 		u.Start()
 	},
 }

@@ -69,14 +69,15 @@ type GUI struct {
 	topLevel      *fyne.Container
 	layout        fyne.Layout
 	runMode       runmode.RunMode
+	tcr           engine.TcrInterface
 	params        engine.Params
 }
 
 // New creates a new instance of graphical user interface
-func New(p engine.Params) ui.UserInterface {
-	var gui = GUI{params: p}
+func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
+	var gui = GUI{params: p, tcr: tcr}
 	// Until the GUI is able to report, we rely on the terminal to report information
-	gui.term = cli.New(p)
+	gui.term = cli.New(p, tcr)
 	report.PostInfo("Opening ", settings.ApplicationName, " GUI")
 
 	gui.initApp()
@@ -137,7 +138,7 @@ func (gui *GUI) NotifyRoleStarting(r role.Role) {
 	gui.sessionPanel.disableActions()
 }
 
-// NotifyRoleEnding tells the user that TCR engine is ending the provided role
+// NotifyRoleEnding tells the user that TCR gui.tcr is ending the provided role
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
 	report.PostInfo("Ending ", strings.Title(r.Name()), " role")
 	gui.sessionPanel.enableActions()
@@ -145,7 +146,7 @@ func (gui *GUI) NotifyRoleEnding(r role.Role) {
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (gui *GUI) ShowSessionInfo() {
-	info := engine.GetSessionInfo()
+	info := gui.tcr.GetSessionInfo()
 	gui.win.SetTitle(fmt.Sprintf("%v - %v", settings.ApplicationName, info.BaseDir))
 	gui.sessionPanel.setLanguage(info.LanguageName)
 	gui.sessionPanel.setToolchain(info.ToolchainName)
@@ -184,7 +185,7 @@ func (gui *GUI) quit(message string) {
 	if message != "" {
 		report.PostInfo(message)
 	}
-	engine.Quit()
+	gui.tcr.Quit()
 }
 
 func (gui *GUI) initApp() {
@@ -221,7 +222,7 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 		report.PostInfo(fmt.Sprintf("Run mode set to %v", gui.runMode.Name()))
 		gui.sessionPanel.setRunMode(gui.runMode)
 		gui.actionBar.setRunMode(gui.runMode)
-		engine.SetRunMode(mode)
+		gui.tcr.SetRunMode(mode)
 	}
 }
 
@@ -243,13 +244,13 @@ func (gui *GUI) initTcrEngine(baseDir string) {
 		gui.quit("Operation cancelled")
 	}
 	gui.params.BaseDir = baseDir
-	engine.Init(gui, gui.params)
+	gui.tcr.Init(gui, gui.params)
 	gui.term.StopReporting()
 }
 
 func (gui *GUI) showTimerStatus() {
 	if settings.EnableMobTimer {
-		engine.ReportMobTimerStatus()
+		gui.tcr.ReportMobTimerStatus()
 	}
 }
 

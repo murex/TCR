@@ -68,7 +68,7 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	// Displayed info on stdout is useless for the test
 	os.Stdout = os.NewFile(0, os.DevNull)
 
-	term := New(engine.Params{})
+	term := New(engine.Params{}, engine.NewTcrEngine())
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
 }
 
