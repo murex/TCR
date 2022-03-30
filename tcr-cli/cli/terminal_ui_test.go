@@ -25,6 +25,8 @@ package cli
 import (
 	"github.com/kami-zh/go-capturer"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/role"
+	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -83,6 +85,23 @@ func mockStdin(t *testing.T, input []byte) *os.File {
 	return r
 }
 
+func asCyanTrace(str string) string {
+	return "\x1b[36mTCR\x1b[0m \x1b[36m" + str + "\x1b[0m\n"
+}
+
+func asCyanTraceWithSeparatorLine(str string) string {
+	return asCyanTrace("---------------------------------------------------------------------------") +
+		asCyanTrace(str)
+}
+
+func asYellowTrace(str string) string {
+	return "\x1b[33mTCR\x1b[0m \x1b[33m" + str + "\x1b[0m\n"
+}
+
+func asRedTrace(str string) string {
+	return "\x1b[31mTCR\x1b[0m \x1b[31m" + str + "\x1b[0m\n"
+}
+
 func Test_terminal_tracing_methods(t *testing.T) {
 	term := TerminalUI{}
 	setLinePrefix("TCR")
@@ -97,21 +116,21 @@ func Test_terminal_tracing_methods(t *testing.T) {
 			func() {
 				term.info("Some info message")
 			},
-			"\x1b[36mTCR\x1b[0m \x1b[36mSome info message\x1b[0m\n",
+			asCyanTrace("Some info message"),
 		},
 		{
 			"warning method",
 			func() {
 				term.warning("Some warning message")
 			},
-			"\x1b[33mTCR\x1b[0m \x1b[33mSome warning message\x1b[0m\n",
+			asYellowTrace("Some warning message"),
 		},
 		{
 			"error method",
 			func() {
 				term.error("Some error message")
 			},
-			"\x1b[31mTCR\x1b[0m \x1b[31mSome error message\x1b[0m\n",
+			asRedTrace("Some error message"),
 		},
 		{
 			"trace method",
@@ -125,14 +144,102 @@ func Test_terminal_tracing_methods(t *testing.T) {
 			func() {
 				term.title("Some title")
 			},
-			"\x1b[36mTCR\x1b[0m \x1b[36m---------------------------------------------------------------------------\x1b[0m\n" +
-				"\x1b[36mTCR\x1b[0m \x1b[36mSome title\x1b[0m\n",
+			asCyanTraceWithSeparatorLine("Some title"),
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
+		})
+	}
+}
+
+func Test_notify_role_starting(t *testing.T) {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+
+	var testFlags = []struct {
+		currentRole role.Role
+		expected    string
+	}{
+		{
+			currentRole: role.Driver{},
+			expected:    asCyanTraceWithSeparatorLine("Starting with Driver role. Press ? for options"),
+		},
+		{
+			currentRole: role.Navigator{},
+			expected:    asCyanTraceWithSeparatorLine("Starting with Navigator role. Press ? for options"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.currentRole.Name(), func(t *testing.T) {
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.NotifyRoleStarting(tt.currentRole)
+			}))
+		})
+	}
+}
+
+func Test_notify_role_ending(t *testing.T) {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+
+	var testFlags = []struct {
+		currentRole role.Role
+		expected    string
+	}{
+		{
+			currentRole: role.Driver{},
+			expected:    asCyanTrace("Ending Driver role"),
+		},
+		{
+			currentRole: role.Navigator{},
+			expected:    asCyanTrace("Ending Navigator role"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.currentRole.Name(), func(t *testing.T) {
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.NotifyRoleEnding(tt.currentRole)
+			}))
+		})
+	}
+}
+
+func Test_show_running_mode(t *testing.T) {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+
+	var testFlags = []struct {
+		currentMode runmode.RunMode
+		expected    string
+	}{
+		{
+			currentMode: runmode.Mob{},
+			expected:    asCyanTraceWithSeparatorLine("Running in mob mode"),
+		},
+		{
+			currentMode: runmode.Solo{},
+			expected:    asCyanTraceWithSeparatorLine("Running in solo mode"),
+		},
+		{
+			currentMode: runmode.OneShot{},
+			expected:    asCyanTraceWithSeparatorLine("Running in one-shot mode"),
+		},
+		{
+			currentMode: runmode.Check{},
+			expected:    asCyanTraceWithSeparatorLine("Running in check mode"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.currentMode.Name(), func(t *testing.T) {
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.ShowRunningMode(tt.currentMode)
+			}))
 		})
 	}
 }
