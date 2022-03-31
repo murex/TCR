@@ -58,106 +58,108 @@ func (fs failures) contains(f failure) bool {
 }
 
 func Test_run_build_command_with_no_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertCommandEndState(t, build, StatusOk, false)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertCommandEndState(t, tcr.build, StatusOk, false)
 }
 
 func Test_run_build_command_with_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failBuild})
-	assertCommandEndState(t, build, StatusBuildFailed, true)
+	tcr := initTcrEngineWithFakes(failures{failBuild})
+	assertCommandEndState(t, tcr.build, StatusBuildFailed, true)
 }
 
 func Test_run_test_command_with_no_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertCommandEndState(t, test, StatusOk, false)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertCommandEndState(t, tcr.test, StatusOk, false)
 }
 
 func Test_run_test_command_with_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failTest})
-	assertCommandEndState(t, test, StatusTestFailed, true)
+	tcr := initTcrEngineWithFakes(failures{failTest})
+	assertCommandEndState(t, tcr.test, StatusTestFailed, true)
 }
 
 func Test_run_commit_operation_with_no_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, commit, StatusOk)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertOperationEndState(t, tcr.commit, StatusOk)
 }
 
 func Test_run_commit_operation_with_commit_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failCommit})
-	assertOperationEndState(t, commit, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failCommit})
+	assertOperationEndState(t, tcr.commit, StatusGitError)
 }
 
 func Test_run_commit_operation_with_push_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failPush})
-	assertOperationEndState(t, commit, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failPush})
+	assertOperationEndState(t, tcr.commit, StatusGitError)
 }
 
 func Test_run_revert_operation_with_no_changes_in_src_files(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, revert, StatusOk)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertOperationEndState(t, tcr.revert, StatusOk)
 }
 
 func Test_run_revert_operation_with_changes_in_src_files(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, revert, StatusOk)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertOperationEndState(t, tcr.revert, StatusOk)
 }
 
 func Test_run_revert_operation_with_diff_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failDiff})
-	assertOperationEndState(t, revert, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failDiff})
+	assertOperationEndState(t, tcr.revert, StatusGitError)
 }
 
 func Test_run_revert_operation_with_restore_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{failRestore})
-	assertOperationEndState(t, revert, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failRestore})
+	assertOperationEndState(t, tcr.revert, StatusGitError)
 }
 
 func Test_run_tcr_cycle_with_no_failure(t *testing.T) {
-	initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, RunTCRCycle, StatusOk)
+	tcr := initTcrEngineWithFakes(failures{})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusOk)
 }
 
 func Test_run_tcr_cycle_with_build_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failBuild})
-	assertOperationEndState(t, RunTCRCycle, StatusBuildFailed)
+	tcr := initTcrEngineWithFakes(failures{failBuild})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusBuildFailed)
 }
 
 func Test_run_tcr_cycle_with_test_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failTest})
-	assertOperationEndState(t, RunTCRCycle, StatusOk)
+	tcr := initTcrEngineWithFakes(failures{failTest})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusOk)
 }
 
 func Test_run_tcr_cycle_with_commit_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failCommit})
-	assertOperationEndState(t, RunTCRCycle, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failCommit})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
 }
 
 func Test_run_tcr_cycle_with_push_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failPush})
-	assertOperationEndState(t, RunTCRCycle, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failPush})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
 }
 
 func Test_run_tcr_cycle_with_test_and_diff_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failTest, failDiff})
-	assertOperationEndState(t, RunTCRCycle, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failTest, failDiff})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
 }
 
 func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
-	initTcrEngineWithFakes(failures{failTest, failRestore})
-	assertOperationEndState(t, RunTCRCycle, StatusGitError)
+	tcr := initTcrEngineWithFakes(failures{failTest, failRestore})
+	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
 }
 
-func initTcrEngineWithFakes(f failures) {
+func initTcrEngineWithFakes(f failures) TcrInterface {
 	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest))
 	lang := registerFakeLanguage(tchn)
-	Init(ui.NewFakeUI(), Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
-	replaceGitImplWithFake(
+	tcr := NewTcrEngine()
+	tcr.Init(ui.NewFakeUI(), Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
+	replaceGitImplWithFake(tcr,
 		f.contains(failCommit),
 		f.contains(failRestore),
 		f.contains(failPush),
 		f.contains(failPull),
 		f.contains(failDiff),
 	)
+	return tcr
 }
 
 func registerFakeToolchain(failingBuild, failingTest bool) string {
@@ -176,8 +178,9 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(failingCommit, failingRestore, failingPush, failingPull, failDiff bool) {
-	git, _ = vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff, []string{"fake-src"})
+func replaceGitImplWithFake(tcr TcrInterface, failingCommit, failingRestore, failingPush, failingPull, failDiff bool) {
+	fake, _ := vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff, []string{"fake-src"})
+	tcr.setVcs(fake)
 }
 
 func assertCommandEndState(t *testing.T, operation func() error, endState Status, expectError bool) {

@@ -38,86 +38,112 @@ import (
 	"time"
 )
 
-// TcrInterface provides the API for accession TCR engine
-type TcrInterface interface {
-	Init(u ui.UserInterface, params Params)
-	ToggleAutoPush()
-	SetAutoPush(ap bool)
-	GetCurrentRole() role.Role
-	RunAsDriver()
-	RunAsNavigator()
-	Stop()
-	RunTCRCycle()
-	GetSessionInfo() SessionInfo
-	ReportMobTimerStatus()
-	SetRunMode(m runmode.RunMode)
-	Quit()
-}
+type (
+	// TcrInterface provides the API for interacting with TCR engine
+	TcrInterface interface {
+		Init(u ui.UserInterface, params Params)
+		setVcs(vcs vcs.GitInterface)
+		ToggleAutoPush()
+		SetAutoPush(ap bool)
+		GetCurrentRole() role.Role
+		RunAsDriver()
+		RunAsNavigator()
+		Stop()
+		RunTCRCycle()
+		build() error
+		test() error
+		commit()
+		revert()
+		GetSessionInfo() SessionInfo
+		ReportMobTimerStatus()
+		SetRunMode(m runmode.RunMode)
+		Quit()
+	}
+
+	// TcrEngine is the engine running all TCR operations
+	TcrEngine struct {
+		mode            runmode.RunMode
+		uitf            ui.UserInterface
+		vcs             vcs.GitInterface
+		lang            language.LangInterface
+		tchn            toolchain.TchnInterface
+		sourceTree      filesystem.SourceTree
+		pollingPeriod   time.Duration
+		mobTurnDuration time.Duration
+		mobTimer        *timer.PeriodicReminder
+		currentRole     role.Role
+		// shoot channel is used for handling interruptions coming from the UI
+		shoot chan bool
+	}
+)
 
 var (
-	mode            runmode.RunMode
-	uitf            ui.UserInterface
-	git             vcs.GitInterface
-	lang            language.LangInterface
-	tchn            toolchain.TchnInterface
-	sourceTree      filesystem.SourceTree
-	pollingPeriod   time.Duration
-	mobTurnDuration time.Duration
-	mobTimer        *timer.PeriodicReminder
-	currentRole     role.Role
+	// Tcr is TCR Engine singleton instance
+	Tcr TcrInterface
 )
+
+// NewTcrEngine instantiates TCR engine instance
+func NewTcrEngine() TcrInterface {
+	Tcr = &TcrEngine{}
+	return Tcr
+}
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
-func Init(u ui.UserInterface, params Params) {
+func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
 	var err error
 	RecordState(StatusOk)
-	uitf = u
+	tcr.uitf = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
-	SetRunMode(params.Mode)
-	if !mode.IsActive() {
-		uitf.ShowRunningMode(mode)
+	tcr.SetRunMode(params.Mode)
+	if !tcr.mode.IsActive() {
+		tcr.uitf.ShowRunningMode(tcr.mode)
 		return
 	}
 
-	pollingPeriod = params.PollingPeriod
+	tcr.pollingPeriod = params.PollingPeriod
 
-	sourceTree, err = filesystem.New(params.BaseDir)
-	handleError(err, true, StatusConfigError)
-	report.PostInfo("Base directory is ", sourceTree.GetBaseDir())
+	tcr.sourceTree, err = filesystem.New(params.BaseDir)
+	tcr.handleError(err, true, StatusConfigError)
+	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 
-	lang, err = language.GetLanguage(params.Language, sourceTree.GetBaseDir())
-	handleError(err, true, StatusConfigError)
+	tcr.lang, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
+	tcr.handleError(err, true, StatusConfigError)
 
-	tchn, err = lang.GetToolchain(params.Toolchain)
-	handleError(err, true, StatusConfigError)
+	tcr.tchn, err = tcr.lang.GetToolchain(params.Toolchain)
+	tcr.handleError(err, true, StatusConfigError)
 
 	err = toolchain.SetWorkDir(params.WorkDir)
-	handleError(err, true, StatusConfigError)
+	tcr.handleError(err, true, StatusConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	git, err = vcs.New(sourceTree.GetBaseDir())
-	handleError(err, true, StatusGitError)
-	git.EnablePush(params.AutoPush)
+	git, err := vcs.New(tcr.sourceTree.GetBaseDir())
+	tcr.handleError(err, true, StatusGitError)
+	tcr.setVcs(git)
+	tcr.vcs.EnablePush(params.AutoPush)
 
-	if settings.EnableMobTimer && mode.NeedsCountdownTimer() {
-		mobTurnDuration = params.MobTurnDuration
-		report.PostInfo("Timer duration is ", mobTurnDuration)
+	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
+		tcr.mobTurnDuration = params.MobTurnDuration
+		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
 	}
 
-	uitf.ShowRunningMode(mode)
-	uitf.ShowSessionInfo()
-	warnIfOnRootBranch(git.GetWorkingBranch(), mode.IsInteractive())
+	tcr.uitf.ShowRunningMode(tcr.mode)
+	tcr.uitf.ShowSessionInfo()
+	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
 }
 
-func warnIfOnRootBranch(branch string, interactive bool) {
+func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {
+	tcr.vcs = vcs
+}
+
+func (tcr *TcrEngine) warnIfOnRootBranch(branch string, interactive bool) {
 	if vcs.IsRootBranch(branch) {
 		message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
 		if interactive {
-			if !uitf.Confirm(message, false) {
-				Quit()
+			if !tcr.uitf.Confirm(message, false) {
+				tcr.Quit()
 			}
 		} else {
 			report.PostWarning(message)
@@ -126,43 +152,43 @@ func warnIfOnRootBranch(branch string, interactive bool) {
 }
 
 // ToggleAutoPush toggles git auto-push state
-func ToggleAutoPush() {
-	git.EnablePush(!git.IsPushEnabled())
+func (tcr *TcrEngine) ToggleAutoPush() {
+	tcr.vcs.EnablePush(!tcr.vcs.IsPushEnabled())
 }
 
 // SetAutoPush sets git auto-push to the provided value
-func SetAutoPush(ap bool) {
-	git.EnablePush(ap)
+func (tcr *TcrEngine) SetAutoPush(ap bool) {
+	tcr.vcs.EnablePush(ap)
 }
 
 // GetCurrentRole returns the role currently used for running TCR.
 // Returns nil when TCR engine is in standby
-func GetCurrentRole() role.Role {
-	return currentRole
+func (tcr *TcrEngine) GetCurrentRole() role.Role {
+	return tcr.currentRole
 }
 
 // RunAsDriver tells TCR engine to start running with driver role
-func RunAsDriver() {
+func (tcr *TcrEngine) RunAsDriver() {
 	if settings.EnableMobTimer {
-		mobTimer = timer.NewMobTurnCountdown(mode, mobTurnDuration)
+		tcr.mobTimer = timer.NewMobTurnCountdown(tcr.mode, tcr.mobTurnDuration)
 	}
 
-	go fromBirthTillDeath(
+	go tcr.fromBirthTillDeath(
 		func() {
-			currentRole = role.Driver{}
-			uitf.NotifyRoleStarting(currentRole)
-			handleError(git.Pull(), false, StatusGitError)
+			tcr.currentRole = role.Driver{}
+			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
+			tcr.handleError(tcr.vcs.Pull(), false, StatusGitError)
 			if settings.EnableMobTimer {
-				mobTimer.Start()
+				tcr.mobTimer.Start()
 			}
 		},
 		func(interrupt <-chan bool) bool {
 			inactivityTeaser := timer.GetInactivityTeaserInstance()
 			inactivityTeaser.Start()
-			if waitForChange(interrupt) {
+			if tcr.waitForChange(interrupt) {
 				// Some file changes were detected
 				inactivityTeaser.Reset()
-				RunTCRCycle()
+				tcr.RunTCRCycle()
 				inactivityTeaser.Start()
 				return true
 			}
@@ -173,91 +199,88 @@ func RunAsDriver() {
 		},
 		func() {
 			if settings.EnableMobTimer {
-				mobTimer.Stop()
-				mobTimer = nil
+				tcr.mobTimer.Stop()
+				tcr.mobTimer = nil
 			}
-			uitf.NotifyRoleEnding(currentRole)
-			currentRole = nil
+			tcr.uitf.NotifyRoleEnding(tcr.currentRole)
+			tcr.currentRole = nil
 		},
 	)
 }
 
 // RunAsNavigator tells TCR engine to start running with navigator role
-func RunAsNavigator() {
-	go fromBirthTillDeath(
+func (tcr *TcrEngine) RunAsNavigator() {
+	go tcr.fromBirthTillDeath(
 		func() {
-			currentRole = role.Navigator{}
-			uitf.NotifyRoleStarting(currentRole)
+			tcr.currentRole = role.Navigator{}
+			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
 		},
 		func(interrupt <-chan bool) bool {
 			select {
 			case <-interrupt:
 				return false
 			default:
-				handleError(git.Pull(), false, StatusGitError)
-				time.Sleep(pollingPeriod)
+				tcr.handleError(tcr.vcs.Pull(), false, StatusGitError)
+				time.Sleep(tcr.pollingPeriod)
 				return true
 			}
 		},
 		func() {
-			uitf.NotifyRoleEnding(currentRole)
-			currentRole = nil
+			tcr.uitf.NotifyRoleEnding(tcr.currentRole)
+			tcr.currentRole = nil
 		},
 	)
 }
 
-// shoot channel is used to handle interruptions coming from the UI
-var shoot chan bool
-
 // Stop is the entry point for telling TCR engine to stop its current operations
-func Stop() {
-	shoot <- true
+func (tcr *TcrEngine) Stop() {
+	tcr.shoot <- true
 }
 
-func fromBirthTillDeath(
+func (tcr *TcrEngine) fromBirthTillDeath(
 	birth func(),
 	dailyLife func(interrupt <-chan bool) bool,
 	death func(),
 ) {
 	var tmb tomb.Tomb
-	shoot = make(chan bool)
+	tcr.shoot = make(chan bool)
 
 	// The goroutine doing the work
 	tmb.Go(func() error {
 		birth()
 		for oneMoreDay := true; oneMoreDay; {
-			oneMoreDay = dailyLife(shoot)
+			oneMoreDay = dailyLife(tcr.shoot)
 		}
 		death()
 		return nil
 	})
-	handleError(tmb.Wait(), true, StatusOtherError)
+	tcr.handleError(tmb.Wait(), true, StatusOtherError)
 }
 
-func waitForChange(interrupt <-chan bool) bool {
+func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
-	return sourceTree.Watch(
-		lang.DirsToWatch(sourceTree.GetBaseDir()),
-		lang.IsLanguageFile,
+	return tcr.sourceTree.Watch(
+		tcr.lang.DirsToWatch(tcr.sourceTree.GetBaseDir()),
+		tcr.lang.IsLanguageFile,
 		interrupt)
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
-func RunTCRCycle() {
+func (tcr *TcrEngine) RunTCRCycle() {
 	RecordState(StatusOk)
-	if build() != nil {
+	if tcr.build() != nil {
 		return
 	}
-	if test() == nil {
-		commit()
+	if tcr.test() == nil {
+		tcr.commit()
 	} else {
-		revert()
+		tcr.revert()
 	}
 }
 
-func build() error {
+func (tcr *TcrEngine) build() error {
 	report.PostInfo("Launching Build")
-	err := tchn.RunBuild()
+	err := tcr.tchn.RunBuild()
 	if err != nil {
 		RecordState(StatusBuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
@@ -265,9 +288,9 @@ func build() error {
 	return err
 }
 
-func test() error {
+func (tcr *TcrEngine) test() error {
 	report.PostInfo("Running Tests")
-	err := tchn.RunTests()
+	err := tcr.tchn.RunTests()
 	if err != nil {
 		RecordState(StatusTestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
@@ -275,27 +298,27 @@ func test() error {
 	return err
 }
 
-func commit() {
-	report.PostInfo("Committing changes on branch ", git.GetWorkingBranch())
-	err := git.Commit()
-	handleError(err, false, StatusGitError)
+func (tcr *TcrEngine) commit() {
+	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
+	err := tcr.vcs.Commit()
+	tcr.handleError(err, false, StatusGitError)
 	if err == nil {
-		handleError(git.Push(), false, StatusGitError)
+		tcr.handleError(tcr.vcs.Push(), false, StatusGitError)
 	}
 }
 
-func revert() {
-	changedFiles, err := git.ListChanges()
-	handleError(err, false, StatusGitError)
+func (tcr *TcrEngine) revert() {
+	changedFiles, err := tcr.vcs.ListChanges()
+	tcr.handleError(err, false, StatusGitError)
 	if err != nil {
 		return
 	}
 
 	var reverted int
 	for _, file := range changedFiles {
-		if lang.IsSrcFile(file) {
-			err := revertFile(file)
-			handleError(err, false, StatusGitError)
+		if tcr.lang.IsSrcFile(file) {
+			err := tcr.revertFile(file)
+			tcr.handleError(err, false, StatusGitError)
 			if err == nil {
 				reverted++
 			}
@@ -309,43 +332,43 @@ func revert() {
 	}
 }
 
-func revertFile(file string) error {
-	return git.Restore(file)
+func (tcr *TcrEngine) revertFile(file string) error {
+	return tcr.vcs.Restore(file)
 }
 
 // GetSessionInfo provides the information related to the current TCR session.
 // Used mainly by the user interface packages to retrieve and display this information
-func GetSessionInfo() SessionInfo {
+func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
 	return SessionInfo{
-		BaseDir:       sourceTree.GetBaseDir(),
+		BaseDir:       tcr.sourceTree.GetBaseDir(),
 		WorkDir:       toolchain.GetWorkDir(),
-		LanguageName:  lang.GetName(),
-		ToolchainName: tchn.GetName(),
-		AutoPush:      git.IsPushEnabled(),
-		BranchName:    git.GetWorkingBranch(),
+		LanguageName:  tcr.lang.GetName(),
+		ToolchainName: tcr.tchn.GetName(),
+		AutoPush:      tcr.vcs.IsPushEnabled(),
+		BranchName:    tcr.vcs.GetWorkingBranch(),
 	}
 }
 
 // ReportMobTimerStatus reports the status of the mob timer
-func ReportMobTimerStatus() {
+func (tcr *TcrEngine) ReportMobTimerStatus() {
 	if settings.EnableMobTimer {
-		timer.ReportCountDownStatus(mobTimer)
+		timer.ReportCountDownStatus(tcr.mobTimer)
 	}
 }
 
 // SetRunMode sets the run mode for TCR engine
-func SetRunMode(m runmode.RunMode) {
-	mode = m
+func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
+	tcr.mode = m
 }
 
 // Quit is the exit point for TCR application
-func Quit() {
+func (tcr *TcrEngine) Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
 	os.Exit(GetReturnCode())
 }
 
-func handleError(err error, fatal bool, status Status) {
+func (tcr *TcrEngine) handleError(err error, fatal bool, status Status) {
 	if err != nil {
 		RecordState(status)
 		if fatal {
@@ -358,74 +381,4 @@ func handleError(err error, fatal bool, status Status) {
 	} else {
 		RecordState(StatusOk)
 	}
-}
-
-// =========================================================================
-
-// TcrEngine is the engine running all TCR operations
-type TcrEngine struct {
-}
-
-func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
-	//TODO implement me
-	Init(u, params)
-}
-
-func (tcr *TcrEngine) ToggleAutoPush() {
-	//TODO implement me
-	ToggleAutoPush()
-}
-
-func (tcr *TcrEngine) SetAutoPush(ap bool) {
-	//TODO implement me
-	SetAutoPush(ap)
-}
-
-func (tcr *TcrEngine) GetCurrentRole() role.Role {
-	//TODO implement me
-	return GetCurrentRole()
-}
-
-func (tcr *TcrEngine) RunAsDriver() {
-	//TODO implement me
-	RunAsDriver()
-}
-
-func (tcr *TcrEngine) RunAsNavigator() {
-	//TODO implement me
-	RunAsNavigator()
-}
-
-func (tcr *TcrEngine) Stop() {
-	//TODO implement me
-	Stop()
-}
-
-func (tcr *TcrEngine) RunTCRCycle() {
-	//TODO implement me
-	RunTCRCycle()
-}
-
-func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
-	//TODO implement me
-	return GetSessionInfo()
-}
-
-func (tcr *TcrEngine) ReportMobTimerStatus() {
-	//TODO implement me
-	ReportMobTimerStatus()
-}
-
-func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
-	//TODO implement me
-	SetRunMode(m)
-}
-
-func (tcr *TcrEngine) Quit() {
-	//TODO implement me
-	Quit()
-}
-
-func NewTcrEngine() TcrInterface {
-	return &TcrEngine{}
 }

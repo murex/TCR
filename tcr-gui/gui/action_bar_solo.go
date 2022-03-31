@@ -50,14 +50,14 @@ func NewSoloActionBarButtonPanel() ActionBarButtonPanel {
 		theme.MediaPlayIcon(),
 		func() {
 			ab.updateButtonsState(true)
-			engine.RunAsDriver()
+			engine.Tcr.RunAsDriver()
 		},
 	)
 	ab.stopButton = widget.NewButtonWithIcon("Stop",
 		theme.MediaStopIcon(),
 		func() {
 			ab.updateButtonsState(false)
-			engine.Stop()
+			engine.Tcr.Stop()
 		},
 	)
 

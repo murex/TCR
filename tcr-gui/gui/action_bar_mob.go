@@ -51,21 +51,21 @@ func NewMobActionBarButtonPanel() ActionBarButtonPanel {
 		theme.MediaPlayIcon(),
 		func() {
 			ab.updateButtonsState(true)
-			engine.RunAsDriver()
+			engine.Tcr.RunAsDriver()
 		},
 	)
 	ab.startNavigatorButton = widget.NewButtonWithIcon("Start as Navigator",
 		theme.MediaPlayIcon(),
 		func() {
 			ab.updateButtonsState(true)
-			engine.RunAsNavigator()
+			engine.Tcr.RunAsNavigator()
 		},
 	)
 	ab.stopButton = widget.NewButtonWithIcon("Stop",
 		theme.MediaStopIcon(),
 		func() {
 			ab.updateButtonsState(false)
-			engine.Stop()
+			engine.Tcr.Stop()
 		},
 	)
 

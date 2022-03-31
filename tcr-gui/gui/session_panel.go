@@ -61,7 +61,7 @@ func (gui *GUI) NewSessionPanel() *SessionPanel {
 
 	sp.autoPushToggle = widget.NewCheck("Auto-Push",
 		func(checked bool) {
-			engine.SetAutoPush(checked)
+			engine.Tcr.SetAutoPush(checked)
 		},
 	)
 
