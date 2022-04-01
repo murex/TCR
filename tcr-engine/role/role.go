@@ -22,8 +22,18 @@ SOFTWARE.
 
 package role
 
+import (
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
+
 // Role provides the interface that a role must implement in order to be used by TCR engine
 type Role interface {
 	Name() string
+	LongName() string
 	RunsWithTimer() bool
+}
+
+func longName(r Role) string {
+	return cases.Title(language.English).String(r.Name()) + " role"
 }

@@ -24,8 +24,9 @@ package language
 
 import (
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -115,9 +116,9 @@ func assertIsSupported(t *testing.T, name string) {
 
 func assertNameIsNotCaseSensitive(t *testing.T, name string) {
 	assert.True(t, isSupported(name))
-	assert.True(t, isSupported(strings.ToUpper(name)))
-	assert.True(t, isSupported(strings.ToLower(name)))
-	assert.True(t, isSupported(strings.Title(name)))
+	assert.True(t, isSupported(cases.Upper(language.English).String(name)))
+	assert.True(t, isSupported(cases.Lower(language.English).String(name)))
+	assert.True(t, isSupported(cases.Title(language.English).String(name)))
 }
 
 func assertLanguageInitialization(t *testing.T, name string) {

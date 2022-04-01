@@ -26,9 +26,14 @@ package role
 type Driver struct {
 }
 
-// Name returns the name of the current role
+// Name returns the name of the driver role
 func (role Driver) Name() string {
 	return "driver"
+}
+
+// LongName returns the long name for the driver role, e.g. "Driver role"
+func (role Driver) LongName() string {
+	return longName(role)
 }
 
 // RunsWithTimer indicates whether this role uses a timer

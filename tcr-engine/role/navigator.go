@@ -26,9 +26,14 @@ package role
 type Navigator struct {
 }
 
-// Name returns the name of the current role
+// Name returns the name of the navigator role
 func (role Navigator) Name() string {
 	return "navigator"
+}
+
+// LongName returns the long name for the navigator role, e.g. "Navigator role"
+func (role Navigator) LongName() string {
+	return longName(role)
 }
 
 // RunsWithTimer indicates whether this role uses a timer

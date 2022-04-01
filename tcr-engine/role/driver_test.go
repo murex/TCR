@@ -31,6 +31,10 @@ func Test_driver_role_name(t *testing.T) {
 	assert.Equal(t, "driver", Driver{}.Name())
 }
 
+func Test_driver_role_long_name(t *testing.T) {
+	assert.Equal(t, "Driver role", Driver{}.LongName())
+}
+
 func Test_driver_role_requires_a_mob_timer(t *testing.T) {
 	assert.True(t, Driver{}.RunsWithTimer())
 }

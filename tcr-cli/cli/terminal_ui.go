@@ -33,7 +33,6 @@ import (
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/ui"
 	"os"
-	"strings"
 )
 
 // TerminalUI is the user interface implementation when using the Command Line Interface
@@ -83,12 +82,12 @@ func (term *TerminalUI) StopReporting() {
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *TerminalUI) NotifyRoleStarting(r role.Role) {
-	term.title("Starting with ", strings.Title(r.Name()), " role. Press ? for options")
+	term.title("Starting with ", r.LongName(), ". Press ? for options")
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
-	term.info("Ending ", strings.Title(r.Name()), " role")
+	term.info("Ending ", r.LongName())
 }
 
 func (term *TerminalUI) info(a ...interface{}) {
@@ -166,7 +165,7 @@ func (term *TerminalUI) startAs(r role.Role) {
 	case role.Driver{}:
 		term.tcr.RunAsDriver()
 	default:
-		term.warning("No action defined for role ", r.Name())
+		term.warning("No action defined for ", r.LongName())
 	}
 
 	// ...Until the user decides to stop
@@ -205,7 +204,6 @@ func (term *TerminalUI) showTimerStatus() {
 			term.keyNotRecognizedMessage()
 		}
 	}
-
 }
 
 // ShowRunningMode shows the current running mode
@@ -306,8 +304,8 @@ func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{
 
 func (term *TerminalUI) listMainMenuOptions(title string) {
 	term.title(title)
-	term.printMenuOption('D', strings.Title(role.Driver{}.Name()), " role")
-	term.printMenuOption('N', strings.Title(role.Navigator{}.Name()), " role")
+	term.printMenuOption('D', role.Driver{}.LongName())
+	term.printMenuOption('N', role.Navigator{}.LongName())
 	term.printMenuOption('P', "Turn on/off git auto-push")
 	term.printMenuOption('Q', "Quit")
 	term.printMenuOption('?', "List available options")
@@ -319,6 +317,6 @@ func (term *TerminalUI) listRoleMenuOptions(title string) {
 	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}
-	term.printMenuOption('Q', "Quit ", r.Name(), " role")
+	term.printMenuOption('Q', "Quit ", r.LongName())
 	term.printMenuOption('?', "List available options")
 }

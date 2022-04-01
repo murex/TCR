@@ -35,8 +35,9 @@ import (
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/ui"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"image/color"
-	"strings"
 )
 
 const (
@@ -134,13 +135,13 @@ func (gui *GUI) ShowRunningMode(mode runmode.RunMode) {
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (gui *GUI) NotifyRoleStarting(r role.Role) {
-	report.PostTitle("Starting as a ", strings.Title(r.Name()))
+	report.PostTitle("Starting as a ", cases.Title(language.English).String(r.Name()))
 	gui.sessionPanel.disableActions()
 }
 
 // NotifyRoleEnding tells the user that TCR gui.tcr is ending the provided role
 func (gui *GUI) NotifyRoleEnding(r role.Role) {
-	report.PostInfo("Ending ", strings.Title(r.Name()), " role")
+	report.PostInfo("Ending ", cases.Title(language.English).String(r.Name()), " role")
 	gui.sessionPanel.enableActions()
 }
 

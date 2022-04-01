@@ -31,6 +31,10 @@ func Test_navigator_role_name(t *testing.T) {
 	assert.Equal(t, "navigator", Navigator{}.Name())
 }
 
+func Test_navigator_role_long_name(t *testing.T) {
+	assert.Equal(t, "Navigator role", Navigator{}.LongName())
+}
+
 func Test_navigator_role_does_not_require_a_mob_timer(t *testing.T) {
 	assert.False(t, Navigator{}.RunsWithTimer())
 }
