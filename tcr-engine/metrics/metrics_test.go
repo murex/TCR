@@ -28,6 +28,59 @@ import (
 	"time"
 )
 
+var (
+	// snapshotTime is used as a base time for all tests using a timestamp
+	snapshotTime = time.Now()
+)
+
+func aTcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
+	tcrEvent := &TcrEvent{
+		timestamp:         snapshotTime,
+		modifiedSrcCount:  0,
+		modifiedTestCount: 0,
+		addedTestCount:    0,
+		buildPassed:       true,
+		testPassed:        true,
+	}
+
+	for _, build := range builders {
+		build(tcrEvent)
+	}
+	return tcrEvent
+}
+
+func withTimestamp(timestamp time.Time) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.timestamp = timestamp
+	}
+}
+
+func withDelay(delay time.Duration) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.timestamp = tcrEvent.timestamp.Add(delay)
+	}
+}
+
+func withFailingTests() func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.testPassed = false
+	}
+}
+
+func withNoFailingTests() func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.testPassed = true
+	}
+}
+
+func todayAt(hour int, min int, sec int) time.Time {
+	return time.Date(
+		snapshotTime.Year(), snapshotTime.Month(), snapshotTime.Day(),
+		hour, min, sec,
+		0, snapshotTime.Location(),
+	)
+}
+
 func Test_compute_score(t *testing.T) {
 	var timeInGreenRatio = .5
 	var savingRate float64 = 60
@@ -37,106 +90,35 @@ func Test_compute_score(t *testing.T) {
 }
 
 func Test_compute_duration_between_2_records(t *testing.T) {
-	startEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 39, 31),
-		modifiedSrcCount:  0,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	endEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 41, 02),
-		modifiedSrcCount:  6,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	assert.Equal(t, 1*time.Minute+31*time.Second, computeDuration(startEvent, endEvent))
+	startEvent := aTcrEvent(withTimestamp(todayAt(4, 39, 31)))
+	endEvent := aTcrEvent(withTimestamp(todayAt(4, 41, 02)))
+	assert.Equal(t, 1*time.Minute+31*time.Second, computeDuration(*startEvent, *endEvent))
 }
 
-func Test_compute_duration_in_green_between_2_records(t *testing.T) {
-	startEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 39, 31),
-		modifiedSrcCount:  0,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	endEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 41, 02),
-		modifiedSrcCount:  6,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	assert.Equal(t, 1*time.Minute+31*time.Second, computeDurationInGreen(startEvent, endEvent))
+func Test_compute_durations_with_no_failing_tests_between_2_records(t *testing.T) {
+	startEvent := aTcrEvent(withNoFailingTests())
+	endEvent := aTcrEvent(withDelay(1 * time.Second))
+	assert.Equal(t, 1*time.Second, computeDurationInGreen(*startEvent, *endEvent))
+	assert.Equal(t, 0*time.Second, computeDurationInRed(*startEvent, *endEvent))
 }
 
-func Test_compute_duration_in_red_between_2_records(t *testing.T) {
-	startEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 39, 31),
-		modifiedSrcCount:  0,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        false,
-	}
-	endEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 41, 02),
-		modifiedSrcCount:  6,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	assert.Equal(t, 1*time.Minute+31*time.Second, computeDurationInRed(startEvent, endEvent))
+func Test_compute_durations_with_failing_tests_between_2_records(t *testing.T) {
+	startEvent := aTcrEvent(withFailingTests())
+	endEvent := aTcrEvent(withDelay(1 * time.Second))
+	assert.Equal(t, 0*time.Second, computeDurationInGreen(*startEvent, *endEvent))
+	assert.Equal(t, 1*time.Second, computeDurationInRed(*startEvent, *endEvent))
 }
 
-func Test_compute_time_in_green_ratio_between_2_records(t *testing.T) {
-	startEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 39, 31),
-		modifiedSrcCount:  0,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	endEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 41, 02),
-		modifiedSrcCount:  6,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	assert.Equal(t, float64(1), computeTimeInGreenRatio(startEvent, endEvent))
+func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing.T) {
+	startEvent := aTcrEvent()
+	endEvent := aTcrEvent(withDelay(1 * time.Second))
+	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
+	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
-func Test_compute_time_in_red_ratio_between_2_records(t *testing.T) {
-	startEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 39, 31),
-		modifiedSrcCount:  0,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	endEvent := TcrEvent{
-		timestamp:         getTimestamp(4, 41, 02),
-		modifiedSrcCount:  6,
-		modifiedTestCount: 0,
-		addedTestCount:    0,
-		buildPassed:       true,
-		testPassed:        true,
-	}
-	assert.Equal(t, float64(0), computeTimeInRedRatio(startEvent, endEvent))
-}
-
-func getTimestamp(hour int, min int, sec int) time.Time {
-	now := time.Now()
-	return time.Date(now.Year(), now.Month(), now.Day(), hour, min, sec, 0, now.Location())
+func Test_compute_time_ratios_with_failing_tests_between_2_records(t *testing.T) {
+	startEvent := aTcrEvent(withFailingTests())
+	endEvent := aTcrEvent(withDelay(1 * time.Second))
+	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
+	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
 }

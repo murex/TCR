@@ -22,7 +22,9 @@ SOFTWARE.
 
 package metrics
 
-import "time"
+import (
+	"time"
+)
 
 type Score float64
 
