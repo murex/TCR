@@ -37,7 +37,6 @@ func Test_compute_score(t *testing.T) {
 }
 
 func Test_compute_duration_between_2_records(t *testing.T) {
-
 	startEvent := TcrEvent{
 		timestamp:         getTimestamp(4, 39, 31),
 		modifiedSrcCount:  0,
@@ -58,7 +57,6 @@ func Test_compute_duration_between_2_records(t *testing.T) {
 }
 
 func Test_compute_duration_in_green_between_2_records(t *testing.T) {
-
 	startEvent := TcrEvent{
 		timestamp:         getTimestamp(4, 39, 31),
 		modifiedSrcCount:  0,
@@ -79,7 +77,6 @@ func Test_compute_duration_in_green_between_2_records(t *testing.T) {
 }
 
 func Test_compute_duration_in_red_between_2_records(t *testing.T) {
-
 	startEvent := TcrEvent{
 		timestamp:         getTimestamp(4, 39, 31),
 		modifiedSrcCount:  0,
@@ -97,6 +94,46 @@ func Test_compute_duration_in_red_between_2_records(t *testing.T) {
 		testPassed:        true,
 	}
 	assert.Equal(t, 1*time.Minute+31*time.Second, computeDurationInRed(startEvent, endEvent))
+}
+
+func Test_compute_time_in_green_ratio_between_2_records(t *testing.T) {
+	startEvent := TcrEvent{
+		timestamp:         getTimestamp(4, 39, 31),
+		modifiedSrcCount:  0,
+		modifiedTestCount: 0,
+		addedTestCount:    0,
+		buildPassed:       true,
+		testPassed:        true,
+	}
+	endEvent := TcrEvent{
+		timestamp:         getTimestamp(4, 41, 02),
+		modifiedSrcCount:  6,
+		modifiedTestCount: 0,
+		addedTestCount:    0,
+		buildPassed:       true,
+		testPassed:        true,
+	}
+	assert.Equal(t, float64(1), computeTimeInGreenRatio(startEvent, endEvent))
+}
+
+func Test_compute_time_in_red_ratio_between_2_records(t *testing.T) {
+	startEvent := TcrEvent{
+		timestamp:         getTimestamp(4, 39, 31),
+		modifiedSrcCount:  0,
+		modifiedTestCount: 0,
+		addedTestCount:    0,
+		buildPassed:       true,
+		testPassed:        true,
+	}
+	endEvent := TcrEvent{
+		timestamp:         getTimestamp(4, 41, 02),
+		modifiedSrcCount:  6,
+		modifiedTestCount: 0,
+		addedTestCount:    0,
+		buildPassed:       true,
+		testPassed:        true,
+	}
+	assert.Equal(t, float64(0), computeTimeInRedRatio(startEvent, endEvent))
 }
 
 func getTimestamp(hour int, min int, sec int) time.Time {

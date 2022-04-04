@@ -53,3 +53,11 @@ func computeDurationInGreen(from TcrEvent, to TcrEvent) time.Duration {
 func computeDurationInRed(from TcrEvent, to TcrEvent) time.Duration {
 	return computeDuration(from, to) - computeDurationInGreen(from, to)
 }
+
+func computeTimeInGreenRatio(from TcrEvent, to TcrEvent) float64 {
+	return float64(computeDurationInGreen(from, to) / computeDuration(from, to))
+}
+
+func computeTimeInRedRatio(from TcrEvent, to TcrEvent) float64 {
+	return float64(computeDurationInRed(from, to) / computeDuration(from, to))
+}
