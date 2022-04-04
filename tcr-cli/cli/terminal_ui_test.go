@@ -25,11 +25,13 @@ package cli
 import (
 	"github.com/kami-zh/go-capturer"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+	"time"
 )
 
 func Test_confirm_with_default_answer_to_yes(t *testing.T) {
@@ -63,16 +65,16 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	stdout := os.Stdout
 	// Restore stdin and stdout right after the test.
 	defer func() { os.Stdin = stdin; os.Stdout = stdout }()
-	// We mock stdin so that we can simulate a key press
-	os.Stdin = mockStdin(t, input)
-	// Displayed info on stdout is useless for the test
+	// We fake stdin so that we can simulate a key press
+	os.Stdin = fakeStdin(t, input)
+	// Displayed info on stdout is not used in the test
 	os.Stdout = os.NewFile(0, os.DevNull)
 
 	term := New(engine.Params{}, engine.NewTcrEngine())
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
 }
 
-func mockStdin(t *testing.T, input []byte) *os.File {
+func fakeStdin(t *testing.T, input []byte) *os.File {
 	r, w, err := os.Pipe()
 	if err != nil {
 		t.Fatal(err)
@@ -100,6 +102,14 @@ func asYellowTrace(str string) string {
 
 func asRedTrace(str string) string {
 	return "\x1b[31mTCR\x1b[0m \x1b[31m" + str + "\x1b[0m\n"
+}
+
+func asGreenTrace(str string) string {
+	return "\x1b[32mTCR\x1b[0m \x1b[32m" + str + "\x1b[0m\n"
+}
+
+func asNeutralTrace(str string) string {
+	return str + "\n"
 }
 
 func Test_terminal_tracing_methods(t *testing.T) {
@@ -137,7 +147,7 @@ func Test_terminal_tracing_methods(t *testing.T) {
 			func() {
 				term.trace("Some trace message")
 			},
-			"Some trace message\n",
+			asNeutralTrace("Some trace message"),
 		},
 		{
 			"title method",
@@ -239,6 +249,60 @@ func Test_show_running_mode(t *testing.T) {
 		t.Run(tt.currentMode.Name(), func(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.ShowRunningMode(tt.currentMode)
+			}))
+		})
+	}
+}
+
+func Test_terminal_reporting(t *testing.T) {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+
+	var testFlags = []struct {
+		desc     string
+		method   func()
+		expected string
+	}{
+		{
+			"PostInfo method",
+			func() { report.PostInfo("Some info report") },
+			asCyanTrace("Some info report"),
+		},
+		{
+			"PostWarning method",
+			func() { report.PostWarning("Some warning report") },
+			asYellowTrace("Some warning report"),
+		},
+		{
+			"PostError method",
+			func() { report.PostWarning("Some error report") },
+			asYellowTrace("Some error report"),
+		},
+		{
+			"PostTitle method",
+			func() { report.PostTitle("Some title report") },
+			asCyanTraceWithSeparatorLine("Some title report"),
+		},
+		{
+			"PostText method",
+			func() { report.PostText("Some text report") },
+			asNeutralTrace("Some text report"),
+		},
+		{
+			"PostNotification method",
+			func() { report.PostNotification("Some notification report") },
+			asGreenTrace("Some notification report"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.StartReporting()
+				time.Sleep(1 * time.Millisecond)
+				tt.method()
+				time.Sleep(1 * time.Millisecond)
+				term.StopReporting()
 			}))
 		})
 	}

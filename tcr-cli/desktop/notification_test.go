@@ -22,4 +22,61 @@ SOFTWARE.
 
 package desktop
 
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+type fakeNotifier struct {
+	lastLevel   NotificationLevel
+	lastTitle   string
+	lastMessage string
+}
+
+func (n fakeNotifier) normalLevelNotification(title string, message string) error {
+	n.lastLevel = NormalLevel
+	n.lastTitle = title
+	n.lastMessage = message
+	return nil
+}
+
+func (n fakeNotifier) highLevelNotification(title string, message string) error {
+	n.lastLevel = HighLevel
+	n.lastTitle = title
+	n.lastMessage = message
+	return nil
+}
+
 // TODO Figure out a way to test notifications without GUI elements displayed
+
+func Test_show_notification(t *testing.T) {
+	var testFlags = []struct {
+		desc    string
+		level   NotificationLevel
+		title   string
+		message string
+	}{
+		{
+			desc:    "Normal Level",
+			level:   NormalLevel,
+			title:   "some normal level title",
+			message: "some normal level message",
+		},
+		//{
+		//	desc:    "High Level",
+		//	level:   HighLevel,
+		//	title:   "some high level title",
+		//	message: "some high level message",
+		//},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			fake := fakeNotifier{}
+			notifier = fake
+			ShowNotification(tt.level, tt.title, tt.message)
+			assert.Equal(t, tt.level, fake.lastLevel)
+			assert.Equal(t, tt.title, fake.lastTitle)
+			assert.Equal(t, tt.message, fake.lastMessage)
+		})
+	}
+}

@@ -27,9 +27,21 @@ import (
 	"github.com/murex/tcr/tcr-engine/report"
 )
 
-// NotificationLevel is the level of desktop notification messages. It can be either
-// normal or high
-type NotificationLevel int
+type (
+	// NotificationLevel is the level of desktop notification messages. It can be either
+	// normal or high
+	NotificationLevel int
+
+	// notifierInterface provides the interface to display desktop notifications
+	notifierInterface interface {
+		normalLevelNotification(title string, message string) error
+		highLevelNotification(title string, message string) error
+	}
+
+	// beeepNotifier provides a wrapper around beeep 3rd-party module for desktop notifications
+	beeepNotifier struct {
+	}
+)
 
 // List of possible values for desktop notification level
 const (
@@ -37,18 +49,36 @@ const (
 	HighLevel
 )
 
+var (
+	// The notifier by default is beeep (3rd-party)
+	notifier = newBeeepNotifier()
+)
+
+// newBeeepNotifier creates a beeep notifier instance
+func newBeeepNotifier() notifierInterface {
+	return beeepNotifier{}
+}
+
 // ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
 func ShowNotification(level NotificationLevel, title string, message string) {
 	var err error
 
 	switch level {
 	case NormalLevel:
-		err = beeep.Notify(title, message, "")
+		err = notifier.normalLevelNotification(title, message)
 	case HighLevel:
-		err = beeep.Alert(title, message, "")
+		err = notifier.highLevelNotification(title, message)
 	}
 
 	if err != nil {
 		report.PostError("ShowNotification:", err)
 	}
+}
+
+func (b beeepNotifier) highLevelNotification(title string, message string) error {
+	return beeep.Alert(title, message, "")
+}
+
+func (b beeepNotifier) normalLevelNotification(title string, message string) error {
+	return beeep.Notify(title, message, "")
 }
