@@ -33,6 +33,8 @@ var (
 	snapshotTime = time.Now()
 )
 
+// TCR Event test data builder
+
 func aTcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
 	tcrEvent := &TcrEvent{
 		timestamp:         snapshotTime,
@@ -81,6 +83,8 @@ func todayAt(hour int, min int, sec int) time.Time {
 	)
 }
 
+// -------------------------------------------------------------------------
+
 func Test_compute_score(t *testing.T) {
 	var timeInGreenRatio = .5
 	var savingRate float64 = 60
@@ -89,11 +93,16 @@ func Test_compute_score(t *testing.T) {
 	assert.Equal(t, expected, computeScore(timeInGreenRatio, savingRate, changesPerCommit))
 }
 
+// TODO: Case where changesPerCommit = 0
+
 func Test_compute_duration_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withTimestamp(todayAt(4, 39, 31)))
 	endEvent := aTcrEvent(withTimestamp(todayAt(4, 41, 02)))
 	assert.Equal(t, 1*time.Minute+31*time.Second, computeDuration(*startEvent, *endEvent))
 }
+
+// TODO: Case where timestamps are inverted
+// TODO: Case where a timestamp is not available
 
 func Test_compute_durations_with_no_failing_tests_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withNoFailingTests())
@@ -115,6 +124,8 @@ func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing
 	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
+
+// TODO: case where timestamps are equal (division by zero)
 
 func Test_compute_time_ratios_with_failing_tests_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withFailingTests())
