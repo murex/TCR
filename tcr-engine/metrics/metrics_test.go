@@ -135,6 +135,8 @@ func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
+// TODO: case where timestamps are equal (division by zero)
+
 func Test_compute_time_ratios_with_failing_tests_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withFailingTests())
 	endEvent := aTcrEvent(withDelay(1 * time.Second))
