@@ -107,8 +107,11 @@ func Test_compute_duration_between_2_records(t *testing.T) {
 	assert.Equal(t, 1*time.Minute+31*time.Second, computeDuration(*startEvent, *endEvent))
 }
 
-// TODO: Case where timestamps are inverted
-// TODO: Case where a timestamp is not available
+func Test_compute_duration_between_2_records_with_inverted_timestamp(t *testing.T) {
+	startEvent := aTcrEvent(withDelay(1 * time.Minute))
+	endEvent := aTcrEvent()
+	assert.Equal(t, 1*time.Minute, computeDuration(*startEvent, *endEvent))
+}
 
 func Test_compute_durations_with_no_failing_tests_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withNoFailingTests())
@@ -131,11 +134,23 @@ func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
-// TODO: case where timestamps are equal (division by zero)
-
 func Test_compute_time_ratios_with_failing_tests_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withFailingTests())
 	endEvent := aTcrEvent(withDelay(1 * time.Second))
+	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
+	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
+}
+
+func Test_compute_time_ratios_with_no_failing_tests_between_2_records_with_same_timestamp(t *testing.T) {
+	startEvent := aTcrEvent(withNoFailingTests())
+	endEvent := aTcrEvent()
+	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
+	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
+}
+
+func Test_compute_time_ratios_with_failing_tests_between_2_records_with_same_timestamp(t *testing.T) {
+	startEvent := aTcrEvent(withFailingTests())
+	endEvent := aTcrEvent()
 	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
 }

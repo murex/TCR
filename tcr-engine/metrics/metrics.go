@@ -45,6 +45,9 @@ func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit
 }
 
 func computeDuration(from TcrEvent, to TcrEvent) time.Duration {
+	if from.timestamp.After(to.timestamp) {
+		return computeDuration(to, from)
+	}
 	return to.timestamp.Sub(from.timestamp)
 }
 
@@ -60,9 +63,12 @@ func computeDurationInRed(from TcrEvent, to TcrEvent) time.Duration {
 }
 
 func computeTimeInGreenRatio(from TcrEvent, to TcrEvent) float64 {
-	return float64(computeDurationInGreen(from, to) / computeDuration(from, to))
+	if from.testPassed {
+		return 1
+	}
+	return 0
 }
 
 func computeTimeInRedRatio(from TcrEvent, to TcrEvent) float64 {
-	return float64(computeDurationInRed(from, to) / computeDuration(from, to))
+	return 1 - computeTimeInGreenRatio(from, to)
 }
