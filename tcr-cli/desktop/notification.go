@@ -24,7 +24,6 @@ package desktop
 
 import (
 	"github.com/gen2brain/beeep"
-	"github.com/murex/tcr/tcr-engine/report"
 )
 
 type (
@@ -39,8 +38,7 @@ type (
 	}
 
 	// beeepNotifier provides a wrapper around beeep 3rd-party module for desktop notifications
-	beeepNotifier struct {
-	}
+	beeepNotifier struct{}
 )
 
 // List of possible values for desktop notification level
@@ -50,7 +48,7 @@ const (
 )
 
 var (
-	// The notifier by default is beeep (3rd-party)
+	// The notifier used by default is beeep (3rd-party)
 	notifier = newBeeepNotifier()
 )
 
@@ -60,19 +58,14 @@ func newBeeepNotifier() notifierInterface {
 }
 
 // ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
-func ShowNotification(level NotificationLevel, title string, message string) {
-	var err error
-
+func ShowNotification(level NotificationLevel, title string, message string) (err error) {
 	switch level {
 	case NormalLevel:
 		err = notifier.normalLevelNotification(title, message)
 	case HighLevel:
 		err = notifier.highLevelNotification(title, message)
 	}
-
-	if err != nil {
-		report.PostError("ShowNotification:", err)
-	}
+	return
 }
 
 func (b beeepNotifier) highLevelNotification(title string, message string) error {

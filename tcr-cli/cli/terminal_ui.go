@@ -109,7 +109,10 @@ func (term *TerminalUI) error(a ...interface{}) {
 
 func (term *TerminalUI) notification(a ...interface{}) {
 	printInGreen(a...)
-	desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+	err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+	if err != nil {
+		term.warning("Failed to show desktop notification: ", err.Error())
+	}
 }
 
 func (term *TerminalUI) trace(a ...interface{}) {

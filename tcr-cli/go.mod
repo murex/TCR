@@ -10,6 +10,7 @@ require (
 	github.com/kami-zh/go-capturer v0.0.0-20171211120116-e492ea43421d
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9
