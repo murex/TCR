@@ -93,7 +93,13 @@ func Test_compute_score(t *testing.T) {
 	assert.Equal(t, expected, computeScore(timeInGreenRatio, savingRate, changesPerCommit))
 }
 
-// TODO: Case where changesPerCommit = 0
+func Test_compute_score_with_0_change_per_commit(t *testing.T) {
+	var timeInGreenRatio = .5
+	var savingRate float64 = 60
+	var changesPerCommit float64 = 0
+	var expected Score = 0
+	assert.Equal(t, expected, computeScore(timeInGreenRatio, savingRate, changesPerCommit))
+}
 
 func Test_compute_duration_between_2_records(t *testing.T) {
 	startEvent := aTcrEvent(withTimestamp(todayAt(4, 39, 31)))

@@ -1,10 +1,10 @@
 build:
-  - os: [darwin, linux, windows]
-    arch: ["386", amd64, arm64]
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
     command: go
-    arguments: [build, ./...]
+    arguments: [ build, ./... ]
 test:
-  - os: [darwin, linux, windows]
-    arch: ["386", amd64, arm64]
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
     command: go
-    arguments: [test, -v, ./...]
+    arguments: [ test, ./... ]

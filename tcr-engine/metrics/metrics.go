@@ -38,6 +38,9 @@ type TcrEvent struct {
 }
 
 func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit float64) Score {
+	if changesPerCommit == 0 {
+		return 0
+	}
 	return Score(timeInGreenRatio * savingRate / changesPerCommit)
 }
 

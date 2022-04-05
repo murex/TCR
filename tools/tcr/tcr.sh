@@ -24,27 +24,12 @@ set -u
 
 command_args=$*
 
-up_find() {
-  ORIG_DIR="$PWD"
-  while [[ "$PWD" != / ]] ; do
-    if find "$PWD"/ -maxdepth 1 -type f -name "$@" | grep -q "$@"; then
-      echo "$PWD" && builtin cd "$ORIG_DIR" || exit
-      return 0
-    else
-      builtin cd .. || exit
-    fi
-  done
-  builtin cd "$ORIG_DIR" || exit
-  return 1
-}
-
 package_dir="$PWD"
-module_dir="$(cd "${package_dir}" && up_find go.mod)"
 repo_root_dir="$(git rev-parse --show-toplevel)"
 tools_dir="$(cd "${repo_root_dir}/tools" && pwd)"
 
 TCR_BASE_DIR="${package_dir}" ; export TCR_BASE_DIR
-TCR_WORK_DIR="${module_dir}" ; export TCR_WORK_DIR
+TCR_WORK_DIR="${package_dir}" ; export TCR_WORK_DIR
 TCR_CONFIG_DIR="${tools_dir}" ; export TCR_CONFIG_DIR
 
 BASE_URL="https://github.com/murex/TCR"
