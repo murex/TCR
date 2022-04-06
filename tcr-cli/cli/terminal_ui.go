@@ -188,7 +188,7 @@ func (term *TerminalUI) startAs(r role.Role) {
 		}
 		switch keyboardInput[0] {
 		case '?':
-			term.listRoleMenuOptions("Available Options:")
+			term.listRoleMenuOptions(r, "Available Options:")
 		case 'q', 'Q', escapeKey:
 			term.warning("OK, I heard you")
 			stopRequest = true
@@ -323,9 +323,8 @@ func (term *TerminalUI) listMainMenuOptions(title string) {
 	term.printMenuOption('?', "List available options")
 }
 
-func (term *TerminalUI) listRoleMenuOptions(title string) {
+func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
 	term.title(title)
-	r := term.tcr.GetCurrentRole()
 	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}

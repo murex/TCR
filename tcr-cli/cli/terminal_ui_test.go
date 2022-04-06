@@ -87,6 +87,20 @@ func fakeStdin(t *testing.T, input []byte) *os.File {
 	return r
 }
 
+func terminalSetup() TerminalUI {
+	term := TerminalUI{}
+	setLinePrefix("TCR")
+	report.Reset()
+	term.MuteDesktopNotifications(true)
+	term.StartReporting()
+	return term
+}
+
+func terminalTeardown(term TerminalUI) {
+	term.StopReporting()
+	term.MuteDesktopNotifications(false)
+}
+
 func asCyanTrace(str string) string {
 	return "\x1b[36mTCR\x1b[0m \x1b[36m" + str + "\x1b[0m\n"
 }
@@ -113,8 +127,7 @@ func asNeutralTrace(str string) string {
 }
 
 func Test_terminal_tracing_methods(t *testing.T) {
-	term := TerminalUI{}
-	setLinePrefix("TCR")
+	var term TerminalUI
 
 	var testFlags = []struct {
 		desc     string
@@ -160,15 +173,14 @@ func Test_terminal_tracing_methods(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
+			term = terminalSetup()
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
+			terminalTeardown(term)
 		})
 	}
 }
 
 func Test_notify_role_starting(t *testing.T) {
-	term := TerminalUI{}
-	setLinePrefix("TCR")
-
 	var testFlags = []struct {
 		currentRole role.Role
 		expected    string
@@ -185,17 +197,16 @@ func Test_notify_role_starting(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
+			term := terminalSetup()
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleStarting(tt.currentRole)
 			}))
+			terminalTeardown(term)
 		})
 	}
 }
 
 func Test_notify_role_ending(t *testing.T) {
-	term := TerminalUI{}
-	setLinePrefix("TCR")
-
 	var testFlags = []struct {
 		currentRole role.Role
 		expected    string
@@ -212,17 +223,81 @@ func Test_notify_role_ending(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
+			term := terminalSetup()
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleEnding(tt.currentRole)
 			}))
+			terminalTeardown(term)
+		})
+	}
+}
+
+func Test_list_role_menu_options(t *testing.T) {
+	title := "some title"
+	var testFlags = []struct {
+		currentRole role.Role
+		expected    string
+	}{
+		{
+			currentRole: role.Driver{},
+			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tT -> Timer status") +
+				asCyanTrace("\tQ -> Quit Driver role") +
+				asCyanTrace("\t? -> List available options"),
+		},
+		{
+			currentRole: role.Navigator{},
+			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tQ -> Quit Navigator role") +
+				asCyanTrace("\t? -> List available options"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.currentRole.Name(), func(t *testing.T) {
+			term := terminalSetup()
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.listRoleMenuOptions(tt.currentRole, title)
+			}))
+			terminalTeardown(term)
+		})
+	}
+}
+
+func Test_simple_message_methods(t *testing.T) {
+	var term TerminalUI
+	var testFlags = []struct {
+		desc     string
+		method   func()
+		expected string
+	}{
+		{
+			desc:     "keyNotRecognizedMessage",
+			method:   term.keyNotRecognizedMessage,
+			expected: asYellowTrace("Key not recognized. Press ? for available options"),
+		},
+		{
+			desc:   "whatShallWeDo",
+			method: term.whatShallWeDo,
+			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
+				asCyanTrace("\tD -> Driver role") +
+				asCyanTrace("\tN -> Navigator role") +
+				asCyanTrace("\tP -> Turn on/off git auto-push") +
+				asCyanTrace("\tQ -> Quit") +
+				asCyanTrace("\t? -> List available options"),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			term = terminalSetup()
+			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
+			terminalTeardown(term)
 		})
 	}
 }
 
 func Test_show_running_mode(t *testing.T) {
-	term := TerminalUI{}
-	setLinePrefix("TCR")
-
 	var testFlags = []struct {
 		currentMode runmode.RunMode
 		expected    string
@@ -247,17 +322,16 @@ func Test_show_running_mode(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentMode.Name(), func(t *testing.T) {
+			term := terminalSetup()
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.ShowRunningMode(tt.currentMode)
 			}))
+			terminalTeardown(term)
 		})
 	}
 }
 
 func Test_terminal_reporting(t *testing.T) {
-	term := TerminalUI{}
-	setLinePrefix("TCR")
-
 	var testFlags = []struct {
 		desc     string
 		method   func()
@@ -300,13 +374,10 @@ func Test_terminal_reporting(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term.MuteDesktopNotifications(true)
-				term.StartReporting()
+				term := terminalSetup()
 				time.Sleep(1 * time.Millisecond)
 				tt.method()
-				time.Sleep(1 * time.Millisecond)
-				term.StopReporting()
-				term.MuteDesktopNotifications(false)
+				terminalTeardown(term)
 			}))
 		})
 	}
