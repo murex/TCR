@@ -58,25 +58,30 @@ var (
 
 // GUI is the user interface implementation when using the TCR with its graphical user interface
 type GUI struct {
-	term          ui.UserInterface
-	reporting     chan bool
-	app           fyne.App
-	win           fyne.Window
-	actionBar     ActionBar
-	traceArea     *TraceArea
-	sessionPanel  *SessionPanel
-	rbConfirm     DeferredConfirmDialog
-	baseDirDialog BaseDirSelectionDialog
-	topLevel      *fyne.Container
-	layout        fyne.Layout
-	runMode       runmode.RunMode
-	tcr           engine.TcrInterface
-	params        engine.Params
+	term              ui.UserInterface
+	reporting         chan bool
+	app               fyne.App
+	win               fyne.Window
+	actionBar         ActionBar
+	traceArea         *TraceArea
+	sessionPanel      *SessionPanel
+	rbConfirm         DeferredConfirmDialog
+	baseDirDialog     BaseDirSelectionDialog
+	topLevel          *fyne.Container
+	layout            fyne.Layout
+	runMode           runmode.RunMode
+	tcr               engine.TcrInterface
+	params            engine.Params
+	muteNotifications bool
+}
+
+func (gui *GUI) MuteDesktopNotifications(muted bool) {
+	gui.muteNotifications = muted
 }
 
 // New creates a new instance of graphical user interface
 func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
-	var gui = GUI{params: p, tcr: tcr}
+	var gui = GUI{params: p, tcr: tcr, muteNotifications: false}
 	// Until the GUI is able to report, we rely on the terminal to report information
 	gui.term = cli.New(p, tcr)
 	report.PostInfo("Opening ", settings.ApplicationName, " GUI")
@@ -173,7 +178,9 @@ func (gui *GUI) error(a ...interface{}) {
 
 func (gui *GUI) notification(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
-	gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
+	if !gui.muteNotifications {
+		gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
+	}
 }
 
 func (gui *GUI) trace(a ...interface{}) {

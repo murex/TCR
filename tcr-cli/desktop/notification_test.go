@@ -55,6 +55,7 @@ func Test_show_notification(t *testing.T) {
 		level       NotificationLevel
 		title       string
 		message     string
+		muted       bool
 		returnError error
 	}{
 		{
@@ -62,6 +63,7 @@ func Test_show_notification(t *testing.T) {
 			level:       NormalLevel,
 			title:       "some normal level title",
 			message:     "some normal level message",
+			muted:       false,
 			returnError: nil,
 		},
 		{
@@ -69,6 +71,7 @@ func Test_show_notification(t *testing.T) {
 			level:       HighLevel,
 			title:       "some high level title",
 			message:     "some high level message",
+			muted:       false,
 			returnError: nil,
 		},
 		{
@@ -76,18 +79,57 @@ func Test_show_notification(t *testing.T) {
 			level:       NormalLevel,
 			title:       "some title",
 			message:     "some message",
+			muted:       false,
 			returnError: errors.New("Some Error"),
+		},
+		{
+			desc:        "When Muted",
+			level:       HighLevel,
+			title:       "some title",
+			message:     "some message",
+			muted:       true,
+			returnError: nil,
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
+			savedNotifier := notifier
+			savedMute := mutedNotifications
 			fake := fakeNotifier{returnError: tt.returnError}
 			notifier = &fake
+			var expectedTitle, expectedMessage string
+			var expectedLevel NotificationLevel
+			var expectedError error
+			if tt.muted {
+				MuteNotifications()
+				expectedLevel = 0
+				expectedTitle = ""
+				expectedMessage = ""
+				expectedError = nil
+			} else {
+				UnmuteNotifications()
+				expectedLevel = tt.level
+				expectedTitle = tt.title
+				expectedMessage = tt.message
+				expectedError = tt.returnError
+			}
 			err := ShowNotification(tt.level, tt.title, tt.message)
-			assert.Equal(t, tt.level, fake.lastLevel)
-			assert.Equal(t, tt.title, fake.lastTitle)
-			assert.Equal(t, tt.message, fake.lastMessage)
-			assert.Equal(t, tt.returnError, err)
+			assert.Equal(t, expectedLevel, fake.lastLevel)
+			assert.Equal(t, expectedTitle, fake.lastTitle)
+			assert.Equal(t, expectedMessage, fake.lastMessage)
+			assert.Equal(t, expectedError, err)
+			notifier = savedNotifier
+			mutedNotifications = savedMute
 		})
 	}
+}
+
+func Test_mute_notifications(t *testing.T) {
+	MuteNotifications()
+	assert.True(t, IsMuted())
+}
+
+func Test_unmute_notifications(t *testing.T) {
+	UnmuteNotifications()
+	assert.False(t, IsMuted())
 }

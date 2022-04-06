@@ -49,16 +49,15 @@ const (
 
 var (
 	// The notifier used by default is beeep (3rd-party)
-	notifier = newBeeepNotifier()
+	notifier           = newBeeepNotifier()
+	mutedNotifications = false
 )
-
-// newBeeepNotifier creates a beeep notifier instance
-func newBeeepNotifier() notifierInterface {
-	return beeepNotifier{}
-}
 
 // ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
 func ShowNotification(level NotificationLevel, title string, message string) (err error) {
+	if IsMuted() {
+		return
+	}
 	switch level {
 	case NormalLevel:
 		err = notifier.normalLevelNotification(title, message)
@@ -66,6 +65,26 @@ func ShowNotification(level NotificationLevel, title string, message string) (er
 		err = notifier.highLevelNotification(title, message)
 	}
 	return
+}
+
+// IsMuted indicates if desktop notifications are muted
+func IsMuted() bool {
+	return mutedNotifications
+}
+
+// MuteNotifications mutes desktop notifications
+func MuteNotifications() {
+	mutedNotifications = true
+}
+
+// UnmuteNotifications un-mutes desktop notifications
+func UnmuteNotifications() {
+	mutedNotifications = false
+}
+
+// newBeeepNotifier creates a beeep notifier instance
+func newBeeepNotifier() notifierInterface {
+	return beeepNotifier{}
 }
 
 func (b beeepNotifier) highLevelNotification(title string, message string) error {

@@ -38,4 +38,5 @@ type UserInterface interface {
 	Confirm(message string, def bool) bool
 	StartReporting()
 	StopReporting()
+	MuteDesktopNotifications(muted bool)
 }

@@ -290,7 +290,9 @@ func Test_terminal_reporting(t *testing.T) {
 		},
 		{
 			"PostNotification method",
-			func() { report.PostNotification("Some notification report") },
+			func() {
+				report.PostNotification("Some notification report")
+			},
 			asGreenTrace("Some notification report"),
 		},
 	}
@@ -298,11 +300,13 @@ func Test_terminal_reporting(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
+				term.MuteDesktopNotifications(true)
 				term.StartReporting()
 				time.Sleep(1 * time.Millisecond)
 				tt.method()
 				time.Sleep(1 * time.Millisecond)
 				term.StopReporting()
+				term.MuteDesktopNotifications(false)
 			}))
 		})
 	}

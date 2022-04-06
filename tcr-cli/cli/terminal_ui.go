@@ -51,6 +51,7 @@ const (
 func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr}
+	term.MuteDesktopNotifications(false)
 	term.StartReporting()
 	return &term
 }
@@ -73,6 +74,14 @@ func (term *TerminalUI) StartReporting() {
 			term.notification(msg.Text)
 		}
 	})
+}
+
+func (term *TerminalUI) MuteDesktopNotifications(muted bool) {
+	if muted {
+		desktop.MuteNotifications()
+	} else {
+		desktop.UnmuteNotifications()
+	}
 }
 
 // StopReporting tells the terminal to stop reporting information

@@ -64,3 +64,6 @@ func (ui FakeUI) StartReporting() {}
 
 // StopReporting does nothing in FakeUI
 func (ui FakeUI) StopReporting() {}
+
+// MuteDesktopNotifications does nothing in FakeUI
+func (ui FakeUI) MuteDesktopNotifications(_ bool) {}
