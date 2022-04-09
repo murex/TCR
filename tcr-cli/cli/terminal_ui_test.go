@@ -23,12 +23,12 @@ SOFTWARE.
 package cli
 
 import (
-	"github.com/kami-zh/go-capturer"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/stretchr/testify/assert"
+	"github.com/zenizh/go-capturer"
 	"os"
 	"testing"
 	"time"
