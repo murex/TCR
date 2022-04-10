@@ -34,30 +34,25 @@ import (
 	"time"
 )
 
-func Test_confirm_with_default_answer_to_yes(t *testing.T) {
-	assertConfirmBehaviour(t, []byte{enterKey}, true, true)
-}
-
-func Test_confirm_with_default_answer_to_no(t *testing.T) {
-	assertConfirmBehaviour(t, []byte{enterKey}, false, false)
-}
-
-func Test_confirm_with_a_yes_answer(t *testing.T) {
-	assertConfirmBehaviour(t, []byte{'y'}, false, true)
-	assertConfirmBehaviour(t, []byte{'Y'}, false, true)
-}
-
-func Test_confirm_with_a_no_answer(t *testing.T) {
-	assertConfirmBehaviour(t, []byte{'n'}, true, false)
-	assertConfirmBehaviour(t, []byte{'N'}, true, false)
-}
-
-func Test_confirm_question_with_default_answer_to_no(t *testing.T) {
-	assert.Equal(t, "[y/N]", yesOrNoAdvice(false))
-}
-
-func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
-	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
+func Test_confirm(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		input        []byte
+		defaultValue bool
+		expected     bool
+	}{
+		{"Enter key with Default Yes", []byte{enterKey}, true, true},
+		{"Enter key with Default No", []byte{enterKey}, false, false},
+		{"Y key", []byte{'Y'}, false, true},
+		{"y key", []byte{'y'}, false, true},
+		{"N key", []byte{'N'}, true, false},
+		{"n key", []byte{'n'}, true, false},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assertConfirmBehaviour(t, tt.input, tt.defaultValue, tt.expected)
+		})
+	}
 }
 
 func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expected bool) {
@@ -85,6 +80,14 @@ func fakeStdin(t *testing.T, input []byte) *os.File {
 	}
 	_ = w.Close()
 	return r
+}
+
+func Test_confirm_question_with_default_answer_to_no(t *testing.T) {
+	assert.Equal(t, "[y/N]", yesOrNoAdvice(false))
+}
+
+func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
+	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
 }
 
 func terminalSetup() TerminalUI {

@@ -76,6 +76,8 @@ func (term *TerminalUI) StartReporting() {
 	})
 }
 
+// MuteDesktopNotifications allows preventing desktop notification popups from being displayed.
+// Used for test automation at the moment. Could be turned into a feature later if there is need for it.
 func (term *TerminalUI) MuteDesktopNotifications(muted bool) {
 	if muted {
 		desktop.MuteNotifications()
