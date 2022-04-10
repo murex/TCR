@@ -34,7 +34,7 @@ import (
 	"time"
 )
 
-func Test_confirm(t *testing.T) {
+func Test_confirm_answer(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		input        []byte
@@ -384,4 +384,18 @@ func Test_terminal_reporting(t *testing.T) {
 			}))
 		})
 	}
+}
+
+func Test_show_session_info(t *testing.T) {
+	expected := asCyanTraceWithSeparatorLine("Base Directory: fake") +
+		asCyanTrace("Work Directory: fake") +
+		asCyanTrace("Language=fake, Toolchain=fake") +
+		asCyanTrace("Running on git branch \"fake\" with auto-push disabled")
+
+	assert.Equal(t, expected, capturer.CaptureStdout(func() {
+		term := terminalSetup()
+		term.tcr = engine.NewFakeTcrEngine()
+		term.ShowSessionInfo()
+		terminalTeardown(term)
+	}))
 }
