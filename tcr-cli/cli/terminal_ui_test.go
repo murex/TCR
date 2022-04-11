@@ -66,7 +66,9 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	os.Stdout = os.NewFile(0, os.DevNull)
 
 	term := New(engine.Params{}, engine.NewTcrEngine())
+	sttyCommandDisabled = true
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
+	sttyCommandDisabled = false
 }
 
 func fakeStdin(t *testing.T, input []byte) *os.File {
@@ -93,6 +95,7 @@ func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
 func terminalSetup() TerminalUI {
 	term := TerminalUI{}
 	setLinePrefix("TCR")
+	sttyCommandDisabled = true
 	report.Reset()
 	term.MuteDesktopNotifications(true)
 	term.StartReporting()
@@ -101,6 +104,7 @@ func terminalSetup() TerminalUI {
 
 func terminalTeardown(term TerminalUI) {
 	term.StopReporting()
+	sttyCommandDisabled = false
 	term.MuteDesktopNotifications(false)
 }
 
@@ -398,4 +402,59 @@ func Test_show_session_info(t *testing.T) {
 		term.ShowSessionInfo()
 		terminalTeardown(term)
 	}))
+}
+
+func Test_main_menu(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		input    []byte
+		expected []engine.TcrCall
+	}{
+		{"? key", []byte{'?'},
+			[]engine.TcrCall{},
+		},
+		{"q key", []byte{'q'},
+			[]engine.TcrCall{},
+		},
+		{"Q key", []byte{'Q'},
+			[]engine.TcrCall{},
+		},
+		{"p key", []byte{'p'},
+			[]engine.TcrCall{
+				engine.TcrCallToggleAutoPush,
+				engine.TcrCallGetSessionInfo,
+			},
+		},
+		{"P key", []byte{'P'},
+			[]engine.TcrCall{
+				engine.TcrCallToggleAutoPush,
+				engine.TcrCallGetSessionInfo,
+			},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assertMainMenuActions(t, tt.input, tt.expected)
+		})
+	}
+}
+
+func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TcrCall) {
+	stdin := os.Stdin
+	//stdout := os.Stdout
+	// Restore stdin and stdout right after the test.
+	//defer func() { os.Stdin = stdin; os.Stdout = stdout }()
+	defer func() { os.Stdin = stdin }()
+	// We fake stdin so that we can simulate a key press
+	// We always add a 'q' at the end to make sure we get out of the infinite loop
+	os.Stdin = fakeStdin(t, append(input, 'q'))
+	// Displayed info on stdout is not used in the test
+	//os.Stdout = os.NewFile(0, os.DevNull)
+
+	term := terminalSetup()
+	fakeEngine := engine.NewFakeTcrEngine()
+	term.tcr = fakeEngine
+	term.mainMenu()
+	assert.Equal(t, append(expected, engine.TcrCallQuit), fakeEngine.GetCallHistory())
+	terminalTeardown(term)
 }

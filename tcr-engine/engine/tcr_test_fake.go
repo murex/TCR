@@ -24,25 +24,62 @@ SOFTWARE.
 
 package engine
 
+// TcrCall is used to track calls to TCR operations
+type TcrCall string
+
+const (
+	TcrCallQuit           TcrCall = "quit"
+	TcrCallToggleAutoPush TcrCall = "toggle-auto-push"
+	TcrCallGetSessionInfo TcrCall = "get-session-info"
+)
+
 // FakeTcrEngine is a TCR engine fake. Used mainly for testing peripheral packages
 // such as cli.
 type FakeTcrEngine struct {
 	TcrEngine
+	callRecord []TcrCall
+	returnCode int
+	info       *SessionInfo
 }
 
 // NewFakeTcrEngine creates a FakeToolchain instance
 func NewFakeTcrEngine() *FakeTcrEngine {
-	return &FakeTcrEngine{}
+	return &FakeTcrEngine{
+		returnCode: 0,
+		info: &SessionInfo{
+			BaseDir:       "fake",
+			WorkDir:       "fake",
+			LanguageName:  "fake",
+			ToolchainName: "fake",
+			AutoPush:      false,
+			BranchName:    "fake",
+		},
+	}
+}
+
+func (fake *FakeTcrEngine) recordCall(call TcrCall) {
+	fake.callRecord = append(fake.callRecord, call)
+}
+
+func (fake *FakeTcrEngine) GetCallHistory() []TcrCall {
+	return fake.callRecord
 }
 
 // GetSessionInfo returns a SessionInfo struct filled with "fake" values
 func (fake *FakeTcrEngine) GetSessionInfo() SessionInfo {
-	return SessionInfo{
-		BaseDir:       "fake",
-		WorkDir:       "fake",
-		LanguageName:  "fake",
-		ToolchainName: "fake",
-		AutoPush:      false,
-		BranchName:    "fake",
-	}
+	fake.recordCall(TcrCallGetSessionInfo)
+	return *fake.info
+}
+
+// Quit is the exit point for TCR application. The FakeTcrEngine implementation
+// overrides the default behaviour in order to bypass the call to os.Exit().
+// Instead, the return code is stored in returnCode attribute
+func (fake *FakeTcrEngine) Quit() {
+	fake.recordCall(TcrCallQuit)
+	fake.returnCode = GetReturnCode()
+}
+
+// ToggleAutoPush toggles git auto-push state
+func (fake *FakeTcrEngine) ToggleAutoPush() {
+	fake.recordCall(TcrCallToggleAutoPush)
 }

@@ -156,6 +156,11 @@ func (term *TerminalUI) mainMenu() {
 		case 'q', 'Q':
 			Restore()
 			term.tcr.Quit()
+			// The return statement below is never reached when running the application
+			// due to the call to os.Exit() done in tcr.Quit(). We still want to keep
+			// it here for running the tests, so that we're able to get out of the infinite loop
+			// even when tcr.Quit() is faked.
+			return
 		case enterKey:
 			// We ignore enter key press
 			continue
