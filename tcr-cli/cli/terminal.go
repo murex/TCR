@@ -32,7 +32,19 @@ import (
 	"strings"
 )
 
+// sttyCommandDisabled allows to turn on/off the underlying call to stty command.
+// It's false by default (regular usage). Most test methods should turn it on
+// as a command call is generally useless when running tests, and time consuming.
+var sttyCommandDisabled bool
+
+func init() {
+	sttyCommandDisabled = false
+}
+
 func readStty(state *bytes.Buffer) (err error) {
+	if sttyCommandDisabled {
+		return
+	}
 	cmd := exec.Command("stty", "-g")
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = state
@@ -40,6 +52,9 @@ func readStty(state *bytes.Buffer) (err error) {
 }
 
 func setStty(state *bytes.Buffer) (err error) {
+	if sttyCommandDisabled {
+		return
+	}
 	cmd := exec.Command("stty", state.String()) //nolint:gosec
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -47,7 +62,7 @@ func setStty(state *bytes.Buffer) (err error) {
 	return cmd.Run()
 }
 
-//SetRaw changes the terminal state to "raw" mode
+// SetRaw changes the terminal state to "raw" mode
 func SetRaw() bytes.Buffer {
 	var initialState bytes.Buffer
 	err := readStty(&initialState)
