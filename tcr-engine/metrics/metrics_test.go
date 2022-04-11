@@ -155,3 +155,6 @@ func Test_compute_time_ratios_with_failing_tests_between_2_records_with_same_tim
 	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
 }
+
+// TODO saving rate per hour
+// TODO average size of change per commit
