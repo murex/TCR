@@ -30,11 +30,11 @@ type Score float64
 
 type TcrEvent struct {
 	timestamp         time.Time
-	modifiedSrcCount  int
-	modifiedTestCount int
-	addedTestCount    int
+	modifiedSrcLines  int
+	modifiedTestLines int
+	addedTestCases    int
 	buildPassed       bool
-	testPassed        bool
+	testsPassed       bool
 }
 
 func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit float64) Score {
@@ -52,7 +52,7 @@ func computeDuration(from TcrEvent, to TcrEvent) time.Duration {
 }
 
 func computeDurationInGreen(from TcrEvent, to TcrEvent) time.Duration {
-	if from.testPassed {
+	if from.testsPassed {
 		return computeDuration(from, to)
 	}
 	return 0
@@ -63,7 +63,7 @@ func computeDurationInRed(from TcrEvent, to TcrEvent) time.Duration {
 }
 
 func computeTimeInGreenRatio(from TcrEvent, to TcrEvent) float64 {
-	if from.testPassed {
+	if from.testsPassed {
 		return 1
 	}
 	return 0

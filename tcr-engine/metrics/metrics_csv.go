@@ -25,23 +25,27 @@ package metrics
 import (
 	"encoding/csv"
 	"io"
-	"log"
+	"strconv"
 	"time"
 )
 
 const timeLayoutFormat = "2006-01-02 15:04:05"
 
-func appendEvent(event *TcrEvent, out io.Writer) {
+func appendEvent(event TcrEvent, out io.Writer) (err error) {
 	w := csv.NewWriter(out)
-
-	if err := w.Write([]string{event.timestamp.In(time.UTC).Format(timeLayoutFormat)}); err != nil {
-		log.Fatalln("error writing record to csv:", err)
+	if err = w.Write(
+		[]string{
+			event.timestamp.In(time.UTC).Format(timeLayoutFormat),
+			strconv.Itoa(event.modifiedSrcLines),
+			strconv.Itoa(event.modifiedTestLines),
+			strconv.Itoa(event.addedTestCases),
+			strconv.FormatBool(event.buildPassed),
+			strconv.FormatBool(event.testsPassed),
+		}); err != nil {
+		return
 	}
-
-	// Write any buffered data to the underlying writer (standard output).
+	// Write any buffered data to the underlying writer.
 	w.Flush()
-
-	if err := w.Error(); err != nil {
-		log.Fatal(err)
-	}
+	err = w.Error()
+	return
 }

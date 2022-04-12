@@ -25,25 +25,85 @@ package metrics
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 	"time"
 )
 
-func Test_write_one_timestamp_to_csv(t *testing.T) {
-	event := aTcrEvent(
-		withTimestamp(
-			time.Date(2022, 4, 11, 15, 52, 3, 0, time.UTC)))
-	var b bytes.Buffer
-	appendEvent(event, &b)
-	assert.Equal(t, "2022-04-11 15:52:03\n", b.String())
-}
+func Test_append_tcr_event_to_csv_writer(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		position int
+		event    TcrEvent
+		expected string
+	}{
+		{
+			"timestamp in UTC",
+			0,
+			*aTcrEvent(withTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC))),
+			"2022-04-11 15:52:03",
+		},
+		{
+			"timestamp not in UTC",
+			0,
+			*aTcrEvent(withTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.FixedZone("UTC-7", -7*60*60)))),
+			"2022-04-11 22:52:03",
+		},
+		{
+			"modified source lines",
+			1,
+			*aTcrEvent(withModifiedSrcLines(2)),
+			"2",
+		},
+		{
+			"modified test lines",
+			2,
+			*aTcrEvent(withModifiedTestLines(25)),
+			"25",
+		},
+		{
+			"added test cases",
+			3,
+			*aTcrEvent(withAddedTestCases(3)),
+			"3",
+		},
+		{
+			"build passing",
+			4,
+			*aTcrEvent(withPassingBuild()),
+			"true",
+		},
+		{
+			"build failing",
+			4,
+			*aTcrEvent(withFailingBuild()),
+			"false",
+		},
+		{
+			"tests passing",
+			5,
+			*aTcrEvent(withPassingTests()),
+			"true",
+		},
+		{
+			"tests failing",
+			5,
+			*aTcrEvent(withFailingTests()),
+			"false",
+		},
+	}
 
-func Test_the_time_stamp_should_be_saved_as_UTC_time(t *testing.T) {
-	event := aTcrEvent(
-		withTimestamp(
-			time.Date(2022, 4, 11, 15, 52, 3, 0,
-				time.FixedZone("UTC-7", -7*60*60))))
-	var b bytes.Buffer
-	appendEvent(event, &b)
-	assert.Equal(t, "2022-04-11 22:52:03\n", b.String())
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var b bytes.Buffer
+			_ = appendEvent(tt.event, &b)
+			str := strings.TrimSuffix(b.String(), "\n")
+			fields := strings.Split(str, ",")
+			assert.Equal(t, tt.expected, fields[tt.position])
+		})
+	}
 }
