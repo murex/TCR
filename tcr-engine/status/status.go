@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package status
 
 // Status is used for describing the current TCR engine status
 type Status struct {
@@ -29,12 +29,12 @@ type Status struct {
 
 // List of TCR engine possible status values
 var (
-	StatusOk          = NewStatus(0) // Build and Test Passed and changes were committed with no error
-	StatusBuildFailed = NewStatus(1) // Build failed
-	StatusTestFailed  = NewStatus(2) // Build passed, one or more test failed, and changes were reverted
-	StatusConfigError = NewStatus(3) // Error in configuration or parameters
-	StatusGitError    = NewStatus(4) // Git error
-	StatusOtherError  = NewStatus(5) // Any other error
+	Ok          = NewStatus(0) // Build and Test Passed and changes were committed with no error
+	BuildFailed = NewStatus(1) // Build failed
+	TestFailed  = NewStatus(2) // Build passed, one or more test failed, and changes were reverted
+	ConfigError = NewStatus(3) // Error in configuration or parameters
+	GitError    = NewStatus(4) // Git error
+	OtherError  = NewStatus(5) // Any other error
 )
 
 var currentState Status
@@ -49,11 +49,12 @@ func RecordState(state Status) {
 	currentState = state
 }
 
-func getCurrentState() Status {
+// GetCurrentState returns the current application state
+func GetCurrentState() Status {
 	return currentState
 }
 
 // GetReturnCode provides the application's return code
 func GetReturnCode() int {
-	return getCurrentState().rc
+	return GetCurrentState().rc
 }

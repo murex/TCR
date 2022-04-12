@@ -20,22 +20,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package status
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
+func Test_return_code_when_no_error(t *testing.T) {
+	RecordState(Ok)
+	assert.Equal(t, 0, GetReturnCode())
+}
+
+func Test_return_code_on_build_failure(t *testing.T) {
+	RecordState(BuildFailed)
+	assert.Equal(t, 1, GetReturnCode())
+}
+
+func Test_return_code_on_test_failure(t *testing.T) {
+	RecordState(TestFailed)
+	assert.Equal(t, 2, GetReturnCode())
+}
+
+func Test_return_code_on_config_error(t *testing.T) {
+	RecordState(ConfigError)
+	assert.Equal(t, 3, GetReturnCode())
+}
+
+func Test_return_code_on_git_error(t *testing.T) {
+	RecordState(GitError)
+	assert.Equal(t, 4, GetReturnCode())
+}
+
+func Test_return_code_on_miscellaneous_error(t *testing.T) {
+	RecordState(OtherError)
+	assert.Equal(t, 5, GetReturnCode())
 }

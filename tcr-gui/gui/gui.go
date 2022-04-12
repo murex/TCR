@@ -30,6 +30,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"github.com/murex/tcr/tcr-cli/cli"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
@@ -71,7 +72,7 @@ type GUI struct {
 	layout            fyne.Layout
 	runMode           runmode.RunMode
 	tcr               engine.TcrInterface
-	params            engine.Params
+	params            params.Params
 	muteNotifications bool
 }
 
@@ -80,7 +81,7 @@ func (gui *GUI) MuteDesktopNotifications(muted bool) {
 }
 
 // New creates a new instance of graphical user interface
-func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
+func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 	var gui = GUI{params: p, tcr: tcr, muteNotifications: false}
 	// Until the GUI is able to report, we rely on the terminal to report information
 	gui.term = cli.New(p, tcr)

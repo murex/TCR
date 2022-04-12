@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package params
 
 import (
 	"github.com/murex/tcr/tcr-engine/runmode"
@@ -109,5 +109,12 @@ func WithAutoPush() func(params *Params) {
 func WithNoAutoPush() func(params *Params) {
 	return func(params *Params) {
 		params.AutoPush = false
+	}
+}
+
+// WithRunMode sets the provided mode as the runmode
+func WithRunMode(mode runmode.RunMode) func(params *Params) {
+	return func(params *Params) {
+		params.Mode = mode
 	}
 }

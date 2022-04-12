@@ -61,8 +61,8 @@ The return code of TCR "check" is one of the following:
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.Check{}
-		u := cli.New(params, engine.NewTcrEngine())
+		parameters.Mode = runmode.Check{}
+		u := cli.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }

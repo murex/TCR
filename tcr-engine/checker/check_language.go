@@ -23,10 +23,10 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 )
 
-func checkLanguage(params engine.Params) (cr *CheckResults) {
+func checkLanguage(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("language")
 
 	if params.Language == "" {

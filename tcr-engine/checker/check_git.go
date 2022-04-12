@@ -23,11 +23,11 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/vcs"
 )
 
-func checkGitEnvironment(_ engine.Params) (cr *CheckResults) {
+func checkGitEnvironment(_ params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git environment")
 	cr.add(checkGitCommand())
 	cr.add(checkGitConfig())

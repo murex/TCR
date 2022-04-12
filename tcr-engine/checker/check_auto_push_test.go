@@ -23,14 +23,14 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 )
 
 func Test_check_auto_push_returns_ok_when_set_to_true(t *testing.T) {
-	assertOk(t, checkAutoPush, *engine.AParamSet(engine.WithAutoPush()))
+	assertOk(t, checkAutoPush, *params.AParamSet(params.WithAutoPush()))
 }
 
 func Test_check_auto_push_returns_ok_when_set_to_false(t *testing.T) {
-	assertOk(t, checkAutoPush, *engine.AParamSet(engine.WithNoAutoPush()))
+	assertOk(t, checkAutoPush, *params.AParamSet(params.WithNoAutoPush()))
 }

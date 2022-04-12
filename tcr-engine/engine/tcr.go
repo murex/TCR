@@ -23,12 +23,15 @@ SOFTWARE.
 package engine
 
 import (
+	"github.com/murex/tcr/tcr-engine/checker"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/timer"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/murex/tcr/tcr-engine/ui"
@@ -41,7 +44,7 @@ import (
 type (
 	// TcrInterface provides the API for interacting with TCR engine
 	TcrInterface interface {
-		Init(u ui.UserInterface, params Params)
+		Init(u ui.UserInterface, params params.Params)
 		setVcs(vcs vcs.GitInterface)
 		ToggleAutoPush()
 		SetAutoPush(ap bool)
@@ -57,6 +60,7 @@ type (
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
+		RunCheck(params params.Params)
 		Quit()
 	}
 
@@ -90,9 +94,9 @@ func NewTcrEngine() TcrInterface {
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
-func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
+func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	var err error
-	RecordState(StatusOk)
+	status.RecordState(status.Ok)
 	tcr.uitf = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
@@ -106,21 +110,21 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
 	tcr.pollingPeriod = params.PollingPeriod
 
 	tcr.sourceTree, err = filesystem.New(params.BaseDir)
-	tcr.handleError(err, true, StatusConfigError)
+	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 
 	tcr.lang, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
-	tcr.handleError(err, true, StatusConfigError)
+	tcr.handleError(err, true, status.ConfigError)
 
 	tcr.tchn, err = tcr.lang.GetToolchain(params.Toolchain)
-	tcr.handleError(err, true, StatusConfigError)
+	tcr.handleError(err, true, status.ConfigError)
 
 	err = toolchain.SetWorkDir(params.WorkDir)
-	tcr.handleError(err, true, StatusConfigError)
+	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
 	git, err := vcs.New(tcr.sourceTree.GetBaseDir())
-	tcr.handleError(err, true, StatusGitError)
+	tcr.handleError(err, true, status.GitError)
 	tcr.setVcs(git)
 	tcr.vcs.EnablePush(params.AutoPush)
 
@@ -132,6 +136,11 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params Params) {
 	tcr.uitf.ShowRunningMode(tcr.mode)
 	tcr.uitf.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
+}
+
+// RunCheck checks the provided parameters and prints out corresponding report
+func (tcr *TcrEngine) RunCheck(params params.Params) {
+	checker.Run(params)
 }
 
 func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {
@@ -177,7 +186,7 @@ func (tcr *TcrEngine) RunAsDriver() {
 		func() {
 			tcr.currentRole = role.Driver{}
 			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
-			tcr.handleError(tcr.vcs.Pull(), false, StatusGitError)
+			tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
 			if settings.EnableMobTimer {
 				tcr.mobTimer.Start()
 			}
@@ -220,7 +229,7 @@ func (tcr *TcrEngine) RunAsNavigator() {
 			case <-interrupt:
 				return false
 			default:
-				tcr.handleError(tcr.vcs.Pull(), false, StatusGitError)
+				tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
 				time.Sleep(tcr.pollingPeriod)
 				return true
 			}
@@ -254,7 +263,7 @@ func (tcr *TcrEngine) fromBirthTillDeath(
 		death()
 		return nil
 	})
-	tcr.handleError(tmb.Wait(), true, StatusOtherError)
+	tcr.handleError(tmb.Wait(), true, status.OtherError)
 }
 
 func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
@@ -267,7 +276,7 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
 func (tcr *TcrEngine) RunTCRCycle() {
-	RecordState(StatusOk)
+	status.RecordState(status.Ok)
 	if tcr.build() != nil {
 		return
 	}
@@ -282,7 +291,7 @@ func (tcr *TcrEngine) build() error {
 	report.PostInfo("Launching Build")
 	err := tcr.tchn.RunBuild()
 	if err != nil {
-		RecordState(StatusBuildFailed)
+		status.RecordState(status.BuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
 	}
 	return err
@@ -292,7 +301,7 @@ func (tcr *TcrEngine) test() error {
 	report.PostInfo("Running Tests")
 	err := tcr.tchn.RunTests()
 	if err != nil {
-		RecordState(StatusTestFailed)
+		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
 	return err
@@ -301,15 +310,15 @@ func (tcr *TcrEngine) test() error {
 func (tcr *TcrEngine) commit() {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
 	err := tcr.vcs.Commit()
-	tcr.handleError(err, false, StatusGitError)
+	tcr.handleError(err, false, status.GitError)
 	if err == nil {
-		tcr.handleError(tcr.vcs.Push(), false, StatusGitError)
+		tcr.handleError(tcr.vcs.Push(), false, status.GitError)
 	}
 }
 
 func (tcr *TcrEngine) revert() {
 	changedFiles, err := tcr.vcs.ListChanges()
-	tcr.handleError(err, false, StatusGitError)
+	tcr.handleError(err, false, status.GitError)
 	if err != nil {
 		return
 	}
@@ -318,7 +327,7 @@ func (tcr *TcrEngine) revert() {
 	for _, file := range changedFiles {
 		if tcr.lang.IsSrcFile(file) {
 			err := tcr.revertFile(file)
-			tcr.handleError(err, false, StatusGitError)
+			tcr.handleError(err, false, status.GitError)
 			if err == nil {
 				reverted++
 			}
@@ -365,20 +374,20 @@ func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
 func (tcr *TcrEngine) Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
-	os.Exit(GetReturnCode())
+	os.Exit(status.GetReturnCode())
 }
 
-func (tcr *TcrEngine) handleError(err error, fatal bool, status Status) {
+func (tcr *TcrEngine) handleError(err error, fatal bool, s status.Status) {
 	if err != nil {
-		RecordState(status)
+		status.RecordState(s)
 		if fatal {
 			report.PostError(err)
 			time.Sleep(1 * time.Millisecond)
-			os.Exit(GetReturnCode())
+			os.Exit(status.GetReturnCode())
 		} else {
 			report.PostWarning(err)
 		}
 	} else {
-		RecordState(StatusOk)
+		status.RecordState(status.Ok)
 	}
 }

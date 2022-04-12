@@ -22,9 +22,11 @@ SOFTWARE.
 
 package checker
 
-import "github.com/murex/tcr/tcr-engine/engine"
+import (
+	"github.com/murex/tcr/tcr-engine/params"
+)
 
-func checkBaseDirectory(params engine.Params) (cr *CheckResults) {
+func checkBaseDirectory(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("base directory")
 
 	if params.BaseDir == "" {

@@ -38,9 +38,9 @@ It never pushes or pulls to a remote repository.
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.Solo{}
-		params.AutoPush = params.Mode.AutoPushDefault()
-		u := cli.New(params, engine.NewTcrEngine())
+		parameters.Mode = runmode.Solo{}
+		parameters.AutoPush = parameters.Mode.AutoPushDefault()
+		u := cli.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }

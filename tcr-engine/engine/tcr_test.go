@@ -25,7 +25,9 @@ package engine
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/murex/tcr/tcr-engine/ui"
 	"github.com/murex/tcr/tcr-engine/vcs"
@@ -59,99 +61,99 @@ func (fs failures) contains(f failure) bool {
 
 func Test_run_build_command_with_no_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertCommandEndState(t, tcr.build, StatusOk, false)
+	assertCommandEndState(t, tcr.build, status.Ok, false)
 }
 
 func Test_run_build_command_with_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failBuild})
-	assertCommandEndState(t, tcr.build, StatusBuildFailed, true)
+	assertCommandEndState(t, tcr.build, status.BuildFailed, true)
 }
 
 func Test_run_test_command_with_no_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertCommandEndState(t, tcr.test, StatusOk, false)
+	assertCommandEndState(t, tcr.test, status.Ok, false)
 }
 
 func Test_run_test_command_with_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest})
-	assertCommandEndState(t, tcr.test, StatusTestFailed, true)
+	assertCommandEndState(t, tcr.test, status.TestFailed, true)
 }
 
 func Test_run_commit_operation_with_no_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, tcr.commit, StatusOk)
+	assertOperationEndState(t, tcr.commit, status.Ok)
 }
 
 func Test_run_commit_operation_with_commit_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failCommit})
-	assertOperationEndState(t, tcr.commit, StatusGitError)
+	assertOperationEndState(t, tcr.commit, status.GitError)
 }
 
 func Test_run_commit_operation_with_push_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failPush})
-	assertOperationEndState(t, tcr.commit, StatusGitError)
+	assertOperationEndState(t, tcr.commit, status.GitError)
 }
 
 func Test_run_revert_operation_with_no_changes_in_src_files(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, tcr.revert, StatusOk)
+	assertOperationEndState(t, tcr.revert, status.Ok)
 }
 
 func Test_run_revert_operation_with_changes_in_src_files(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, tcr.revert, StatusOk)
+	assertOperationEndState(t, tcr.revert, status.Ok)
 }
 
 func Test_run_revert_operation_with_diff_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failDiff})
-	assertOperationEndState(t, tcr.revert, StatusGitError)
+	assertOperationEndState(t, tcr.revert, status.GitError)
 }
 
 func Test_run_revert_operation_with_restore_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failRestore})
-	assertOperationEndState(t, tcr.revert, StatusGitError)
+	assertOperationEndState(t, tcr.revert, status.GitError)
 }
 
 func Test_run_tcr_cycle_with_no_failure(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusOk)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.Ok)
 }
 
 func Test_run_tcr_cycle_with_build_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failBuild})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusBuildFailed)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.BuildFailed)
 }
 
 func Test_run_tcr_cycle_with_test_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusOk)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.Ok)
 }
 
 func Test_run_tcr_cycle_with_commit_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failCommit})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.GitError)
 }
 
 func Test_run_tcr_cycle_with_push_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failPush})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.GitError)
 }
 
 func Test_run_tcr_cycle_with_test_and_diff_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest, failDiff})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.GitError)
 }
 
 func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest, failRestore})
-	assertOperationEndState(t, tcr.RunTCRCycle, StatusGitError)
+	assertOperationEndState(t, tcr.RunTCRCycle, status.GitError)
 }
 
 func initTcrEngineWithFakes(f failures) TcrInterface {
 	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest))
 	lang := registerFakeLanguage(tchn)
 	tcr := NewTcrEngine()
-	tcr.Init(ui.NewFakeUI(), Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
+	tcr.Init(ui.NewFakeUI(), params.Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
 	replaceGitImplWithFake(tcr,
 		f.contains(failCommit),
 		f.contains(failRestore),
@@ -183,19 +185,19 @@ func replaceGitImplWithFake(tcr TcrInterface, failingCommit, failingRestore, fai
 	tcr.setVcs(fake)
 }
 
-func assertCommandEndState(t *testing.T, operation func() error, endState Status, expectError bool) {
-	assert.Equal(t, StatusOk, getCurrentState())
+func assertCommandEndState(t *testing.T, operation func() error, endState status.Status, expectError bool) {
+	assert.Equal(t, status.Ok, status.GetCurrentState())
 	err := operation()
 	if expectError {
 		assert.Error(t, err)
 	} else {
 		assert.Zero(t, err)
 	}
-	assert.Equal(t, endState, getCurrentState())
+	assert.Equal(t, endState, status.GetCurrentState())
 }
 
-func assertOperationEndState(t *testing.T, operation func(), endState Status) {
-	assert.Equal(t, StatusOk, getCurrentState())
+func assertOperationEndState(t *testing.T, operation func(), endState status.Status) {
+	assert.Equal(t, status.Ok, status.GetCurrentState())
 	operation()
-	assert.Equal(t, endState, getCurrentState())
+	assert.Equal(t, endState, status.GetCurrentState())
 }

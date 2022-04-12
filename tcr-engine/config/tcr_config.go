@@ -24,7 +24,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -208,7 +208,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
-func UpdateEngineParams(params *engine.Params) {
+func UpdateEngineParams(params *params.Params) {
 	params.BaseDir = Config.BaseDir.GetValue()
 	params.WorkDir = Config.WorkDir.GetValue()
 	params.ConfigDir = Config.ConfigDir.GetValue()

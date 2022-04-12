@@ -23,7 +23,7 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"time"
 )
 
@@ -32,7 +32,7 @@ const (
 	mobTimerHighThreshold = 15 * time.Minute
 )
 
-func checkMobTimer(params engine.Params) (cr *CheckResults) {
+func checkMobTimer(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("mob timer")
 	cr.ok("mob timer duration is ", params.MobTurnDuration.String())
 	if params.MobTurnDuration == 0 {

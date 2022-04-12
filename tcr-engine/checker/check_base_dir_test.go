@@ -23,29 +23,29 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 )
 
 func Test_check_base_directory_returns_ok_when_set_and_exists(t *testing.T) {
-	assertOk(t, checkBaseDirectory, *engine.AParamSet(engine.WithBaseDir(".")))
+	assertOk(t, checkBaseDirectory, *params.AParamSet(params.WithBaseDir(".")))
 }
 
 func Test_check_base_directory_returns_ok_when_not_set(t *testing.T) {
 	// When not set, base dir is automatically initialized to the current directory
-	assertOk(t, checkBaseDirectory, *engine.AParamSet(engine.WithBaseDir("")))
+	assertOk(t, checkBaseDirectory, *params.AParamSet(params.WithBaseDir("")))
 }
 
 func Test_check_base_directory_returns_error_when_set_but_does_not_exist(t *testing.T) {
-	assertError(t, checkBaseDirectory, *engine.AParamSet(engine.WithBaseDir("missing-dir")))
+	assertError(t, checkBaseDirectory, *params.AParamSet(params.WithBaseDir("missing-dir")))
 }
 
 func Test_check_base_directory_returns_error_when_set_but_insufficient_permissions(t *testing.T) {
 	t.Skip("disabled until we plug an in-memory filesystem")
-	assertError(t, checkBaseDirectory, *engine.AParamSet(engine.WithBaseDir("no-perm-dir")))
+	assertError(t, checkBaseDirectory, *params.AParamSet(params.WithBaseDir("no-perm-dir")))
 }
 
 func Test_check_base_directory_returns_error_when_set_but_is_not_a_directory(t *testing.T) {
 	t.Skip("disabled until we plug an in-memory filesystem")
-	assertError(t, checkBaseDirectory, *engine.AParamSet(engine.WithBaseDir("file")))
+	assertError(t, checkBaseDirectory, *params.AParamSet(params.WithBaseDir("file")))
 }

@@ -23,27 +23,27 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 )
 
 func Test_check_config_directory_returns_ok_when_set_and_exists(t *testing.T) {
 	t.Skip("need to provide fake configuration settings for tests")
-	assertOk(t, checkConfigDirectory, *engine.AParamSet(engine.WithConfigDir(".")))
+	assertOk(t, checkConfigDirectory, *params.AParamSet(params.WithConfigDir(".")))
 }
 
 func Test_check_config_directory_returns_ok_when_not_set(t *testing.T) {
 	// When not set, config dir is automatically initialized to the current directory
 	t.Skip("need to provide fake configuration settings for tests")
-	assertOk(t, checkConfigDirectory, *engine.AParamSet(engine.WithConfigDir("")))
+	assertOk(t, checkConfigDirectory, *params.AParamSet(params.WithConfigDir("")))
 }
 
 func Test_check_config_directory_returns_error_when_set_but_does_not_exist(t *testing.T) {
 	t.Skip("need to provide fake configuration settings for tests")
-	assertError(t, checkConfigDirectory, *engine.AParamSet(engine.WithConfigDir("missing-dir")))
+	assertError(t, checkConfigDirectory, *params.AParamSet(params.WithConfigDir("missing-dir")))
 }
 
 func Test_check_config_directory_returns_error_when_set_but_insufficient_permissions(t *testing.T) {
 	t.Skip("disabled until we plug an in-memory filesystem")
-	assertError(t, checkConfigDirectory, *engine.AParamSet(engine.WithConfigDir("no-perm-dir")))
+	assertError(t, checkConfigDirectory, *params.AParamSet(params.WithConfigDir("no-perm-dir")))
 }

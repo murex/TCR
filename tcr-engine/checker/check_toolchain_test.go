@@ -23,71 +23,71 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 )
 
 func Test_check_toolchain_returns_ok_when_set_and_recognized(t *testing.T) {
 	assertOk(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain("make"),
-			engine.WithLanguage("go"),
+		*params.AParamSet(
+			params.WithToolchain("make"),
+			params.WithLanguage("go"),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_error_when_set_but_unknown(t *testing.T) {
 	assertError(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain("unknown-toolchain"),
+		*params.AParamSet(
+			params.WithToolchain("unknown-toolchain"),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_error_when_set_but_language_incompatible(t *testing.T) {
 	assertError(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain("gradlew"),
-			engine.WithLanguage("go"),
+		*params.AParamSet(
+			params.WithToolchain("gradlew"),
+			params.WithLanguage("go"),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_ok_when_deduced_from_language(t *testing.T) {
 	assertOk(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain(""),
-			engine.WithLanguage("go"),
+		*params.AParamSet(
+			params.WithToolchain(""),
+			params.WithLanguage("go"),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_error_when_cannot_be_deduced_from_language(t *testing.T) {
 	assertError(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain(""),
-			engine.WithLanguage("unknown-language"),
+		*params.AParamSet(
+			params.WithToolchain(""),
+			params.WithLanguage("unknown-language"),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_ok_when_deduced_from_base_dir_name(t *testing.T) {
 	assertOk(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain(""),
-			engine.WithLanguage(""),
-			engine.WithWorkDir(testDataDirJava),
-			engine.WithBaseDir(testDataDirJava),
+		*params.AParamSet(
+			params.WithToolchain(""),
+			params.WithLanguage(""),
+			params.WithWorkDir(testDataDirJava),
+			params.WithBaseDir(testDataDirJava),
 		),
 	)
 }
 
 func Test_check_toolchain_returns_error_when_cannot_be_deduced_from_language_nor_base_dir_name(t *testing.T) {
 	assertError(t, checkToolchain,
-		*engine.AParamSet(
-			engine.WithToolchain(""),
-			engine.WithLanguage(""),
-			engine.WithBaseDir(""),
+		*params.AParamSet(
+			params.WithToolchain(""),
+			params.WithLanguage(""),
+			params.WithBaseDir(""),
 		),
 	)
 }

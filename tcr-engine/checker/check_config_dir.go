@@ -24,11 +24,11 @@ package checker
 
 import (
 	"github.com/murex/tcr/tcr-engine/config"
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"path/filepath"
 )
 
-func checkConfigDirectory(params engine.Params) (cr *CheckResults) {
+func checkConfigDirectory(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("configuration directory")
 
 	// TODO see how we can handle incorrect configuration settings, knowing that conf is already loaded when we get here

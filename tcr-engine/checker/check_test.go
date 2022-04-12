@@ -23,7 +23,8 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
@@ -42,20 +43,20 @@ var (
 
 // Assert utility functions
 
-func assertStatus(t *testing.T, expected CheckStatus, checker func(params engine.Params) (cr *CheckResults), params engine.Params) {
+func assertStatus(t *testing.T, expected CheckStatus, checker func(params params.Params) (cr *CheckResults), params params.Params) {
 	initCheckEnv(params)
 	assert.Equal(t, expected, checker(params).getStatus())
 }
 
-func assertOk(t *testing.T, checker func(params engine.Params) (cr *CheckResults), params engine.Params) {
+func assertOk(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
 	assertStatus(t, CheckStatusOk, checker, params)
 }
 
-func assertWarning(t *testing.T, checker func(params engine.Params) (cr *CheckResults), params engine.Params) {
+func assertWarning(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
 	assertStatus(t, CheckStatusWarning, checker, params)
 }
 
-func assertError(t *testing.T, checker func(params engine.Params) (cr *CheckResults), params engine.Params) {
+func assertError(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
 	assertStatus(t, CheckStatusError, checker, params)
 }
 
@@ -63,34 +64,34 @@ func assertError(t *testing.T, checker func(params engine.Params) (cr *CheckResu
 
 func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 	t.Skip("need to provide fake configuration settings for tests")
-	Run(*engine.AParamSet(
-		engine.WithConfigDir(testDataDirJava),
-		engine.WithBaseDir(testDataDirJava),
-		engine.WithWorkDir(testDataDirJava),
-		engine.WithMobTimerDuration(mobTimerLowThreshold),
-		engine.WithPollingPeriod(pollingPeriodLowThreshold),
+	Run(*params.AParamSet(
+		params.WithConfigDir(testDataDirJava),
+		params.WithBaseDir(testDataDirJava),
+		params.WithWorkDir(testDataDirJava),
+		params.WithMobTimerDuration(mobTimerLowThreshold),
+		params.WithPollingPeriod(pollingPeriodLowThreshold),
 	))
-	assert.Equal(t, 0, engine.GetReturnCode())
+	assert.Equal(t, 0, status.GetReturnCode())
 }
 
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 	// The warning is triggered by the mob timer duration being under the min threshold
 	t.Skip("disabled due to git remote access check failing when running from CI")
-	Run(*engine.AParamSet(
-		engine.WithConfigDir(testDataDirJava),
-		engine.WithBaseDir(testDataDirJava),
-		engine.WithWorkDir(testDataDirJava),
-		engine.WithMobTimerDuration(1*time.Second),
+	Run(*params.AParamSet(
+		params.WithConfigDir(testDataDirJava),
+		params.WithBaseDir(testDataDirJava),
+		params.WithWorkDir(testDataDirJava),
+		params.WithMobTimerDuration(1*time.Second),
 	))
-	assert.Equal(t, 1, engine.GetReturnCode())
+	assert.Equal(t, 1, status.GetReturnCode())
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
 	const invalidDir = "invalid-dir"
-	Run(*engine.AParamSet(
-		engine.WithConfigDir(invalidDir),
-		engine.WithBaseDir(invalidDir),
-		engine.WithWorkDir(invalidDir),
+	Run(*params.AParamSet(
+		params.WithConfigDir(invalidDir),
+		params.WithBaseDir(invalidDir),
+		params.WithWorkDir(invalidDir),
 	))
-	assert.Equal(t, 2, engine.GetReturnCode())
+	assert.Equal(t, 2, status.GetReturnCode())
 }

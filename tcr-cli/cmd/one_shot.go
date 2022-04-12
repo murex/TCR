@@ -50,9 +50,9 @@ The return code of TCR "one-shot" is one of the following:
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.OneShot{}
-		params.AutoPush = params.Mode.AutoPushDefault()
-		u := cli.New(params, engine.NewTcrEngine())
+		parameters.Mode = runmode.OneShot{}
+		parameters.AutoPush = parameters.Mode.AutoPushDefault()
+		u := cli.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }

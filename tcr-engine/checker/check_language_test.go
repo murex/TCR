@@ -23,49 +23,49 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 )
 
 func Test_check_language_returns_ok_when_set_and_recognized(t *testing.T) {
 	assertOk(t, checkLanguage,
-		*engine.AParamSet(
-			engine.WithBaseDir(testDataDirJava),
-			engine.WithLanguage("java"),
+		*params.AParamSet(
+			params.WithBaseDir(testDataDirJava),
+			params.WithLanguage("java"),
 		),
 	)
 }
 
 func Test_check_language_returns_error_when_set_but_unknown(t *testing.T) {
 	assertError(t, checkLanguage,
-		*engine.AParamSet(
-			engine.WithLanguage("unknown-language"),
+		*params.AParamSet(
+			params.WithLanguage("unknown-language"),
 		),
 	)
 }
 
 func Test_check_language_returns_error_when_not_set_and_no_base_dir(t *testing.T) {
 	assertError(t, checkLanguage,
-		*engine.AParamSet(
-			engine.WithLanguage(""),
+		*params.AParamSet(
+			params.WithLanguage(""),
 		),
 	)
 }
 
 func Test_check_language_returns_ok_when_not_set_but_with_valid_base_dir(t *testing.T) {
 	assertOk(t, checkLanguage,
-		*engine.AParamSet(
-			engine.WithLanguage(""),
-			engine.WithBaseDir(testDataDirJava),
+		*params.AParamSet(
+			params.WithLanguage(""),
+			params.WithBaseDir(testDataDirJava),
 		),
 	)
 }
 
 func Test_check_language_returns_error_when_not_set_and_with_invalid_base_dir(t *testing.T) {
 	assertError(t, checkLanguage,
-		*engine.AParamSet(
-			engine.WithLanguage(""),
-			engine.WithBaseDir("invalid-base-dir"),
+		*params.AParamSet(
+			params.WithLanguage(""),
+			params.WithBaseDir("invalid-base-dir"),
 		),
 	)
 }

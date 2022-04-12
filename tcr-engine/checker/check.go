@@ -25,10 +25,11 @@ package checker
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/config"
-	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/murex/tcr/tcr-engine/vcs"
 	"os"
@@ -73,10 +74,10 @@ var checkEnv struct {
 
 // Run goes through all configuration, parameters and local environment to check
 // if TCR is ready to be used
-func Run(params engine.Params) {
-	initCheckEnv(params)
+func Run(p params.Params) {
+	initCheckEnv(p)
 
-	checkers := []func(engine.Params) *CheckResults{
+	checkers := []func(params.Params) *CheckResults{
 		checkConfigDirectory,
 		checkBaseDirectory,
 		checkWorkDirectory,
@@ -89,7 +90,7 @@ func Run(params engine.Params) {
 	}
 
 	for _, checker := range checkers {
-		results := checker(params)
+		results := checker(p)
 		results.print()
 		updateReturnState(results)
 	}
@@ -97,16 +98,16 @@ func Run(params engine.Params) {
 }
 
 func updateReturnState(results *CheckResults) {
-	if int(results.getStatus()) > engine.GetReturnCode() {
+	if int(results.getStatus()) > status.GetReturnCode() {
 		recordCheckState(results.getStatus())
 	}
 }
 
-func recordCheckState(status CheckStatus) {
-	engine.RecordState(engine.NewStatus(int(status)))
+func recordCheckState(s CheckStatus) {
+	status.RecordState(status.NewStatus(int(s)))
 }
 
-func initCheckEnv(params engine.Params) {
+func initCheckEnv(params params.Params) {
 	recordCheckState(CheckStatusOk)
 
 	checkEnv.configDir = config.GetConfigDirPath()

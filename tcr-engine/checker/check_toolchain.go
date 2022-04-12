@@ -23,12 +23,12 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"runtime"
 )
 
-func checkToolchain(params engine.Params) (cr *CheckResults) {
+func checkToolchain(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("toolchain")
 
 	if params.Toolchain == "" {

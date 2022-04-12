@@ -23,23 +23,23 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 	"time"
 )
 
 func Test_check_polling_period_returns_warning_when_set_to_0(t *testing.T) {
-	assertWarning(t, checkPollingPeriod, *engine.AParamSet(engine.WithPollingPeriod(0)))
+	assertWarning(t, checkPollingPeriod, *params.AParamSet(params.WithPollingPeriod(0)))
 }
 
 func Test_check_polling_period_returns_warning_when_set_to_1s(t *testing.T) {
-	assertWarning(t, checkPollingPeriod, *engine.AParamSet(engine.WithPollingPeriod(1 * time.Second)))
+	assertWarning(t, checkPollingPeriod, *params.AParamSet(params.WithPollingPeriod(1 * time.Second)))
 }
 
 func Test_check_polling_period_returns_ok_when_set_to_2s(t *testing.T) {
-	assertOk(t, checkPollingPeriod, *engine.AParamSet(engine.WithPollingPeriod(2 * time.Second)))
+	assertOk(t, checkPollingPeriod, *params.AParamSet(params.WithPollingPeriod(2 * time.Second)))
 }
 
 func Test_check_polling_period_returns_warning_when_set_to_2m(t *testing.T) {
-	assertWarning(t, checkPollingPeriod, *engine.AParamSet(engine.WithPollingPeriod(2 * time.Minute)))
+	assertWarning(t, checkPollingPeriod, *params.AParamSet(params.WithPollingPeriod(2 * time.Minute)))
 }

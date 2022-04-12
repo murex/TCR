@@ -39,9 +39,9 @@ is shared with other participants through calling git push-pull.
 
 This subcommand runs directly in the terminal (no GUI).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		params.Mode = runmode.Mob{}
-		params.AutoPush = params.Mode.AutoPushDefault()
-		u := cli.New(params, engine.NewTcrEngine())
+		parameters.Mode = runmode.Mob{}
+		parameters.AutoPush = parameters.Mode.AutoPushDefault()
+		u := cli.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }

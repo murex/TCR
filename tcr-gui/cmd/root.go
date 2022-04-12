@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,14 @@ package cmd
 import (
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-gui/gui"
 	"github.com/spf13/cobra"
 )
 
-var params engine.Params
+var parameters params.Params
 
 var rootCmd = &cobra.Command{
 	Use:     "tcr-gui",
@@ -43,14 +44,14 @@ It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs TCR graphical user interface.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		config.UpdateEngineParams(&params)
+		config.UpdateEngineParams(&parameters)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// When run without a subcommand, we open the gui by default
 		// so that the user can decide what they want to do
-		params.Mode = runmode.Mob{}
-		params.AutoPush = params.Mode.AutoPushDefault()
-		u := gui.New(params, engine.NewTcrEngine())
+		parameters.Mode = runmode.Mob{}
+		parameters.AutoPush = parameters.Mode.AutoPushDefault()
+		u := gui.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }

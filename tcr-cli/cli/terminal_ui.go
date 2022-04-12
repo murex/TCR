@@ -25,8 +25,8 @@ package cli
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-cli/desktop"
-	"github.com/murex/tcr/tcr-engine/checker"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
@@ -39,7 +39,7 @@ import (
 type TerminalUI struct {
 	reportingChannel chan bool
 	tcr              engine.TcrInterface
-	params           engine.Params
+	params           params.Params
 }
 
 const (
@@ -48,7 +48,7 @@ const (
 )
 
 // New creates a new instance of terminal
-func New(p engine.Params, tcr engine.TcrInterface) ui.UserInterface {
+func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr}
 	term.MuteDesktopNotifications(false)
@@ -88,7 +88,9 @@ func (term *TerminalUI) MuteDesktopNotifications(muted bool) {
 
 // StopReporting tells the terminal to stop reporting information
 func (term *TerminalUI) StopReporting() {
-	report.Unsubscribe(term.reportingChannel)
+	if term.reportingChannel != nil {
+		report.Unsubscribe(term.reportingChannel)
+	}
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
@@ -306,7 +308,7 @@ func (term *TerminalUI) Start() {
 	case runmode.Check{}:
 		// When running TCR in check mode, there's no selection menu:
 		// we directly ask TCR engine to run a check and quit when done
-		checker.Run(term.params)
+		term.tcr.RunCheck(term.params)
 		term.tcr.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)

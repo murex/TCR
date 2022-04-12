@@ -26,12 +26,13 @@ import (
 	"github.com/murex/tcr/tcr-cli/cli"
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/spf13/cobra"
 )
 
-var params engine.Params
+var parameters params.Params
 
 var (
 	rootCmd = &cobra.Command{
@@ -44,12 +45,12 @@ It can be used either in solo, or as a group within a mob or pair session.
 
 This application runs within a terminal.`,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			config.UpdateEngineParams(&params)
+			config.UpdateEngineParams(&parameters)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			params.Mode = runmode.Mob{}
-			params.AutoPush = params.Mode.AutoPushDefault()
-			u := cli.New(params, engine.NewTcrEngine())
+			parameters.Mode = runmode.Mob{}
+			parameters.AutoPush = parameters.Mode.AutoPushDefault()
+			u := cli.New(parameters, engine.NewTcrEngine())
 			u.Start()
 		},
 	}

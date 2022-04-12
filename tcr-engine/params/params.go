@@ -20,39 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package params
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/murex/tcr/tcr-engine/runmode"
+	"time"
 )
 
-func Test_return_code_when_no_error(t *testing.T) {
-	RecordState(StatusOk)
-	assert.Equal(t, 0, GetReturnCode())
-}
-
-func Test_return_code_on_build_failure(t *testing.T) {
-	RecordState(StatusBuildFailed)
-	assert.Equal(t, 1, GetReturnCode())
-}
-
-func Test_return_code_on_test_failure(t *testing.T) {
-	RecordState(StatusTestFailed)
-	assert.Equal(t, 2, GetReturnCode())
-}
-
-func Test_return_code_on_config_error(t *testing.T) {
-	RecordState(StatusConfigError)
-	assert.Equal(t, 3, GetReturnCode())
-}
-
-func Test_return_code_on_git_error(t *testing.T) {
-	RecordState(StatusGitError)
-	assert.Equal(t, 4, GetReturnCode())
-}
-
-func Test_return_code_on_miscellaneous_error(t *testing.T) {
-	RecordState(StatusOtherError)
-	assert.Equal(t, 5, GetReturnCode())
+// Params contains the main parameter values that TCR engine is using
+type Params struct {
+	ConfigDir       string
+	BaseDir         string
+	WorkDir         string
+	Language        string
+	Toolchain       string
+	MobTurnDuration time.Duration
+	AutoPush        bool
+	PollingPeriod   time.Duration
+	Mode            runmode.RunMode
 }

@@ -22,9 +22,11 @@ SOFTWARE.
 
 package checker
 
-import "github.com/murex/tcr/tcr-engine/engine"
+import (
+	"github.com/murex/tcr/tcr-engine/params"
+)
 
-func checkAutoPush(params engine.Params) (cr *CheckResults) {
+func checkAutoPush(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git auto-push")
 	if params.AutoPush {
 		cr.ok("git auto-push is turned on: every commit will be pushed to origin")

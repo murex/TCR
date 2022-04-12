@@ -25,8 +25,8 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
@@ -245,7 +245,7 @@ func Test_cobra_command_init_with_saved_config(t *testing.T) {
 	)
 }
 
-var testParams engine.Params
+var testParams params.Params
 
 func NewCobraTestCmd() *cobra.Command {
 	return &cobra.Command{

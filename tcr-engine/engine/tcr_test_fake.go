@@ -24,13 +24,26 @@ SOFTWARE.
 
 package engine
 
+import (
+	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/tcr-engine/role"
+	"github.com/murex/tcr/tcr-engine/status"
+	"github.com/murex/tcr/tcr-engine/ui"
+)
+
 // TcrCall is used to track calls to TCR operations
 type TcrCall string
 
 const (
-	TcrCallQuit           TcrCall = "quit"
-	TcrCallToggleAutoPush TcrCall = "toggle-auto-push"
-	TcrCallGetSessionInfo TcrCall = "get-session-info"
+	TcrCallQuit                 TcrCall = "quit"
+	TcrCallToggleAutoPush       TcrCall = "toggle-auto-push"
+	TcrCallGetSessionInfo       TcrCall = "get-session-info"
+	TcrCallRunAsDriver          TcrCall = "run-as-driver"
+	TcrCallRunAsNavigator       TcrCall = "run-as-navigator"
+	TcrCallStop                 TcrCall = "stop"
+	TcrCallReportMobTimerStatus TcrCall = "report-mob-timer-status"
+	TcrCallRunTcrCycle          TcrCall = "run-tcr-cycle"
+	TcrCallRunCheck             TcrCall = "run-check"
 )
 
 // FakeTcrEngine is a TCR engine fake. Used mainly for testing peripheral packages
@@ -65,6 +78,9 @@ func (fake *FakeTcrEngine) GetCallHistory() []TcrCall {
 	return fake.callRecord
 }
 
+// Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
+func (fake *FakeTcrEngine) Init(_ ui.UserInterface, _ params.Params) {}
+
 // GetSessionInfo returns a SessionInfo struct filled with "fake" values
 func (fake *FakeTcrEngine) GetSessionInfo() SessionInfo {
 	fake.recordCall(TcrCallGetSessionInfo)
@@ -76,10 +92,42 @@ func (fake *FakeTcrEngine) GetSessionInfo() SessionInfo {
 // Instead, the return code is stored in returnCode attribute
 func (fake *FakeTcrEngine) Quit() {
 	fake.recordCall(TcrCallQuit)
-	fake.returnCode = GetReturnCode()
+	fake.returnCode = status.GetReturnCode()
 }
 
 // ToggleAutoPush toggles git auto-push state
 func (fake *FakeTcrEngine) ToggleAutoPush() {
 	fake.recordCall(TcrCallToggleAutoPush)
+}
+
+// RunAsDriver tells TCR engine to start running with driver role
+func (fake *FakeTcrEngine) RunAsDriver() {
+	fake.currentRole = role.Driver{}
+	fake.recordCall(TcrCallRunAsDriver)
+}
+
+// RunAsNavigator tells TCR engine to start running with navigator role
+func (fake *FakeTcrEngine) RunAsNavigator() {
+	fake.currentRole = role.Navigator{}
+	fake.recordCall(TcrCallRunAsNavigator)
+}
+
+// Stop is the entry point for telling TCR engine to stop its current operations
+func (fake *FakeTcrEngine) Stop() {
+	fake.recordCall(TcrCallStop)
+}
+
+// ReportMobTimerStatus reports the status of the mob timer
+func (fake *FakeTcrEngine) ReportMobTimerStatus() {
+	fake.recordCall(TcrCallReportMobTimerStatus)
+}
+
+// RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
+func (fake *FakeTcrEngine) RunTCRCycle() {
+	fake.recordCall(TcrCallRunTcrCycle)
+}
+
+// RunCheck checks the provided parameters and prints out corresponding report
+func (fake *FakeTcrEngine) RunCheck(_ params.Params) {
+	fake.recordCall(TcrCallRunCheck)
 }

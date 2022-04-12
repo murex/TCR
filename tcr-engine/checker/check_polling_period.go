@@ -23,7 +23,7 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"time"
 )
 
@@ -32,7 +32,7 @@ const (
 	pollingPeriodHighThreshold = 1 * time.Minute
 )
 
-func checkPollingPeriod(params engine.Params) (cr *CheckResults) {
+func checkPollingPeriod(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git polling period")
 	cr.ok("git polling period is ", params.PollingPeriod.String())
 	if params.PollingPeriod == 0 {

@@ -23,23 +23,23 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/params"
 	"testing"
 	"time"
 )
 
 func Test_check_mob_timer_returns_warning_when_set_to_0(t *testing.T) {
-	assertWarning(t, checkMobTimer, *engine.AParamSet(engine.WithMobTimerDuration(0)))
+	assertWarning(t, checkMobTimer, *params.AParamSet(params.WithMobTimerDuration(0)))
 }
 
 func Test_check_mob_timer_returns_warning_when_set_to_2m(t *testing.T) {
-	assertWarning(t, checkMobTimer, *engine.AParamSet(engine.WithMobTimerDuration(2 * time.Minute)))
+	assertWarning(t, checkMobTimer, *params.AParamSet(params.WithMobTimerDuration(2 * time.Minute)))
 }
 
 func Test_check_mob_timer_returns_ok_when_set_to_3m(t *testing.T) {
-	assertOk(t, checkMobTimer, *engine.AParamSet(engine.WithMobTimerDuration(3 * time.Minute)))
+	assertOk(t, checkMobTimer, *params.AParamSet(params.WithMobTimerDuration(3 * time.Minute)))
 }
 
 func Test_check_mob_timer_returns_warning_when_set_to_16m(t *testing.T) {
-	assertWarning(t, checkMobTimer, *engine.AParamSet(engine.WithMobTimerDuration(16 * time.Minute)))
+	assertWarning(t, checkMobTimer, *params.AParamSet(params.WithMobTimerDuration(16 * time.Minute)))
 }
