@@ -61,7 +61,6 @@ func withDelay(delay time.Duration) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
 		tcrEvent.timestamp = tcrEvent.timestamp.Add(delay)
 	}
-	assert.Equal(t, 1*time.Minute+31*time.Second, computeDurationInGreen(startEvent, endEvent))
 }
 
 func withFailingTests() func(filter *TcrEvent) {
