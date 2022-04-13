@@ -26,13 +26,16 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/tcr-engine/settings"
 	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/murex/tcr/tcr-engine/ui"
 	"github.com/murex/tcr/tcr-engine/vcs"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 type (
@@ -200,4 +203,24 @@ func assertOperationEndState(t *testing.T, operation func(), endState status.Sta
 	assert.Equal(t, status.Ok, status.GetCurrentState())
 	operation()
 	assert.Equal(t, endState, status.GetCurrentState())
+}
+
+func Test_run_as_role_methods(t *testing.T) {
+	var tcr TcrInterface
+	testFlags := []struct {
+		role        role.Role
+		runAsMethod func()
+	}{
+		{role.Driver{}, func() { tcr.RunAsDriver() }},
+		{role.Navigator{}, func() { tcr.RunAsNavigator() }},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.role.LongName(), func(t *testing.T) {
+			tcr = initTcrEngineWithFakes(failures{})
+			settings.EnableMobTimer = false
+			tt.runAsMethod()
+			time.Sleep(1 * time.Millisecond)
+			assert.Equal(t, tt.role, tcr.GetCurrentRole())
+		})
+	}
 }

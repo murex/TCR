@@ -34,6 +34,7 @@ import (
 // TcrCall is used to track calls to TCR operations
 type TcrCall string
 
+// Possible values for TcrCall
 const (
 	TcrCallQuit                 TcrCall = "quit"
 	TcrCallToggleAutoPush       TcrCall = "toggle-auto-push"
@@ -74,6 +75,7 @@ func (fake *FakeTcrEngine) recordCall(call TcrCall) {
 	fake.callRecord = append(fake.callRecord, call)
 }
 
+// GetCallHistory returns the list of TcrCall events tracked by FakeTcrEngine
 func (fake *FakeTcrEngine) GetCallHistory() []TcrCall {
 	return fake.callRecord
 }

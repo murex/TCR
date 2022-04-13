@@ -76,6 +76,8 @@ type GUI struct {
 	muteNotifications bool
 }
 
+// MuteDesktopNotifications allows preventing desktop notification popups from being displayed.
+// Used for test automation at the moment. Could be turned into a feature later if there is need for it.
 func (gui *GUI) MuteDesktopNotifications(muted bool) {
 	gui.muteNotifications = muted
 }

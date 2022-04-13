@@ -24,7 +24,7 @@ package settings
 
 // Feature toggles allowing to quickly turn on/off a feature
 
-const (
+var (
 	// EnableTcrInactivityTeaser Turns on/off TCR inactivity teaser messages
 	EnableTcrInactivityTeaser = false
 
