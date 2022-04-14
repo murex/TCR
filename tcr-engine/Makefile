@@ -7,7 +7,7 @@ lint:
 
 .PHONY: vet
 vet:
-	@go vet ./...
+	@go vet --tags=test_helper ./...
 
 .PHONY: test
 test:
