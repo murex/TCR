@@ -42,7 +42,7 @@ func Test_get_build_info_default(t *testing.T) {
 	assert.ElementsMatch(t, defaultBuildInfo, GetBuildInfo())
 }
 
-func Test_get_print_info_default(t *testing.T) {
+func Test_print_build_info_default(t *testing.T) {
 	var expected []string
 	for _, info := range defaultBuildInfo {
 		expected = append(expected, "- "+info.Label+":\t"+info.Value+"\n")
@@ -51,7 +51,7 @@ func Test_get_print_info_default(t *testing.T) {
 	out := capturer.CaptureStdout(PrintBuildInfo)
 	
 	printedLines := strings.SplitAfter(out, "\n")
-	// strings.Split() adds as extra empty string that we don't care about here
+	// strings.Split() adds an extra empty string that we don't care about here
 	printedLines = printedLines[:len(printedLines)-1]
 	assert.ElementsMatch(t, expected, printedLines)
 }

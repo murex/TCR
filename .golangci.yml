@@ -24,6 +24,7 @@ linters:
     - goimports
     - errcheck
 run:
+  go: 1.17
   timeout: 5m
   skip-dirs:
     - testdata
