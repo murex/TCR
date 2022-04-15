@@ -126,8 +126,8 @@ func Test_compute_score(t *testing.T) {
 func Test_compute_score_with_0_change_per_commit(t *testing.T) {
 	var timeInGreenRatio = .5
 	var savingRate float64 = 60
-	var changesPerCommit float64 = 0
-	var expected Score = 0
+	var changesPerCommit float64
+	var expected Score
 	assert.Equal(t, expected, computeScore(timeInGreenRatio, savingRate, changesPerCommit))
 }
 

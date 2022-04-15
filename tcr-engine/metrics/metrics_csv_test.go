@@ -24,7 +24,9 @@ package metrics
 
 import (
 	"bytes"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -106,4 +108,30 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 			assert.Equal(t, tt.expected, fields[tt.position])
 		})
 	}
+}
+
+func Test_it_should_create_the_file_when_it_doesnt_exist(t *testing.T) {
+	event := aTcrEvent(withTimestamp(time.Date(
+		2022, 4, 11, 15, 52, 3, 0,
+		time.UTC)))
+
+	mapFs := afero.NewMemMapFs()
+	dirError := mapFs.Mkdir("test", os.ModeDir)
+	assert.Nil(t, dirError)
+
+	metricsFile, fileError := mapFs.Create("test/metrics.csv")
+	assert.Nil(t, fileError)
+
+	err := appendEvent(*event, metricsFile)
+	assert.Nil(t, err)
+
+	file, dirError := mapFs.Open("test/metrics.csv")
+	assert.Nil(t, dirError)
+
+	b := make([]byte, 50)
+	readCount, readError := file.Read(b)
+
+	//fmt.Println(string(b))
+	assert.Nil(t, readError)
+	assert.NotEqualf(t, 0, readCount, "Empty file")
 }

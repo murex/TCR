@@ -26,8 +26,10 @@ import (
 	"time"
 )
 
+// Score is the computed TCR score
 type Score float64
 
+// TcrEvent is the structure containing information related to a TCR event
 type TcrEvent struct {
 	timestamp         time.Time
 	modifiedSrcLines  int
@@ -62,7 +64,7 @@ func computeDurationInRed(from TcrEvent, to TcrEvent) time.Duration {
 	return computeDuration(from, to) - computeDurationInGreen(from, to)
 }
 
-func computeTimeInGreenRatio(from TcrEvent, to TcrEvent) float64 {
+func computeTimeInGreenRatio(from TcrEvent, _ TcrEvent) float64 {
 	if from.testsPassed {
 		return 1
 	}
