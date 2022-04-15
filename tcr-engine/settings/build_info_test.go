@@ -38,18 +38,18 @@ var defaultBuildInfo = []BuildInfo{
 	{"Built By", "unknown"},
 }
 
-func Test_get_build_info_default(t *testing.T) {
+func Test_get_build_info_with_default_values(t *testing.T) {
 	assert.ElementsMatch(t, defaultBuildInfo, GetBuildInfo())
 }
 
-func Test_print_build_info_default(t *testing.T) {
+func Test_print_build_info_with_default_values(t *testing.T) {
 	var expected []string
 	for _, info := range defaultBuildInfo {
 		expected = append(expected, "- "+info.Label+":\t"+info.Value+"\n")
 	}
 
 	out := capturer.CaptureStdout(PrintBuildInfo)
-	
+
 	printedLines := strings.SplitAfter(out, "\n")
 	// strings.Split() adds an extra empty string that we don't care about here
 	printedLines = printedLines[:len(printedLines)-1]

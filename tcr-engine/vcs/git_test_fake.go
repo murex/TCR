@@ -30,6 +30,7 @@ import (
 
 // GitFake provides a fake implementation of the git interface
 type GitFake struct {
+	GitImpl
 	failCommit   bool
 	failRestore  bool
 	failPush     bool
@@ -49,21 +50,6 @@ func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, chan
 		failDiff:     failDiff,
 		changedFiles: changedFiles,
 	}, nil
-}
-
-// GetRootDir returns an empty root directory path
-func (g GitFake) GetRootDir() string {
-	return ""
-}
-
-// GetRemoteName returns an empty remote name
-func (g GitFake) GetRemoteName() string {
-	return ""
-}
-
-// GetWorkingBranch returns an empty working branch
-func (g GitFake) GetWorkingBranch() string {
-	return ""
 }
 
 // Commit does nothing. Returns an error if failCommit flag is set
@@ -89,20 +75,6 @@ func (g GitFake) Pull() error {
 // ListChanges returns the list of changed files configured at fake initialization
 func (g *GitFake) ListChanges() (files []string, err error) {
 	return g.changedFiles, fakeOperation("diff", g.failDiff)
-}
-
-// EnablePush does nothing
-func (g GitFake) EnablePush(_ bool) {
-}
-
-// IsPushEnabled always returns false
-func (g GitFake) IsPushEnabled() bool {
-	return false
-}
-
-// CheckRemoteAccess always returns false
-func (g GitFake) CheckRemoteAccess() bool {
-	return false
 }
 
 func fakeOperation(operation string, shouldFail bool) (err error) {

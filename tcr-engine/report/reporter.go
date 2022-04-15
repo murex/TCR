@@ -88,7 +88,7 @@ func Subscribe(onReport func(msg Message)) chan bool {
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified
-// of any further reported messages
+// of any further reported message
 func Unsubscribe(c chan bool) {
 	c <- true
 }

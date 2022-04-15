@@ -98,21 +98,14 @@ func WithMobTimerDuration(duration time.Duration) func(params *Params) {
 	}
 }
 
-// WithAutoPush sets auto-push flag to true
-func WithAutoPush() func(params *Params) {
+// WithAutoPush sets auto-push flag to the provided value
+func WithAutoPush(value bool) func(params *Params) {
 	return func(params *Params) {
-		params.AutoPush = true
+		params.AutoPush = value
 	}
 }
 
-// WithNoAutoPush sets auto-push flag to false
-func WithNoAutoPush() func(params *Params) {
-	return func(params *Params) {
-		params.AutoPush = false
-	}
-}
-
-// WithRunMode sets the provided mode as the runmode
+// WithRunMode sets the provided mode as the run mode
 func WithRunMode(mode runmode.RunMode) func(params *Params) {
 	return func(params *Params) {
 		params.Mode = mode
