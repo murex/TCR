@@ -85,6 +85,15 @@ func Reset(name string) {
 	}
 }
 
+// Unregister removes the toolchain with the provided name from the toolchain register
+func Unregister(name string) {
+	key := strings.ToLower(name)
+	_, found := registered[key]
+	if found {
+		delete(registered, key)
+	}
+}
+
 func getBuiltIn(name string) *TchnInterface {
 	var builtIn, _ = builtIn[strings.ToLower(name)]
 	return &builtIn

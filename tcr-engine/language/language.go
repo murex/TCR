@@ -122,12 +122,12 @@ func (lang *Language) IsSrcFile(filepath string) bool {
 	if lang.IsTestFile(filepath) {
 		return false
 	}
-	return lang.srcFileFilter.matches(filepath, lang.baseDir)
+	return lang.GetSrcFileFilter().matches(filepath, lang.baseDir)
 }
 
 // IsTestFile returns true if the provided filePath is recognized as a test file for this language
 func (lang *Language) IsTestFile(filepath string) bool {
-	return lang.testFileFilter.matches(filepath, lang.baseDir)
+	return lang.GetTestFileFilter().matches(filepath, lang.baseDir)
 }
 
 // IsLanguageFile returns true if the provided filePath is recognized as either a source or a test file for this language
@@ -138,7 +138,7 @@ func (lang *Language) IsLanguageFile(filepath string) bool {
 // DirsToWatch returns the list of directories that TCR engine needs to watch for this language
 func (lang *Language) DirsToWatch(baseDir string) (dirs []string) {
 	// First we concatenate the 2 lists
-	concat := append(lang.srcFileFilter.Directories, lang.testFileFilter.Directories...)
+	concat := append(lang.GetSrcFileFilter().Directories, lang.GetTestFileFilter().Directories...)
 
 	// Then we use a map to remove duplicates
 	unique := make(map[string]int)
@@ -209,11 +209,6 @@ func (lang *Language) worksWithToolchain(toolchainName string) bool {
 	return false
 }
 
-// SrcDirs returns the list of subdirectories that may contain source files for this language
-func (lang *Language) SrcDirs() []string {
-	return lang.srcFileFilter.Directories
-}
-
 // AllSrcFiles returns the list of source files for this language.
 // If there is an overlap between source and test files patterns, test files
 // are excluded from the returned list
@@ -248,12 +243,12 @@ func (lang *Language) AllTestFiles() (result []string, err error) {
 
 // allMatchingSrcFiles returns the list of source files matching for this language
 func (lang *Language) allMatchingSrcFiles() ([]string, error) {
-	return lang.srcFileFilter.findAllMatchingFiles(lang.baseDir)
+	return lang.GetSrcFileFilter().findAllMatchingFiles(lang.baseDir)
 }
 
 // allMatchingTestFiles returns the list of test files matching for this language
 func (lang *Language) allMatchingTestFiles() ([]string, error) {
-	return lang.testFileFilter.findAllMatchingFiles(lang.baseDir)
+	return lang.GetTestFileFilter().findAllMatchingFiles(lang.baseDir)
 }
 
 func (lang *Language) setBaseDir(dir string) {

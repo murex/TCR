@@ -23,6 +23,8 @@ SOFTWARE.
 package language
 
 import (
+	"errors"
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -63,6 +65,79 @@ func Test_dirs_to_watch_should_not_have_duplicates(t *testing.T) {
 	assert.Equal(t, 1, len(lang.DirsToWatch(baseDir)))
 }
 
+func Test_a_file_with_no_name_is_not_a_language_file(t *testing.T) {
+	lang := ALanguage()
+	assert.False(t, lang.IsLanguageFile(""))
+}
+
+func Test_a_matching_source_file_is_a_language_file(t *testing.T) {
+	const dir = "dir"
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(dir), WithPattern(".*\\.ext"))),
+		WithTestFiles(AFileTreeFilter(WithDirectory(dir), WithClosedPattern())),
+	)
+	assert.True(t, lang.IsLanguageFile(filepath.Join(dir, "some-file.ext")))
+}
+
+func Test_a_matching_test_file_is_a_language_file(t *testing.T) {
+	const dir = "dir"
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(dir), WithClosedPattern())),
+		WithTestFiles(AFileTreeFilter(WithDirectory(dir), WithPattern(".*\\.ext"))),
+	)
+	assert.True(t, lang.IsLanguageFile(filepath.Join(dir, "some-file.ext")))
+}
+
+func Test_a_file_not_matching_src_or_test_is_not_a_language_file(t *testing.T) {
+	const dir = "dir"
+	lang := ALanguage(
+		WithSrcFiles(AFileTreeFilter(WithDirectory(dir), WithClosedPattern())),
+		WithTestFiles(AFileTreeFilter(WithDirectory(dir), WithClosedPattern())),
+	)
+	assert.False(t, lang.IsLanguageFile(filepath.Join(dir, "some-file.ext")))
+}
+
+func Test_get_toolchain_with_unregistered_toolchain(t *testing.T) {
+	lang := ALanguage(
+		WithDefaultToolchain("some-toolchain"),
+		WithCompatibleToolchain("some-toolchain"),
+	)
+
+	actual, err := lang.GetToolchain("some-toolchain")
+	assert.Zero(t, actual)
+	assert.Error(t, err)
+	assert.Equal(t, errors.New("toolchain not supported: some-toolchain"), err)
+}
+
+func Test_get_toolchain_with_empty_toolchain_name(t *testing.T) {
+	lang := ALanguage(
+		WithDefaultToolchain("some-toolchain"),
+		WithCompatibleToolchain("some-toolchain"),
+	)
+	_ = toolchain.Register(
+		toolchain.AToolchain(toolchain.WithName("some-toolchain")))
+	actual, err := lang.GetToolchain("")
+	toolchain.Unregister("some-toolchain")
+
+	assert.Zero(t, err)
+	assert.Equal(t, lang.toolchains.Default, actual.GetName())
+}
+
+func Test_get_toolchain_with_non_compatible_toolchain(t *testing.T) {
+	lang := ALanguage(
+		WithDefaultToolchain("some-toolchain"),
+		WithCompatibleToolchain("some-toolchain"),
+	)
+	_ = toolchain.Register(
+		toolchain.AToolchain(toolchain.WithName("other-toolchain")))
+	actual, err := lang.GetToolchain("other-toolchain")
+	toolchain.Unregister("other-toolchain")
+
+	assert.Zero(t, actual)
+	assert.Error(t, err)
+	assert.Equal(t, errors.New("other-toolchain toolchain is not compatible with default-language language"), err)
+}
+
 // Assert utility functions for language type
 
 func assertDefaultToolchain(t *testing.T, expected string, name string) {
@@ -79,15 +154,15 @@ func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
 
 func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
 	lang := getBuiltIn(name)
-	for _, toolchain := range expected {
-		assert.True(t, lang.worksWithToolchain(toolchain))
+	for _, tchn := range expected {
+		assert.True(t, lang.worksWithToolchain(tchn))
 	}
 }
 
 func assertIncompatibleToolchains(t *testing.T, expected []string, name string) {
 	lang := getBuiltIn(name)
-	for _, toolchain := range expected {
-		assert.False(t, lang.worksWithToolchain(toolchain))
+	for _, tchn := range expected {
+		assert.False(t, lang.worksWithToolchain(tchn))
 	}
 }
 

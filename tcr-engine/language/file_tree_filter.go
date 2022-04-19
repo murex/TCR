@@ -78,6 +78,9 @@ func isSubPathOf(path string, refPath string) bool {
 }
 
 func (treeFilter FileTreeFilter) matches(filepath string, baseDir string) bool {
+	if filepath == "" {
+		return false
+	}
 	if treeFilter.isInFileTree(filepath, baseDir) {
 		// If no pattern is set, any file matches as long as it's in the file tree
 		if treeFilter.FilePatterns == nil || len(treeFilter.FilePatterns) == 0 {

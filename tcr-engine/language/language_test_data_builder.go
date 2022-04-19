@@ -26,15 +26,11 @@ package language
 
 // ALanguage is a test data builder for type Language
 func ALanguage(languageBuilders ...func(lang *Language)) *Language {
-	lang := &Language{
-		name: "default-language",
-		toolchains: Toolchains{
-			Default:    "default-toolchain",
-			Compatible: []string{"default-toolchain"},
-		},
-		srcFileFilter:  *AFileTreeFilter(),
-		testFileFilter: *AFileTreeFilter(),
-	}
+	lang := New("default-language",
+		Toolchains{Default: "default-toolchain", Compatible: []string{"default-toolchain"}},
+		*AFileTreeFilter(),
+		*AFileTreeFilter(),
+	)
 
 	for _, build := range languageBuilders {
 		build(lang)
