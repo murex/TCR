@@ -24,8 +24,8 @@ package engine
 
 import (
 	"fmt"
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/metrics"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
@@ -156,7 +156,7 @@ func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
 func initTcrEngineWithFakes(f failures) TcrInterface {
 	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest))
 	lang := registerFakeLanguage(tchn)
-	metrics.EventRepository = &metrics.TcrEventInMemoryRepository{}
+	events.EventRepository = &events.TcrEventInMemoryRepository{}
 	tcr := NewTcrEngine()
 	tcr.Init(ui.NewFakeUI(), params.Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
 	replaceGitImplWithFake(tcr,
@@ -221,7 +221,7 @@ func Test_run_as_role_methods(t *testing.T) {
 			tcr = initTcrEngineWithFakes(failures{})
 			settings.EnableMobTimer = false
 			tt.runAsMethod()
-			time.Sleep(1 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
 		})
 	}
@@ -230,19 +230,19 @@ func Test_run_as_role_methods(t *testing.T) {
 func Test_generate_tcr_event_on_build_fail(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failBuild})
 	tcr.RunTCRCycle()
-	assert.False(t, metrics.EventRepository.Get().GetBuildPassed())
+	assert.False(t, events.EventRepository.Get().BuildPassed)
 }
 
 func Test_generate_tcr_event_on_build_pass_and_tests_pass(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
 	tcr.RunTCRCycle()
-	assert.True(t, metrics.EventRepository.Get().GetBuildPassed())
-	assert.True(t, metrics.EventRepository.Get().GetTestsPassed())
+	assert.True(t, events.EventRepository.Get().BuildPassed)
+	assert.True(t, events.EventRepository.Get().TestsPassed)
 }
 
 func Test_generate_tcr_event_on_build_pass_and_tests_fail(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest})
 	tcr.RunTCRCycle()
-	assert.True(t, metrics.EventRepository.Get().GetBuildPassed())
-	assert.False(t, metrics.EventRepository.Get().GetTestsPassed())
+	assert.True(t, events.EventRepository.Get().BuildPassed)
+	assert.False(t, events.EventRepository.Get().TestsPassed)
 }

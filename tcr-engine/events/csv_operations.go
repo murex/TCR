@@ -20,10 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package metrics
+package events
 
 import (
 	"encoding/csv"
+	"fmt"
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/report"
 	"io"
@@ -35,13 +36,13 @@ import (
 
 const timeLayoutFormat = "2006-01-02 15:04:05"
 
-const metricsFileName = "tcr-metrics.csv"
+const eventLogFileName = "event-log.csv"
 
-// AppendEventToMetricsFile appends a TCR event to the TCR metrics file
-func AppendEventToMetricsFile(event TcrEvent) {
-	metricsFilePath := filepath.Join(config.GetConfigDirPath(), metricsFileName)
-	//report.PostInfo("Metrics file: ", metricsFilePath)
-	file, err := os.OpenFile(metricsFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+// AppendEventToLogFile appends a TCR event to the TCR event log file
+func AppendEventToLogFile(e TcrEvent) {
+	eventLogFilePath := filepath.Join(config.GetConfigDirPath(), eventLogFileName)
+	//report.PostInfo("Metrics file: ", eventLogFilePath)
+	file, err := os.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		report.PostWarning(err)
 		return
@@ -53,8 +54,35 @@ func AppendEventToMetricsFile(event TcrEvent) {
 		}
 	}(file)
 
-	eventErr := appendEvent(event, file)
+	eventErr := appendEvent(e, file)
 	if eventErr != nil {
+		report.PostWarning(err)
+		return
+	}
+}
+
+// AppendEventToLogFile2 appends a TCR event to the TCR event log file
+func AppendEventToLogFile2(e TcrEvent) {
+	eventLogFilePath := filepath.Join("test", "test.csv")
+	fmt.Println("Metrics file: ", eventLogFilePath)
+	file, err := AppFs.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		fmt.Println(err)
+		report.PostWarning(err)
+		return
+	}
+	defer func() {
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+			report.PostWarning(err)
+			return
+		}
+	}()
+
+	eventErr := appendEvent(e, file)
+	if eventErr != nil {
+		fmt.Println(err)
 		report.PostWarning(err)
 		return
 	}
@@ -62,19 +90,22 @@ func AppendEventToMetricsFile(event TcrEvent) {
 
 func appendEvent(event TcrEvent, out io.Writer) (err error) {
 	w := csv.NewWriter(out)
-	if err = w.Write(
-		[]string{
-			event.timestamp.In(time.UTC).Format(timeLayoutFormat),
-			strconv.Itoa(event.modifiedSrcLines),
-			strconv.Itoa(event.modifiedTestLines),
-			strconv.Itoa(event.addedTestCases),
-			strconv.FormatBool(event.buildPassed),
-			strconv.FormatBool(event.testsPassed),
-		}); err != nil {
+	if err = w.Write(toCsvRecord(event)); err != nil {
 		return
 	}
 	// Write any buffered data to the underlying writer.
 	w.Flush()
 	err = w.Error()
 	return
+}
+
+func toCsvRecord(event TcrEvent) []string {
+	return []string{
+		event.Timestamp.In(time.UTC).Format(timeLayoutFormat),
+		strconv.Itoa(event.ModifiedSrcLines),
+		strconv.Itoa(event.ModifiedTestLines),
+		strconv.Itoa(event.AddedTestCases),
+		strconv.FormatBool(event.BuildPassed),
+		strconv.FormatBool(event.TestsPassed),
+	}
 }

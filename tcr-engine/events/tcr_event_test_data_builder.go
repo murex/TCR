@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package metrics
+package events
 
 import "time"
 
@@ -33,32 +33,33 @@ var (
 
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
-	tcrEvent := &TcrEvent{
-		timestamp:         snapshotTime,
-		modifiedSrcLines:  0,
-		modifiedTestLines: 0,
-		addedTestCases:    0,
-		buildPassed:       true,
-		testsPassed:       true,
-	}
+	//tcrEvent := &TcrEvent{
+	//	Timestamp:         snapshotTime,
+	//	ModifiedSrcLines:  0,
+	//	ModifiedTestLines: 0,
+	//	AddedTestCases:    0,
+	//	BuildPassed:       true,
+	//	TestsPassed:       true,
+	//}
+	tcrEvent := NewTcrEvent(0, 0, 0, true, true)
 
 	for _, build := range builders {
-		build(tcrEvent)
+		build(&tcrEvent)
 	}
-	return tcrEvent
+	return &tcrEvent
 }
 
 // WithTimestamp adds timestamp to TcrEvent test data builder
 func WithTimestamp(timestamp time.Time) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.timestamp = timestamp
+		tcrEvent.Timestamp = timestamp
 	}
 }
 
 // WithDelay adds delayed timestamp to TcrEvent test data builder
 func WithDelay(delay time.Duration) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.timestamp = tcrEvent.timestamp.Add(delay)
+		tcrEvent.Timestamp = tcrEvent.Timestamp.Add(delay)
 	}
 }
 
@@ -74,48 +75,48 @@ func TodayAt(hour int, min int, sec int) time.Time {
 // WithModifiedSrcLines sets modified source lines to TCR event test data builder
 func WithModifiedSrcLines(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.modifiedSrcLines = count
+		tcrEvent.ModifiedSrcLines = count
 	}
 }
 
 // WithModifiedTestLines sets modified test lines to TCR event test data builder
 func WithModifiedTestLines(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.modifiedTestLines = count
+		tcrEvent.ModifiedTestLines = count
 	}
 }
 
 // WithAddedTestCases sets added test cases to TCR event test data builder
 func WithAddedTestCases(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.addedTestCases = count
+		tcrEvent.AddedTestCases = count
 	}
 }
 
 // WithFailingBuild sets TCR event test data builder with failing build
 func WithFailingBuild() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.buildPassed = false
+		tcrEvent.BuildPassed = false
 	}
 }
 
 // WithPassingBuild sets TCR event test data builder with passing build
 func WithPassingBuild() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.buildPassed = true
+		tcrEvent.BuildPassed = true
 	}
 }
 
 // WithFailingTests sets TCR event test data builder with failing tests
 func WithFailingTests() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.testsPassed = false
+		tcrEvent.TestsPassed = false
 	}
 }
 
 // WithPassingTests sets TCR event test data builder with passing tests
 func WithPassingTests() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.testsPassed = true
+		tcrEvent.TestsPassed = true
 	}
 }

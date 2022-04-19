@@ -20,7 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package metrics
+package events
+
+import "github.com/spf13/afero"
+
+// AppFs is the singleton referring to the filesystem being used
+var AppFs afero.Fs
 
 // TcrEventRepository is the interface for a repository where we store TCR events
 type TcrEventRepository interface {
@@ -33,6 +38,7 @@ var EventRepository TcrEventRepository
 
 func init() {
 	EventRepository = &TcrEventFileRepository{}
+	AppFs = afero.NewOsFs()
 }
 
 // TcrEventInMemoryRepository is an in-memory implementation of a TCR Event repository
@@ -52,16 +58,23 @@ func (t *TcrEventInMemoryRepository) Add(event TcrEvent) {
 
 // TcrEventFileRepository is a filesystem implementation of a TCR Event repository
 type TcrEventFileRepository struct {
-	event TcrEvent
+	filename string
+	event    TcrEvent
+}
+
+// NewTcrEventFileRepository creates a new TCR Event file repository
+func NewTcrEventFileRepository(filename string) TcrEventRepository {
+	return &TcrEventFileRepository{filename: filename}
 }
 
 // Get returns an event stored in TCR Event repository
 func (t *TcrEventFileRepository) Get() TcrEvent {
+	// TODO read from the file instead of in memory attribute
 	return t.event
 }
 
 // Add stores a TCR event in TCR Event repository
 func (t *TcrEventFileRepository) Add(event TcrEvent) {
 	t.event = event
-	AppendEventToMetricsFile(t.event)
+	AppendEventToLogFile2(t.event)
 }

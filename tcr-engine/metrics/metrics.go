@@ -23,45 +23,12 @@ SOFTWARE.
 package metrics
 
 import (
+	"github.com/murex/tcr/tcr-engine/events"
 	"time"
 )
 
 // Score is the computed TCR score
 type Score float64
-
-// TcrEvent is the structure containing information related to a TCR event
-type TcrEvent struct {
-	timestamp         time.Time
-	modifiedSrcLines  int
-	modifiedTestLines int
-	addedTestCases    int
-	buildPassed       bool
-	testsPassed       bool
-}
-
-// NewTcrEvent create a new TCREvent instance
-func NewTcrEvent(
-	modifiedSrcLines, modifiedTestLines, addedTestCases int,
-	buildPassed, testPassed bool) TcrEvent {
-	return TcrEvent{
-		timestamp:         time.Now(),
-		modifiedSrcLines:  modifiedSrcLines,
-		modifiedTestLines: modifiedTestLines,
-		addedTestCases:    addedTestCases,
-		buildPassed:       buildPassed,
-		testsPassed:       testPassed,
-	}
-}
-
-// GetBuildPassed indicates if the build passed in this event
-func (event TcrEvent) GetBuildPassed() bool {
-	return event.buildPassed
-}
-
-// GetTestsPassed indicates if the tests passed in this event
-func (event TcrEvent) GetTestsPassed() bool {
-	return event.testsPassed
-}
 
 func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit float64) Score {
 	if changesPerCommit == 0 {
@@ -70,31 +37,31 @@ func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit
 	return Score(timeInGreenRatio * savingRate / changesPerCommit)
 }
 
-func computeDuration(from TcrEvent, to TcrEvent) time.Duration {
-	if from.timestamp.After(to.timestamp) {
+func computeDuration(from events.TcrEvent, to events.TcrEvent) time.Duration {
+	if from.Timestamp.After(to.Timestamp) {
 		return computeDuration(to, from)
 	}
-	return to.timestamp.Sub(from.timestamp)
+	return to.Timestamp.Sub(from.Timestamp)
 }
 
-func computeDurationInGreen(from TcrEvent, to TcrEvent) time.Duration {
-	if from.testsPassed {
+func computeDurationInGreen(from events.TcrEvent, to events.TcrEvent) time.Duration {
+	if from.TestsPassed {
 		return computeDuration(from, to)
 	}
 	return 0
 }
 
-func computeDurationInRed(from TcrEvent, to TcrEvent) time.Duration {
+func computeDurationInRed(from events.TcrEvent, to events.TcrEvent) time.Duration {
 	return computeDuration(from, to) - computeDurationInGreen(from, to)
 }
 
-func computeTimeInGreenRatio(from TcrEvent, _ TcrEvent) float64 {
-	if from.testsPassed {
+func computeTimeInGreenRatio(from events.TcrEvent, _ events.TcrEvent) float64 {
+	if from.TestsPassed {
 		return 1
 	}
 	return 0
 }
 
-func computeTimeInRedRatio(from TcrEvent, to TcrEvent) float64 {
+func computeTimeInRedRatio(from events.TcrEvent, to events.TcrEvent) float64 {
 	return 1 - computeTimeInGreenRatio(from, to)
 }

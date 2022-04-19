@@ -23,6 +23,7 @@ SOFTWARE.
 package metrics
 
 import (
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -45,55 +46,55 @@ func Test_compute_score_with_0_change_per_commit(t *testing.T) {
 }
 
 func Test_compute_duration_between_2_records(t *testing.T) {
-	startEvent := ATcrEvent(WithTimestamp(TodayAt(4, 39, 31)))
-	endEvent := ATcrEvent(WithTimestamp(TodayAt(4, 41, 02)))
+	startEvent := events.ATcrEvent(events.WithTimestamp(events.TodayAt(4, 39, 31)))
+	endEvent := events.ATcrEvent(events.WithTimestamp(events.TodayAt(4, 41, 02)))
 	assert.Equal(t, 1*time.Minute+31*time.Second, computeDuration(*startEvent, *endEvent))
 }
 
 func Test_compute_duration_between_2_records_with_inverted_timestamp(t *testing.T) {
-	startEvent := ATcrEvent(WithDelay(1 * time.Minute))
-	endEvent := ATcrEvent()
+	startEvent := events.ATcrEvent(events.WithDelay(1 * time.Minute))
+	endEvent := events.ATcrEvent()
 	assert.Equal(t, 1*time.Minute, computeDuration(*startEvent, *endEvent))
 }
 
 func Test_compute_durations_with_no_failing_tests_between_2_records(t *testing.T) {
-	startEvent := ATcrEvent(WithPassingTests())
-	endEvent := ATcrEvent(WithDelay(1 * time.Second))
+	startEvent := events.ATcrEvent(events.WithPassingTests())
+	endEvent := events.ATcrEvent(events.WithDelay(1 * time.Second))
 	assert.Equal(t, 1*time.Second, computeDurationInGreen(*startEvent, *endEvent))
 	assert.Equal(t, 0*time.Second, computeDurationInRed(*startEvent, *endEvent))
 }
 
 func Test_compute_durations_with_failing_tests_between_2_records(t *testing.T) {
-	startEvent := ATcrEvent(WithFailingTests())
-	endEvent := ATcrEvent(WithDelay(1 * time.Second))
+	startEvent := events.ATcrEvent(events.WithFailingTests())
+	endEvent := events.ATcrEvent(events.WithDelay(1 * time.Second))
 	assert.Equal(t, 0*time.Second, computeDurationInGreen(*startEvent, *endEvent))
 	assert.Equal(t, 1*time.Second, computeDurationInRed(*startEvent, *endEvent))
 }
 
 func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing.T) {
-	startEvent := ATcrEvent()
-	endEvent := ATcrEvent(WithDelay(1 * time.Second))
+	startEvent := events.ATcrEvent()
+	endEvent := events.ATcrEvent(events.WithDelay(1 * time.Second))
 	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
 func Test_compute_time_ratios_with_failing_tests_between_2_records(t *testing.T) {
-	startEvent := ATcrEvent(WithFailingTests())
-	endEvent := ATcrEvent(WithDelay(1 * time.Second))
+	startEvent := events.ATcrEvent(events.WithFailingTests())
+	endEvent := events.ATcrEvent(events.WithDelay(1 * time.Second))
 	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
 func Test_compute_time_ratios_with_no_failing_tests_between_2_records_with_same_timestamp(t *testing.T) {
-	startEvent := ATcrEvent(WithPassingTests())
-	endEvent := ATcrEvent()
+	startEvent := events.ATcrEvent(events.WithPassingTests())
+	endEvent := events.ATcrEvent()
 	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))
 }
 
 func Test_compute_time_ratios_with_failing_tests_between_2_records_with_same_timestamp(t *testing.T) {
-	startEvent := ATcrEvent(WithFailingTests())
-	endEvent := ATcrEvent()
+	startEvent := events.ATcrEvent(events.WithFailingTests())
+	endEvent := events.ATcrEvent()
 	assert.Equal(t, float64(0), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(1), computeTimeInRedRatio(*startEvent, *endEvent))
 }

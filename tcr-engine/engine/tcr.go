@@ -24,9 +24,9 @@ package engine
 
 import (
 	"github.com/murex/tcr/tcr-engine/checker"
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/metrics"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
@@ -292,8 +292,8 @@ func (tcr *TcrEngine) RunTCRCycle() {
 }
 
 func (tcr *TcrEngine) addEvent(buildPassed bool, testsPassed bool) {
-	metrics.EventRepository.Add(
-		metrics.NewTcrEvent(
+	events.EventRepository.Add(
+		events.NewTcrEvent(
 			0,
 			0,
 			0,
