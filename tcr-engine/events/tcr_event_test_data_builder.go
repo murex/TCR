@@ -42,6 +42,7 @@ func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
 	//	TestsPassed:       true,
 	//}
 	tcrEvent := NewTcrEvent(0, 0, 0, true, true)
+	tcrEvent.Timestamp = snapshotTime
 
 	for _, build := range builders {
 		build(&tcrEvent)
