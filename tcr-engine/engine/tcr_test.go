@@ -156,6 +156,7 @@ func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
 func initTcrEngineWithFakes(f failures) TcrInterface {
 	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest))
 	lang := registerFakeLanguage(tchn)
+	metrics.EventRepository = &metrics.TcrEventInMemoryRepository{}
 	tcr := NewTcrEngine()
 	tcr.Init(ui.NewFakeUI(), params.Params{Language: lang, Toolchain: tchn, Mode: runmode.OneShot{}})
 	replaceGitImplWithFake(tcr,

@@ -32,7 +32,7 @@ type TcrEventRepository interface {
 var EventRepository TcrEventRepository
 
 func init() {
-	EventRepository = &TcrEventInMemoryRepository{}
+	EventRepository = &TcrEventFileRepository{}
 }
 
 // TcrEventInMemoryRepository is an in-memory implementation of a TCR Event repository
@@ -48,4 +48,20 @@ func (t *TcrEventInMemoryRepository) Get() TcrEvent {
 // Add stores a TCR event in TCR Event repository
 func (t *TcrEventInMemoryRepository) Add(event TcrEvent) {
 	t.event = event
+}
+
+// TcrEventFileRepository is a filesystem implementation of a TCR Event repository
+type TcrEventFileRepository struct {
+	event TcrEvent
+}
+
+// Get returns an event stored in TCR Event repository
+func (t *TcrEventFileRepository) Get() TcrEvent {
+	return t.event
+}
+
+// Add stores a TCR event in TCR Event repository
+func (t *TcrEventFileRepository) Add(event TcrEvent) {
+	t.event = event
+	AppendEventToMetricsFile(t.event)
 }

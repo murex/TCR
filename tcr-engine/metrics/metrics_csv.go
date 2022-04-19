@@ -24,27 +24,41 @@ package metrics
 
 import (
 	"encoding/csv"
+	"github.com/murex/tcr/tcr-engine/config"
+	"github.com/murex/tcr/tcr-engine/report"
 	"io"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
 
 const timeLayoutFormat = "2006-01-02 15:04:05"
 
-//const metricsFileName = "./TCR_Metrics.csv"
+const metricsFileName = "tcr-metrics.csv"
 
-//func appendEventToMetricsFile(event TcrEvent) {
-//	file, err := os.OpenFile(metricsFileName, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-//	if err != nil {
-//		log.Fatalln("error opening the metrics file: ", err)
-//	}
-//	defer file.Close()
-//
-//	eventErr := appendEvent(event, file)
-//	if eventErr != nil {
-//		return
-//	}
-//}
+// AppendEventToMetricsFile appends a TCR event to the TCR metrics file
+func AppendEventToMetricsFile(event TcrEvent) {
+	metricsFilePath := filepath.Join(config.GetConfigDirPath(), metricsFileName)
+	//report.PostInfo("Metrics file: ", metricsFilePath)
+	file, err := os.OpenFile(metricsFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		report.PostWarning(err)
+		return
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			report.PostWarning(err)
+		}
+	}(file)
+
+	eventErr := appendEvent(event, file)
+	if eventErr != nil {
+		report.PostWarning(err)
+		return
+	}
+}
 
 func appendEvent(event TcrEvent, out io.Writer) (err error) {
 	w := csv.NewWriter(out)
