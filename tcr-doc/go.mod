@@ -9,7 +9,7 @@ replace github.com/murex/tcr/tcr-gui => ../tcr-gui
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-00010101000000-000000000000
+	github.com/murex/tcr/tcr-cli v0.0.0-20220414085711-8ca37ca267ec
 	github.com/murex/tcr/tcr-gui v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.4.0
 )
