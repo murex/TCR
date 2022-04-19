@@ -11,7 +11,8 @@ vet:
 
 .PHONY: test
 test:
-	@RICHGO_FORCE_COLOR=1 richgo test -covermode atomic -coverprofile=coverage.out -tags=test_helper -v ./...
+	@RICHGO_FORCE_COLOR=1 richgo test -covermode atomic -coverprofile=coverage-all.out -tags=test_helper -v ./...
+	@grep -v "_test_" coverage-all.out >| coverage.out
 
 .PHONY: cov
 cov:
