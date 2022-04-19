@@ -39,6 +39,30 @@ type TcrEvent struct {
 	testsPassed       bool
 }
 
+// NewTcrEvent create a new TCREvent instance
+func NewTcrEvent(
+	modifiedSrcLines, modifiedTestLines, addedTestCases int,
+	buildPassed, testPassed bool) TcrEvent {
+	return TcrEvent{
+		timestamp:         time.Now(),
+		modifiedSrcLines:  modifiedSrcLines,
+		modifiedTestLines: modifiedTestLines,
+		addedTestCases:    addedTestCases,
+		buildPassed:       buildPassed,
+		testsPassed:       testPassed,
+	}
+}
+
+// GetBuildPassed indicates if the build passed in this event
+func (event TcrEvent) GetBuildPassed() bool {
+	return event.buildPassed
+}
+
+// GetTestsPassed indicates if the tests passed in this event
+func (event TcrEvent) GetTestsPassed() bool {
+	return event.testsPassed
+}
+
 func computeScore(timeInGreenRatio float64, savingRate float64, changesPerCommit float64) Score {
 	if changesPerCommit == 0 {
 		return 0

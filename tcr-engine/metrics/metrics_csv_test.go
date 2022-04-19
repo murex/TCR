@@ -42,7 +42,7 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 		{
 			"timestamp in UTC",
 			0,
-			*aTcrEvent(withTimestamp(time.Date(
+			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC))),
 			"2022-04-11 15:52:03",
@@ -50,7 +50,7 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 		{
 			"timestamp not in UTC",
 			0,
-			*aTcrEvent(withTimestamp(time.Date(
+			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.FixedZone("UTC-7", -7*60*60)))),
 			"2022-04-11 22:52:03",
@@ -58,43 +58,43 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 		{
 			"modified source lines",
 			1,
-			*aTcrEvent(withModifiedSrcLines(2)),
+			*ATcrEvent(WithModifiedSrcLines(2)),
 			"2",
 		},
 		{
 			"modified test lines",
 			2,
-			*aTcrEvent(withModifiedTestLines(25)),
+			*ATcrEvent(WithModifiedTestLines(25)),
 			"25",
 		},
 		{
 			"added test cases",
 			3,
-			*aTcrEvent(withAddedTestCases(3)),
+			*ATcrEvent(WithAddedTestCases(3)),
 			"3",
 		},
 		{
 			"build passing",
 			4,
-			*aTcrEvent(withPassingBuild()),
+			*ATcrEvent(WithPassingBuild()),
 			"true",
 		},
 		{
 			"build failing",
 			4,
-			*aTcrEvent(withFailingBuild()),
+			*ATcrEvent(WithFailingBuild()),
 			"false",
 		},
 		{
 			"tests passing",
 			5,
-			*aTcrEvent(withPassingTests()),
+			*ATcrEvent(WithPassingTests()),
 			"true",
 		},
 		{
 			"tests failing",
 			5,
-			*aTcrEvent(withFailingTests()),
+			*ATcrEvent(WithFailingTests()),
 			"false",
 		},
 	}
@@ -111,7 +111,7 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 }
 
 func Test_it_should_create_the_file_when_it_doesnt_exist(t *testing.T) {
-	event := aTcrEvent(withTimestamp(time.Date(
+	event := ATcrEvent(WithTimestamp(time.Date(
 		2022, 4, 11, 15, 52, 3, 0,
 		time.UTC)))
 

@@ -25,6 +25,7 @@ package engine
 import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/metrics"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
@@ -223,4 +224,24 @@ func Test_run_as_role_methods(t *testing.T) {
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
 		})
 	}
+}
+
+func Test_generate_tcr_event_on_build_fail(t *testing.T) {
+	tcr := initTcrEngineWithFakes(failures{failBuild})
+	tcr.RunTCRCycle()
+	assert.False(t, metrics.EventRepository.Get().GetBuildPassed())
+}
+
+func Test_generate_tcr_event_on_build_pass_and_tests_pass(t *testing.T) {
+	tcr := initTcrEngineWithFakes(failures{})
+	tcr.RunTCRCycle()
+	assert.True(t, metrics.EventRepository.Get().GetBuildPassed())
+	assert.True(t, metrics.EventRepository.Get().GetTestsPassed())
+}
+
+func Test_generate_tcr_event_on_build_pass_and_tests_fail(t *testing.T) {
+	tcr := initTcrEngineWithFakes(failures{failTest})
+	tcr.RunTCRCycle()
+	assert.True(t, metrics.EventRepository.Get().GetBuildPassed())
+	assert.False(t, metrics.EventRepository.Get().GetTestsPassed())
 }

@@ -26,6 +26,7 @@ import (
 	"github.com/murex/tcr/tcr-engine/checker"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/metrics"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/role"
@@ -278,13 +279,27 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
+		tcr.addEvent(false, true)
 		return
 	}
 	if tcr.test() == nil {
+		tcr.addEvent(true, true)
 		tcr.commit()
 	} else {
+		tcr.addEvent(true, false)
 		tcr.revert()
 	}
+}
+
+func (tcr *TcrEngine) addEvent(buildPassed bool, testsPassed bool) {
+	metrics.EventRepository.Add(
+		metrics.NewTcrEvent(
+			0,
+			0,
+			0,
+			buildPassed,
+			testsPassed),
+	)
 }
 
 func (tcr *TcrEngine) build() error {
