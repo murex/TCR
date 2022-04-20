@@ -31,6 +31,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -91,4 +92,29 @@ func toCsvRecord(event TcrEvent) []string {
 		strconv.FormatBool(event.BuildPassed),
 		strconv.FormatBool(event.TestsPassed),
 	}
+}
+
+func toTctEvent(csvRecord string) TcrEvent {
+	split := strings.Split(csvRecord, ",")
+	parsedTime, _ := time.Parse(timeLayoutFormat, split[0])
+
+	event := TcrEvent{
+		Timestamp:         parsedTime,
+		ModifiedSrcLines:  toInt(split[1]),
+		ModifiedTestLines: toInt(split[2]),
+		AddedTestCases:    toInt(split[3]),
+		BuildPassed:       toBoolean(split[4]),
+		TestsPassed:       toBoolean(split[5]),
+	}
+	return event
+}
+
+func toBoolean(value string) bool {
+	parseBool, _ := strconv.ParseBool(value)
+	return parseBool
+}
+
+func toInt(value string) int {
+	intValue, _ := strconv.Atoi(value)
+	return intValue
 }

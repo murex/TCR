@@ -117,3 +117,16 @@ func Test_append_event_to_writer(t *testing.T) {
 	_ = appendEvent(event, &b)
 	assert.Equal(t, "2022-04-11 15:52:03,12,25,3,true,false\n", b.String())
 }
+
+func Test_converts_a_csv_record_to_an_event(t *testing.T) {
+	input := "2022-04-11 15:52:03,12,25,3,true,false\n"
+	expected := *ATcrEvent(
+		WithTimestamp(time.Date(2022, 4, 11, 15, 52, 3, 0, time.UTC)),
+		WithModifiedSrcLines(12),
+		WithModifiedTestLines(25),
+		WithAddedTestCases(3),
+		WithPassingBuild(),
+		WithFailingTests(),
+	)
+	assert.Equal(t, expected, toTctEvent(input))
+}
