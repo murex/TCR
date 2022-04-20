@@ -23,12 +23,19 @@ SOFTWARE.
 package events
 
 import (
+	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func init() {
+	config.DirPathGetter = func() string {
+		return "test"
+	}
+}
 
 func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 	repository := &TcrEventInMemoryRepository{}
@@ -37,12 +44,12 @@ func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 	assert.Equal(t, event, repository.Get())
 }
 
-func Test_add_and_get_event_to_file_repository(t *testing.T) {
+func Test_add_and_get_a_single_event_to_file_repository(t *testing.T) {
 	AppFs = afero.NewMemMapFs()
-	filename := "test.csv"
-	eventFilePath := filepath.Join("test", filename)
+	filename := "event-log.csv"
+	eventFilePath := filepath.Join(config.DirPathGetter(), filename)
 
-	_ = AppFs.Mkdir("test", os.ModeDir)
+	_ = AppFs.Mkdir(config.DirPathGetter(), os.ModeDir)
 	_, _ = AppFs.Create(eventFilePath)
 
 	repository := NewTcrEventFileRepository(eventFilePath)

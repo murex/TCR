@@ -24,9 +24,9 @@ package events
 
 import (
 	"encoding/csv"
-	"fmt"
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/spf13/afero"
 	"io"
 	"os"
 	"path/filepath"
@@ -40,52 +40,35 @@ const eventLogFileName = "event-log.csv"
 
 // AppendEventToLogFile appends a TCR event to the TCR event log file
 func AppendEventToLogFile(e TcrEvent) {
-	eventLogFilePath := filepath.Join(config.GetConfigDirPath(), eventLogFileName)
-	//report.PostInfo("Metrics file: ", eventLogFilePath)
-	file, err := os.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-	if err != nil {
-		report.PostWarning(err)
-		return
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			report.PostWarning(err)
-		}
-	}(file)
+	eventsFile := openEventLogFile()
 
-	eventErr := appendEvent(e, file)
-	if eventErr != nil {
-		report.PostWarning(err)
+	if eventsFile == nil {
 		return
 	}
-}
 
-// AppendEventToLogFile2 appends a TCR event to the TCR event log file
-func AppendEventToLogFile2(e TcrEvent) {
-	eventLogFilePath := filepath.Join("test", "test.csv")
-	fmt.Println("Metrics file: ", eventLogFilePath)
-	file, err := AppFs.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-	if err != nil {
-		fmt.Println(err)
-		report.PostWarning(err)
-		return
-	}
 	defer func() {
-		err = file.Close()
+		err := eventsFile.Close()
 		if err != nil {
-			fmt.Println(err)
 			report.PostWarning(err)
 			return
 		}
 	}()
 
-	eventErr := appendEvent(e, file)
+	eventErr := appendEvent(e, eventsFile)
 	if eventErr != nil {
-		fmt.Println(err)
-		report.PostWarning(err)
+		report.PostWarning(eventErr)
 		return
 	}
+}
+
+func openEventLogFile() afero.File {
+	eventLogFilePath := filepath.Join(config.DirPathGetter(), eventLogFileName)
+	file, err := AppFs.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		report.PostWarning(err)
+		return nil
+	}
+	return file
 }
 
 func appendEvent(event TcrEvent, out io.Writer) (err error) {

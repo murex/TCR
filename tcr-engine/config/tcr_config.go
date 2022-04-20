@@ -66,6 +66,7 @@ const (
 
 var (
 	configDirPath     string
+	DirPathGetter     = GetConfigDirPath // initializes the config directory path
 	configTraceWriter io.Writer
 )
 

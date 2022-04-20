@@ -76,5 +76,5 @@ func (t *TcrEventFileRepository) Get() TcrEvent {
 // Add stores a TCR event in TCR Event repository
 func (t *TcrEventFileRepository) Add(event TcrEvent) {
 	t.event = event
-	AppendEventToLogFile2(t.event)
+	AppendEventToLogFile(t.event)
 }
