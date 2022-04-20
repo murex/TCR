@@ -41,21 +41,21 @@ const eventLogFileName = "event-log.csv"
 
 // AppendEventToLogFile appends a TCR event to the TCR event log file
 func AppendEventToLogFile(e TcrEvent) {
-	eventsFile := openEventLogFile()
+	eventLogFile := openEventLogFile()
 
-	if eventsFile == nil {
+	if eventLogFile == nil {
 		return
 	}
 
 	defer func() {
-		err := eventsFile.Close()
+		err := eventLogFile.Close()
 		if err != nil {
 			report.PostWarning(err)
 			return
 		}
 	}()
 
-	eventErr := appendEvent(e, eventsFile)
+	eventErr := appendEvent(e, eventLogFile)
 	if eventErr != nil {
 		report.PostWarning(eventErr)
 		return
@@ -70,6 +70,22 @@ func openEventLogFile() afero.File {
 		return nil
 	}
 	return file
+}
+
+// ReadEventLogFile reads the content of the EventLog file
+func ReadEventLogFile() TcrEvent {
+	a := afero.Afero{
+		Fs: AppFs,
+	}
+	eventLogBytes, err := a.ReadFile(filepath.Join(config.DirPathGetter(), eventLogFileName))
+
+	if err != nil {
+		report.PostWarning(err)
+		return TcrEvent{}
+	}
+
+	fileContent := string(eventLogBytes)
+	return toTcrEvent(fileContent)
 }
 
 func appendEvent(event TcrEvent, out io.Writer) (err error) {
@@ -94,7 +110,7 @@ func toCsvRecord(event TcrEvent) []string {
 	}
 }
 
-func toTctEvent(csvRecord string) TcrEvent {
+func toTcrEvent(csvRecord string) TcrEvent {
 	split := strings.Split(csvRecord, ",")
 	parsedTime, _ := time.Parse(timeLayoutFormat, split[0])
 
@@ -110,11 +126,13 @@ func toTctEvent(csvRecord string) TcrEvent {
 }
 
 func toBoolean(value string) bool {
-	parseBool, _ := strconv.ParseBool(value)
+	spaceTrimmed := strings.Trim(value, "\n")
+	trimmed := strings.Trim(spaceTrimmed, " ")
+	parseBool, _ := strconv.ParseBool(trimmed)
 	return parseBool
 }
 
 func toInt(value string) int {
-	intValue, _ := strconv.Atoi(value)
+	intValue, _ := strconv.Atoi(strings.Trim(value, " "))
 	return intValue
 }

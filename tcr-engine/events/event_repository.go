@@ -69,8 +69,7 @@ func NewTcrEventFileRepository(filename string) TcrEventRepository {
 
 // Get returns an event stored in TCR Event repository
 func (t *TcrEventFileRepository) Get() TcrEvent {
-	// TODO read from the file instead of in memory attribute
-	return t.event
+	return ReadEventLogFile()
 }
 
 // Add stores a TCR event in TCR Event repository

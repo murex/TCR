@@ -28,7 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 )
 
 func init() {
@@ -44,24 +46,45 @@ func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 	assert.Equal(t, event, repository.Get())
 }
 
-func Test_add_and_get_a_single_event_to_file_repository(t *testing.T) {
+func Test_add_a_single_event_to_file_repository(t *testing.T) {
+	fileReader := afero.Afero{
+		Fs: AppFs,
+	}
+	repository := setUpFileRepository()
+
+	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
+		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
+
+	repository.Add(*tcrEvent)
+
+	eventLogBytes, _ := fileReader.ReadFile(getEventLogFileName())
+
+	assert.Equal(t, "2022-04-11 15:52:03,0,0,0,true,true\n", strings.Trim(string(eventLogBytes), " "))
+}
+
+func Test_gets_a_single_event_from_file_repository(t *testing.T) {
+	repository := setUpFileRepository()
+
+	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
+		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
+
+	repository.Add(*tcrEvent)
+	eventRead := repository.Get()
+
+	assert.Equal(t, tcrEvent, &eventRead)
+}
+
+func setUpFileRepository() TcrEventRepository {
 	AppFs = afero.NewMemMapFs()
-	filename := "event-log.csv"
-	eventFilePath := filepath.Join(config.DirPathGetter(), filename)
+	eventFilePath := getEventLogFileName()
 
 	_ = AppFs.Mkdir(config.DirPathGetter(), os.ModeDir)
 	_, _ = AppFs.Create(eventFilePath)
 
-	repository := NewTcrEventFileRepository(eventFilePath)
-	event := *ATcrEvent()
-	repository.Add(event)
+	return NewTcrEventFileRepository(eventFilePath)
+}
 
-	file, _ := AppFs.Open(eventFilePath)
-	b := make([]byte, 50)
-	readCount, readError := file.Read(b)
-
-	assert.Nil(t, readError)
-	assert.NotEqualf(t, 0, readCount, "Empty file")
-
-	assert.Equal(t, event, repository.Get())
+func getEventLogFileName() string {
+	filename := "event-log.csv"
+	return filepath.Join(config.DirPathGetter(), filename)
 }

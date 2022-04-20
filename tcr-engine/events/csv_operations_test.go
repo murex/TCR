@@ -119,14 +119,74 @@ func Test_append_event_to_writer(t *testing.T) {
 }
 
 func Test_converts_a_csv_record_to_an_event(t *testing.T) {
-	input := "2022-04-11 15:52:03,12,25,3,true,false\n"
-	expected := *ATcrEvent(
-		WithTimestamp(time.Date(2022, 4, 11, 15, 52, 3, 0, time.UTC)),
-		WithModifiedSrcLines(12),
-		WithModifiedTestLines(25),
-		WithAddedTestCases(3),
-		WithPassingBuild(),
-		WithFailingTests(),
-	)
-	assert.Equal(t, expected, toTctEvent(input))
+	testFlags := []struct {
+		desc     string
+		eventStr string
+		expected TcrEvent
+	}{
+		{
+			"timestamp in UTC",
+			"2022-04-11 15:52:03, 0, 0, 0, false, false\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests()),
+		},
+		{
+			"modified source lines",
+			"2022-04-11 15:52:03, 2, 0, 0, false, false\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithModifiedSrcLines(2),
+				WithFailingBuild(),
+				WithFailingTests()),
+		},
+		{
+			"modified test lines",
+			"2022-04-11 15:52:03, 0, 3, 0, false, false\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithModifiedTestLines(3),
+				WithFailingBuild(),
+				WithFailingTests()),
+		},
+		{
+			"added test cases",
+			"2022-04-11 15:52:03, 0, 0, 4, false, false\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithAddedTestCases(4),
+				WithFailingBuild(),
+				WithFailingTests()),
+		},
+		{
+			"with build passed",
+			"2022-04-11 15:52:03, 0, 0, 0, true, false\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithPassingBuild(),
+				WithFailingTests()),
+		},
+		{
+			"with test passed",
+			"2022-04-11 15:52:03, 0, 0, 0, false, true\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithPassingTests()),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			csvRecord := toTcrEvent(tt.eventStr)
+			assert.Equal(t, tt.expected, csvRecord)
+		})
+	}
 }
