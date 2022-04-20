@@ -24,9 +24,7 @@ package events
 
 import (
 	"bytes"
-	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 	"time"
 )
@@ -118,30 +116,4 @@ func Test_append_event_to_writer(t *testing.T) {
 	)
 	_ = appendEvent(event, &b)
 	assert.Equal(t, "2022-04-11 15:52:03,12,25,3,true,false\n", b.String())
-}
-
-func Test_it_should_create_the_file_when_it_doesnt_exist(t *testing.T) {
-	event := ATcrEvent(WithTimestamp(time.Date(
-		2022, 4, 11, 15, 52, 3, 0,
-		time.UTC)))
-
-	mapFs := afero.NewMemMapFs()
-	dirError := mapFs.Mkdir("test", os.ModeDir)
-	assert.Nil(t, dirError)
-
-	eventFile, fileError := mapFs.Create("test/event-log.csv")
-	assert.Nil(t, fileError)
-
-	err := appendEvent(*event, eventFile)
-	assert.Nil(t, err)
-
-	file, dirError := mapFs.Open("test/event-log.csv")
-	assert.Nil(t, dirError)
-
-	b := make([]byte, 50)
-	readCount, readError := file.Read(b)
-
-	//fmt.Println(string(b))
-	assert.Nil(t, readError)
-	assert.NotEqualf(t, 0, readCount, "Empty file")
 }
