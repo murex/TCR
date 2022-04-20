@@ -47,18 +47,17 @@ func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 }
 
 func Test_add_a_single_event_to_file_repository(t *testing.T) {
+	repository := setUpFileRepository()
+
 	fileReader := afero.Afero{
 		Fs: AppFs,
 	}
-	repository := setUpFileRepository()
 
 	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
 		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
-
 	repository.Add(*tcrEvent)
 
 	eventLogBytes, _ := fileReader.ReadFile(getEventLogFileName())
-
 	assert.Equal(t, "2022-04-11 15:52:03,0,0,0,true,true\n", strings.Trim(string(eventLogBytes), " "))
 }
 
