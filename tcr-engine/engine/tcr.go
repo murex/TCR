@@ -268,6 +268,9 @@ func (tcr *TcrEngine) fromBirthTillDeath(
 
 func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
+	// We need to wait a bit to make sure the file watcher
+	// does not get triggered again following a revert operation
+	time.Sleep(1 * time.Second)
 	return tcr.sourceTree.Watch(
 		tcr.lang.DirsToWatch(tcr.sourceTree.GetBaseDir()),
 		tcr.lang.IsLanguageFile,
