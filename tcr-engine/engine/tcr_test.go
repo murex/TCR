@@ -186,7 +186,8 @@ func registerFakeLanguage(toolchainName string) string {
 }
 
 func replaceGitImplWithFake(tcr TcrInterface, failingCommit, failingRestore, failingPush, failingPull, failDiff bool) {
-	fake, _ := vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff, []string{"fake-src"})
+	fake, _ := vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff,
+		[]vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
 	tcr.setVcs(fake)
 }
 
