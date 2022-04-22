@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -104,6 +105,46 @@ func Test_does_not_detect_language_from_a_dir_name_not_matching_a_known_language
 	assert.Zero(t, lang)
 }
 
+func Test_get_registered_language_with_empty_name(t *testing.T) {
+	lang, err := Get("")
+	assert.Zero(t, lang)
+	assert.Equal(t, errors.New("language name not provided"), err)
+}
+
+func Test_get_list_of_languages_registered_by_default(t *testing.T) {
+	assert.NotZero(t, Names())
+}
+
+func Test_update_then_reset_a_built_in_language(t *testing.T) {
+	// 1 - Add a built-in language
+	builtIn := ALanguage(
+		WithName("built-in"),
+		WithDefaultToolchain("built-in-1"),
+		WithCompatibleToolchain("built-in-1"),
+	)
+	assert.NoError(t, addBuiltIn(builtIn))
+	l1, err1 := Get("built-in")
+	assert.Equal(t, builtIn, l1)
+	assert.NoError(t, err1)
+
+	// 2 - Register a new language with the same name
+	updated := ALanguage(
+		WithName("built-in"),
+		WithDefaultToolchain("built-in-2"),
+		WithCompatibleToolchain("built-in-2"),
+	)
+	assert.NoError(t, Register(updated))
+	l2, err2 := Get("built-in")
+	assert.Equal(t, updated, l2)
+	assert.NoError(t, err2)
+
+	// 3 - Reset the language to built-in configuration
+	Reset("built-in")
+	l3, err3 := Get("built-in")
+	assert.Equal(t, builtIn, l3)
+	assert.NoError(t, err3)
+}
+
 // Assert utility functions for language register
 
 func assertIsABuiltInLanguage(t *testing.T, name string) {
@@ -112,6 +153,10 @@ func assertIsABuiltInLanguage(t *testing.T, name string) {
 
 func assertIsSupported(t *testing.T, name string) {
 	assert.True(t, isSupported(name))
+}
+
+func assertIsRegistered(t *testing.T, name string) {
+	assert.Contains(t, Names(), name)
 }
 
 func assertNameIsNotCaseSensitive(t *testing.T, name string) {

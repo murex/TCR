@@ -38,6 +38,10 @@ func Test_cpp_language_is_supported(t *testing.T) {
 	assertIsSupported(t, cppLanguageName)
 }
 
+func Test_cpp_language_is_registered(t *testing.T) {
+	assertIsRegistered(t, cppLanguageName)
+}
+
 func Test_cpp_language_name(t *testing.T) {
 	assertLanguageName(t, cppLanguageName)
 }

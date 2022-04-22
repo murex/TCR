@@ -109,7 +109,7 @@ func Test_get_toolchain_with_unregistered_toolchain(t *testing.T) {
 	assert.Equal(t, errors.New("toolchain not supported: some-toolchain"), err)
 }
 
-func Test_get_toolchain_with_empty_toolchain_name(t *testing.T) {
+func Test_get_toolchain_with_empty_toolchain_name_and_a_default_toolchain(t *testing.T) {
 	lang := ALanguage(
 		WithDefaultToolchain("some-toolchain"),
 		WithCompatibleToolchain("some-toolchain"),
@@ -121,6 +121,18 @@ func Test_get_toolchain_with_empty_toolchain_name(t *testing.T) {
 
 	assert.Zero(t, err)
 	assert.Equal(t, lang.toolchains.Default, actual.GetName())
+}
+
+func Test_get_toolchain_with_empty_toolchain_name_and_no_default_toolchain(t *testing.T) {
+	lang := ALanguage(
+		WithDefaultToolchain(""),
+		WithCompatibleToolchain(""),
+	)
+	actual, err := lang.GetToolchain("")
+
+	assert.Zero(t, actual)
+	assert.Error(t, err)
+	assert.Equal(t, errors.New("toolchain name not provided"), err)
 }
 
 func Test_get_toolchain_with_non_compatible_toolchain(t *testing.T) {
@@ -175,10 +187,10 @@ type filePathMatcher struct {
 func shouldMatchSrc(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: true, isTestFile: false}
 }
-
 func shouldMatchTest(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: true}
 }
+
 func shouldNotMatch(filePath string) filePathMatcher {
 	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
 }

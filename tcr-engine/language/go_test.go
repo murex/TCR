@@ -36,6 +36,10 @@ func Test_go_language_is_supported(t *testing.T) {
 	assertIsSupported(t, goLanguageName)
 }
 
+func Test_go_language_is_registered(t *testing.T) {
+	assertIsRegistered(t, goLanguageName)
+}
+
 func Test_go_language_name(t *testing.T) {
 	assertLanguageName(t, goLanguageName)
 }
