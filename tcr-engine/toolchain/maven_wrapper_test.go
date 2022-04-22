@@ -38,6 +38,10 @@ func Test_maven_wrapper_toolchain_is_supported(t *testing.T) {
 	assertIsSupported(t, mavenWrapperToolchainName)
 }
 
+func Test_maven_wrapper_toolchain_is_registered(t *testing.T) {
+	assertIsRegistered(t, mavenWrapperToolchainName)
+}
+
 func Test_maven_wrapper_toolchain_name_is_case_insensitive(t *testing.T) {
 	assertNameIsNotCaseSensitive(t, mavenWrapperToolchainName)
 }

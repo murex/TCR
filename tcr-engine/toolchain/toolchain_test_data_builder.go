@@ -26,11 +26,7 @@ package toolchain
 
 // AToolchain is a test data builder for type Toolchain
 func AToolchain(toolchainBuilders ...func(tchn *Toolchain)) *Toolchain {
-	tchn := &Toolchain{
-		name:          "default-toolchain",
-		buildCommands: []Command{*ACommand()},
-		testCommands:  []Command{*ACommand()},
-	}
+	tchn := New("default-toolchain", []Command{*ACommand()}, []Command{*ACommand()})
 
 	for _, build := range toolchainBuilders {
 		build(tchn)
@@ -48,7 +44,21 @@ func WithNoBuildCommand() func(tchn *Toolchain) {
 	return func(tchn *Toolchain) { tchn.buildCommands = nil }
 }
 
+// WithBuildCommand adds the provided command as a build command
+func WithBuildCommand(command *Command) func(tchn *Toolchain) {
+	return func(tchn *Toolchain) {
+		tchn.buildCommands = append(tchn.buildCommands, *command)
+	}
+}
+
 // WithNoTestCommand creates a toolchain with no test command defined
 func WithNoTestCommand() func(tchn *Toolchain) {
 	return func(tchn *Toolchain) { tchn.testCommands = nil }
+}
+
+// WithTestCommand adds the provided command as a test command
+func WithTestCommand(command *Command) func(tchn *Toolchain) {
+	return func(tchn *Toolchain) {
+		tchn.testCommands = append(tchn.testCommands, *command)
+	}
 }

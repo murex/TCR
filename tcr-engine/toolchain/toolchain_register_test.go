@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -83,12 +84,64 @@ func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
 	assert.False(t, isSupported(name))
 }
 
+func Test_get_registered_toolchain_with_empty_name(t *testing.T) {
+	tchn, err := GetToolchain("")
+	assert.Zero(t, tchn)
+	assert.Equal(t, errors.New("toolchain name not provided"), err)
+}
+
+func Test_get_list_of_toolchains_registered_by_default(t *testing.T) {
+	assert.NotZero(t, Names())
+}
+
+func Test_update_then_reset_a_built_in_toolchain(t *testing.T) {
+	// 1 - Add a built-in toolchain
+	builtIn := AToolchain(WithName("built-in"))
+	assert.NoError(t, addBuiltIn(builtIn))
+	t1, err1 := GetToolchain("built-in")
+	assert.Equal(t, builtIn, t1)
+	assert.NoError(t, err1)
+
+	// 2 - Register a new toolchain with the same name
+	updated := AToolchain(WithName("built-in"),
+		WithBuildCommand(ACommand(WithPath("other-path"))))
+	assert.NoError(t, Register(updated))
+	t2, err2 := GetToolchain("built-in")
+	assert.Equal(t, updated, t2)
+	assert.NoError(t, err2)
+
+	// 3 - Reset the toolchain to built-in configuration
+	Reset("built-in")
+	t3, err3 := GetToolchain("built-in")
+	assert.Equal(t, builtIn, t3)
+	assert.NoError(t, err3)
+}
+
+func Test_register_then_unregister_a_toolchain(t *testing.T) {
+	// 1 - Register a toolchain
+	tchn := AToolchain(WithName("a-toolchain"))
+	assert.NoError(t, Register(tchn))
+	t1, err1 := GetToolchain("a-toolchain")
+	assert.Equal(t, tchn, t1)
+	assert.NoError(t, err1)
+
+	// 2 - Unregister the toolchain
+	Unregister("a-toolchain")
+	t2, err2 := GetToolchain("a-toolchain")
+	assert.Zero(t, t2)
+	assert.Equal(t, errors.New("toolchain not supported: a-toolchain"), err2)
+}
+
 func assertIsABuiltInToolchain(t *testing.T, name string) {
 	assert.True(t, isBuiltIn(name))
 }
 
 func assertIsSupported(t *testing.T, name string) {
 	assert.True(t, isSupported(name))
+}
+
+func assertIsRegistered(t *testing.T, name string) {
+	assert.Contains(t, Names(), name)
 }
 
 func assertNameIsNotCaseSensitive(t *testing.T, name string) {

@@ -38,6 +38,10 @@ func Test_maven_toolchain_is_supported(t *testing.T) {
 	assertIsSupported(t, mavenToolchainName)
 }
 
+func Test_maven_toolchain_is_registered(t *testing.T) {
+	assertIsRegistered(t, mavenToolchainName)
+}
+
 func Test_maven_toolchain_name_is_case_insensitive(t *testing.T) {
 	assertNameIsNotCaseSensitive(t, mavenToolchainName)
 }

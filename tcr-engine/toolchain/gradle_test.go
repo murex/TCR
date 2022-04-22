@@ -38,6 +38,10 @@ func Test_gradle_toolchain_is_supported(t *testing.T) {
 	assertIsSupported(t, gradleToolchainName)
 }
 
+func Test_gradle_toolchain_is_registered(t *testing.T) {
+	assertIsRegistered(t, gradleToolchainName)
+}
+
 func Test_gradle_toolchain_name_is_case_insensitive(t *testing.T) {
 	assertNameIsNotCaseSensitive(t, gradleToolchainName)
 }
