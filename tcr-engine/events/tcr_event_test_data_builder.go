@@ -33,15 +33,7 @@ var (
 
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
-	//tcrEvent := &TcrEvent{
-	//	Timestamp:         snapshotTime,
-	//	ModifiedSrcLines:  0,
-	//	ModifiedTestLines: 0,
-	//	AddedTestCases:    0,
-	//	BuildPassed:       true,
-	//	TestsPassed:       true,
-	//}
-	tcrEvent := NewTcrEvent(0, 0, 0, true, true)
+	tcrEvent := NewTcrEvent(0, 0, 0, StatusUnknown, StatusUnknown)
 	tcrEvent.Timestamp = snapshotTime
 
 	for _, build := range builders {
@@ -97,27 +89,27 @@ func WithAddedTestCases(count int) func(filter *TcrEvent) {
 // WithFailingBuild sets TCR event test data builder with failing build
 func WithFailingBuild() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.BuildPassed = false
+		tcrEvent.BuildStatus = StatusFailed
 	}
 }
 
 // WithPassingBuild sets TCR event test data builder with passing build
 func WithPassingBuild() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.BuildPassed = true
+		tcrEvent.BuildStatus = StatusPassed
 	}
 }
 
 // WithFailingTests sets TCR event test data builder with failing tests
 func WithFailingTests() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsPassed = false
+		tcrEvent.TestsStatus = StatusFailed
 	}
 }
 
 // WithPassingTests sets TCR event test data builder with passing tests
 func WithPassingTests() func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsPassed = true
+		tcrEvent.TestsStatus = StatusPassed
 	}
 }

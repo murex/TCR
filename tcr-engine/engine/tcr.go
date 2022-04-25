@@ -279,19 +279,19 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		tcr.addEvent(false, true)
+		tcr.addEvent(events.StatusFailed, events.StatusUnknown)
 		return
 	}
 	if tcr.test() == nil {
-		tcr.addEvent(true, true)
+		tcr.addEvent(events.StatusPassed, events.StatusPassed)
 		tcr.commit()
 	} else {
-		tcr.addEvent(true, false)
+		tcr.addEvent(events.StatusPassed, events.StatusFailed)
 		tcr.revert()
 	}
 }
 
-func (tcr *TcrEngine) addEvent(buildPassed bool, testsPassed bool) {
+func (tcr *TcrEngine) addEvent(buildPassed, testsPassed events.TcrEventStatus) {
 	events.EventRepository.Add(
 		events.NewTcrEvent(
 			0,

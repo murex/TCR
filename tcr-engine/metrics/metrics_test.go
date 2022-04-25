@@ -72,7 +72,7 @@ func Test_compute_durations_with_failing_tests_between_2_records(t *testing.T) {
 }
 
 func Test_compute_time_ratios_with_no_failing_tests_between_2_records(t *testing.T) {
-	startEvent := events.ATcrEvent()
+	startEvent := events.ATcrEvent(events.WithPassingTests())
 	endEvent := events.ATcrEvent(events.WithDelay(1 * time.Second))
 	assert.Equal(t, float64(1), computeTimeInGreenRatio(*startEvent, *endEvent))
 	assert.Equal(t, float64(0), computeTimeInRedRatio(*startEvent, *endEvent))

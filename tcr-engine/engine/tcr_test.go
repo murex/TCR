@@ -230,19 +230,19 @@ func Test_run_as_role_methods(t *testing.T) {
 func Test_generate_tcr_event_on_build_fail(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failBuild})
 	tcr.RunTCRCycle()
-	assert.False(t, events.EventRepository.Get().BuildPassed)
+	assert.Equal(t, events.StatusFailed, events.EventRepository.Get().BuildStatus)
 }
 
 func Test_generate_tcr_event_on_build_pass_and_tests_pass(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{})
 	tcr.RunTCRCycle()
-	assert.True(t, events.EventRepository.Get().BuildPassed)
-	assert.True(t, events.EventRepository.Get().TestsPassed)
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().BuildStatus)
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().TestsStatus)
 }
 
 func Test_generate_tcr_event_on_build_pass_and_tests_fail(t *testing.T) {
 	tcr := initTcrEngineWithFakes(failures{failTest})
 	tcr.RunTCRCycle()
-	assert.True(t, events.EventRepository.Get().BuildPassed)
-	assert.False(t, events.EventRepository.Get().TestsPassed)
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().BuildStatus)
+	assert.Equal(t, events.StatusFailed, events.EventRepository.Get().TestsStatus)
 }

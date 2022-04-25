@@ -54,13 +54,13 @@ func Test_add_a_single_event_to_file_repository(t *testing.T) {
 	repository.Add(*tcrEvent)
 
 	eventLogBytes, _ := afero.ReadFile(AppFs, filePath)
-	assert.Equal(t, "2022-04-11 15:52:03,0,0,0,true,true\n", strings.Trim(string(eventLogBytes), " "))
+	assert.Equal(t, "2022-04-11 15:52:03,0,0,0,0,0\n", strings.Trim(string(eventLogBytes), " "))
 }
 
 func Test_gets_a_single_event_from_file_repository(t *testing.T) {
 	repository, filePath := setUpFileRepository()
 
-	eventStr := "2022-04-11 15:52:03,0,0,0,true,true\n"
+	eventStr := "2022-04-11 15:52:03,0,0,0,0,0\n"
 
 	_ = afero.WriteFile(AppFs, filePath, []byte(eventStr), os.ModePerm)
 

@@ -101,8 +101,8 @@ func toCsvRecord(event TcrEvent) []string {
 		strconv.Itoa(event.ModifiedSrcLines),
 		strconv.Itoa(event.ModifiedTestLines),
 		strconv.Itoa(event.AddedTestCases),
-		strconv.FormatBool(event.BuildPassed),
-		strconv.FormatBool(event.TestsPassed),
+		strconv.Itoa(int(event.BuildStatus)),
+		strconv.Itoa(int(event.TestsStatus)),
 	}
 }
 
@@ -116,15 +116,14 @@ func toTcrEvent(csvRecord string) TcrEvent {
 		ModifiedSrcLines:  toInt(recordFields[1]),
 		ModifiedTestLines: toInt(recordFields[2]),
 		AddedTestCases:    toInt(recordFields[3]),
-		BuildPassed:       toBoolean(recordFields[4]),
-		TestsPassed:       toBoolean(recordFields[5]),
+		BuildStatus:       toTcrEventStatus(recordFields[4]),
+		TestsStatus:       toTcrEventStatus(recordFields[5]),
 	}
 	return event
 }
 
-func toBoolean(field string) bool {
-	parseBool, _ := strconv.ParseBool(strings.TrimSpace(field))
-	return parseBool
+func toTcrEventStatus(field string) TcrEventStatus {
+	return TcrEventStatus(toInt(field))
 }
 
 func toInt(field string) int {

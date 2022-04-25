@@ -45,7 +45,7 @@ func computeDuration(from events.TcrEvent, to events.TcrEvent) time.Duration {
 }
 
 func computeDurationInGreen(from events.TcrEvent, to events.TcrEvent) time.Duration {
-	if from.TestsPassed {
+	if from.TestsStatus == events.StatusPassed {
 		return computeDuration(from, to)
 	}
 	return 0
@@ -56,7 +56,7 @@ func computeDurationInRed(from events.TcrEvent, to events.TcrEvent) time.Duratio
 }
 
 func computeTimeInGreenRatio(from events.TcrEvent, _ events.TcrEvent) float64 {
-	if from.TestsPassed {
+	if from.TestsStatus == events.StatusPassed {
 		return 1
 	}
 	return 0

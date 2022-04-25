@@ -74,25 +74,25 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 			"build passing",
 			4,
 			*ATcrEvent(WithPassingBuild()),
-			"true",
+			"1",
 		},
 		{
 			"build failing",
 			4,
 			*ATcrEvent(WithFailingBuild()),
-			"false",
+			"2",
 		},
 		{
 			"tests passing",
 			5,
 			*ATcrEvent(WithPassingTests()),
-			"true",
+			"1",
 		},
 		{
 			"tests failing",
 			5,
 			*ATcrEvent(WithFailingTests()),
-			"false",
+			"2",
 		},
 	}
 
@@ -115,7 +115,7 @@ func Test_append_event_to_writer(t *testing.T) {
 		WithFailingTests(),
 	)
 	_ = appendEvent(event, &b)
-	assert.Equal(t, "2022-04-11 15:52:03,12,25,3,true,false\n", b.String())
+	assert.Equal(t, "2022-04-11 15:52:03,12,25,3,1,2\n", b.String())
 }
 
 func Test_converts_a_csv_record_to_an_event(t *testing.T) {
@@ -126,7 +126,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 	}{
 		{
 			"timestamp in UTC",
-			"2022-04-11 15:52:03, 0, 0, 0, false, false\n",
+			"2022-04-11 15:52:03, 0, 0, 0, 2, 2\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -135,7 +135,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"modified source lines",
-			"2022-04-11 15:52:03, 2, 0, 0, false, false\n",
+			"2022-04-11 15:52:03, 2, 0, 0, 2, 2\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -145,7 +145,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"modified test lines",
-			"2022-04-11 15:52:03, 0, 3, 0, false, false\n",
+			"2022-04-11 15:52:03, 0, 3, 0, 2, 2\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -155,7 +155,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"added test cases",
-			"2022-04-11 15:52:03, 0, 0, 4, false, false\n",
+			"2022-04-11 15:52:03, 0, 0, 4, 2, 2\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -165,7 +165,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"with build passed",
-			"2022-04-11 15:52:03, 0, 0, 0, true, false\n",
+			"2022-04-11 15:52:03, 0, 0, 0, 1, 2\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -174,7 +174,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"with test passed",
-			"2022-04-11 15:52:03, 0, 0, 0, false, true\n",
+			"2022-04-11 15:52:03, 0, 0, 0, 2, 1\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
