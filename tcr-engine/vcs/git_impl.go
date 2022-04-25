@@ -220,18 +220,6 @@ func (g *GitImpl) ListChanges() (files []string, err error) {
 	return
 }
 
-// FileDiff is a structure containing diff information for a file
-type FileDiff struct {
-	filename     string
-	addedLines   int
-	removedLines int
-}
-
-// NewFileDiff creates a new instance of FileDiff
-func NewFileDiff(filename string, added int, removed int) FileDiff {
-	return FileDiff{filename: filename, addedLines: added, removedLines: removed}
-}
-
 // Diff returns the list of files modified since last commit with diff info for each file
 // Current implementation uses a direct call to git
 func (g *GitImpl) Diff() (diffs []FileDiff, err error) {

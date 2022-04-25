@@ -58,3 +58,20 @@ func IsRootBranch(branch string) bool {
 	}
 	return false
 }
+
+// FileDiff is a structure containing diff information for a file
+type FileDiff struct {
+	Path         string
+	addedLines   int
+	removedLines int
+}
+
+// NewFileDiff creates a new instance of FileDiff
+func NewFileDiff(filename string, added int, removed int) FileDiff {
+	return FileDiff{Path: filename, addedLines: added, removedLines: removed}
+}
+
+// ChangedLines returns the number of changed lines for this file
+func (fd FileDiff) ChangedLines() int {
+	return fd.addedLines + fd.removedLines
+}

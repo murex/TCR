@@ -51,7 +51,7 @@ func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, chan
 	}, nil
 }
 
-// GetRootDir returns an empty root directory path
+// GetRootDir returns an empty root directory Path
 func (g GitFake) GetRootDir() string {
 	return ""
 }
@@ -89,7 +89,7 @@ func (g GitFake) Pull() error {
 // ListChanges returns the list of changed files configured at fake initialization
 func (g *GitFake) ListChanges() (files []string, err error) {
 	for _, d := range g.changedFiles {
-		files = append(files, d.filename)
+		files = append(files, d.Path)
 	}
 	return files, fakeOperation("diff", g.failDiff)
 }

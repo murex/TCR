@@ -20,25 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package engine
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"github.com/murex/tcr/tcr-engine/language"
+	"github.com/murex/tcr/tcr-engine/vcs"
 )
 
-func Test_master_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("master"))
+func computeSrcLinesChanged(lang language.LangInterface, files []vcs.FileDiff) int {
+	return computeLinesChanged(files, lang.IsSrcFile)
 }
 
-func Test_main_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("main"))
+func computeTestLinesChanged(lang language.LangInterface, files []vcs.FileDiff) int {
+	return computeLinesChanged(files, lang.IsTestFile)
 }
 
-func Test_is_not_a_git_root_branch(t *testing.T) {
-	assert.False(t, IsRootBranch("x"))
-}
-
-func Test_compute_changed_lines(t *testing.T) {
-	assert.Equal(t, 6, NewFileDiff("", 4, 2).ChangedLines())
+func computeLinesChanged(files []vcs.FileDiff, predicate func(filepath string) bool) int {
+	var totalChanges int
+	for _, fd := range files {
+		if predicate(fd.Path) {
+			totalChanges += fd.ChangedLines()
+		}
+	}
+	return totalChanges
 }
