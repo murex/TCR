@@ -107,28 +107,27 @@ func toCsvRecord(event TcrEvent) []string {
 }
 
 func toTcrEvent(csvRecord string) TcrEvent {
-	split := strings.Split(csvRecord, ",")
-	parsedTime, _ := time.Parse(timeLayoutFormat, split[0])
+	trimmedRecord := strings.Trim(csvRecord, "\n")
+	recordFields := strings.Split(trimmedRecord, ",")
+	parsedTime, _ := time.Parse(timeLayoutFormat, recordFields[0])
 
 	event := TcrEvent{
 		Timestamp:         parsedTime,
-		ModifiedSrcLines:  toInt(split[1]),
-		ModifiedTestLines: toInt(split[2]),
-		AddedTestCases:    toInt(split[3]),
-		BuildPassed:       toBoolean(split[4]),
-		TestsPassed:       toBoolean(split[5]),
+		ModifiedSrcLines:  toInt(recordFields[1]),
+		ModifiedTestLines: toInt(recordFields[2]),
+		AddedTestCases:    toInt(recordFields[3]),
+		BuildPassed:       toBoolean(recordFields[4]),
+		TestsPassed:       toBoolean(recordFields[5]),
 	}
 	return event
 }
 
-func toBoolean(value string) bool {
-	spaceTrimmed := strings.Trim(value, "\n")
-	trimmed := strings.Trim(spaceTrimmed, " ")
-	parseBool, _ := strconv.ParseBool(trimmed)
+func toBoolean(field string) bool {
+	parseBool, _ := strconv.ParseBool(strings.TrimSpace(field))
 	return parseBool
 }
 
-func toInt(value string) int {
-	intValue, _ := strconv.Atoi(strings.Trim(value, " "))
+func toInt(field string) int {
+	intValue, _ := strconv.Atoi(strings.TrimSpace(field))
 	return intValue
 }
