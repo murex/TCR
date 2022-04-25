@@ -41,9 +41,10 @@ const eventLogFileName = "event-log.csv"
 
 // AppendEventToLogFile appends a TCR event to the TCR event log file
 func AppendEventToLogFile(e TcrEvent) {
-	eventLogFile := openEventLogFile()
+	eventLogFile, err := openEventLogFile()
 
-	if eventLogFile == nil {
+	if err != nil {
+		report.PostWarning(err)
 		return
 	}
 
@@ -62,14 +63,9 @@ func AppendEventToLogFile(e TcrEvent) {
 	}
 }
 
-func openEventLogFile() afero.File {
+func openEventLogFile() (afero.File, error) {
 	eventLogFilePath := filepath.Join(config.DirPathGetter(), eventLogFileName)
-	file, err := AppFs.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-	if err != nil {
-		report.PostWarning(err)
-		return nil
-	}
-	return file
+	return AppFs.OpenFile(eventLogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
 }
 
 // ReadEventLogFile reads the content of the EventLog file
