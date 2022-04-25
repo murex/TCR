@@ -293,9 +293,8 @@ func (tcr *TcrEngine) RunTCRCycle() {
 
 func (tcr *TcrEngine) addEvent(buildPassed, testsPassed events.TcrEventStatus) {
 	changedFiles, err := tcr.vcs.Diff()
-	tcr.handleError(err, false, status.GitError)
 	if err != nil {
-		return
+		report.PostWarning(err)
 	}
 
 	events.EventRepository.Add(
