@@ -47,40 +47,37 @@ func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 }
 
 func Test_add_a_single_event_to_file_repository(t *testing.T) {
-	repository := setUpFileRepository()
-
-	fileReader := afero.Afero{
-		Fs: AppFs,
-	}
+	repository, filePath := setUpFileRepository()
 
 	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
 		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
 	repository.Add(*tcrEvent)
 
-	eventLogBytes, _ := fileReader.ReadFile(getEventLogFileName())
+	eventLogBytes, _ := afero.ReadFile(AppFs, filePath)
 	assert.Equal(t, "2022-04-11 15:52:03,0,0,0,true,true\n", strings.Trim(string(eventLogBytes), " "))
 }
 
 func Test_gets_a_single_event_from_file_repository(t *testing.T) {
-	repository := setUpFileRepository()
+	repository, filePath := setUpFileRepository()
+
+	eventStr := "2022-04-11 15:52:03,0,0,0,true,true\n"
+
+	_ = afero.WriteFile(AppFs, filePath, []byte(eventStr), os.ModePerm)
 
 	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
 		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
 
-	repository.Add(*tcrEvent)
-	eventRead := repository.Get()
-
-	assert.Equal(t, tcrEvent, &eventRead)
+	assert.Equal(t, *tcrEvent, repository.Get())
 }
 
-func setUpFileRepository() TcrEventRepository {
+func setUpFileRepository() (TcrEventRepository, string) {
 	AppFs = afero.NewMemMapFs()
 	eventFilePath := getEventLogFileName()
 
 	_ = AppFs.Mkdir(config.DirPathGetter(), os.ModeDir)
 	_, _ = AppFs.Create(eventFilePath)
 
-	return NewTcrEventFileRepository(eventFilePath)
+	return NewTcrEventFileRepository(eventFilePath), eventFilePath
 }
 
 func getEventLogFileName() string {
