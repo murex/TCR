@@ -39,7 +39,9 @@ func Test_compute_number_of_changed_lines(t *testing.T) {
 		{"0 file", nil, 0, 0},
 		{
 			"1 src file - 0 test file",
-			[]vcs.FileDiff{vcs.NewFileDiff("src/main/Hello.java", 1, 2)},
+			[]vcs.FileDiff{
+				vcs.NewFileDiff("src/main/Hello.java", 1, 2),
+			},
 			3, 0,
 		},
 		{
@@ -60,7 +62,9 @@ func Test_compute_number_of_changed_lines(t *testing.T) {
 		},
 		{
 			"0 src file - 1 test file",
-			[]vcs.FileDiff{vcs.NewFileDiff("src/test/HelloTest.java", 1, 2)},
+			[]vcs.FileDiff{
+				vcs.NewFileDiff("src/test/HelloTest.java", 1, 2),
+			},
 			0, 3,
 		},
 		{

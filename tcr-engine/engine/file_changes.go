@@ -35,12 +35,11 @@ func computeTestLinesChanged(lang language.LangInterface, files []vcs.FileDiff) 
 	return computeLinesChanged(files, lang.IsTestFile)
 }
 
-func computeLinesChanged(files []vcs.FileDiff, predicate func(filepath string) bool) int {
-	var totalChanges int
+func computeLinesChanged(files []vcs.FileDiff, predicate func(filepath string) bool) (totalChanges int) {
 	for _, fd := range files {
 		if predicate(fd.Path) {
 			totalChanges += fd.ChangedLines()
 		}
 	}
-	return totalChanges
+	return
 }

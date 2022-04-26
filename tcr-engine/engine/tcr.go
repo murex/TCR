@@ -279,19 +279,19 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		tcr.addEvent(events.StatusFailed, events.StatusUnknown)
+		tcr.logEvent(events.StatusFailed, events.StatusUnknown)
 		return
 	}
 	if tcr.test() == nil {
-		tcr.addEvent(events.StatusPassed, events.StatusPassed)
+		tcr.logEvent(events.StatusPassed, events.StatusPassed)
 		tcr.commit()
 	} else {
-		tcr.addEvent(events.StatusPassed, events.StatusFailed)
+		tcr.logEvent(events.StatusPassed, events.StatusFailed)
 		tcr.revert()
 	}
 }
 
-func (tcr *TcrEngine) addEvent(buildPassed, testsPassed events.TcrEventStatus) {
+func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus) {
 	changedFiles, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -302,8 +302,8 @@ func (tcr *TcrEngine) addEvent(buildPassed, testsPassed events.TcrEventStatus) {
 			computeSrcLinesChanged(tcr.lang, changedFiles),
 			computeTestLinesChanged(tcr.lang, changedFiles),
 			0,
-			buildPassed,
-			testsPassed),
+			buildStatus,
+			testsStatus),
 	)
 }
 

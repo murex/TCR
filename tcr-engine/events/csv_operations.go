@@ -70,10 +70,8 @@ func openEventLogFile() (afero.File, error) {
 
 // ReadEventLogFile reads the content of the EventLog file
 func ReadEventLogFile() TcrEvent {
-	a := afero.Afero{
-		Fs: AppFs,
-	}
-	eventLogBytes, err := a.ReadFile(filepath.Join(config.DirPathGetter(), eventLogFileName))
+	// TODO: Read the file line by line, then convert each line to a TCR Event
+	eventLogBytes, err := afero.ReadFile(AppFs, filepath.Join(config.DirPathGetter(), eventLogFileName))
 
 	if err != nil {
 		report.PostWarning(err)
