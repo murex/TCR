@@ -65,6 +65,9 @@ const (
 )
 
 var (
+	// DirPathGetter is the function allowing to retrieve the configuration directory path. It should
+	// not be changed unless when running tests.
+	DirPathGetter     = GetConfigDirPath
 	configDirPath     string
 	configTraceWriter io.Writer
 )

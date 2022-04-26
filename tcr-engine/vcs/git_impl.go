@@ -34,6 +34,7 @@ import (
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/murex/tcr/tcr-engine/report"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -46,15 +47,19 @@ type GitImpl struct {
 	workingBranchExistsOnRemote bool
 	commitMessage               string
 	pushEnabled                 bool
+	runGitFunction              func(params []string) (output []byte, err error)
+	traceGitFunction            func(params []string) (err error)
 }
 
 // New initializes the git implementation based on the provided directory from local clone
 func New(dir string) (GitInterface, error) {
 	var gitImpl = GitImpl{
-		baseDir:       dir,
-		remoteName:    DefaultRemoteName,
-		commitMessage: DefaultCommitMessage,
-		pushEnabled:   DefaultPushEnabled,
+		baseDir:          dir,
+		remoteName:       DefaultRemoteName,
+		commitMessage:    DefaultCommitMessage,
+		pushEnabled:      DefaultPushEnabled,
+		runGitFunction:   runGitCommand,
+		traceGitFunction: traceGitCommand,
 	}
 
 	plainOpenOptions := git.PlainOpenOptions{
@@ -215,6 +220,27 @@ func (g *GitImpl) ListChanges() (files []string, err error) {
 	return
 }
 
+// Diff returns the list of files modified since last commit with diff info for each file
+// Current implementation uses a direct call to git
+func (g *GitImpl) Diff() (diffs []FileDiff, err error) {
+	var gitOutput []byte
+	gitOutput, err = g.runGit("diff", "--numstat", "--ignore-cr-at-eol",
+		"--ignore-all-space", "--ignore-blank-lines", "HEAD")
+	if err != nil {
+		return nil, err
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))
+	for scanner.Scan() {
+		fields := strings.Split(scanner.Text(), "\t")
+		added, _ := strconv.Atoi(fields[0])
+		removed, _ := strconv.Atoi(fields[1])
+		filename := filepath.Join(g.rootDir, fields[2])
+		diffs = append(diffs, NewFileDiff(filename, added, removed))
+	}
+	return
+}
+
 // EnablePush sets a flag allowing to turn on/off git push operations
 func (g *GitImpl) EnablePush(flag bool) {
 	if g.pushEnabled == flag {
@@ -244,11 +270,11 @@ func (g *GitImpl) CheckRemoteAccess() bool {
 // traceGit runs a git command and traces its output.
 // The command is launched from the git root directory
 func (g *GitImpl) traceGit(args ...string) error {
-	return traceGitCommand(append([]string{"-C", g.GetRootDir()}, args...))
+	return g.traceGitFunction(append([]string{"-C", g.GetRootDir()}, args...))
 }
 
 // runGit calls git command in a separate process and returns its output traces
 // The command is launched from the git root directory
 func (g *GitImpl) runGit(args ...string) (output []byte, err error) {
-	return runGitCommand(append([]string{"-C", g.GetRootDir()}, args...))
+	return g.runGitFunction(append([]string{"-C", g.GetRootDir()}, args...))
 }

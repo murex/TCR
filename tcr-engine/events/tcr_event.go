@@ -20,25 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package events
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+import "time"
+
+// TcrEventStatus is the status of the build and/or tests in a TCR Event record
+type TcrEventStatus int
+
+// List of possible values of TcrEventStatus
+const (
+	StatusUnknown TcrEventStatus = iota
+	StatusPassed
+	StatusFailed
 )
 
-func Test_master_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("master"))
+// TcrEvent is the structure containing information related to a TCR event
+type TcrEvent struct {
+	Timestamp         time.Time
+	ModifiedSrcLines  int
+	ModifiedTestLines int
+	AddedTestCases    int
+	BuildStatus       TcrEventStatus
+	TestsStatus       TcrEventStatus
 }
 
-func Test_main_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("main"))
-}
-
-func Test_is_not_a_git_root_branch(t *testing.T) {
-	assert.False(t, IsRootBranch("x"))
-}
-
-func Test_compute_changed_lines(t *testing.T) {
-	assert.Equal(t, 6, NewFileDiff("", 4, 2).ChangedLines())
+// NewTcrEvent create a new TCREvent instance
+func NewTcrEvent(
+	modifiedSrcLines, modifiedTestLines, addedTestCases int,
+	buildStatus, testStatus TcrEventStatus) TcrEvent {
+	return TcrEvent{
+		Timestamp:         time.Now(),
+		ModifiedSrcLines:  modifiedSrcLines,
+		ModifiedTestLines: modifiedTestLines,
+		AddedTestCases:    addedTestCases,
+		BuildStatus:       buildStatus,
+		TestsStatus:       testStatus,
+	}
 }

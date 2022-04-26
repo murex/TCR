@@ -24,6 +24,7 @@ package engine
 
 import (
 	"github.com/murex/tcr/tcr-engine/checker"
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/filesystem"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/params"
@@ -281,13 +282,32 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
+		tcr.logEvent(events.StatusFailed, events.StatusUnknown)
 		return
 	}
 	if tcr.test() == nil {
+		tcr.logEvent(events.StatusPassed, events.StatusPassed)
 		tcr.commit()
 	} else {
+		tcr.logEvent(events.StatusPassed, events.StatusFailed)
 		tcr.revert()
 	}
+}
+
+func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus) {
+	changedFiles, err := tcr.vcs.Diff()
+	if err != nil {
+		report.PostWarning(err)
+	}
+
+	events.EventRepository.Add(
+		events.NewTcrEvent(
+			computeSrcLinesChanged(tcr.lang, changedFiles),
+			computeTestLinesChanged(tcr.lang, changedFiles),
+			0,
+			buildStatus,
+			testsStatus),
+	)
 }
 
 func (tcr *TcrEngine) build() error {

@@ -36,12 +36,12 @@ type GitFake struct {
 	failPush     bool
 	failPull     bool
 	failDiff     bool
-	changedFiles []string
+	changedFiles []FileDiff
 }
 
 // NewGitFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
-func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, changedFiles []string) (GitInterface, error) {
+func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, changedFiles []FileDiff) (GitInterface, error) {
 	return &GitFake{
 		failCommit:   failCommit,
 		failRestore:  failRestore,
@@ -74,6 +74,14 @@ func (g GitFake) Pull() error {
 
 // ListChanges returns the list of changed files configured at fake initialization
 func (g *GitFake) ListChanges() (files []string, err error) {
+	for _, d := range g.changedFiles {
+		files = append(files, d.Path)
+	}
+	return files, fakeOperation("diff", g.failDiff)
+}
+
+// Diff returns the list of files modified configured at fake initialization
+func (g GitFake) Diff() (diffs []FileDiff, err error) {
 	return g.changedFiles, fakeOperation("diff", g.failDiff)
 }
 

@@ -24,6 +24,7 @@ package engine
 
 import (
 	"fmt"
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
@@ -157,6 +158,7 @@ func Test_run_tcr_cycle_with_test_and_restore_failing(t *testing.T) {
 func initTcrEngineWithFakes(p *params.Params, f failures) TcrInterface {
 	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest))
 	lang := registerFakeLanguage(tchn)
+	events.EventRepository = &events.TcrEventInMemoryRepository{}
 
 	var parameters params.Params
 	if p == nil {
@@ -208,7 +210,8 @@ func registerFakeLanguage(toolchainName string) string {
 }
 
 func replaceGitImplWithFake(tcr TcrInterface, failingCommit, failingRestore, failingPush, failingPull, failDiff bool) {
-	fake, _ := vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff, []string{"fake-src"})
+	fake, _ := vcs.NewGitFake(failingCommit, failingRestore, failingPush, failingPull, failDiff,
+		[]vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
 	tcr.setVcs(fake)
 }
 
@@ -242,10 +245,30 @@ func Test_run_as_role_methods(t *testing.T) {
 		t.Run(tt.role.LongName(), func(t *testing.T) {
 			tcr = initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Mob{})), failures{})
 			tt.runAsMethod()
-			time.Sleep(1 * time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
 		})
 	}
+}
+
+func Test_generate_tcr_event_on_build_fail(t *testing.T) {
+	tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.OneShot{})), failures{failBuild})
+	tcr.RunTCRCycle()
+	assert.Equal(t, events.StatusFailed, events.EventRepository.Get().BuildStatus)
+}
+
+func Test_generate_tcr_event_on_build_pass_and_tests_pass(t *testing.T) {
+	tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.OneShot{})), failures{})
+	tcr.RunTCRCycle()
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().BuildStatus)
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().TestsStatus)
+}
+
+func Test_generate_tcr_event_on_build_pass_and_tests_fail(t *testing.T) {
+	tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.OneShot{})), failures{failTest})
+	tcr.RunTCRCycle()
+	assert.Equal(t, events.StatusPassed, events.EventRepository.Get().BuildStatus)
+	assert.Equal(t, events.StatusFailed, events.EventRepository.Get().TestsStatus)
 }
 
 func Test_set_auto_push(t *testing.T) {
