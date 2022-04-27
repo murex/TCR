@@ -39,21 +39,29 @@ type TcrEvent struct {
 	Timestamp         time.Time
 	ModifiedSrcLines  int
 	ModifiedTestLines int
-	TotalTestsRan     int
 	BuildStatus       TcrEventStatus
 	TestsStatus       TcrEventStatus
+	TotalTestsRan     int
+	TestsFailed       int
+	TestsPassed       int
+	TestsSkipped      int
+	TestsWithErrors   int
 }
 
 // NewTcrEvent create a new TCREvent instance
-func NewTcrEvent(
-	modifiedSrcLines, modifiedTestLines, totalTestsRan int,
-	buildStatus, testStatus TcrEventStatus) TcrEvent {
+func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
+	buildStatus, testStatus TcrEventStatus,
+	totalTestsRan, testsFailed, testsPassed, testsSkipped, testsWithErrors int) TcrEvent {
 	return TcrEvent{
 		Timestamp:         time.Now(),
 		ModifiedSrcLines:  modifiedSrcLines,
 		ModifiedTestLines: modifiedTestLines,
-		TotalTestsRan:     totalTestsRan,
 		BuildStatus:       buildStatus,
 		TestsStatus:       testStatus,
+		TotalTestsRan:     totalTestsRan,
+		TestsFailed:       testsFailed,
+		TestsPassed:       testsPassed,
+		TestsSkipped:      testsSkipped,
+		TestsWithErrors:   testsWithErrors,
 	}
 }
