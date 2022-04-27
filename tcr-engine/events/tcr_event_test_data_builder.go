@@ -79,10 +79,10 @@ func WithModifiedTestLines(count int) func(filter *TcrEvent) {
 	}
 }
 
-// WithAddedTestCases sets added test cases to TCR event test data builder
-func WithAddedTestCases(count int) func(filter *TcrEvent) {
+// WithTotalTestsRan sets added test cases to TCR event test data builder
+func WithTotalTestsRan(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.AddedTestCases = count
+		tcrEvent.TotalTestsRan = count
 	}
 }
 
