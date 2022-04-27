@@ -67,7 +67,7 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 		{
 			"added test cases",
 			3,
-			*ATcrEvent(WithAddedTestCases(3)),
+			*ATcrEvent(WithTotalTestsRan(3)),
 			"3",
 		},
 		{
@@ -110,7 +110,7 @@ func Test_append_event_to_writer(t *testing.T) {
 		WithTimestamp(time.Date(2022, 4, 11, 15, 52, 3, 0, time.UTC)),
 		WithModifiedSrcLines(12),
 		WithModifiedTestLines(25),
-		WithAddedTestCases(3),
+		WithTotalTestsRan(3),
 		WithPassingBuild(),
 		WithFailingTests(),
 	)
@@ -159,7 +159,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
-				WithAddedTestCases(4),
+				WithTotalTestsRan(4),
 				WithFailingBuild(),
 				WithFailingTests()),
 		},
