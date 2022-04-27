@@ -33,7 +33,7 @@ var (
 
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
-	tcrEvent := NewTcrEvent(0, 0, 0, StatusUnknown, StatusUnknown)
+	tcrEvent := NewTcrEvent(0, 0, StatusUnknown, StatusUnknown, 0, 0, 0, 0, 0)
 	tcrEvent.Timestamp = snapshotTime
 
 	for _, build := range builders {
@@ -79,10 +79,38 @@ func WithModifiedTestLines(count int) func(filter *TcrEvent) {
 	}
 }
 
-// WithTotalTestsRan sets added test cases to TCR event test data builder
+// WithTotalTestsRan sets the total added test cases to TCR event test data builder
 func WithTotalTestsRan(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
 		tcrEvent.TotalTestsRan = count
+	}
+}
+
+// WithTestsPassed sets the number of passed test cases to TCR event test data builder
+func WithTestsPassed(count int) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.TestsPassed = count
+	}
+}
+
+// WithTestsFailed sets the number of failed test cases to TCR event test data builder
+func WithTestsFailed(count int) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.TestsFailed = count
+	}
+}
+
+// WithTestsSkipped sets the number of skipped test cases to TCR event test data builder
+func WithTestsSkipped(count int) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.TestsSkipped = count
+	}
+}
+
+// WithTestsWithErrors sets the number of test cases with erros to TCR event test data builder
+func WithTestsWithErrors(count int) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.TestsWithErrors = count
 	}
 }
 
