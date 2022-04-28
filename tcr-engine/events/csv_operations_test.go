@@ -65,34 +65,58 @@ func Test_append_tcr_event_to_csv_writer(t *testing.T) {
 			"25",
 		},
 		{
-			"added test cases",
-			3,
-			*ATcrEvent(WithTotalTestsRan(3)),
-			"3",
-		},
-		{
 			"build passing",
-			4,
+			3,
 			*ATcrEvent(WithPassingBuild()),
 			"1",
 		},
 		{
 			"build failing",
-			4,
+			3,
 			*ATcrEvent(WithFailingBuild()),
 			"2",
 		},
 		{
 			"tests passing",
-			5,
+			4,
 			*ATcrEvent(WithPassingTests()),
 			"1",
 		},
 		{
 			"tests failing",
-			5,
+			4,
 			*ATcrEvent(WithFailingTests()),
 			"2",
+		},
+		{
+			"total test cases",
+			5,
+			*ATcrEvent(WithTotalTestsRan(3)),
+			"3",
+		},
+		{
+			"passed test cases",
+			6,
+			*ATcrEvent(WithTestsPassed(4)),
+			"4",
+		},
+		{
+			"failed test cases",
+			7,
+			*ATcrEvent(WithTestsFailed(10)),
+			"10",
+		},
+		{
+			"skipped test cases",
+			8,
+			*ATcrEvent(WithTestsSkipped(9)),
+			"9",
+		},
+		{
+			"test cases with errors",
+			9,
+			*ATcrEvent(WithTestsWithErrors(10)),
+			"10",
 		},
 	}
 
@@ -110,12 +134,16 @@ func Test_append_event_to_writer(t *testing.T) {
 		WithTimestamp(time.Date(2022, 4, 11, 15, 52, 3, 0, time.UTC)),
 		WithModifiedSrcLines(12),
 		WithModifiedTestLines(25),
-		WithTotalTestsRan(3),
 		WithPassingBuild(),
 		WithFailingTests(),
+		WithTotalTestsRan(14),
+		WithTestsPassed(8),
+		WithTestsFailed(2),
+		WithTestsSkipped(1),
+		WithTestsWithErrors(3),
 	)
 	_ = appendEvent(event, &b)
-	assert.Equal(t, "2022-04-11 15:52:03,12,25,3,1,2\n", b.String())
+	assert.Equal(t, "2022-04-11 15:52:03,12,25,1,2,14,8,2,1,3\n", b.String())
 }
 
 func Test_converts_a_csv_record_to_an_event(t *testing.T) {
@@ -126,7 +154,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 	}{
 		{
 			"timestamp in UTC",
-			"2022-04-11 15:52:03, 0, 0, 0, 2, 2\n",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 0, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -135,7 +163,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"modified source lines",
-			"2022-04-11 15:52:03, 2, 0, 0, 2, 2\n",
+			"2022-04-11 15:52:03, 2, 0, 2, 2, 0, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -145,7 +173,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"modified test lines",
-			"2022-04-11 15:52:03, 0, 3, 0, 2, 2\n",
+			"2022-04-11 15:52:03, 0, 3, 2, 2, 0, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -154,18 +182,8 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 				WithFailingTests()),
 		},
 		{
-			"added test cases",
-			"2022-04-11 15:52:03, 0, 0, 4, 2, 2\n",
-			*ATcrEvent(WithTimestamp(time.Date(
-				2022, 4, 11, 15, 52, 3, 0,
-				time.UTC)),
-				WithTotalTestsRan(4),
-				WithFailingBuild(),
-				WithFailingTests()),
-		},
-		{
 			"with build passed",
-			"2022-04-11 15:52:03, 0, 0, 0, 1, 2\n",
+			"2022-04-11 15:52:03, 0, 0, 1, 2, 0, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
@@ -174,12 +192,62 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 		},
 		{
 			"with test passed",
-			"2022-04-11 15:52:03, 0, 0, 0, 2, 1\n",
+			"2022-04-11 15:52:03, 0, 0, 2, 1, 0, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,
 				time.UTC)),
 				WithFailingBuild(),
 				WithPassingTests()),
+		},
+		{
+			"added test cases",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 4, 0, 0, 0, 0\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests(),
+				WithTotalTestsRan(4)),
+		},
+		{
+			"passed test cases",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 0, 3, 0, 0, 0\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests(),
+				WithTestsPassed(3)),
+		},
+		{
+			"failed test cases",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 0, 0, 2, 0, 0\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests(),
+				WithTestsFailed(2)),
+		},
+		{
+			"skipped test cases",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 0, 0, 0, 5, 0\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests(),
+				WithTestsSkipped(5)),
+		},
+		{
+			"test cases with errors",
+			"2022-04-11 15:52:03, 0, 0, 2, 2, 0, 0, 0, 0, 4\n",
+			*ATcrEvent(WithTimestamp(time.Date(
+				2022, 4, 11, 15, 52, 3, 0,
+				time.UTC)),
+				WithFailingBuild(),
+				WithFailingTests(),
+				WithTestsWithErrors(4)),
 		},
 	}
 
