@@ -98,9 +98,13 @@ func toCsvRecord(event TcrEvent) []string {
 		event.Timestamp.In(time.UTC).Format(timeLayoutFormat),
 		strconv.Itoa(event.ModifiedSrcLines),
 		strconv.Itoa(event.ModifiedTestLines),
-		strconv.Itoa(event.TotalTestsRan),
 		strconv.Itoa(int(event.BuildStatus)),
 		strconv.Itoa(int(event.TestsStatus)),
+		strconv.Itoa(event.TotalTestsRan),
+		strconv.Itoa(event.TestsPassed),
+		strconv.Itoa(event.TestsFailed),
+		strconv.Itoa(event.TestsSkipped),
+		strconv.Itoa(event.TestsWithErrors),
 	}
 }
 
@@ -113,9 +117,13 @@ func toTcrEvent(csvRecord string) TcrEvent {
 		Timestamp:         parsedTime,
 		ModifiedSrcLines:  toInt(recordFields[1]),
 		ModifiedTestLines: toInt(recordFields[2]),
-		TotalTestsRan:     toInt(recordFields[3]),
-		BuildStatus:       toTcrEventStatus(recordFields[4]),
-		TestsStatus:       toTcrEventStatus(recordFields[5]),
+		BuildStatus:       toTcrEventStatus(recordFields[3]),
+		TestsStatus:       toTcrEventStatus(recordFields[4]),
+		TotalTestsRan:     toInt(recordFields[5]),
+		TestsPassed:       toInt(recordFields[6]),
+		TestsFailed:       toInt(recordFields[7]),
+		TestsSkipped:      toInt(recordFields[8]),
+		TestsWithErrors:   toInt(recordFields[9]),
 	}
 	return event
 }
