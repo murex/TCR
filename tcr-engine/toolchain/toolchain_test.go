@@ -83,7 +83,8 @@ func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.Error(t, toolchain.RunTests())
+			_, err := toolchain.RunTests()
+			assert.Error(t, err)
 		})
 }
 
@@ -91,7 +92,8 @@ func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.NoError(t, toolchain.RunTests())
+			_, err := toolchain.RunTests()
+			assert.NoError(t, err)
 		})
 }
 

@@ -326,7 +326,7 @@ func (tcr *TcrEngine) build() error {
 
 func (tcr *TcrEngine) test() error {
 	report.PostInfo("Running Tests")
-	err := tcr.tchn.RunTests()
+	_, err := tcr.tchn.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
