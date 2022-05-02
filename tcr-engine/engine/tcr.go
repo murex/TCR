@@ -55,7 +55,7 @@ type (
 		Stop()
 		RunTCRCycle()
 		build() error
-		test() error
+		test() (string, error)
 		commit()
 		revert()
 		GetSessionInfo() SessionInfo
@@ -285,7 +285,8 @@ func (tcr *TcrEngine) RunTCRCycle() {
 		tcr.logEvent(events.StatusFailed, events.StatusUnknown)
 		return
 	}
-	if tcr.test() == nil {
+	_, err := tcr.test()
+	if err == nil {
 		tcr.logEvent(events.StatusPassed, events.StatusPassed)
 		tcr.commit()
 	} else {
@@ -324,14 +325,14 @@ func (tcr *TcrEngine) build() error {
 	return err
 }
 
-func (tcr *TcrEngine) test() error {
+func (tcr *TcrEngine) test() (string, error) {
 	report.PostInfo("Running Tests")
 	_, err := tcr.tchn.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
-	return err
+	return "", err
 }
 
 func (tcr *TcrEngine) commit() {

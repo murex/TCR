@@ -84,12 +84,19 @@ func Test_tcr_command_end_state(t *testing.T) {
 		},
 		{
 			"test with no failure",
-			initTcrEngineWithFakes(nil, failures{}).test,
+			func() error {
+				_, err := initTcrEngineWithFakes(nil, failures{}).test()
+				return err
+			},
 			status.Ok, false,
 		},
 		{
 			"test with failure",
-			initTcrEngineWithFakes(nil, failures{failTest}).test,
+			func() error {
+				_, err := initTcrEngineWithFakes(nil, failures{failTest}).test()
+				return err
+			},
+
 			status.TestFailed, true,
 		},
 	}
