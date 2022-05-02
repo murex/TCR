@@ -59,16 +59,17 @@ func (tchn FakeToolchain) checkTestCommand() error {
 // RunBuild returns an error if failingBuild is true, nil otherwise. THis method does not
 // call any real command
 func (tchn FakeToolchain) RunBuild() error {
-	return runCommandStub(tchn.failingBuild)
+	_, err := runCommandStub(tchn.failingBuild)
+	return err
 }
 
 // RunTests returns an error if failingTest is true, nil otherwise. THis method does not
 // call any real command
-func (tchn FakeToolchain) RunTests() error {
+func (tchn FakeToolchain) RunTests() (string, error) {
 	return runCommandStub(tchn.failingTest)
 }
 
-func runCommandStub(shouldFail bool) (err error) {
+func runCommandStub(shouldFail bool) (str string, err error) {
 	if shouldFail {
 		err = errors.New("fake toolchain failing command")
 	}
