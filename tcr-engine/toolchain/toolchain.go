@@ -138,12 +138,14 @@ func (tchn Toolchain) GetTestCommands() []Command {
 
 // RunBuild runs the build with this toolchain
 func (tchn Toolchain) RunBuild() error {
-	return findCompatibleCommand(tchn.buildCommands).run()
+	_, err := findCompatibleCommand(tchn.buildCommands).run()
+	return err
 }
 
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() error {
-	return findCompatibleCommand(tchn.testCommands).run()
+	_, err := findCompatibleCommand(tchn.testCommands).run()
+	return err
 }
 
 // BuildCommandPath returns the build command path for this toolchain

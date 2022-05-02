@@ -102,14 +102,15 @@ func (command Command) runsWithArch(arch ArchName) bool {
 	return false
 }
 
-func (command Command) run() error {
+func (command Command) run() (output string, err error) {
 	report.PostText(command.asCommandLine())
 	session := sh.NewSession().SetDir(GetWorkDir())
-	output, err := session.Command(command.Path, command.Arguments).CombinedOutput()
-	if output != nil {
-		report.PostText(string(output))
+	outputBytes, err := session.Command(command.Path, command.Arguments).CombinedOutput()
+	if outputBytes != nil {
+		output := string(outputBytes)
+		report.PostText(output)
 	}
-	return err
+	return
 }
 
 func (command Command) check() error {
