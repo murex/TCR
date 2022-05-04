@@ -12,7 +12,8 @@ const regexFailures = "Failures: [0-9]+"
 const regexErrors = "Errors: [0-9]+"
 const regexSkipped = "Skipped: [0-9]+"
 
-func extractTestRunInformation(mvnTestRunOutput string) TestRunInformation {
+// ExtractTestRunInformation extracts an instance of TestRunInformation from the buildOutPut
+func ExtractTestRunInformation(mvnTestRunOutput string) TestRunInformation {
 	testInfo := extractTestInfo(mvnTestRunOutput)
 	totalTests := extractSectionInfo(testInfo, regexTestsRun)
 	testsFailed := extractSectionInfo(testInfo, regexFailures)

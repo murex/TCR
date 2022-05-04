@@ -33,10 +33,11 @@ type FakeToolchain struct {
 	Toolchain
 	failingBuild bool
 	failingTest  bool
+	testOutput   string
 }
 
 // NewFakeToolchain creates a FakeToolchain instance
-func NewFakeToolchain(failingBuild, failingTest bool) *FakeToolchain {
+func NewFakeToolchain(failingBuild, failingTest bool, testOutput string) *FakeToolchain {
 	return &FakeToolchain{
 		Toolchain: Toolchain{
 			name:          "fake-toolchain",
@@ -45,6 +46,7 @@ func NewFakeToolchain(failingBuild, failingTest bool) *FakeToolchain {
 		},
 		failingBuild: failingBuild,
 		failingTest:  failingTest,
+		testOutput:   testOutput,
 	}
 }
 
@@ -59,17 +61,16 @@ func (tchn FakeToolchain) checkTestCommand() error {
 // RunBuild returns an error if failingBuild is true, nil otherwise. THis method does not
 // call any real command
 func (tchn FakeToolchain) RunBuild() error {
-	_, err := runCommandStub(tchn.failingBuild)
-	return err
+	return runCommandStub(tchn.failingBuild)
 }
 
 // RunTests returns an error if failingTest is true, nil otherwise. THis method does not
 // call any real command
 func (tchn FakeToolchain) RunTests() (string, error) {
-	return runCommandStub(tchn.failingTest)
+	return tchn.testOutput, runCommandStub(tchn.failingTest)
 }
 
-func runCommandStub(shouldFail bool) (str string, err error) {
+func runCommandStub(shouldFail bool) (err error) {
 	if shouldFail {
 		err = errors.New("fake toolchain failing command")
 	}

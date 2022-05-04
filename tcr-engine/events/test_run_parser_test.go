@@ -39,7 +39,7 @@ func Test_extracting_a_test_info_from_a_maven_test_build_output(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			info := extractTestRunInformation(tt.mavenTestOutput)
+			info := ExtractTestRunInformation(tt.mavenTestOutput)
 			assert.Equal(t, tt.expected, info)
 		})
 	}
