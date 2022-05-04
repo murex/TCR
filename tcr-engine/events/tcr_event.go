@@ -42,8 +42,8 @@ type TcrEvent struct {
 	BuildStatus       TcrEventStatus
 	TestsStatus       TcrEventStatus
 	TotalTestsRan     int
-	TestsFailed       int
 	TestsPassed       int
+	TestsFailed       int
 	TestsSkipped      int
 	TestsWithErrors   int
 }
@@ -59,8 +59,8 @@ func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
 		BuildStatus:       buildStatus,
 		TestsStatus:       testStatus,
 		TotalTestsRan:     totalTestsRan,
-		TestsFailed:       testsFailed,
 		TestsPassed:       testsPassed,
+		TestsFailed:       testsFailed,
 		TestsSkipped:      testsSkipped,
 		TestsWithErrors:   testsWithErrors,
 	}
