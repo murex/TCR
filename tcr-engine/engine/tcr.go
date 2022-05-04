@@ -282,20 +282,21 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		tcr.logEvent(events.StatusFailed, events.StatusUnknown)
+		tcr.logEvent(events.StatusFailed, events.StatusUnknown, events.TestRunInformation{})
 		return
 	}
-	_, err := tcr.test()
+	testOutput, err := tcr.test()
+	testRunInfo := events.ExtractTestRunInformation(testOutput)
 	if err == nil {
-		tcr.logEvent(events.StatusPassed, events.StatusPassed)
+		tcr.logEvent(events.StatusPassed, events.StatusPassed, testRunInfo)
 		tcr.commit()
 	} else {
-		tcr.logEvent(events.StatusPassed, events.StatusFailed)
+		tcr.logEvent(events.StatusPassed, events.StatusFailed, testRunInfo)
 		tcr.revert()
 	}
 }
 
-func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus) {
+func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, testRunInfo events.TestRunInformation) {
 	changedFiles, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -307,11 +308,11 @@ func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus) {
 			computeTestLinesChanged(tcr.lang, changedFiles),
 			buildStatus,
 			testsStatus,
-			0,
-			0,
-			0,
-			0,
-			0),
+			testRunInfo.TotalTestsRan,
+			testRunInfo.TestsPassed,
+			testRunInfo.TestsFailed,
+			testRunInfo.TestsSkipped,
+			testRunInfo.TestsWithErrors),
 	)
 }
 
@@ -325,14 +326,13 @@ func (tcr *TcrEngine) build() error {
 	return err
 }
 
-func (tcr *TcrEngine) test() (string, error) {
-	report.PostInfo("Running Tests")
-	_, err := tcr.tchn.RunTests()
+func (tcr *TcrEngine) test() (testOutput string, err error) {
+	testOutput, err = tcr.tchn.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
-	return "", err
+	return
 }
 
 func (tcr *TcrEngine) commit() {

@@ -97,6 +97,15 @@ func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
 		})
 }
 
+func assertTestOutputReturnedWhenTestRuns(t *testing.T, name string, workDir string) {
+	toolchain, _ := GetToolchain(name)
+	runFromDir(t, workDir,
+		func(t *testing.T) {
+			result, _ := toolchain.RunTests()
+			assert.NotEmpty(t, result)
+		})
+}
+
 func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
