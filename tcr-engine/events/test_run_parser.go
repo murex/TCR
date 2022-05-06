@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const regexBuildOutput = ".*Tests run: [0-9]+, Failures: [0-9]+, Errors: [0-9]+, Skipped: [0-9]+.*"
+const regexBuildOutput = `Tests run: [0-9]+, Failures: [0-9]+, Errors: [0-9]+, Skipped: [0-9]+\r`
 const regexTestsRun = "Tests run: [0-9]+"
 const regexFailures = "Failures: [0-9]+"
 const regexErrors = "Errors: [0-9]+"
