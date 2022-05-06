@@ -312,17 +312,17 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 		{
 			"valid test run with passed tests",
 			failures{},
-			"[INFO] Results: \n" +
-				"[INFO]\n" +
-				"[WARNING] Tests run: 26, Failures: 00, Errors: 0, Skipped: 2, Time elapsed: 0.076 s - in test.org.testclass",
+			"[INFO] Results: \r" +
+				"[INFO]\r" +
+				"[WARNING] Tests run: 26, Failures: 00, Errors: 0, Skipped: 2\r",
 			events.NewTestRunInformation(26, 24, 0, 2, 0),
 		},
 		{
 			"valid test run with failed tests",
 			failures{failTest},
-			"[INFO] Results: \n" +
-				"[INFO]\n" +
-				"[WARNING] Tests run: 26, Failures: 1, Errors: 3, Skipped: 4, Time elapsed: 0.076 s - in test.org.testclass",
+			"[INFO] Results: \r" +
+				"[INFO]\r" +
+				"[WARNING] Tests run: 26, Failures: 1, Errors: 3, Skipped: 4\r",
 			events.NewTestRunInformation(26, 18, 1, 4, 3),
 		},
 		{
@@ -334,8 +334,8 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 		{
 			"with an invalid test run",
 			failures{},
-			"[INFO] Results: \n" +
-				"[INFO]\n" +
+			"[INFO] Results: \r" +
+				"[INFO]\r" +
 				"[WARNING] Tests run: 26, Failures",
 			events.NewTestRunInformation(0, 0, 0, 0, 0),
 		},
