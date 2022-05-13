@@ -41,7 +41,7 @@ type TcrEvent struct {
 	ModifiedTestLines int
 	BuildStatus       TcrEventStatus
 	TestsStatus       TcrEventStatus
-	TotalTestsRan     int
+	TotalTestsRun     int
 	TestsPassed       int
 	TestsFailed       int
 	TestsSkipped      int
@@ -51,14 +51,14 @@ type TcrEvent struct {
 // NewTcrEvent create a new TCREvent instance
 func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
 	buildStatus, testStatus TcrEventStatus,
-	totalTestsRan, testsPassed, testsFailed, testsSkipped, testsWithErrors int) TcrEvent {
+	totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int) TcrEvent {
 	return TcrEvent{
 		Timestamp:         time.Now(),
 		ModifiedSrcLines:  modifiedSrcLines,
 		ModifiedTestLines: modifiedTestLines,
 		BuildStatus:       buildStatus,
 		TestsStatus:       testStatus,
-		TotalTestsRan:     totalTestsRan,
+		TotalTestsRun:     totalTestsRun,
 		TestsPassed:       testsPassed,
 		TestsFailed:       testsFailed,
 		TestsSkipped:      testsSkipped,
