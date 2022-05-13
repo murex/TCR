@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -60,17 +61,26 @@ func Test_unrecognized_architecture(t *testing.T) {
 }
 
 func Test_unrecognized_platform(t *testing.T) {
-	dummyOs, dummyArch := OsName("dummy"), ArchName("dummy")
+	dummyOs, dummyArch := OsName("dummy_os"), ArchName("dummy_arch")
 
-	assert.False(t, ACommand().runsOnPlatform(dummyOs, dummyArch))
+	cases := []struct {
+		os   OsName
+		arch ArchName
+	}{
+		{dummyOs, dummyArch},
+		{OsDarwin, dummyArch},
+		{OsWindows, dummyArch},
+		{OsLinux, dummyArch},
+		{dummyOs, Arch386},
+		{dummyOs, ArchAmd64},
+		{dummyOs, ArchArm64},
+	}
 
-	assert.False(t, ACommand().runsOnPlatform(OsDarwin, dummyArch))
-	assert.False(t, ACommand().runsOnPlatform(OsWindows, dummyArch))
-	assert.False(t, ACommand().runsOnPlatform(OsLinux, dummyArch))
-
-	assert.False(t, ACommand().runsOnPlatform(dummyOs, Arch386))
-	assert.False(t, ACommand().runsOnPlatform(dummyOs, ArchAmd64))
-	assert.False(t, ACommand().runsOnPlatform(dummyOs, ArchArm64))
+	for _, tt := range cases {
+		t.Run(fmt.Sprint(tt.os, "-", tt.arch), func(t *testing.T) {
+			assert.False(t, ACommand().runsOnPlatform(tt.os, tt.arch))
+		})
+	}
 }
 
 func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
@@ -79,10 +89,23 @@ func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 	myCommand := ACommand(WithOs(myOs), WithArch(myArch))
 	commands := []Command{*myCommand}
 
-	assert.Equal(t, findCommand(commands, myOs, myArch), myCommand)
-	assert.Zero(t, findCommand(commands, anotherOs, anotherArch))
-	assert.Zero(t, findCommand(commands, myOs, anotherArch))
-	assert.Zero(t, findCommand(commands, anotherOs, myArch))
+	cases := []struct {
+		desc     string
+		os       OsName
+		arch     ArchName
+		expected *Command
+	}{
+		{"both os and arch match", myOs, myArch, myCommand},
+		{"both os and arch do not match", anotherOs, anotherArch, nil},
+		{"os matches but arch does not match", myOs, anotherArch, nil},
+		{"arch matches but os does not match", anotherOs, myArch, nil},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, findCommand(commands, tt.os, tt.arch))
+		})
+	}
 }
 
 func Test_command_path_cannot_be_empty(t *testing.T) {
@@ -103,4 +126,8 @@ func Test_command_arch_list_cannot_be_empty(t *testing.T) {
 
 func Test_a_command_arch_cannot_be_empty(t *testing.T) {
 	assert.Error(t, ACommand(WithArch("")).check())
+}
+
+func Test_a_valid_command_should_have_path_os_and_arch_non_empty(t *testing.T) {
+	assert.NoError(t, ACommand(WithPath("some-path"), WithOs("some-os"), WithArch("some-arch")).check())
 }

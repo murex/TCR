@@ -29,7 +29,7 @@ func ACommand(commandBuilders ...func(command *Command)) *Command {
 	command := &Command{
 		Os:        GetAllOsNames(),
 		Arch:      GetAllArchNames(),
-		Path:      "",
+		Path:      "some-command-path",
 		Arguments: []string{},
 	}
 
