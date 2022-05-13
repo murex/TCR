@@ -311,7 +311,7 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 		desc             string
 		failures         failures
 		buildOutput      string
-		expectedTestInfo events.TestRunInformation
+		expectedTestInfo events.TestResults
 	}{
 		{
 			"valid test run with passed tests",
@@ -319,7 +319,7 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 			"[INFO] Results: \r" +
 				"[INFO]\r" +
 				"[WARNING] Tests run: 26, Failures: 00, Errors: 0, Skipped: 2\r",
-			events.NewTestRunInformation(26, 24, 0, 2, 0),
+			events.NewTestResults(26, 24, 0, 2, 0),
 		},
 		{
 			"valid test run with failed tests",
@@ -327,13 +327,13 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 			"[INFO] Results: \r" +
 				"[INFO]\r" +
 				"[WARNING] Tests run: 26, Failures: 1, Errors: 3, Skipped: 4\r",
-			events.NewTestRunInformation(26, 18, 1, 4, 3),
+			events.NewTestResults(26, 18, 1, 4, 3),
 		},
 		{
 			"with a build failure",
 			failures{failBuild},
 			"",
-			events.NewTestRunInformation(0, 0, 0, 0, 0),
+			events.NewTestResults(0, 0, 0, 0, 0),
 		},
 		{
 			"with an invalid test run",
@@ -341,7 +341,7 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 			"[INFO] Results: \r" +
 				"[INFO]\r" +
 				"[WARNING] Tests run: 26, Failures",
-			events.NewTestRunInformation(0, 0, 0, 0, 0),
+			events.NewTestResults(0, 0, 0, 0, 0),
 		},
 	}
 
@@ -351,8 +351,8 @@ func Test_generate_test_info_from_test_run_output(t *testing.T) {
 			tcr.RunTCRCycle()
 			event := events.EventRepository.Get()
 			assert.Equal(t, tt.expectedTestInfo,
-				events.NewTestRunInformation(
-					event.TotalTestsRan,
+				events.NewTestResults(
+					event.TotalTestsRun,
 					event.TestsPassed,
 					event.TestsFailed,
 					event.TestsSkipped,
