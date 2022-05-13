@@ -187,11 +187,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 }
 
 func initTcrEngineWithFakes(p *params.Params, f failures) TcrInterface {
-	return initTcrEngineWithFakesAndOutput(p, f, "")
-}
-
-func initTcrEngineWithFakesAndOutput(p *params.Params, f failures, testOutput string) TcrInterface {
-	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest), testOutput)
+	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest), toolchain.TestResults{})
 	lang := registerFakeLanguage(tchn)
 	events.EventRepository = &events.TcrEventInMemoryRepository{}
 
@@ -228,8 +224,8 @@ func initTcrEngineWithFakesAndOutput(p *params.Params, f failures, testOutput st
 	return tcr
 }
 
-func registerFakeToolchain(failingBuild, failingTest bool, testOutput string) string {
-	fake := toolchain.NewFakeToolchain(failingBuild, failingTest, testOutput)
+func registerFakeToolchain(failingBuild, failingTest bool, testResults toolchain.TestResults) string {
+	fake := toolchain.NewFakeToolchain(failingBuild, failingTest, testResults)
 	if err := toolchain.Register(fake); err != nil {
 		fmt.Println(err)
 	}
@@ -306,60 +302,6 @@ func Test_generate_events_from_tcr_cycle(t *testing.T) {
 	}
 }
 
-func Test_generate_test_info_from_test_run_output(t *testing.T) {
-	testsFlags := []struct {
-		desc             string
-		failures         failures
-		buildOutput      string
-		expectedTestInfo events.TestResults
-	}{
-		{
-			"valid test run with passed tests",
-			failures{},
-			"[INFO] Results: \r" +
-				"[INFO]\r" +
-				"[WARNING] Tests run: 26, Failures: 00, Errors: 0, Skipped: 2\r",
-			events.NewTestResults(26, 24, 0, 2, 0),
-		},
-		{
-			"valid test run with failed tests",
-			failures{failTest},
-			"[INFO] Results: \r" +
-				"[INFO]\r" +
-				"[WARNING] Tests run: 26, Failures: 1, Errors: 3, Skipped: 4\r",
-			events.NewTestResults(26, 18, 1, 4, 3),
-		},
-		{
-			"with a build failure",
-			failures{failBuild},
-			"",
-			events.NewTestResults(0, 0, 0, 0, 0),
-		},
-		{
-			"with an invalid test run",
-			failures{},
-			"[INFO] Results: \r" +
-				"[INFO]\r" +
-				"[WARNING] Tests run: 26, Failures",
-			events.NewTestResults(0, 0, 0, 0, 0),
-		},
-	}
-
-	for _, tt := range testsFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			tcr := initTcrEngineWithFakesAndOutput(params.AParamSet(params.WithRunMode(runmode.OneShot{})), tt.failures, tt.buildOutput)
-			tcr.RunTCRCycle()
-			event := events.EventRepository.Get()
-			assert.Equal(t, tt.expectedTestInfo,
-				events.NewTestResults(
-					event.TotalTestsRun,
-					event.TestsPassed,
-					event.TestsFailed,
-					event.TestsSkipped,
-					event.TestsWithErrors))
-		})
-	}
-}
 func Test_set_auto_push(t *testing.T) {
 	var tcr TcrInterface
 	testFlags := []struct {

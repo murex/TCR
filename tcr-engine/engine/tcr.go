@@ -55,7 +55,7 @@ type (
 		Stop()
 		RunTCRCycle()
 		build() error
-		test() (string, error)
+		test() (toolchain.TestResults, error)
 		commit()
 		revert()
 		GetSessionInfo() SessionInfo
@@ -282,11 +282,10 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		tcr.logEvent(events.StatusFailed, events.StatusUnknown, events.TestResults{})
+		tcr.logEvent(events.StatusFailed, events.StatusUnknown, toolchain.TestResults{})
 		return
 	}
-	testOutput, err := tcr.test()
-	testResults := events.ExtractTestResults(testOutput)
+	testResults, err := tcr.test()
 	if err == nil {
 		tcr.logEvent(events.StatusPassed, events.StatusPassed, testResults)
 		tcr.commit()
@@ -296,7 +295,7 @@ func (tcr *TcrEngine) RunTCRCycle() {
 	}
 }
 
-func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, testResults events.TestResults) {
+func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, testResults toolchain.TestResults) {
 	changedFiles, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -326,8 +325,8 @@ func (tcr *TcrEngine) build() error {
 	return err
 }
 
-func (tcr *TcrEngine) test() (testOutput string, err error) {
-	testOutput, err = tcr.tchn.RunTests()
+func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
+	testResults, err = tcr.tchn.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")

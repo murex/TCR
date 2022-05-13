@@ -47,7 +47,7 @@ type (
 		GetBuildCommands() []Command
 		GetTestCommands() []Command
 		RunBuild() error
-		RunTests() (string, error)
+		RunTests() (TestResults, error)
 		checkName() error
 		BuildCommandLine() string
 		BuildCommandPath() string
@@ -143,8 +143,11 @@ func (tchn Toolchain) RunBuild() error {
 }
 
 // RunTests runs the tests with this toolchain
-func (tchn Toolchain) RunTests() (string, error) {
-	return findCompatibleCommand(tchn.testCommands).run()
+func (tchn Toolchain) RunTests() (testResults TestResults, err error) {
+	var testOutput string
+	testOutput, err = findCompatibleCommand(tchn.testCommands).run()
+	testResults = extractTestResults(testOutput)
+	return
 }
 
 // BuildCommandPath returns the build command path for this toolchain

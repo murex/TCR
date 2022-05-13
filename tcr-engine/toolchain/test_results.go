@@ -1,4 +1,4 @@
-package events
+package toolchain
 
 // TestResults is the structure containing information of the test run
 type TestResults struct {

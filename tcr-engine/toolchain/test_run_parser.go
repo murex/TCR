@@ -1,4 +1,4 @@
-package events
+package toolchain
 
 import (
 	"regexp"
@@ -12,8 +12,7 @@ const regexFailures = "Failures: [0-9]+"
 const regexErrors = "Errors: [0-9]+"
 const regexSkipped = "Skipped: [0-9]+"
 
-// ExtractTestResults extracts an instance of TestResults from the buildOutput
-func ExtractTestResults(mvnTestRunOutput string) TestResults {
+func extractTestResults(mvnTestRunOutput string) TestResults {
 	testResult := extractTestInfo(mvnTestRunOutput)
 	totalTests := extractSectionInfo(testResult, regexTestsRun)
 	testsFailed := extractSectionInfo(testResult, regexFailures)

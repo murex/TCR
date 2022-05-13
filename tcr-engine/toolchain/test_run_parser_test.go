@@ -1,4 +1,4 @@
-package events
+package toolchain
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -51,7 +51,7 @@ func Test_extracting_a_test_info_from_a_maven_test_build_output(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			info := ExtractTestResults(tt.mavenTestOutput)
+			info := extractTestResults(tt.mavenTestOutput)
 			assert.Equal(t, tt.expected, info)
 		})
 	}
