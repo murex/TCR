@@ -23,6 +23,7 @@ SOFTWARE.
 package vcs
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
@@ -108,6 +109,114 @@ func Test_git_diff_command(t *testing.T) {
 			}
 			fileDiffs, _ := git.Diff()
 			assert.Equal(t, tt.expected, fileDiffs)
+		})
+	}
+}
+
+func Test_git_push_command(t *testing.T) {
+	testFlags := []struct {
+		desc                 string
+		pushEnabled          bool
+		gitError             error
+		expectError          bool
+		expectBranchOnRemote bool
+	}{
+		{
+			"push enabled and no git error",
+			true,
+			nil,
+			false,
+			true,
+		},
+		{
+			"push enabled and git error",
+			true,
+			errors.New("git push error"),
+			true,
+			false,
+		},
+		{
+			"push disabled and no git error",
+			false,
+			nil,
+			false,
+			false,
+		},
+		{
+			"push disabled and git error",
+			false,
+			errors.New("git push error"),
+			false,
+			false,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(_ []string) (err error) {
+					return tt.gitError
+				},
+				pushEnabled: tt.pushEnabled,
+			}
+			err := git.Push()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectBranchOnRemote, git.workingBranchExistsOnRemote)
+		})
+	}
+}
+
+func Test_git_pull_command(t *testing.T) {
+	testFlags := []struct {
+		desc           string
+		branchOnRemote bool
+		gitError       error
+		expectError    bool
+	}{
+		{
+			"branch on remote and no git error",
+			true,
+			nil,
+			false,
+		},
+		{
+			"branch on remote and git error",
+			true,
+			errors.New("git push error"),
+			true,
+		},
+		{
+			"no branch on remote and no git error",
+			false,
+			nil,
+			false,
+		},
+		{
+			"no branch on remote and git error",
+			false,
+			errors.New("git push error"),
+			false,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(_ []string) (err error) {
+					return tt.gitError
+				},
+				workingBranchExistsOnRemote: tt.branchOnRemote,
+			}
+			err := git.Pull()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }
