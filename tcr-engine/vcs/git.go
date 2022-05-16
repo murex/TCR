@@ -41,7 +41,6 @@ type GitInterface interface {
 	Restore(dir string) error
 	Push() error
 	Pull() error
-	ListChanges() (files []string, err error)
 	Diff() (diffs []FileDiff, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool

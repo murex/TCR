@@ -344,16 +344,16 @@ func (tcr *TcrEngine) commit() {
 }
 
 func (tcr *TcrEngine) revert() {
-	changedFiles, err := tcr.vcs.ListChanges()
+	diffs, err := tcr.vcs.Diff()
 	tcr.handleError(err, false, status.GitError)
 	if err != nil {
 		return
 	}
 
 	var reverted int
-	for _, file := range changedFiles {
-		if tcr.lang.IsSrcFile(file) {
-			err := tcr.revertFile(file)
+	for _, diff := range diffs {
+		if tcr.lang.IsSrcFile(diff.Path) {
+			err := tcr.revertFile(diff.Path)
 			tcr.handleError(err, false, status.GitError)
 			if err == nil {
 				reverted++

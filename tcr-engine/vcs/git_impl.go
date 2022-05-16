@@ -205,21 +205,6 @@ func (g *GitImpl) Pull() error {
 	return g.traceGit("pull", "--no-recurse-submodules", g.GetRemoteName(), g.GetWorkingBranch())
 }
 
-// ListChanges returns the list of files modified since last commit
-// Current implementation uses a direct call to git
-func (g *GitImpl) ListChanges() (files []string, err error) {
-	var gitOutput []byte
-	gitOutput, err = g.runGit("diff", "--name-only")
-	if err != nil {
-		return nil, err
-	}
-	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))
-	for scanner.Scan() {
-		files = append(files, filepath.Join(g.rootDir, scanner.Text()))
-	}
-	return
-}
-
 // Diff returns the list of files modified since last commit with diff info for each file
 // Current implementation uses a direct call to git
 func (g *GitImpl) Diff() (diffs []FileDiff, err error) {
