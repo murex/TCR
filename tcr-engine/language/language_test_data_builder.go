@@ -74,3 +74,8 @@ func WithSrcFiles(filter *FileTreeFilter) func(lang *Language) {
 func WithTestFiles(filter *FileTreeFilter) func(lang *Language) {
 	return func(lang *Language) { lang.testFileFilter = *filter }
 }
+
+// WithBaseDir sets the provided directory as base directory for this language
+func WithBaseDir(dir string) func(lang *Language) {
+	return func(lang *Language) { lang.baseDir = dir }
+}

@@ -24,12 +24,20 @@ package language
 
 import (
 	"errors"
+	"github.com/spf13/afero"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
 )
+
+// appFs is the singleton referring to the filesystem being used
+var appFs afero.Fs
+
+func init() {
+	appFs = afero.NewOsFs()
+}
 
 type (
 	// FileTreeFilter provides filtering mechanisms allowing to determine if a file or directory
@@ -109,7 +117,7 @@ func buildRegex(corePattern string) string {
 
 func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
 	for _, dir := range treeFilter.Directories {
-		err := filepath.Walk(filepath.Join(baseDir, dir), func(path string, fi os.FileInfo, err error) error {
+		err := afero.Walk(appFs, filepath.Join(baseDir, dir), func(path string, fi os.FileInfo, err error) error {
 			if err != nil {
 				return errors.New("something wrong with " + path)
 			}

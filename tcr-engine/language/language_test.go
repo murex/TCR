@@ -25,6 +25,7 @@ package language
 import (
 	"errors"
 	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -148,6 +149,42 @@ func Test_get_toolchain_with_non_compatible_toolchain(t *testing.T) {
 	assert.Zero(t, actual)
 	assert.Error(t, err)
 	assert.Equal(t, errors.New("other-toolchain toolchain is not compatible with default-language language"), err)
+}
+
+func Test_retrieve_language_files(t *testing.T) {
+	appFs = afero.NewMemMapFs()
+	baseDir := filepath.Join("base-dir")
+	srcDir := filepath.Join(baseDir, "src")
+	_ = appFs.MkdirAll(srcDir, os.ModeDir)
+	srcFile1 := filepath.Join(srcDir, "file1.ext")
+	_ = afero.WriteFile(appFs, srcFile1, []byte("some contents"), 0644)
+	srcFile2 := filepath.Join(srcDir, "file2.ext")
+	_ = afero.WriteFile(appFs, srcFile2, []byte("some contents"), 0644)
+	testDir := filepath.Join(baseDir, "test")
+	_ = appFs.MkdirAll(testDir, os.ModeDir)
+	testFile1 := filepath.Join(testDir, "file1.ext")
+	_ = afero.WriteFile(appFs, testFile1, []byte("some contents"), 0644)
+	testFile2 := filepath.Join(testDir, "file2.ext")
+	_ = afero.WriteFile(appFs, testFile2, []byte("some contents"), 0644)
+
+	lang := ALanguage(
+		WithBaseDir(baseDir),
+		WithSrcFiles(AFileTreeFilter(WithDirectory("src"), WithPattern(".*\\.ext"))),
+		WithTestFiles(AFileTreeFilter(WithDirectory("test"), WithPattern(".*\\.ext"))),
+	)
+	srcFiles, errSrc := lang.AllSrcFiles()
+	assert.NoError(t, errSrc)
+	assert.Contains(t, srcFiles, srcFile1)
+	assert.Contains(t, srcFiles, srcFile2)
+	assert.NotContains(t, srcFiles, testFile1)
+	assert.NotContains(t, srcFiles, testFile2)
+
+	testFiles, errTest := lang.AllTestFiles()
+	assert.NoError(t, errTest)
+	assert.NotContains(t, testFiles, srcFile1)
+	assert.NotContains(t, testFiles, srcFile2)
+	assert.Contains(t, testFiles, testFile1)
+	assert.Contains(t, testFiles, testFile2)
 }
 
 // Assert utility functions for language type

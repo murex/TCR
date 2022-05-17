@@ -252,5 +252,6 @@ func (lang *Language) allMatchingTestFiles() ([]string, error) {
 }
 
 func (lang *Language) setBaseDir(dir string) {
+	// Warning (for tests only): filepath.Abs() does not work with MemMapFs on Windows
 	lang.baseDir, _ = filepath.Abs(dir)
 }

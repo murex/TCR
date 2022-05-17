@@ -23,6 +23,7 @@ SOFTWARE.
 package language
 
 import (
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -88,4 +89,36 @@ func Test_file_tree_filter_with_multiple_file_patterns(t *testing.T) {
 	assert.True(t, filter.matches("base.ext1", ""))
 	assert.True(t, filter.matches("base.ext2", ""))
 	assert.False(t, filter.matches("base.ext3", ""))
+}
+
+func Test_find_all_matching_files(t *testing.T) {
+	appFs = afero.NewMemMapFs()
+	baseDir := filepath.Join("base-dir")
+	srcDir := filepath.Join(baseDir, "src")
+	_ = appFs.MkdirAll(srcDir, os.ModeDir)
+	testDir := filepath.Join(baseDir, "test")
+	_ = appFs.MkdirAll(testDir, os.ModeDir)
+	matching := filepath.Join(srcDir, "file.ext")
+	_ = afero.WriteFile(appFs, matching, []byte("some contents"), 0644)
+	nonMatchingName := filepath.Join(srcDir, "file.other-ext")
+	_ = afero.WriteFile(appFs, nonMatchingName, []byte("some contents"), 0644)
+	nonMatchingDir := filepath.Join(testDir, "file.ext")
+	_ = afero.WriteFile(appFs, nonMatchingDir, []byte("some contents"), 0644)
+
+	filter := AFileTreeFilter(WithDirectory("src"), WithPattern(".*\\.ext"))
+	files, err := filter.findAllMatchingFiles(baseDir)
+	assert.NoError(t, err)
+	assert.Contains(t, files, matching)
+	assert.NotContains(t, files, nonMatchingName)
+	assert.NotContains(t, files, nonMatchingDir)
+}
+
+func Test_find_all_matching_files_with_wrong_base_dir(t *testing.T) {
+	appFs = afero.NewMemMapFs()
+	baseDir := filepath.Join("base-dir")
+	_ = appFs.MkdirAll(baseDir, os.ModeDir)
+
+	filter := AFileTreeFilter(WithDirectory("src"), WithPattern(".*\\.ext"))
+	_, err := filter.findAllMatchingFiles("wrong-dir")
+	assert.Error(t, err)
 }
