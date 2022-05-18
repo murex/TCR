@@ -131,3 +131,92 @@ func assertRunsOnPlatform(t *testing.T, name string, osName OsName, archName Arc
 	toolchain, _ := GetToolchain(name)
 	assert.True(t, toolchain.runsOnPlatform(osName, archName))
 }
+
+func Test_set_work_dir(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		path         string
+		expectError  bool
+		expectedPath func() string
+	}{
+		{
+			"with empty path",
+			"",
+			false,
+			func() string { path, _ := os.Getwd(); return path },
+		},
+		{
+			"with existing directory",
+			filepath.Join(testDataDirJava),
+			false,
+			func() string { path, _ := filepath.Abs(testDataDirJava); return path },
+		},
+		{
+			"with non-existing directory",
+			filepath.Join(testDataDirJava, "fake-dir"),
+			true,
+			func() string { return "" },
+		},
+		{
+			"with existing file",
+			filepath.Join(testDataDirJava, "Makefile"),
+			true,
+			func() string { return "" },
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			err := SetWorkDir(tt.path)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedPath(), GetWorkDir())
+		})
+	}
+}
+
+func Test_get_build_commands(t *testing.T) {
+	cmd1 := ACommand(WithPath("build-cmd-1"))
+	cmd2 := ACommand(WithPath("build-cmd-2"))
+	tchn := AToolchain(WithBuildCommand(cmd1), WithBuildCommand(cmd2))
+	commands := tchn.GetBuildCommands()
+	assert.Contains(t, commands, *cmd1)
+	assert.Contains(t, commands, *cmd2)
+}
+
+func Test_get_test_commands(t *testing.T) {
+	cmd1 := ACommand(WithPath("test-cmd-1"))
+	cmd2 := ACommand(WithPath("test-cmd-2"))
+	tchn := AToolchain(WithTestCommand(cmd1), WithTestCommand(cmd2))
+	commands := tchn.GetTestCommands()
+	assert.Contains(t, commands, *cmd1)
+	assert.Contains(t, commands, *cmd2)
+}
+
+func Test_build_command_line(t *testing.T) {
+	cmd := ACommand(WithPath("build-cmd"), WithArgs([]string{"arg1", "arg2"}))
+	tchn := AToolchain(WithNoBuildCommand(), WithBuildCommand(cmd))
+	assert.Equal(t, "build-cmd arg1 arg2", tchn.BuildCommandLine())
+}
+
+func Test_test_command_line(t *testing.T) {
+	cmd := ACommand(WithPath("test-cmd"), WithArgs([]string{"arg1", "arg2"}))
+	tchn := AToolchain(WithNoTestCommand(), WithTestCommand(cmd))
+	assert.Equal(t, "test-cmd arg1 arg2", tchn.TestCommandLine())
+}
+
+func Test_check_command_access_for_valid_command(t *testing.T) {
+	tchn := AToolchain()
+	path, err := tchn.CheckCommandAccess("go")
+	assert.NoError(t, err)
+	assert.NotZero(t, path)
+}
+
+func Test_check_command_access_for_invalid_command(t *testing.T) {
+	tchn := AToolchain()
+	path, err := tchn.CheckCommandAccess("invalid-command")
+	assert.Error(t, err)
+	assert.Zero(t, path)
+}
