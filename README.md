@@ -195,7 +195,7 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 > TCR automatically performs a significant number of commits.
 > It would become unusable if the user had to enter a passphrase at each commit.
 >
-> For this reason, ***TCR commits are deliberately  not signed***.
+> For this reason, ***TCR commits are deliberately not signed***.
 >
 > If signing every commit is important to you, you can still do it when you're done
 > working with TCR, when reworking git history and squashing TCR commits into meaningful ones.
@@ -361,8 +361,8 @@ TCR tool locally.
 ### Clone TCR repository - `Required`
 
 ```shell
-$ git clone https://github.com/murex/TCR.git
-$ cd TCR
+git clone https://github.com/murex/TCR.git
+cd TCR
 ```
 
 ### Install Go SDK - `Required`
@@ -416,10 +416,25 @@ for installation.
 Once golangci-lint is installed, you can run it from the root directory:
 
 ```shell
-$ make lint
+make lint
 ```
 
 Both local run and GitHub Action use [this configuration file](.golangci.yml)
+
+#### Rich-Go utility - `Optional`
+
+We use [Rich-Go](https://github.com/kyoh86/richgo) to run tests with coloring.
+
+Although not mandatory, we advise you to install it locally on your machine as it greatly improves
+readability on the test traces.
+Refer to [Rich-Go's Installation section](https://github.com/kyoh86/richgo/blob/main/README.md)
+for installation.
+
+Once Rich-Go is installed, you can run make's test target from the root directory:
+
+```shell
+make test
+```
 
 #### Fyne toolkit - `Optional`
 
@@ -442,7 +457,7 @@ You will not need it as long as you're working on the TCR Command Line implement
 To build TCR locally on your machine, simply type the following from the root directory:
 
 ```shell
-$ make
+make
 ```
 
 This command generates by default both TCR CLI (in [tcr-cli](./tcr-cli) directory)
@@ -454,14 +469,14 @@ directory).
 Either run the following command from the root directory:
 
 ```shell
-$ make -C ./tcr-cli
+make -C ./tcr-cli
 ```
 
 Or run make from [tcr-cli](./tcr-cli) directory:
 
 ```shell
-$ cd tcr-cli
-$ make
+cd tcr-cli
+make
 ```
 
 </details>
@@ -471,14 +486,14 @@ $ make
 Either run the following command from the root directory:
 
 ```shell
-$ make -C ./tcr-gui
+make -C ./tcr-gui
 ```
 
 Or run make from [tcr-gui](./tcr-gui) directory:
 
 ```shell
-$ cd tcr-gui
-$ make
+cd tcr-gui
+make
 ```
 
 </details>
@@ -486,7 +501,7 @@ $ make
 <details><summary>To generate TCR command markdown documentation</summary>
 
 ```shell
-$ make doc
+make doc
 ```
 
 </details>
