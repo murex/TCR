@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,19 +24,69 @@ package filesystem
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
-// Source Tree initialization
+const (
+	testDataRootDir = "../testdata"
+)
 
-func Test_init_source_tree_with_missing_directory_fails(t *testing.T) {
-	tree, err := New("/dummy")
-	assert.Zero(t, tree)
-	assert.NotZero(t, err)
-}
+var (
+	testDataDirJava = filepath.Join(testDataRootDir, "java")
+)
 
-func Test_init_source_tree_with_existing_directory_passes(t *testing.T) {
-	tree, err := New(".")
-	assert.NotZero(t, tree)
-	assert.Zero(t, err)
+func Test_init_source_tree(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		path         string
+		expectError  bool
+		expectedPath func() string
+	}{
+		{
+			"with empty path",
+			"",
+			false,
+			func() string { path, _ := os.Getwd(); return path },
+		},
+		{
+			"with current directory",
+			".",
+			false,
+			func() string { path, _ := os.Getwd(); return path },
+		},
+		{
+			"with existing directory",
+			testDataDirJava,
+			false,
+			func() string { path, _ := filepath.Abs(testDataDirJava); return path },
+		},
+		{
+			"with non-existing path",
+			filepath.Join(testDataDirJava, "dummy-dir"),
+			true,
+			nil,
+		},
+		{
+			"with existing file",
+			filepath.Join(testDataDirJava, "Makefile"),
+			true,
+			nil,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			tree, err := New(tt.path)
+			if tt.expectError {
+				assert.Error(t, err)
+				assert.Zero(t, tree)
+			} else {
+				assert.NoError(t, err)
+				assert.NotZero(t, tree)
+				assert.True(t, tree.IsValid())
+				assert.Equal(t, tt.expectedPath(), tree.GetBaseDir())
+			}
+		})
+	}
 }
