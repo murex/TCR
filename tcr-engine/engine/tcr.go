@@ -179,18 +179,14 @@ func (tcr *TcrEngine) GetCurrentRole() role.Role {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func (tcr *TcrEngine) RunAsDriver() {
-	if settings.EnableMobTimer {
-		tcr.mobTimer = timer.NewMobTurnCountdown(tcr.mode, tcr.mobTurnDuration)
-	}
+	tcr.initTimer()
 
 	go tcr.fromBirthTillDeath(
 		func() {
 			tcr.currentRole = role.Driver{}
 			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
 			tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
-			if settings.EnableMobTimer {
-				tcr.mobTimer.Start()
-			}
+			tcr.startTimer()
 		},
 		func(interrupt <-chan bool) bool {
 			inactivityTeaser := timer.GetInactivityTeaserInstance()
@@ -208,10 +204,7 @@ func (tcr *TcrEngine) RunAsDriver() {
 			return false
 		},
 		func() {
-			if settings.EnableMobTimer {
-				tcr.mobTimer.Stop()
-				tcr.mobTimer = nil
-			}
+			tcr.stopTimer()
 			tcr.uitf.NotifyRoleEnding(tcr.currentRole)
 			tcr.currentRole = nil
 		},
@@ -382,6 +375,25 @@ func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
 		ToolchainName: tcr.tchn.GetName(),
 		AutoPush:      tcr.vcs.IsPushEnabled(),
 		BranchName:    tcr.vcs.GetWorkingBranch(),
+	}
+}
+
+func (tcr *TcrEngine) initTimer() {
+	if settings.EnableMobTimer {
+		tcr.mobTimer = timer.NewMobTurnCountdown(tcr.mode, tcr.mobTurnDuration)
+	}
+}
+
+func (tcr *TcrEngine) startTimer() {
+	if settings.EnableMobTimer && tcr.mobTimer != nil {
+		tcr.mobTimer.Start()
+	}
+}
+
+func (tcr *TcrEngine) stopTimer() {
+	if settings.EnableMobTimer && tcr.mobTimer != nil {
+		tcr.mobTimer.Stop()
+		tcr.mobTimer = nil
 	}
 }
 

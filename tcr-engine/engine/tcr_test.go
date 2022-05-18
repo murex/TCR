@@ -370,9 +370,30 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			tcr.SetRunMode(runmode.Mob{})
 			tt.runAsMethod()
 			time.Sleep(1 * time.Millisecond)
+			tcr.Stop()
 			sniffer.Stop()
 			//fmt.Println(sniffer.GetAllMatches())
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
 	}
+}
+
+func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
+	settings.EnableMobTimer = true
+	sniffer := report.NewFilteringSniffer(
+		func(msg report.Message) bool {
+			return msg.Type == report.Info && msg.Text == "Mob Timer is off"
+		},
+	)
+	tcr := initTcrEngineWithFakes(params.AParamSet(
+		params.WithRunMode(runmode.Solo{}),
+	), failures{})
+
+	tcr.RunAsDriver()
+	time.Sleep(1 * time.Millisecond)
+	tcr.ReportMobTimerStatus()
+	tcr.Stop()
+	sniffer.Stop()
+	//fmt.Println(sniffer.GetAllMatches())
+	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
