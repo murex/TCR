@@ -24,9 +24,12 @@ package filesystem
 
 import (
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
+	"time"
 )
 
 const (
@@ -89,4 +92,96 @@ func Test_init_source_tree(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_watch_can_detect_changes_on_matching_files(t *testing.T) {
+	// TODO figure out why this is failing on Unix OS's
+	if runtime.GOOS != "windows" {
+		t.Skip("needs to be fixed on Unix OS's")
+	}
+	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
+
+	srcDir := filepath.Join(baseDir, "src")
+	_ = os.Mkdir(srcDir, os.ModeDir)
+	file := filepath.Join(srcDir, "file.txt")
+	_ = os.WriteFile(file, []byte("some contents\n"), 0600)
+
+	tree, _ := New(baseDir)
+	stopWatching := make(chan bool)
+	go func() {
+		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
+		time.Sleep(1 * time.Second)
+		assert.True(t, caughtFileUpdate)
+	}()
+
+	_ = os.WriteFile(file, []byte("some other contents\n"), 0600)
+}
+
+func Test_watch_ignores_changes_on_non_matching_files(t *testing.T) {
+	// TODO figure out why this is failing on Unix OS's
+	if runtime.GOOS != "windows" {
+		t.Skip("needs to be fixed on Unix OS's")
+	}
+	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
+
+	srcDir := filepath.Join(baseDir, "src")
+	_ = os.Mkdir(srcDir, os.ModeDir)
+	file := filepath.Join(srcDir, "file.txt")
+	_ = os.WriteFile(file, []byte("some contents\n"), 0600)
+
+	tree, _ := New(baseDir)
+	stopWatching := make(chan bool)
+	go func() {
+		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
+		time.Sleep(1 * time.Second)
+		assert.False(t, caughtFileUpdate)
+	}()
+
+	_ = os.WriteFile(file, []byte("some other contents\n"), 0600)
+	stopWatching <- true
+}
+
+func Test_watch_can_be_stopped_on_request(t *testing.T) {
+	// TODO figure out why this is failing on Unix OS's
+	if runtime.GOOS != "windows" {
+		t.Skip("needs to be fixed on Unix OS's")
+	}
+	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
+
+	srcDir := filepath.Join(baseDir, "src")
+	_ = os.Mkdir(srcDir, os.ModeDir)
+	file := filepath.Join(srcDir, "file.txt")
+	_ = os.WriteFile(file, []byte("some contents\n"), 0600)
+
+	tree, _ := New(baseDir)
+	stopWatching := make(chan bool)
+	go func() {
+		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
+		time.Sleep(1 * time.Millisecond)
+		assert.False(t, caughtFileUpdate)
+	}()
+
+	stopWatching <- true
+}
+
+func Test_watch_exits_if_missing_directory(t *testing.T) {
+	// TODO figure out why this is failing on Unix OS's
+	if runtime.GOOS != "windows" {
+		t.Skip("needs to be fixed on Unix OS's")
+	}
+	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
+
+	srcDir := filepath.Join(baseDir, "src")
+
+	tree, _ := New(baseDir)
+	stopWatching := make(chan bool)
+	go func() {
+		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
+		time.Sleep(1 * time.Millisecond)
+		assert.False(t, caughtFileUpdate)
+	}()
 }

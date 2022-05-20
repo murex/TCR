@@ -91,7 +91,7 @@ func (st *SourceTreeImpl) Watch(
 	defer func(watcher *fsnotify.Watcher) {
 		err := watcher.Close()
 		if err != nil {
-			report.PostError("watcher.Close(): ", err)
+			report.PostError(err)
 		}
 	}(st.watcher)
 
@@ -102,10 +102,12 @@ func (st *SourceTreeImpl) Watch(
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
+	// If anything is wrong with the subdirectories, we exit right away
 	for _, dir := range dirList {
-		report.PostText("- Watching ", dir)
+		report.PostText("- watching ", dir)
 		if err := filepath.Walk(dir, st.watchFile); err != nil {
-			report.PostWarning("filepath.Walk(", dir, "): ", err)
+			report.PostWarning(err)
+			return false
 		}
 	}
 
@@ -118,7 +120,7 @@ func (st *SourceTreeImpl) Watch(
 				changesDetected <- true
 				return
 			case err := <-st.watcher.Errors:
-				report.PostWarning("Watcher error: ", err)
+				report.PostWarning(err)
 				changesDetected <- false
 				return
 			case <-interrupt:
@@ -134,7 +136,7 @@ func (st *SourceTreeImpl) Watch(
 // watchFile gets run as a walk func, searching for files to watch
 func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) error {
 	if err != nil {
-		report.PostWarning("Something wrong with ", path)
+		report.PostWarning(err)
 		return err
 	}
 
@@ -147,7 +149,7 @@ func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) erro
 	if st.matcher(path) {
 		err = st.watcher.Add(path)
 		if err != nil {
-			report.PostError("watcher.Add(", path, "): ", err)
+			report.PostError(err)
 		}
 		return err
 	}
