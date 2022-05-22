@@ -310,6 +310,11 @@ func (term *TerminalUI) Start() {
 		// we directly ask TCR engine to run a check and quit when done
 		term.tcr.RunCheck(term.params)
 		term.tcr.Quit()
+	case runmode.Metrics{}:
+		// When running TCR in metrics mode, there's no selection menu:
+		// we directly ask TCR engine to show metrics and quit when done
+		term.tcr.ShowMetrics(term.params)
+		term.tcr.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)
 	}

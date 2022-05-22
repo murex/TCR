@@ -23,6 +23,7 @@ SOFTWARE.
 package engine
 
 import (
+	"github.com/murex/tcr/tcr-engine/charts"
 	"github.com/murex/tcr/tcr-engine/checker"
 	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/filesystem"
@@ -62,6 +63,7 @@ type (
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
 		RunCheck(params params.Params)
+		ShowMetrics(params params.Params)
 		Quit()
 	}
 
@@ -142,6 +144,11 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 // RunCheck checks the provided parameters and prints out corresponding report
 func (tcr *TcrEngine) RunCheck(params params.Params) {
 	checker.Run(params)
+}
+
+// ShowMetrics browses TCR metrics
+func (tcr *TcrEngine) ShowMetrics(params params.Params) {
+	charts.Browse()
 }
 
 func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {
