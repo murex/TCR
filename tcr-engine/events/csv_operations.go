@@ -23,6 +23,7 @@ SOFTWARE.
 package events
 
 import (
+	"bufio"
 	"encoding/csv"
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/report"
@@ -69,17 +70,17 @@ func openEventLogFile() (afero.File, error) {
 }
 
 // ReadEventLogFile reads the content of the EventLog file
-func ReadEventLogFile() TcrEvent {
-	// TODO: Read the file line by line, then convert each line to a TCR Event
-	eventLogBytes, err := afero.ReadFile(AppFs, filepath.Join(config.DirPathGetter(), eventLogFileName))
-
+func ReadEventLogFile() (events []TcrEvent) {
+	file, err := AppFs.Open(filepath.Join(config.DirPathGetter(), eventLogFileName))
 	if err != nil {
 		report.PostWarning(err)
-		return TcrEvent{}
+		return
 	}
-
-	fileContent := string(eventLogBytes)
-	return toTcrEvent(fileContent)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		events = append(events, toTcrEvent(scanner.Text()))
+	}
+	return
 }
 
 func appendEvent(event TcrEvent, out io.Writer) (err error) {

@@ -43,7 +43,7 @@ func Test_add_and_get_event_to_in_memory_repository(t *testing.T) {
 	repository := &TcrEventInMemoryRepository{}
 	event := *ATcrEvent()
 	repository.Add(event)
-	assert.Equal(t, event, repository.Get())
+	assert.Equal(t, event, repository.GetLast())
 }
 
 func Test_add_a_single_event_to_file_repository(t *testing.T) {
@@ -67,7 +67,7 @@ func Test_gets_a_single_event_from_file_repository(t *testing.T) {
 	tcrEvent := ATcrEvent(WithTimestamp(time.Date(
 		2022, 4, 11, 15, 52, 3, 0, time.UTC)))
 
-	assert.Equal(t, *tcrEvent, repository.Get())
+	assert.Equal(t, *tcrEvent, repository.GetLast())
 }
 
 func setUpFileRepository() (TcrEventRepository, string) {

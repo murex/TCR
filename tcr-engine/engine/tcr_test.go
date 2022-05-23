@@ -296,8 +296,8 @@ func Test_generate_events_from_tcr_cycle(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.OneShot{})), tt.failures)
 			tcr.RunTCRCycle()
-			assert.Equal(t, tt.expectedBuildStatus, events.EventRepository.Get().BuildStatus)
-			assert.Equal(t, tt.expectedTestStatus, events.EventRepository.Get().TestsStatus)
+			assert.Equal(t, tt.expectedBuildStatus, events.EventRepository.GetLast().BuildStatus)
+			assert.Equal(t, tt.expectedTestStatus, events.EventRepository.GetLast().TestsStatus)
 		})
 	}
 }

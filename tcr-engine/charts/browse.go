@@ -1,23 +1,23 @@
 package charts
 
 import (
-	"encoding/csv"
 	"fmt"
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/pkg/browser"
-	"log"
-	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
+	"time"
 )
 
 // Data is a data record
 type Data struct {
-	Key   string
-	Value float64
+	Key   time.Time
+	Value int
 }
+
+const htmlFile = "tcr-metrics.html"
 
 // DataList contains the list of all records
 type DataList []Data
@@ -39,44 +39,28 @@ func (d DataList) Less(i, j int) bool {
 
 // Browse loads the CSV file contents, generates an HTML page, and browses it
 func Browse() {
-	// CSV Reader
-	// TODO replace with event log file
-	file, err := os.Open(filepath.Join("../tcr-engine/charts", "games.csv"))
-	var gameNames []string
-	var sales []float64
-	if err != nil {
-		log.Fatal(err)
-	}
-	reader := csv.NewReader(file)
-	reader.LazyQuotes = true
-	records, err := reader.ReadAll()
-	if err != nil {
-		log.Fatal(err)
-	}
-	gameNames, sales = formatRecords(records)
-	sortedData := mapData(gameNames, sales)
+	e := events.ReadEventLogFile()
+	sortedData := mapData(formatRecords(e))
 	createChart(sortedData)
-	err = browser.OpenFile(filepath.Join("", "games.html"))
+
+	err := browser.OpenFile(filepath.Join("", htmlFile))
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func formatRecords(records [][]string) ([]string, []float64) {
-	var gameNames []string
-	var sales []float64
-	for _, r := range records[1:] {
-		gameNames = append(gameNames, r[0])
-		val, _ := strconv.ParseFloat(r[1], 64)
-		sales = append(sales, val)
+func formatRecords(records []events.TcrEvent) (timestamp []time.Time, testsRun []int) {
+	for _, e := range records {
+		timestamp = append(timestamp, e.Timestamp)
+		testsRun = append(testsRun, e.TotalTestsRun)
 	}
-	return gameNames, sales
+	return
 }
 
-func mapData(gameNames []string, sales []float64) DataList {
-	dataMap := map[string]float64{}
-	for index, value := range gameNames {
-		dataMap[value] = sales[index]
+func mapData(timeStamps []time.Time, testRun []int) DataList {
+	dataMap := map[time.Time]int{}
+	for index, value := range timeStamps {
+		dataMap[value] = testRun[index]
 	}
 	data := make(DataList, len(dataMap))
 	iterator := 0
@@ -84,36 +68,52 @@ func mapData(gameNames []string, sales []float64) DataList {
 		data[iterator] = Data{k, v}
 		iterator++
 	}
-	sort.Sort(sort.Reverse(data))
+	sort.Sort(data)
 	return data
 }
 
 func createChart(sortedData DataList) {
-	bar := charts.NewBar()
-	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
-		Title:    "PC Games Sales",
-		Subtitle: "Best selling PC games",
+	chart := charts.NewLine()
+	chart.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
+		Title:    "TCR log stats",
+		Subtitle: "Total tests run per save",
 	}))
-	bar.SetXAxis([]string{
-		sortedData[0].Key[:4], sortedData[1].Key[:4], sortedData[2].Key[:4], sortedData[3].Key[:4],
-		sortedData[4].Key[:4], sortedData[5].Key[:4], sortedData[6].Key[:4],
-		sortedData[7].Key[:4], sortedData[8].Key[:4], sortedData[9].Key[:4],
-	}).AddSeries("Values", generateBarItems(sortedData))
-	f, _ := os.Create("games.html")
-	err := bar.Render(f)
+	chart.SetXAxis(generateXAxisItems(sortedData)).AddSeries("Tests Run", generateLineItems(sortedData))
+	f, _ := events.AppFs.Create(htmlFile)
+	err := chart.Render(f)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func generateBarItems(data DataList) []opts.BarData {
-	var barData []float64
-	items := make([]opts.BarData, 0)
-	for i := 0; i < 10; i++ {
-		barData = append(barData, data[i].Value)
+func formatTimestamp(t time.Time) string {
+	return fmt.Sprintf("%02d:%02d", t.Hour(), t.Minute())
+}
+
+func generateXAxisItems(data DataList) (values []string) {
+	for _, d := range data {
+		values = append(values, formatTimestamp(d.Key))
 	}
-	for _, v := range barData {
-		items = append(items, opts.BarData{Value: v})
+	return
+}
+
+func generateBarItems(data DataList) (items []opts.BarData) {
+	for _, d := range data {
+		items = append(items, opts.BarData{Value: d.Value})
 	}
 	return items
 }
+
+func generateLineItems(data DataList) (items []opts.LineData) {
+	for _, d := range data {
+		items = append(items, opts.LineData{Value: d.Value})
+	}
+	return items
+}
+
+//func generateKLineItems(data DataList) (items []opts.KlineData) {
+//	for _, d := range data {
+//		items = append(items, opts.KlineData{Value: d.Value})
+//	}
+//	return items
+//}

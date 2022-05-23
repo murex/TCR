@@ -30,7 +30,7 @@ var AppFs afero.Fs
 // TcrEventRepository is the interface for a repository where we store TCR events
 type TcrEventRepository interface {
 	Add(event TcrEvent)
-	Get() TcrEvent
+	GetLast() TcrEvent
 }
 
 // EventRepository is the TcrEventRepository instance
@@ -46,8 +46,8 @@ type TcrEventInMemoryRepository struct {
 	event TcrEvent
 }
 
-// Get returns an event stored in TCR Event repository
-func (t *TcrEventInMemoryRepository) Get() TcrEvent {
+// GetLast returns the last event stored in TCR Event repository
+func (t *TcrEventInMemoryRepository) GetLast() TcrEvent {
 	return t.event
 }
 
@@ -67,9 +67,10 @@ func NewTcrEventFileRepository(filename string) TcrEventRepository {
 	return &TcrEventFileRepository{filename: filename}
 }
 
-// Get returns an event stored in TCR Event repository
-func (t *TcrEventFileRepository) Get() TcrEvent {
-	return ReadEventLogFile()
+// GetLast returns the last event stored in TCR Event repository
+func (t *TcrEventFileRepository) GetLast() TcrEvent {
+	events := ReadEventLogFile()
+	return events[len(events)-1]
 }
 
 // Add stores a TCR event in TCR Event repository
