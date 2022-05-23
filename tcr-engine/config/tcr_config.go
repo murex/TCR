@@ -44,6 +44,7 @@ type TcrConfig struct {
 	PollingPeriod    *DurationParam
 	MobTimerDuration *DurationParam
 	AutoPush         *BoolParam
+	CommitFailures   *BoolParam
 }
 
 func (c TcrConfig) reset() {
@@ -52,6 +53,7 @@ func (c TcrConfig) reset() {
 	c.PollingPeriod.reset()
 	c.MobTimerDuration.reset()
 	c.AutoPush.reset()
+	c.CommitFailures.reset()
 }
 
 // Config is the placeholder for all TCR configuration parameters
@@ -208,6 +210,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.PollingPeriod = AddPollingPeriodParam(cmd)
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
+	Config.CommitFailures = AddCommitFailuresParam(cmd)
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
@@ -220,4 +223,5 @@ func UpdateEngineParams(params *params.Params) {
 	params.Toolchain = Config.Toolchain.GetValue()
 	params.PollingPeriod = Config.PollingPeriod.GetValue()
 	params.AutoPush = Config.AutoPush.GetValue()
+	params.CommitFailures = Config.CommitFailures.GetValue()
 }

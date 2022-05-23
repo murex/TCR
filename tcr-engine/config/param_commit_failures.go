@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2021 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
+// AddCommitFailuresParam adds git commit failure parameter to the provided command
+func AddCommitFailuresParam(cmd *cobra.Command) *BoolParam {
+	param := BoolParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: true,
+				keyPath: "config.git",
+				name:    "commit-failures",
+			},
+			cobraSettings: cobraSettings{
+				name:       "commit-failures",
+				shorthand:  "f",
+				usage:      "enable committing reverts on tests failure",
+				persistent: true,
+			},
+		},
+		v: paramValueBool{
+			value:        false,
+			defaultValue: false,
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

@@ -20,23 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"time"
+	"github.com/murex/tcr/tcr-engine/params"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
+func checkCommitFailures(params params.Params) (cr *CheckResults) {
+	cr = NewCheckResults("git commit-failures")
+	if params.CommitFailures {
+		cr.ok("git commit-failures is turned on: test failures will be committed")
+	} else {
+		cr.ok("git commit-failures is turned off: test failures will not be committed")
+	}
+	return
 }

@@ -77,6 +77,7 @@ type (
 		mobTurnDuration time.Duration
 		mobTimer        *timer.PeriodicReminder
 		currentRole     role.Role
+		commitOnFail    bool
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
 	}
@@ -129,6 +130,8 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.setVcs(git)
 	tcr.vcs.EnablePush(params.AutoPush)
 
+	tcr.setCommitOnFail(params.CommitFailures)
+
 	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
 		tcr.mobTurnDuration = params.MobTurnDuration
 		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
@@ -137,6 +140,16 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.uitf.ShowRunningMode(tcr.mode)
 	tcr.uitf.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
+
+}
+
+func (tcr *TcrEngine) setCommitOnFail(flag bool) {
+	tcr.commitOnFail = flag
+	if tcr.commitOnFail {
+		report.PostInfo("Test failures will be committed")
+	} else {
+		report.PostInfo("Test failures will not be committed")
+	}
 }
 
 // RunCheck checks the provided parameters and prints out corresponding report
@@ -343,6 +356,14 @@ func (tcr *TcrEngine) revert() {
 		return
 	}
 
+	if tcr.commitOnFail {
+		tcr.commitFailuresAndRevert(diffs)
+	} else {
+		tcr.revertSrcFiles(diffs)
+	}
+}
+
+func (tcr *TcrEngine) revertSrcFiles(diffs []vcs.FileDiff) {
 	var reverted int
 	for _, diff := range diffs {
 		if tcr.lang.IsSrcFile(diff.Path) {
@@ -353,7 +374,6 @@ func (tcr *TcrEngine) revert() {
 			}
 		}
 	}
-
 	if reverted > 0 {
 		report.PostWarning(reverted, " file(s) reverted")
 	} else {
@@ -363,6 +383,10 @@ func (tcr *TcrEngine) revert() {
 
 func (tcr *TcrEngine) revertFile(file string) error {
 	return tcr.vcs.Restore(file)
+}
+
+func (tcr *TcrEngine) commitFailuresAndRevert(diffs []vcs.FileDiff) {
+	// TODO implement revert with commit on fail
 }
 
 // GetSessionInfo provides the information related to the current TCR session.

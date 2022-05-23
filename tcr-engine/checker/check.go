@@ -85,6 +85,7 @@ func Run(p params.Params) {
 		checkToolchain,
 		checkGitEnvironment,
 		checkAutoPush,
+		checkCommitFailures,
 		checkMobTimer,
 		checkPollingPeriod,
 	}
