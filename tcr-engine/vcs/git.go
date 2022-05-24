@@ -25,8 +25,6 @@ package vcs
 const (
 	// DefaultRemoteName is the alias used by default for the git remote repository
 	DefaultRemoteName = "origin"
-	// DefaultCommitMessage is the message used by default by TCR every time it does a git commit
-	DefaultCommitMessage = "TCR"
 	// DefaultPushEnabled indicates the default state for git auto-push option
 	DefaultPushEnabled = false
 )
@@ -37,7 +35,7 @@ type GitInterface interface {
 	GetRootDir() string
 	GetRemoteName() string
 	GetWorkingBranch() string
-	Commit() error
+	Commit(message string, all bool, amend bool) error
 	Restore(dir string) error
 	Push() error
 	Pull() error

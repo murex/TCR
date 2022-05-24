@@ -45,7 +45,6 @@ type GitImpl struct {
 	remoteName                  string
 	workingBranch               string
 	workingBranchExistsOnRemote bool
-	commitMessage               string
 	pushEnabled                 bool
 	runGitFunction              func(params []string) (output []byte, err error)
 	traceGitFunction            func(params []string) (err error)
@@ -56,7 +55,6 @@ func New(dir string) (GitInterface, error) {
 	var gitImpl = GitImpl{
 		baseDir:          dir,
 		remoteName:       DefaultRemoteName,
-		commitMessage:    DefaultCommitMessage,
 		pushEnabled:      DefaultPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
@@ -162,8 +160,16 @@ func (g *GitImpl) GetWorkingBranch() string {
 
 // Commit restores to last commit.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Commit() error {
-	_ = g.traceGit("commit", "--no-gpg-sign", "-am", g.commitMessage)
+func (g *GitImpl) Commit(message string, all bool, amend bool) error {
+	gitArgs := []string{"commit", "--no-gpg-sign"}
+	if amend {
+		gitArgs = append(gitArgs, "--amend")
+	}
+	if all {
+		gitArgs = append(gitArgs, "--all")
+	}
+	gitArgs = append(gitArgs, "-m", message)
+	_ = g.traceGit(gitArgs...)
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit
 	// TODO find a way to check beforehand if there is something to commit

@@ -53,7 +53,7 @@ func NewGitFake(failCommit, failRestore, failPush, failPull, failDiff bool, chan
 }
 
 // Commit does nothing. Returns an error if failCommit flag is set
-func (g GitFake) Commit() error {
+func (g GitFake) Commit(_ string, _ bool, _ bool) error {
 	return fakeOperation("commit", g.failCommit)
 }
 

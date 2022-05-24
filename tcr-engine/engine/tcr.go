@@ -83,6 +83,12 @@ type (
 	}
 )
 
+const (
+	commitMessageOk = "✅ TCR - tests passing"
+	//commitMessageFail   = "❌ TCR - tests failing"
+	//commitMessageRevert = "↩ TCR - revert changes"
+)
+
 var (
 	// Tcr is TCR Engine singleton instance
 	Tcr TcrInterface
@@ -342,7 +348,7 @@ func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
 
 func (tcr *TcrEngine) commit() {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
-	err := tcr.vcs.Commit()
+	err := tcr.vcs.Commit(commitMessageOk, true, false)
 	tcr.handleError(err, false, status.GitError)
 	if err == nil {
 		tcr.handleError(tcr.vcs.Push(), false, status.GitError)

@@ -248,35 +248,60 @@ func Test_git_pull_command(t *testing.T) {
 
 func Test_git_commit_command(t *testing.T) {
 	testFlags := []struct {
-		desc        string
-		gitError    error
-		expectError bool
+		desc         string
+		message      string
+		all          bool
+		amend        bool
+		gitError     error
+		expectError  bool
+		expectedArgs []string
 	}{
 		{
 			"no git error",
+			"some message", false, false,
 			nil,
 			false,
+			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
 			"git error",
+			"some message", false, false,
 			errors.New("git commit error"),
 			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
+			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
+		},
+		{
+			"with all option",
+			"some message", true, false,
+			errors.New("git commit error"),
+			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
+			[]string{"commit", "--no-gpg-sign", "--all", "-m", "some message"},
+		},
+		{
+			"with amend option",
+			"some message", false, true,
+			errors.New("git commit error"),
+			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
+			[]string{"commit", "--no-gpg-sign", "--amend", "-m", "some message"},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
+			var expectedArgs []string
 			git := &GitImpl{
 				// git command calls are faked
-				traceGitFunction: func(_ []string) (err error) {
+				traceGitFunction: func(args []string) (err error) {
+					expectedArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Commit()
+			err := git.Commit(tt.message, tt.all, tt.amend)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
+			assert.Equal(t, tt.expectedArgs, expectedArgs)
 		})
 	}
 }
