@@ -184,6 +184,13 @@ func (g *GitImpl) Restore(path string) error {
 	return g.traceGit("checkout", "HEAD", "--", path)
 }
 
+// Revert runs a git revert operation.
+// Current implementation uses a direct call to git
+func (g *GitImpl) Revert() error {
+	report.PostInfo("Reverting changes")
+	return g.traceGit("revert", "--no-gpg-sign", "--no-edit", "HEAD")
+}
+
 // Push runs a git push operation.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Push() error {
@@ -209,6 +216,25 @@ func (g *GitImpl) Pull() error {
 	}
 	report.PostInfo("Pulling latest changes from ", g.GetRemoteName(), "/", g.GetWorkingBranch())
 	return g.traceGit("pull", "--no-recurse-submodules", g.GetRemoteName(), g.GetWorkingBranch())
+}
+
+// Stash creates a git stash.
+// Current implementation uses a direct call to git
+func (g *GitImpl) Stash(message string) error {
+	report.PostInfo("Stashing changes")
+	return g.traceGit("stash", "push", "--quiet", "--include-untracked", "--message", message)
+}
+
+// UnStash applies a git stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
+// command is executed under the hood.
+// Current implementation uses a direct call to git
+func (g *GitImpl) UnStash(keep bool) error {
+	report.PostInfo("Applying stashed changes")
+	stashAction := "pop"
+	if keep {
+		stashAction = "apply"
+	}
+	return g.traceGit("stash", stashAction, "--quiet")
 }
 
 // Diff returns the list of files modified since last commit with diff info for each file

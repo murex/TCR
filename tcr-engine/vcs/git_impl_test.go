@@ -340,3 +340,146 @@ func Test_git_restore_command(t *testing.T) {
 		})
 	}
 }
+
+func Test_git_revert_command(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		gitError     error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"no git error",
+			nil,
+			false,
+			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
+		},
+		{
+			"git error",
+			errors.New("git revert error"),
+			true,
+			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var expectedArgs []string
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(args []string) (err error) {
+					expectedArgs = args[2:]
+					return tt.gitError
+				},
+			}
+			err := git.Revert()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, expectedArgs)
+		})
+	}
+}
+
+func Test_git_stash_command(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		message      string
+		gitError     error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"no git error",
+			"some message",
+			nil,
+			false,
+			[]string{"stash", "push", "--quiet", "--include-untracked", "--message", "some message"},
+		},
+		{
+			"git error",
+			"some message",
+			errors.New("git stash push error"),
+			true,
+			[]string{"stash", "push", "--quiet", "--include-untracked", "--message", "some message"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var expectedArgs []string
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(args []string) (err error) {
+					expectedArgs = args[2:]
+					return tt.gitError
+				},
+			}
+			err := git.Stash(tt.message)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, expectedArgs)
+		})
+	}
+}
+
+func Test_git_unstash_command(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		keep         bool
+		gitError     error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"keep stash and no git error",
+			true,
+			nil,
+			false,
+			[]string{"stash", "apply", "--quiet"},
+		},
+		{
+			"keep stash and git error",
+			true,
+			errors.New("git stash apply error"),
+			true,
+			[]string{"stash", "apply", "--quiet"},
+		},
+		{
+			"remove stash and no git error",
+			false,
+			nil,
+			false,
+			[]string{"stash", "pop", "--quiet"},
+		},
+		{
+			"remove stash and git error",
+			false,
+			errors.New("git stash pop error"),
+			true,
+			[]string{"stash", "pop", "--quiet"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var expectedArgs []string
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(args []string) (err error) {
+					expectedArgs = args[2:]
+					return tt.gitError
+				},
+			}
+			err := git.UnStash(tt.keep)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, expectedArgs)
+		})
+	}
+}

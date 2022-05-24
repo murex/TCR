@@ -37,8 +37,11 @@ type GitInterface interface {
 	GetWorkingBranch() string
 	Commit(message string, all bool, amend bool) error
 	Restore(dir string) error
+	Revert() error
 	Push() error
 	Pull() error
+	Stash(message string) error
+	UnStash(keep bool) error
 	Diff() (diffs []FileDiff, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
