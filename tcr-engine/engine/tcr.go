@@ -146,9 +146,9 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 func (tcr *TcrEngine) setCommitOnFail(flag bool) {
 	tcr.commitOnFail = flag
 	if tcr.commitOnFail {
-		report.PostInfo("Test failures will be committed")
+		report.PostInfo("Test breaking changes will be committed")
 	} else {
-		report.PostInfo("Test failures will not be committed")
+		report.PostInfo("Test breaking changes will not be committed")
 	}
 }
 
@@ -350,20 +350,22 @@ func (tcr *TcrEngine) commit() {
 }
 
 func (tcr *TcrEngine) revert() {
+	if tcr.commitOnFail {
+		tcr.commitTestBreakingChanges()
+	}
+	tcr.revertSrcFiles()
+}
+
+func (tcr *TcrEngine) commitTestBreakingChanges() {
+	// TODO implement revert with commit on fail
+}
+
+func (tcr *TcrEngine) revertSrcFiles() {
 	diffs, err := tcr.vcs.Diff()
 	tcr.handleError(err, false, status.GitError)
 	if err != nil {
 		return
 	}
-
-	if tcr.commitOnFail {
-		tcr.commitFailuresAndRevert(diffs)
-	} else {
-		tcr.revertSrcFiles(diffs)
-	}
-}
-
-func (tcr *TcrEngine) revertSrcFiles(diffs []vcs.FileDiff) {
 	var reverted int
 	for _, diff := range diffs {
 		if tcr.lang.IsSrcFile(diff.Path) {
@@ -383,10 +385,6 @@ func (tcr *TcrEngine) revertSrcFiles(diffs []vcs.FileDiff) {
 
 func (tcr *TcrEngine) revertFile(file string) error {
 	return tcr.vcs.Restore(file)
-}
-
-func (tcr *TcrEngine) commitFailuresAndRevert(diffs []vcs.FileDiff) {
-	// TODO implement revert with commit on fail
 }
 
 // GetSessionInfo provides the information related to the current TCR session.

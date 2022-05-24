@@ -29,9 +29,9 @@ import (
 func checkCommitFailures(params params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git commit-failures")
 	if params.CommitFailures {
-		cr.ok("git commit-failures is turned on: test failures will be committed")
+		cr.ok("git commit-failures is turned on: test-breaking changes will be committed")
 	} else {
-		cr.ok("git commit-failures is turned off: test failures will not be committed")
+		cr.ok("git commit-failures is turned off: test-breaking changes will not be committed")
 	}
 	return
 }
