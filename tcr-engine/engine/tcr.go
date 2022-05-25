@@ -138,10 +138,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 
 	tcr.setCommitOnFail(params.CommitFailures)
 
-	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
-		tcr.mobTurnDuration = params.MobTurnDuration
-		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
-	}
+	tcr.setMobTimerDuration(params.MobTurnDuration)
 
 	tcr.uitf.ShowRunningMode(tcr.mode)
 	tcr.uitf.ShowSessionInfo()
@@ -155,6 +152,13 @@ func (tcr *TcrEngine) setCommitOnFail(flag bool) {
 		report.PostInfo("Test breaking changes will be committed")
 	} else {
 		report.PostInfo("Test breaking changes will not be committed")
+	}
+}
+
+func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
+	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
+		tcr.mobTurnDuration = duration
+		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
 	}
 }
 
