@@ -35,7 +35,8 @@ type GitInterface interface {
 	GetRootDir() string
 	GetRemoteName() string
 	GetWorkingBranch() string
-	Commit(message string, all bool, amend bool) error
+	Add(paths ...string) error
+	Commit(amend bool, message string) error
 	Restore(dir string) error
 	Revert() error
 	Push() error

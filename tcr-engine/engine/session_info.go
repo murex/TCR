@@ -29,5 +29,6 @@ type SessionInfo struct {
 	LanguageName  string
 	ToolchainName string
 	AutoPush      bool
+	CommitOnFail  bool
 	BranchName    string
 }

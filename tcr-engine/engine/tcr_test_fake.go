@@ -66,6 +66,7 @@ func NewFakeTcrEngine() *FakeTcrEngine {
 			LanguageName:  "fake",
 			ToolchainName: "fake",
 			AutoPush:      false,
+			CommitOnFail:  false,
 			BranchName:    "fake",
 		},
 	}

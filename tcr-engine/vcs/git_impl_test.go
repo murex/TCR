@@ -49,7 +49,7 @@ func Test_git_enable_disable_push(t *testing.T) {
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
 	git, err := New("/")
 	assert.Zero(t, git)
-	assert.NotZero(t, err)
+	assert.Error(t, err)
 }
 
 func Test_can_retrieve_working_branch(t *testing.T) {
@@ -63,12 +63,22 @@ func Test_git_diff_command(t *testing.T) {
 		gitDiffOutput string
 		gitDiffError  error
 		expectError   bool
+		expectedArgs  []string
 		expectedDiff  []FileDiff
 	}{
+		{"git command arguments",
+			"",
+			errors.New("git diff error"),
+			true,
+			[]string{
+				"diff", "--numstat", "--ignore-cr-at-eol", "--ignore-all-space", "--ignore-blank-lines", "HEAD"},
+			nil,
+		},
 		{"git error",
 			"",
 			errors.New("git diff error"),
 			true,
+			nil,
 			nil,
 		},
 		{"0 file changed",
@@ -76,11 +86,13 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
+			nil,
 		},
 		{"1 file changed",
 			"1\t1\tsome-file.txt\n",
 			nil,
 			false,
+			nil,
 			[]FileDiff{
 				{"some-file.txt", 1, 1},
 			},
@@ -89,6 +101,7 @@ func Test_git_diff_command(t *testing.T) {
 			"1\t1\tfile1.txt\n1\t1\tfile2.txt\n",
 			nil,
 			false,
+			nil,
 			[]FileDiff{
 				{"file1.txt", 1, 1},
 				{"file2.txt", 1, 1},
@@ -98,6 +111,7 @@ func Test_git_diff_command(t *testing.T) {
 			"1\t1\tsome-dir/some-file.txt\n",
 			nil,
 			false,
+			nil,
 			[]FileDiff{
 				{filepath.Join("some-dir", "some-file.txt"), 1, 1},
 			},
@@ -106,6 +120,7 @@ func Test_git_diff_command(t *testing.T) {
 			"15\t0\tsome-file.txt\n",
 			nil,
 			false,
+			nil,
 			[]FileDiff{
 				{"some-file.txt", 15, 0},
 			},
@@ -114,16 +129,30 @@ func Test_git_diff_command(t *testing.T) {
 			"0\t7\tsome-file.txt\n",
 			nil,
 			false,
+			nil,
 			[]FileDiff{
 				{"some-file.txt", 0, 7},
+			},
+		},
+		{"noise in output trace",
+			"warning: LF will be replaced by CRLF in some-file.txt.\n" +
+				"The file will have its original line endings in your working directory\n" +
+				"1\t1\tsome-file.txt\n",
+			nil,
+			false,
+			nil,
+			[]FileDiff{
+				{"some-file.txt", 1, 1},
 			},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
 			git := &GitImpl{
 				// git command calls are faked
-				runGitFunction: func(_ []string) (output []byte, err error) {
+				runGitFunction: func(args []string) (output []byte, err error) {
+					actualArgs = args[2:]
 					return []byte(tt.gitDiffOutput), tt.gitDiffError
 				},
 			}
@@ -132,6 +161,9 @@ func Test_git_diff_command(t *testing.T) {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
+			}
+			if tt.expectedArgs != nil {
+				assert.Equal(t, tt.expectedArgs, actualArgs)
 			}
 			assert.Equal(t, tt.expectedDiff, fileDiffs)
 		})
@@ -246,11 +278,68 @@ func Test_git_pull_command(t *testing.T) {
 	}
 }
 
+func Test_git_add_command(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		paths        []string
+		gitError     error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"no git error",
+			[]string{"some-path"},
+			nil,
+			false,
+			[]string{"add", "some-path"},
+		},
+		{
+			"git error",
+			[]string{"some-path"},
+			errors.New("git add error"),
+			true,
+			[]string{"add", "some-path"},
+		},
+		{
+			"default path",
+			nil,
+			nil,
+			false,
+			[]string{"add", "."},
+		},
+		{
+			"multiple paths",
+			[]string{"path1", "path2"},
+			nil,
+			false,
+			[]string{"add", "path1", "path2"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			git := &GitImpl{
+				// git command calls are faked
+				traceGitFunction: func(args []string) (err error) {
+					actualArgs = args[2:]
+					return tt.gitError
+				},
+			}
+			err := git.Add(tt.paths...)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, actualArgs)
+		})
+	}
+}
+
 func Test_git_commit_command(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		message      string
-		all          bool
 		amend        bool
 		gitError     error
 		expectError  bool
@@ -258,28 +347,21 @@ func Test_git_commit_command(t *testing.T) {
 	}{
 		{
 			"no git error",
-			"some message", false, false,
+			"some message", false,
 			nil,
 			false,
 			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
 			"git error",
-			"some message", false, false,
+			"some message", false,
 			errors.New("git commit error"),
 			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
 			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
-			"with all option",
-			"some message", true, false,
-			errors.New("git commit error"),
-			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
-			[]string{"commit", "--no-gpg-sign", "--all", "-m", "some message"},
-		},
-		{
 			"with amend option",
-			"some message", false, true,
+			"some message", true,
 			errors.New("git commit error"),
 			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
 			[]string{"commit", "--no-gpg-sign", "--amend", "-m", "some message"},
@@ -287,21 +369,21 @@ func Test_git_commit_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			var expectedArgs []string
+			var actualArgs []string
 			git := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
-					expectedArgs = args[2:]
+					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Commit(tt.message, tt.all, tt.amend)
+			err := git.Commit(tt.amend, tt.message)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expectedArgs, expectedArgs)
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }
@@ -363,11 +445,11 @@ func Test_git_revert_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			var expectedArgs []string
+			var actualArgs []string
 			git := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
-					expectedArgs = args[2:]
+					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
@@ -377,7 +459,7 @@ func Test_git_revert_command(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expectedArgs, expectedArgs)
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }
@@ -407,11 +489,11 @@ func Test_git_stash_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			var expectedArgs []string
+			var actualArgs []string
 			git := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
-					expectedArgs = args[2:]
+					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
@@ -421,7 +503,7 @@ func Test_git_stash_command(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expectedArgs, expectedArgs)
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }
@@ -465,11 +547,11 @@ func Test_git_unstash_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			var expectedArgs []string
+			var actualArgs []string
 			git := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
-					expectedArgs = args[2:]
+					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
@@ -479,7 +561,7 @@ func Test_git_unstash_command(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expectedArgs, expectedArgs)
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }

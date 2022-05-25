@@ -158,15 +158,24 @@ func (g *GitImpl) GetWorkingBranch() string {
 	return g.workingBranch
 }
 
-// Commit restores to last commit.
+// Add adds the listed paths to git index.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Commit(message string, all bool, amend bool) error {
+func (g *GitImpl) Add(paths ...string) error {
+	gitArgs := []string{"add"}
+	if len(paths) == 0 {
+		gitArgs = append(gitArgs, ".")
+	} else {
+		gitArgs = append(gitArgs, paths...)
+	}
+	return g.traceGit(gitArgs...)
+}
+
+// Commit commits changes to git index.
+// Current implementation uses a direct call to git
+func (g *GitImpl) Commit(amend bool, message string) error {
 	gitArgs := []string{"commit", "--no-gpg-sign"}
 	if amend {
 		gitArgs = append(gitArgs, "--amend")
-	}
-	if all {
-		gitArgs = append(gitArgs, "--all")
 	}
 	gitArgs = append(gitArgs, "-m", message)
 	_ = g.traceGit(gitArgs...)
@@ -223,6 +232,7 @@ func (g *GitImpl) Pull() error {
 func (g *GitImpl) Stash(message string) error {
 	report.PostInfo("Stashing changes")
 	return g.traceGit("stash", "push", "--quiet", "--include-untracked", "--message", message)
+	//	"--", "java/src/main", "java/src/test")
 }
 
 // UnStash applies a git stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
@@ -250,10 +260,12 @@ func (g *GitImpl) Diff() (diffs []FileDiff, err error) {
 	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))
 	for scanner.Scan() {
 		fields := strings.Split(scanner.Text(), "\t")
-		added, _ := strconv.Atoi(fields[0])
-		removed, _ := strconv.Atoi(fields[1])
-		filename := filepath.Join(g.rootDir, fields[2])
-		diffs = append(diffs, NewFileDiff(filename, added, removed))
+		if len(fields) == 3 {
+			added, _ := strconv.Atoi(fields[0])
+			removed, _ := strconv.Atoi(fields[1])
+			filename := filepath.Join(g.rootDir, fields[2])
+			diffs = append(diffs, NewFileDiff(filename, added, removed))
+		}
 	}
 	return
 }

@@ -49,6 +49,7 @@ type (
 		setVcs(vcs vcs.GitInterface)
 		ToggleAutoPush()
 		SetAutoPush(ap bool)
+		SetCommitOnFail(ap bool)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -84,9 +85,9 @@ type (
 )
 
 const (
-	commitMessageOk = "✅ TCR - tests passing"
-	//commitMessageFail   = "❌ TCR - tests failing"
-	//commitMessageRevert = "↩ TCR - revert changes"
+	commitMessageOk     = "✅ TCR - tests passing"
+	commitMessageFail   = "❌ TCR - tests failing"
+	commitMessageRevert = "↩ TCR - revert changes"
 )
 
 var (
@@ -136,7 +137,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.setVcs(git)
 	tcr.vcs.EnablePush(params.AutoPush)
 
-	tcr.setCommitOnFail(params.CommitFailures)
+	tcr.SetCommitOnFail(params.CommitFailures)
 
 	tcr.setMobTimerDuration(params.MobTurnDuration)
 
@@ -146,12 +147,13 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 
 }
 
-func (tcr *TcrEngine) setCommitOnFail(flag bool) {
+// SetCommitOnFail sets git commit-on-fail option to the provided value
+func (tcr *TcrEngine) SetCommitOnFail(flag bool) {
 	tcr.commitOnFail = flag
 	if tcr.commitOnFail {
-		report.PostInfo("Test breaking changes will be committed")
+		report.PostInfo("Test-breaking changes will be committed")
 	} else {
-		report.PostInfo("Test breaking changes will not be committed")
+		report.PostInfo("Test-breaking changes will not be committed")
 	}
 }
 
@@ -352,22 +354,64 @@ func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
 
 func (tcr *TcrEngine) commit() {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
-	err := tcr.vcs.Commit(commitMessageOk, true, false)
+	var err error
+	err = tcr.vcs.Add()
 	tcr.handleError(err, false, status.GitError)
-	if err == nil {
-		tcr.handleError(tcr.vcs.Push(), false, status.GitError)
+	if err != nil {
+		return
 	}
+	err = tcr.vcs.Commit(false, commitMessageOk)
+	tcr.handleError(err, false, status.GitError)
+	if err != nil {
+		return
+	}
+	tcr.handleError(tcr.vcs.Push(), false, status.GitError)
 }
 
 func (tcr *TcrEngine) revert() {
 	if tcr.commitOnFail {
-		tcr.commitTestBreakingChanges()
+		err := tcr.commitTestBreakingChanges()
+		tcr.handleError(err, false, status.GitError)
+		if err != nil {
+			return
+		}
 	}
 	tcr.revertSrcFiles()
 }
 
-func (tcr *TcrEngine) commitTestBreakingChanges() {
-	// TODO implement revert with commit on fail
+func (tcr *TcrEngine) commitTestBreakingChanges() (err error) {
+	// Create stash with the changes
+	err = tcr.vcs.Stash(commitMessageFail)
+	if err != nil {
+		return
+	}
+	// Apply changes back in the working tree
+	err = tcr.vcs.UnStash(true)
+	if err != nil {
+		return
+	}
+	// Commit changes with failure message into git index
+	err = tcr.vcs.Add()
+	if err != nil {
+		return
+	}
+	err = tcr.vcs.Commit(false, commitMessageFail)
+	if err != nil {
+		return
+	}
+	// Revert changes (both in git index and working tree)
+	err = tcr.vcs.Revert()
+	if err != nil {
+		return
+	}
+	// Amend commit message on revert operation in git index
+	err = tcr.vcs.Commit(true, commitMessageRevert)
+	if err != nil {
+		return
+	}
+	// Re-apply changes in the working tree and get rid of stash
+	err = tcr.vcs.UnStash(false)
+	return err
 }
 
 func (tcr *TcrEngine) revertSrcFiles() {
@@ -406,6 +450,7 @@ func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
 		LanguageName:  tcr.lang.GetName(),
 		ToolchainName: tcr.tchn.GetName(),
 		AutoPush:      tcr.vcs.IsPushEnabled(),
+		CommitOnFail:  tcr.commitOnFail,
 		BranchName:    tcr.vcs.GetWorkingBranch(),
 	}
 }

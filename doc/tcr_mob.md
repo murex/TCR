@@ -25,6 +25,7 @@ tcr mob [flags]
 ```
   -p, --auto-push           enable git push after every commit
   -b, --base-dir string     indicate the directory from which TCR is looking for files (default: current directory)
+  -f, --commit-failures     enable committing reverts on tests failure
   -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration   set the duration for role rotation countdown timer
   -l, --language string     indicate the programming language to be used by TCR
