@@ -48,8 +48,8 @@ type (
 		Init(u ui.UserInterface, params params.Params)
 		setVcs(vcs vcs.GitInterface)
 		ToggleAutoPush()
-		SetAutoPush(ap bool)
-		SetCommitOnFail(ap bool)
+		SetAutoPush(flag bool)
+		SetCommitOnFail(flag bool)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -69,10 +69,10 @@ type (
 	// TcrEngine is the engine running all TCR operations
 	TcrEngine struct {
 		mode            runmode.RunMode
-		uitf            ui.UserInterface
+		ui              ui.UserInterface
 		vcs             vcs.GitInterface
-		lang            language.LangInterface
-		tchn            toolchain.TchnInterface
+		language        language.LangInterface
+		toolchain       toolchain.TchnInterface
 		sourceTree      filesystem.SourceTree
 		pollingPeriod   time.Duration
 		mobTurnDuration time.Duration
@@ -87,7 +87,7 @@ type (
 const (
 	commitMessageOk     = "✅ TCR - tests passing"
 	commitMessageFail   = "❌ TCR - tests failing"
-	commitMessageRevert = "↩ TCR - revert changes"
+	commitMessageRevert = "⏪ TCR - revert changes"
 )
 
 var (
@@ -106,13 +106,13 @@ func NewTcrEngine() TcrInterface {
 func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	var err error
 	status.RecordState(status.Ok)
-	tcr.uitf = u
+	tcr.ui = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
 	tcr.SetRunMode(params.Mode)
 	if !tcr.mode.IsActive() {
-		tcr.uitf.ShowRunningMode(tcr.mode)
+		tcr.ui.ShowRunningMode(tcr.mode)
 		return
 	}
 
@@ -122,10 +122,10 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 
-	tcr.lang, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
+	tcr.language, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
 	tcr.handleError(err, true, status.ConfigError)
 
-	tcr.tchn, err = tcr.lang.GetToolchain(params.Toolchain)
+	tcr.toolchain, err = tcr.language.GetToolchain(params.Toolchain)
 	tcr.handleError(err, true, status.ConfigError)
 
 	err = toolchain.SetWorkDir(params.WorkDir)
@@ -141,8 +141,8 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 
 	tcr.setMobTimerDuration(params.MobTurnDuration)
 
-	tcr.uitf.ShowRunningMode(tcr.mode)
-	tcr.uitf.ShowSessionInfo()
+	tcr.ui.ShowRunningMode(tcr.mode)
+	tcr.ui.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
 
 }
@@ -177,7 +177,7 @@ func (tcr *TcrEngine) warnIfOnRootBranch(branch string, interactive bool) {
 	if vcs.IsRootBranch(branch) {
 		message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
 		if interactive {
-			if !tcr.uitf.Confirm(message, false) {
+			if !tcr.ui.Confirm(message, false) {
 				tcr.Quit()
 			}
 		} else {
@@ -209,7 +209,7 @@ func (tcr *TcrEngine) RunAsDriver() {
 	go tcr.fromBirthTillDeath(
 		func() {
 			tcr.currentRole = role.Driver{}
-			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
+			tcr.ui.NotifyRoleStarting(tcr.currentRole)
 			tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
 			tcr.startTimer()
 		},
@@ -230,7 +230,7 @@ func (tcr *TcrEngine) RunAsDriver() {
 		},
 		func() {
 			tcr.stopTimer()
-			tcr.uitf.NotifyRoleEnding(tcr.currentRole)
+			tcr.ui.NotifyRoleEnding(tcr.currentRole)
 			tcr.currentRole = nil
 		},
 	)
@@ -241,7 +241,7 @@ func (tcr *TcrEngine) RunAsNavigator() {
 	go tcr.fromBirthTillDeath(
 		func() {
 			tcr.currentRole = role.Navigator{}
-			tcr.uitf.NotifyRoleStarting(tcr.currentRole)
+			tcr.ui.NotifyRoleStarting(tcr.currentRole)
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -254,7 +254,7 @@ func (tcr *TcrEngine) RunAsNavigator() {
 			}
 		},
 		func() {
-			tcr.uitf.NotifyRoleEnding(tcr.currentRole)
+			tcr.ui.NotifyRoleEnding(tcr.currentRole)
 			tcr.currentRole = nil
 		},
 	)
@@ -291,8 +291,8 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 	// does not get triggered again following a revert operation
 	time.Sleep(1 * time.Second)
 	return tcr.sourceTree.Watch(
-		tcr.lang.DirsToWatch(tcr.sourceTree.GetBaseDir()),
-		tcr.lang.IsLanguageFile,
+		tcr.language.DirsToWatch(tcr.sourceTree.GetBaseDir()),
+		tcr.language.IsLanguageFile,
 		interrupt)
 }
 
@@ -321,8 +321,8 @@ func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, t
 
 	events.EventRepository.Add(
 		events.NewTcrEvent(
-			computeSrcLinesChanged(tcr.lang, changedFiles),
-			computeTestLinesChanged(tcr.lang, changedFiles),
+			computeSrcLinesChanged(tcr.language, changedFiles),
+			computeTestLinesChanged(tcr.language, changedFiles),
 			buildStatus,
 			testsStatus,
 			testResults.TotalRun,
@@ -335,7 +335,7 @@ func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, t
 
 func (tcr *TcrEngine) build() error {
 	report.PostInfo("Launching Build")
-	err := tcr.tchn.RunBuild()
+	err := tcr.toolchain.RunBuild()
 	if err != nil {
 		status.RecordState(status.BuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
@@ -344,7 +344,7 @@ func (tcr *TcrEngine) build() error {
 }
 
 func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
-	testResults, err = tcr.tchn.RunTests()
+	testResults, err = tcr.toolchain.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
@@ -422,7 +422,7 @@ func (tcr *TcrEngine) revertSrcFiles() {
 	}
 	var reverted int
 	for _, diff := range diffs {
-		if tcr.lang.IsSrcFile(diff.Path) {
+		if tcr.language.IsSrcFile(diff.Path) {
 			err := tcr.revertFile(diff.Path)
 			tcr.handleError(err, false, status.GitError)
 			if err == nil {
@@ -447,8 +447,8 @@ func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
 	return SessionInfo{
 		BaseDir:       tcr.sourceTree.GetBaseDir(),
 		WorkDir:       toolchain.GetWorkDir(),
-		LanguageName:  tcr.lang.GetName(),
-		ToolchainName: tcr.tchn.GetName(),
+		LanguageName:  tcr.language.GetName(),
+		ToolchainName: tcr.toolchain.GetName(),
 		AutoPush:      tcr.vcs.IsPushEnabled(),
 		CommitOnFail:  tcr.commitOnFail,
 		BranchName:    tcr.vcs.GetWorkingBranch(),
