@@ -42,25 +42,19 @@ import (
 )
 
 type (
-	failure  int
-	failures []failure
+	// ToolchainAction is the name of a toolchain action
+	ToolchainAction string
+	// ToolchainActions is a slice of ToolchainAction
+	ToolchainActions []ToolchainAction
 )
 
+// List of supported toolchain actions
 const (
-	failBuild failure = iota
-	failTest
-	failAdd
-	failCommit
-	failRestore
-	failPush
-	failPull
-	failDiff
-	failStash
-	failUnstash
-	failRevert
+	BuildAction ToolchainAction = "build"
+	TestAction  ToolchainAction = "test"
 )
 
-func (fs failures) contains(f failure) bool {
+func (fs ToolchainActions) contains(f ToolchainAction) bool {
 	for _, set := range fs {
 		if f == set {
 			return true
@@ -78,18 +72,18 @@ func Test_tcr_command_end_state(t *testing.T) {
 	}{
 		{
 			"build with no failure",
-			initTcrEngineWithFakes(nil, failures{}).build,
+			initTcrEngineWithFakes(nil, nil, nil).build,
 			status.Ok, false,
 		},
 		{
 			"build with failure",
-			initTcrEngineWithFakes(nil, failures{failBuild}).build,
+			initTcrEngineWithFakes(nil, ToolchainActions{BuildAction}, nil).build,
 			status.BuildFailed, true,
 		},
 		{
 			"test with no failure",
 			func() error {
-				_, err := initTcrEngineWithFakes(nil, failures{}).test()
+				_, err := initTcrEngineWithFakes(nil, nil, nil).test()
 				return err
 			},
 			status.Ok, false,
@@ -97,10 +91,9 @@ func Test_tcr_command_end_state(t *testing.T) {
 		{
 			"test with failure",
 			func() error {
-				_, err := initTcrEngineWithFakes(nil, failures{failTest}).test()
+				_, err := initTcrEngineWithFakes(nil, ToolchainActions{TestAction}, nil).test()
 				return err
 			},
-
 			status.TestFailed, true,
 		},
 	}
@@ -127,37 +120,32 @@ func Test_tcr_operation_end_state(t *testing.T) {
 	}{
 		{
 			"commit with no failure",
-			initTcrEngineWithFakes(nil, failures{}).commit,
+			initTcrEngineWithFakes(nil, nil, nil).commit,
 			status.Ok,
 		},
 		{
 			"commit with git commit failure",
-			initTcrEngineWithFakes(nil, failures{failCommit}).commit,
+			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.CommitCommand}).commit,
 			status.GitError,
 		},
 		{
 			"commit with git push failure",
-			initTcrEngineWithFakes(nil, failures{failPush}).commit,
+			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand}).commit,
 			status.GitError,
 		},
 		{
 			"revert with no failure",
-			initTcrEngineWithFakes(nil, failures{}).revert,
+			initTcrEngineWithFakes(nil, nil, nil).revert,
 			status.Ok,
 		},
 		{
 			"revert with git diff failure",
-			initTcrEngineWithFakes(nil, failures{failDiff}).revert,
+			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.DiffCommand}).revert,
 			status.GitError,
 		},
 		{
 			"revert with git restore failure",
-			initTcrEngineWithFakes(nil, failures{failRestore}).revert,
-			status.GitError,
-		},
-		{
-			"revert with git restore failure",
-			initTcrEngineWithFakes(nil, failures{failRestore}).revert,
+			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.RestoreCommand}).revert,
 			status.GitError,
 		},
 	}
@@ -174,37 +162,37 @@ func Test_tcr_operation_end_state(t *testing.T) {
 func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 	testFlags := []struct {
 		desc           string
-		failures       []failure
+		gitFailures    vcs.GitCommands
 		expectedStatus status.Status
 	}{
 		{
 			"no failure",
-			failures{},
+			nil,
 			status.Ok,
 		},
 		{
 			"git stash failure",
-			failures{failStash},
+			vcs.GitCommands{vcs.StashCommand},
 			status.GitError,
 		},
 		{
-			"git unstash failure",
-			failures{failUnstash},
+			"git un-stash failure",
+			vcs.GitCommands{vcs.UnStashCommand},
 			status.GitError,
 		},
 		{
 			"git add failure",
-			failures{failAdd},
+			vcs.GitCommands{vcs.AddCommand},
 			status.GitError,
 		},
 		{
 			"git commit failure",
-			failures{failCommit},
+			vcs.GitCommands{vcs.CommitCommand},
 			status.GitError,
 		},
 		{
 			"git revert failure",
-			failures{failRevert},
+			vcs.GitCommands{vcs.RevertCommand},
 			status.GitError,
 		},
 	}
@@ -212,7 +200,7 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			status.RecordState(status.Ok)
-			tcr := initTcrEngineWithFakes(nil, tt.failures)
+			tcr := initTcrEngineWithFakes(nil, nil, tt.gitFailures)
 			tcr.SetCommitOnFail(true)
 			tcr.revert()
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
@@ -222,31 +210,64 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 
 func Test_tcr_cycle_end_state(t *testing.T) {
 	testFlags := []struct {
-		desc           string
-		failures       failures
-		expectedStatus status.Status
+		desc              string
+		toolchainFailures ToolchainActions
+		gitFailures       vcs.GitCommands
+		expectedStatus    status.Status
 	}{
-		{"with no failure", failures{}, status.Ok},
-		{"with build failure", failures{failBuild}, status.BuildFailed},
-		{"with test failure", failures{failTest}, status.Ok},
-		{"with git add failure", failures{failAdd}, status.GitError},
-		{"with git commit failure", failures{failCommit}, status.GitError},
-		{"with git push failure", failures{failPush}, status.GitError},
-		{"with test and git diff failure", failures{failTest, failDiff}, status.GitError},
-		{"with test and git restore failure", failures{failTest, failRestore}, status.GitError},
+		{
+			"with no failure",
+			nil, nil,
+			status.Ok,
+		},
+		{
+			"with build failure",
+			ToolchainActions{BuildAction}, nil,
+			status.BuildFailed,
+		},
+		{
+			"with test failure",
+			ToolchainActions{TestAction}, nil,
+			status.Ok,
+		},
+		{
+			"with git add failure",
+			nil, vcs.GitCommands{vcs.AddCommand},
+			status.GitError,
+		},
+		{
+			"with git commit failure",
+			nil, vcs.GitCommands{vcs.CommitCommand},
+			status.GitError,
+		},
+		{
+			"with git push failure",
+			nil, vcs.GitCommands{vcs.PushCommand},
+			status.GitError,
+		},
+		{
+			"with test and git diff failure",
+			ToolchainActions{TestAction}, vcs.GitCommands{vcs.DiffCommand},
+			status.GitError,
+		},
+		{
+			"with test and git restore failure",
+			ToolchainActions{TestAction}, vcs.GitCommands{vcs.RestoreCommand},
+			status.GitError,
+		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			status.RecordState(status.Ok)
-			initTcrEngineWithFakes(nil, tt.failures).RunTCRCycle()
+			initTcrEngineWithFakes(nil, tt.toolchainFailures, tt.gitFailures).RunTCRCycle()
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
 		})
 	}
 }
 
-func initTcrEngineWithFakes(p *params.Params, f failures) TcrInterface {
-	tchn := registerFakeToolchain(f.contains(failBuild), f.contains(failTest), toolchain.TestResults{})
+func initTcrEngineWithFakes(p *params.Params, toolchainFailures ToolchainActions, gitFailures vcs.GitCommands) TcrInterface {
+	tchn := registerFakeToolchain(toolchainFailures, toolchain.TestResults{})
 	lang := registerFakeLanguage(tchn)
 	events.EventRepository = &events.TcrEventInMemoryRepository{}
 
@@ -274,22 +295,12 @@ func initTcrEngineWithFakes(p *params.Params, f failures) TcrInterface {
 
 	tcr := NewTcrEngine()
 	tcr.Init(ui.NewFakeUI(), parameters)
-	replaceGitImplWithFake(tcr,
-		f.contains(failAdd),
-		f.contains(failCommit),
-		f.contains(failRestore),
-		f.contains(failPush),
-		f.contains(failPull),
-		f.contains(failDiff),
-		f.contains(failStash),
-		f.contains(failUnstash),
-		f.contains(failRevert),
-	)
+	replaceGitImplWithFake(tcr, gitFailures)
 	return tcr
 }
 
-func registerFakeToolchain(failingBuild, failingTest bool, testResults toolchain.TestResults) string {
-	fake := toolchain.NewFakeToolchain(failingBuild, failingTest, testResults)
+func registerFakeToolchain(failingActions ToolchainActions, testResults toolchain.TestResults) string {
+	fake := toolchain.NewFakeToolchain(failingActions.contains(BuildAction), failingActions.contains(TestAction), testResults)
 	if err := toolchain.Register(fake); err != nil {
 		fmt.Println(err)
 	}
@@ -304,11 +315,8 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(tcr TcrInterface,
-	failingAdd, failingCommit, failingRestore, failingPush, failingPull, failingDiff, failingStash, failingUnstash, failingRevert bool) {
-	fake, _ := vcs.NewGitFake(
-		failingAdd, failingCommit, failingRestore, failingPush, failingPull, failingDiff, failingStash, failingUnstash, failingRevert,
-		[]vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
+func replaceGitImplWithFake(tcr TcrInterface, failingCommands vcs.GitCommands) {
+	fake, _ := vcs.NewGitFake(failingCommands, []vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
 	tcr.setVcs(fake)
 }
 
@@ -323,7 +331,7 @@ func Test_run_as_role_methods(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.role.LongName(), func(t *testing.T) {
-			tcr = initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Mob{})), failures{})
+			tcr = initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Mob{})), nil, nil)
 			tt.runAsMethod()
 			time.Sleep(10 * time.Millisecond)
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
@@ -334,25 +342,25 @@ func Test_run_as_role_methods(t *testing.T) {
 func Test_generate_events_from_tcr_cycle(t *testing.T) {
 	testsFlags := []struct {
 		desc                string
-		failures            failures
+		toolchainFailures   ToolchainActions
 		expectedBuildStatus events.TcrEventStatus
 		expectedTestStatus  events.TcrEventStatus
 	}{
 		{
 			"with build failing",
-			failures{failBuild},
+			ToolchainActions{BuildAction},
 			events.StatusFailed,
 			events.StatusUnknown,
 		},
 		{
 			"with tests failing",
-			failures{failTest},
+			ToolchainActions{TestAction},
 			events.StatusPassed,
 			events.StatusFailed,
 		},
 		{
 			"with tests passing",
-			failures{},
+			nil,
 			events.StatusPassed,
 			events.StatusPassed,
 		},
@@ -360,7 +368,10 @@ func Test_generate_events_from_tcr_cycle(t *testing.T) {
 
 	for _, tt := range testsFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.OneShot{})), tt.failures)
+			tcr := initTcrEngineWithFakes(
+				params.AParamSet(params.WithRunMode(runmode.OneShot{})),
+				tt.toolchainFailures, nil,
+			)
 			tcr.RunTCRCycle()
 			assert.Equal(t, tt.expectedBuildStatus, events.EventRepository.Get().BuildStatus)
 			assert.Equal(t, tt.expectedTestStatus, events.EventRepository.Get().TestsStatus)
@@ -379,7 +390,7 @@ func Test_set_auto_push(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			tcr = initTcrEngineWithFakes(nil, failures{})
+			tcr = initTcrEngineWithFakes(nil, nil, nil)
 			tcr.SetAutoPush(tt.state)
 			assert.Equal(t, tt.state, tcr.GetSessionInfo().AutoPush)
 		})
@@ -397,7 +408,7 @@ func Test_set_commit_on_fail(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			tcr = initTcrEngineWithFakes(nil, failures{})
+			tcr = initTcrEngineWithFakes(nil, nil, nil)
 			tcr.SetCommitOnFail(tt.state)
 			assert.Equal(t, tt.state, tcr.GetSessionInfo().CommitOnFail)
 		})
@@ -405,7 +416,7 @@ func Test_set_commit_on_fail(t *testing.T) {
 }
 
 func Test_toggle_auto_push(t *testing.T) {
-	tcr := initTcrEngineWithFakes(nil, failures{})
+	tcr := initTcrEngineWithFakes(nil, nil, nil)
 	tcr.SetAutoPush(false)
 	assert.Equal(t, false, tcr.GetSessionInfo().AutoPush)
 	tcr.ToggleAutoPush()
@@ -415,7 +426,7 @@ func Test_toggle_auto_push(t *testing.T) {
 }
 
 func Test_get_session_info(t *testing.T) {
-	tcr := initTcrEngineWithFakes(nil, failures{})
+	tcr := initTcrEngineWithFakes(nil, nil, nil)
 	currentDir, _ := os.Getwd()
 	expected := SessionInfo{
 		BaseDir:       currentDir,
@@ -450,7 +461,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			tcr = initTcrEngineWithFakes(params.AParamSet(
 				params.WithRunMode(runmode.Mob{}),
 				params.WithMobTimerDuration(tt.timer),
-			), failures{})
+			), nil, nil)
 			tcr.SetRunMode(runmode.Mob{})
 			tt.runAsMethod()
 			time.Sleep(1 * time.Millisecond)
@@ -469,10 +480,10 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 			return msg.Type == report.Info && msg.Text == "Mob Timer is off"
 		},
 	)
-	tcr := initTcrEngineWithFakes(params.AParamSet(
-		params.WithRunMode(runmode.Solo{}),
-	), failures{})
-
+	tcr := initTcrEngineWithFakes(
+		params.AParamSet(params.WithRunMode(runmode.Solo{})),
+		nil, nil,
+	)
 	tcr.RunAsDriver()
 	time.Sleep(1 * time.Millisecond)
 	tcr.ReportMobTimerStatus()

@@ -28,89 +28,97 @@ import (
 	"errors"
 )
 
+// GitCommand is the name of a Git command
+type GitCommand string
+
+// GitCommands is a slice of GitCommand
+type GitCommands []GitCommand
+
+func (gc GitCommands) contains(command GitCommand) bool {
+	for _, value := range gc {
+		if value == command {
+			return true
+		}
+	}
+	return false
+}
+
+// List of supported git commands
+const (
+	AddCommand     GitCommand = "add"
+	CommitCommand  GitCommand = "commit"
+	DiffCommand    GitCommand = "diff"
+	PullCommand    GitCommand = "pull"
+	PushCommand    GitCommand = "push"
+	RestoreCommand GitCommand = "restore"
+	RevertCommand  GitCommand = "revert"
+	StashCommand   GitCommand = "stash"
+	UnStashCommand GitCommand = "unStash"
+)
+
 // GitFake provides a fake implementation of the git interface
 type GitFake struct {
 	GitImpl
-	failAdd      bool
-	failCommit   bool
-	failRestore  bool
-	failPush     bool
-	failPull     bool
-	failDiff     bool
-	failStash    bool
-	failUnstash  bool
-	failRevert   bool
-	changedFiles []FileDiff
+	failingCommands GitCommands
+	changedFiles    []FileDiff
+}
+
+func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
+	failingCmd := g.failingCommands.contains(cmd)
+	//fmt.Printf("faking git %v operation (failure=%v)\n", cmd, failingCmd)
+	if failingCmd {
+		err = errors.New("git " + string(cmd) + " fake error")
+	}
+	return
 }
 
 // NewGitFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
-func NewGitFake(
-	failAdd, failCommit, failRestore, failPush, failPull, failDiff, failStash, failUnstash, failRevert bool,
-	changedFiles []FileDiff) (GitInterface, error) {
-	return &GitFake{
-		failAdd:      failAdd,
-		failCommit:   failCommit,
-		failRestore:  failRestore,
-		failPush:     failPush,
-		failPull:     failPull,
-		failDiff:     failDiff,
-		failStash:    failStash,
-		failUnstash:  failUnstash,
-		failRevert:   failRevert,
-		changedFiles: changedFiles,
-	}, nil
+func NewGitFake(failingCommands GitCommands, changedFiles []FileDiff) (GitInterface, error) {
+	return &GitFake{failingCommands: failingCommands, changedFiles: changedFiles}, nil
 }
 
-// Add does nothing. Returns an error if failAdd flag is set
+// Add does nothing. Returns an error if in the list of failing commands
 func (g *GitFake) Add(_ ...string) error {
-	return fakeOperation("add", g.failAdd)
+	return g.fakeGitCommand(AddCommand)
 }
 
-// Commit does nothing. Returns an error if failCommit flag is set
+// Commit does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Commit(_ bool, _ string) error {
-	return fakeOperation("commit", g.failCommit)
+	return g.fakeGitCommand(CommitCommand)
 }
 
-// Restore does nothing. Returns an error if failRestore flag is set
+// Restore does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Restore(_ string) error {
-	return fakeOperation("restore", g.failRestore)
+	return g.fakeGitCommand(RestoreCommand)
 }
 
-// Push does nothing. Returns an error if failPush flag is set
+// Push does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Push() error {
-	return fakeOperation("push", g.failPush)
+	return g.fakeGitCommand(PushCommand)
 }
 
-// Pull does nothing. Returns an error if failPull flag is set
+// Pull does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Pull() error {
-	return fakeOperation("pull", g.failPull)
+	return g.fakeGitCommand(PullCommand)
 }
 
 // Diff returns the list of files modified configured at fake initialization
 func (g GitFake) Diff() (_ []FileDiff, err error) {
-	return g.changedFiles, fakeOperation("diff", g.failDiff)
+	return g.changedFiles, g.fakeGitCommand(DiffCommand)
 }
 
-// Stash does nothing. Returns an error if failStash flag is set
+// Stash does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Stash(_ string) error {
-	return fakeOperation("stash", g.failStash)
+	return g.fakeGitCommand(StashCommand)
 }
 
-// UnStash does nothing. Returns an error if failUnstash flag is set
+// UnStash does nothing. Returns an error if in the list of failing commands
 func (g GitFake) UnStash(_ bool) error {
-	return fakeOperation("unstash", g.failUnstash)
+	return g.fakeGitCommand(UnStashCommand)
 }
 
-// Revert does nothing. Returns an error if failRevert flag is set
+// Revert does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Revert() error {
-	return fakeOperation("revert", g.failRevert)
-}
-
-func fakeOperation(operation string, shouldFail bool) (err error) {
-	//fmt.Printf("faking git %v operation (failure=%v)\n", operation, shouldFail)
-	if shouldFail {
-		err = errors.New("git " + operation + " fake error")
-	}
-	return
+	return g.fakeGitCommand(RevertCommand)
 }
