@@ -41,28 +41,6 @@ import (
 	"time"
 )
 
-type (
-	// ToolchainAction is the name of a toolchain action
-	ToolchainAction string
-	// ToolchainActions is a slice of ToolchainAction
-	ToolchainActions []ToolchainAction
-)
-
-// List of supported toolchain actions
-const (
-	BuildAction ToolchainAction = "build"
-	TestAction  ToolchainAction = "test"
-)
-
-func (fs ToolchainActions) contains(f ToolchainAction) bool {
-	for _, set := range fs {
-		if f == set {
-			return true
-		}
-	}
-	return false
-}
-
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc           string
@@ -72,12 +50,16 @@ func Test_tcr_command_end_state(t *testing.T) {
 	}{
 		{
 			"build with no failure",
-			initTcrEngineWithFakes(nil, nil, nil).build,
+			func() error {
+				return initTcrEngineWithFakes(nil, nil, nil).build()
+			},
 			status.Ok, false,
 		},
 		{
 			"build with failure",
-			initTcrEngineWithFakes(nil, ToolchainActions{BuildAction}, nil).build,
+			func() error {
+				return initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.BuildOperation}, nil).build()
+			},
 			status.BuildFailed, true,
 		},
 		{
@@ -91,7 +73,7 @@ func Test_tcr_command_end_state(t *testing.T) {
 		{
 			"test with failure",
 			func() error {
-				_, err := initTcrEngineWithFakes(nil, ToolchainActions{TestAction}, nil).test()
+				_, err := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil).test()
 				return err
 			},
 			status.TestFailed, true,
@@ -211,7 +193,7 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 func Test_tcr_cycle_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
-		toolchainFailures ToolchainActions
+		toolchainFailures toolchain.Operations
 		gitFailures       vcs.GitCommands
 		expectedStatus    status.Status
 	}{
@@ -222,12 +204,12 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 		},
 		{
 			"with build failure",
-			ToolchainActions{BuildAction}, nil,
+			toolchain.Operations{toolchain.BuildOperation}, nil,
 			status.BuildFailed,
 		},
 		{
 			"with test failure",
-			ToolchainActions{TestAction}, nil,
+			toolchain.Operations{toolchain.TestOperation}, nil,
 			status.Ok,
 		},
 		{
@@ -247,12 +229,12 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 		},
 		{
 			"with test and git diff failure",
-			ToolchainActions{TestAction}, vcs.GitCommands{vcs.DiffCommand},
+			toolchain.Operations{toolchain.TestOperation}, vcs.GitCommands{vcs.DiffCommand},
 			status.GitError,
 		},
 		{
 			"with test and git restore failure",
-			ToolchainActions{TestAction}, vcs.GitCommands{vcs.RestoreCommand},
+			toolchain.Operations{toolchain.TestOperation}, vcs.GitCommands{vcs.RestoreCommand},
 			status.GitError,
 		},
 	}
@@ -266,8 +248,8 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	}
 }
 
-func initTcrEngineWithFakes(p *params.Params, toolchainFailures ToolchainActions, gitFailures vcs.GitCommands) TcrInterface {
-	tchn := registerFakeToolchain(toolchainFailures, toolchain.TestResults{})
+func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures vcs.GitCommands) TcrInterface {
+	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
 	events.EventRepository = &events.TcrEventInMemoryRepository{}
 
@@ -299,8 +281,8 @@ func initTcrEngineWithFakes(p *params.Params, toolchainFailures ToolchainActions
 	return tcr
 }
 
-func registerFakeToolchain(failingActions ToolchainActions, testResults toolchain.TestResults) string {
-	fake := toolchain.NewFakeToolchain(failingActions.contains(BuildAction), failingActions.contains(TestAction), testResults)
+func registerFakeToolchain(failures toolchain.Operations) string {
+	fake := toolchain.NewFakeToolchain(failures, toolchain.TestResults{})
 	if err := toolchain.Register(fake); err != nil {
 		fmt.Println(err)
 	}
@@ -315,8 +297,8 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(tcr TcrInterface, failingCommands vcs.GitCommands) {
-	fake, _ := vcs.NewGitFake(failingCommands, []vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
+func replaceGitImplWithFake(tcr TcrInterface, failures vcs.GitCommands) {
+	fake, _ := vcs.NewGitFake(failures, []vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
 	tcr.setVcs(fake)
 }
 
@@ -342,19 +324,19 @@ func Test_run_as_role_methods(t *testing.T) {
 func Test_generate_events_from_tcr_cycle(t *testing.T) {
 	testsFlags := []struct {
 		desc                string
-		toolchainFailures   ToolchainActions
+		toolchainFailures   toolchain.Operations
 		expectedBuildStatus events.TcrEventStatus
 		expectedTestStatus  events.TcrEventStatus
 	}{
 		{
 			"with build failing",
-			ToolchainActions{BuildAction},
+			toolchain.Operations{toolchain.BuildOperation},
 			events.StatusFailed,
 			events.StatusUnknown,
 		},
 		{
 			"with tests failing",
-			ToolchainActions{TestAction},
+			toolchain.Operations{toolchain.TestOperation},
 			events.StatusPassed,
 			events.StatusFailed,
 		},

@@ -26,27 +26,46 @@ package toolchain
 
 import "errors"
 
-// FakeToolchain is a toolchain fake with 2 flags failingBuild and failingTest
-// which determine how the toolchain's build and test command will respond (but without
-// actually calling a real command)
+type (
+	// Operation is the name of a toolchain operation
+	Operation string
+	// Operations is a slice of Operation
+	Operations []Operation
+)
+
+// List of supported toolchain operations
+const (
+	BuildOperation Operation = "build"
+	TestOperation  Operation = "test"
+)
+
+func (operations Operations) contains(operation Operation) bool {
+	for _, op := range operations {
+		if op == operation {
+			return true
+		}
+	}
+	return false
+}
+
+// FakeToolchain is a toolchain fake allowing to emulate failing operations (build and fail)
+// responses, but without actually calling a real command.
 type FakeToolchain struct {
 	Toolchain
-	failingBuild bool
-	failingTest  bool
-	testResults  TestResults
+	failingOperations Operations
+	testResults       TestResults
 }
 
 // NewFakeToolchain creates a FakeToolchain instance
-func NewFakeToolchain(failingBuild, failingTest bool, testResults TestResults) *FakeToolchain {
+func NewFakeToolchain(failingOperations Operations, testResults TestResults) *FakeToolchain {
 	return &FakeToolchain{
 		Toolchain: Toolchain{
 			name:          "fake-toolchain",
 			buildCommands: nil,
 			testCommands:  nil,
 		},
-		failingBuild: failingBuild,
-		failingTest:  failingTest,
-		testResults:  testResults,
+		failingOperations: failingOperations,
+		testResults:       testResults,
 	}
 }
 
@@ -58,21 +77,21 @@ func (tchn FakeToolchain) checkTestCommand() error {
 	return nil
 }
 
-// RunBuild returns an error if failingBuild is true, nil otherwise. THis method does not
-// call any real command
+// RunBuild returns an error if build is part of failingOperations, nil otherwise.
+// This method does not call any real command
 func (tchn FakeToolchain) RunBuild() error {
-	return runCommandStub(tchn.failingBuild)
+	return tchn.fakeOperation(BuildOperation)
 }
 
-// RunTests returns an error if failingTest is true, nil otherwise. THis method does not
-// call any real command
+// RunTests returns an error if test is part of failingOperations, nil otherwise.
+// This method does not call any real command
 func (tchn FakeToolchain) RunTests() (TestResults, error) {
-	return TestResults{}, runCommandStub(tchn.failingTest)
+	return tchn.testResults, tchn.fakeOperation(TestOperation)
 }
 
-func runCommandStub(shouldFail bool) (err error) {
-	if shouldFail {
-		err = errors.New("fake toolchain failing command")
+func (tchn FakeToolchain) fakeOperation(operation Operation) (err error) {
+	if tchn.failingOperations.contains(operation) {
+		err = errors.New("toolchain " + string(operation) + " fake error")
 	}
 	return
 }

@@ -64,9 +64,7 @@ type GitFake struct {
 }
 
 func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
-	failingCmd := g.failingCommands.contains(cmd)
-	//fmt.Printf("faking git %v operation (failure=%v)\n", cmd, failingCmd)
-	if failingCmd {
+	if g.failingCommands.contains(cmd) {
 		err = errors.New("git " + string(cmd) + " fake error")
 	}
 	return
