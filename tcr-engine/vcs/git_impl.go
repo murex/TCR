@@ -172,12 +172,14 @@ func (g *GitImpl) Add(paths ...string) error {
 
 // Commit commits changes to git index.
 // Current implementation uses a direct call to git
-func (g *GitImpl) Commit(amend bool, message string) error {
+func (g *GitImpl) Commit(amend bool, messages ...string) error {
 	gitArgs := []string{"commit", "--no-gpg-sign"}
 	if amend {
 		gitArgs = append(gitArgs, "--amend")
 	}
-	gitArgs = append(gitArgs, "-m", message)
+	for _, message := range messages {
+		gitArgs = append(gitArgs, "-m", message)
+	}
 	_ = g.traceGit(gitArgs...)
 	// We ignore return code on purpose to prevent raising an error
 	// when there is nothing to commit

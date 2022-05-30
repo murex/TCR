@@ -82,7 +82,7 @@ func (g *GitFake) Add(_ ...string) error {
 }
 
 // Commit does nothing. Returns an error if in the list of failing commands
-func (g GitFake) Commit(_ bool, _ string) error {
+func (g GitFake) Commit(_ bool, _ ...string) error {
 	return g.fakeGitCommand(CommitCommand)
 }
 

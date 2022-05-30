@@ -36,7 +36,7 @@ type GitInterface interface {
 	GetRemoteName() string
 	GetWorkingBranch() string
 	Add(paths ...string) error
-	Commit(amend bool, message string) error
+	Commit(amend bool, messages ...string) error
 	Restore(dir string) error
 	Revert() error
 	Push() error

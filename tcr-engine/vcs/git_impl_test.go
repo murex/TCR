@@ -339,7 +339,7 @@ func Test_git_add_command(t *testing.T) {
 func Test_git_commit_command(t *testing.T) {
 	testFlags := []struct {
 		desc         string
-		message      string
+		messages     []string
 		amend        bool
 		gitError     error
 		expectError  bool
@@ -347,23 +347,37 @@ func Test_git_commit_command(t *testing.T) {
 	}{
 		{
 			"no git error",
-			"some message", false,
+			[]string{"some message"}, false,
 			nil,
 			false,
 			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
 			"git error",
-			"some message", false,
+			[]string{"some message"}, false,
 			errors.New("git commit error"),
 			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
 			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
+			"with multiple messages",
+			[]string{"main message", "additional message"}, false,
+			nil,
+			false,
+			[]string{"commit", "--no-gpg-sign", "-m", "main message", "-m", "additional message"},
+		},
+		{
+			"with multi-line messages",
+			[]string{"main message", "- line 1\n- line 2"}, false,
+			nil,
+			false,
+			[]string{"commit", "--no-gpg-sign", "-m", "main message", "-m", "- line 1\n- line 2"},
+		},
+		{
 			"with amend option",
-			"some message", true,
+			[]string{"some message"}, true,
 			errors.New("git commit error"),
-			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
+			false,
 			[]string{"commit", "--no-gpg-sign", "--amend", "-m", "some message"},
 		},
 	}
@@ -377,7 +391,7 @@ func Test_git_commit_command(t *testing.T) {
 					return tt.gitError
 				},
 			}
-			err := git.Commit(tt.amend, tt.message)
+			err := git.Commit(tt.amend, tt.messages...)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
