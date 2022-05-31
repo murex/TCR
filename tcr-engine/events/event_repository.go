@@ -38,7 +38,9 @@ var EventRepository TcrEventRepository
 
 func init() {
 	EventRepository = &TcrEventFileRepository{}
-	AppFs = afero.NewOsFs()
+	// We replaced this by an InMemory File System because we don't need to track the history in a file since we are doing this in the commits.
+	// AppFs = afero.NewOsFs()
+	AppFs = afero.NewMemMapFs()
 }
 
 // TcrEventInMemoryRepository is an in-memory implementation of a TCR Event repository
