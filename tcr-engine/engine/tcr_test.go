@@ -126,17 +126,26 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		},
 		{
 			"revert with no failure",
-			initTcrEngineWithFakes(nil, nil, nil).revert,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, nil)
+				tcr.revert(events.TcrEvent{})
+			},
 			status.Ok,
 		},
 		{
 			"revert with git diff failure",
-			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.DiffCommand}).revert,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.DiffCommand})
+				tcr.revert(events.TcrEvent{})
+			},
 			status.GitError,
 		},
 		{
 			"revert with git restore failure",
-			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.RestoreCommand}).revert,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.RestoreCommand})
+				tcr.revert(events.TcrEvent{})
+			},
 			status.GitError,
 		},
 	}
@@ -193,7 +202,7 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 			status.RecordState(status.Ok)
 			tcr := initTcrEngineWithFakes(nil, nil, tt.gitFailures)
 			tcr.SetCommitOnFail(true)
-			tcr.revert()
+			tcr.revert(events.TcrEvent{})
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
 		})
 	}

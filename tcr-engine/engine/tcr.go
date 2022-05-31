@@ -58,7 +58,7 @@ type (
 		build() error
 		test() (toolchain.TestResults, error)
 		commit(event events.TcrEvent)
-		revert()
+		revert(events.TcrEvent)
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
@@ -308,8 +308,8 @@ func (tcr *TcrEngine) RunTCRCycle() {
 		event := tcr.logEvent(events.StatusPassed, events.StatusPassed, testResults)
 		tcr.commit(event)
 	} else {
-		_ = tcr.logEvent(events.StatusPassed, events.StatusFailed, testResults)
-		tcr.revert()
+		event := tcr.logEvent(events.StatusPassed, events.StatusFailed, testResults)
+		tcr.revert(event)
 	}
 }
 
@@ -362,9 +362,9 @@ func (tcr *TcrEngine) commit(event events.TcrEvent) {
 	tcr.handleError(tcr.vcs.Push(), false, status.GitError)
 }
 
-func (tcr *TcrEngine) revert() {
+func (tcr *TcrEngine) revert(event events.TcrEvent) {
 	if tcr.commitOnFail {
-		err := tcr.commitTestBreakingChanges()
+		err := tcr.commitTestBreakingChanges(event)
 		tcr.handleError(err, false, status.GitError)
 		if err != nil {
 			return
@@ -373,7 +373,7 @@ func (tcr *TcrEngine) revert() {
 	tcr.revertSrcFiles()
 }
 
-func (tcr *TcrEngine) commitTestBreakingChanges() (err error) {
+func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err error) {
 	// Create stash with the changes
 	err = tcr.vcs.Stash(commitMessageFail)
 	if err != nil {
@@ -389,7 +389,7 @@ func (tcr *TcrEngine) commitTestBreakingChanges() (err error) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, commitMessageFail)
+	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYaml())
 	if err != nil {
 		return
 	}
