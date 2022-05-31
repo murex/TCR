@@ -102,17 +102,26 @@ func Test_tcr_operation_end_state(t *testing.T) {
 	}{
 		{
 			"commit with no failure",
-			initTcrEngineWithFakes(nil, nil, nil).commit,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, nil)
+				tcr.commit(events.TcrEvent{})
+			},
 			status.Ok,
 		},
 		{
 			"commit with git commit failure",
-			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.CommitCommand}).commit,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.CommitCommand})
+				tcr.commit(events.TcrEvent{})
+			},
 			status.GitError,
 		},
 		{
 			"commit with git push failure",
-			initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand}).commit,
+			func() {
+				tcr := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand})
+				tcr.commit(events.TcrEvent{})
+			},
 			status.GitError,
 		},
 		{

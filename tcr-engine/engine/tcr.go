@@ -57,7 +57,7 @@ type (
 		RunTCRCycle()
 		build() error
 		test() (toolchain.TestResults, error)
-		commit()
+		commit(event events.TcrEvent)
 		revert()
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
@@ -300,37 +300,31 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		tcr.logEvent(events.StatusFailed, events.StatusUnknown, toolchain.TestResults{})
+		_ = tcr.logEvent(events.StatusFailed, events.StatusUnknown, toolchain.TestResults{})
 		return
 	}
 	testResults, err := tcr.test()
 	if err == nil {
-		tcr.logEvent(events.StatusPassed, events.StatusPassed, testResults)
-		tcr.commit()
+		event := tcr.logEvent(events.StatusPassed, events.StatusPassed, testResults)
+		tcr.commit(event)
 	} else {
-		tcr.logEvent(events.StatusPassed, events.StatusFailed, testResults)
+		_ = tcr.logEvent(events.StatusPassed, events.StatusFailed, testResults)
 		tcr.revert()
 	}
 }
 
-func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, testResults toolchain.TestResults) {
+func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, testResults toolchain.TestResults) (event events.TcrEvent) {
 	changedFiles, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
 	}
-
-	events.EventRepository.Add(
-		events.NewTcrEvent(
-			computeSrcLinesChanged(tcr.language, changedFiles),
-			computeTestLinesChanged(tcr.language, changedFiles),
-			buildStatus,
-			testsStatus,
-			testResults.TotalRun,
-			testResults.Passed,
-			testResults.Failed,
-			testResults.Skipped,
-			testResults.WithErrors),
-	)
+	event = events.NewTcrEvent(
+		computeSrcLinesChanged(tcr.language, changedFiles),
+		computeTestLinesChanged(tcr.language, changedFiles),
+		buildStatus, testsStatus,
+		testResults.TotalRun, testResults.Passed, testResults.Failed, testResults.Skipped, testResults.WithErrors)
+	events.EventRepository.Add(event)
+	return
 }
 
 func (tcr *TcrEngine) build() error {
@@ -352,7 +346,7 @@ func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
 	return
 }
 
-func (tcr *TcrEngine) commit() {
+func (tcr *TcrEngine) commit(event events.TcrEvent) {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
 	var err error
 	err = tcr.vcs.Add()
@@ -360,7 +354,7 @@ func (tcr *TcrEngine) commit() {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, commitMessageOk)
+	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYaml())
 	tcr.handleError(err, false, status.GitError)
 	if err != nil {
 		return
