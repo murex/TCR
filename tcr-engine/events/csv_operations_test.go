@@ -200,7 +200,7 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 				WithPassingTests()),
 		},
 		{
-			"added test cases",
+			"total test cases run",
 			"2022-04-11 15:52:03, 0, 0, 2, 2, 4, 0, 0, 0, 0\n",
 			*ATcrEvent(WithTimestamp(time.Date(
 				2022, 4, 11, 15, 52, 3, 0,

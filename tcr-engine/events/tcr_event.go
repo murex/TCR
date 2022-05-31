@@ -65,3 +65,8 @@ func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
 		TestsWithErrors:   testsWithErrors,
 	}
 }
+
+// ToYaml converts a TcrEvent to a yaml string
+func (event TcrEvent) ToYaml() string {
+	return tcrEventToYaml(event)
+}
