@@ -440,19 +440,15 @@ func Test_get_session_info(t *testing.T) {
 }
 
 func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
-	t.Skip("Dangling test on GitHub actions")
 	var tcr TcrInterface
 	testFlags := []struct {
-		role        role.Role
-		runAsMethod func()
-		timer       time.Duration
+		timer time.Duration
 	}{
-		{role.Driver{}, func() { tcr.RunAsDriver() }, 1 * time.Minute},
-		//	{role.Navigator{}, func() { tcr.RunAsNavigator() }, 3 * time.Minute},
-		{role.Driver{}, func() { tcr.RunAsDriver() }, 2 * time.Hour},
+		{1 * time.Minute},
+		{2 * time.Hour},
 	}
 	for _, tt := range testFlags {
-		t.Run(tt.role.LongName()+" "+tt.timer.String(), func(t *testing.T) {
+		t.Run("duration "+tt.timer.String(), func(t *testing.T) {
 			settings.EnableMobTimer = true
 			sniffer := report.NewFilteringSniffer(
 				func(msg report.Message) bool {
@@ -463,9 +459,9 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 				params.WithRunMode(runmode.Mob{}),
 				params.WithMobTimerDuration(tt.timer),
 			), nil, nil)
-			tcr.SetRunMode(runmode.Mob{})
-			tt.runAsMethod()
+			tcr.RunAsDriver()
 			time.Sleep(1 * time.Millisecond)
+			tcr.ReportMobTimerStatus()
 			tcr.Stop()
 			sniffer.Stop()
 			//fmt.Println(sniffer.GetAllMatches())
