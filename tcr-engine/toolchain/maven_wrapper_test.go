@@ -78,10 +78,6 @@ func Test_maven_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
 	assertNoErrorWhenTestPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }
 
-func Test_maven_wrapper_toolchain_returns_the_test_output(t *testing.T) {
-	assertTestOutputReturnedWhenTestRuns(t, mavenWrapperToolchainName, testDataDirJava)
-}
-
 func Test_maven_wrapper_toolchain_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, mavenWrapperToolchainName)
 }

@@ -72,7 +72,7 @@ func assertXunitSampleData(t *testing.T, suites []junit.Suite, nbSamples int) {
 }
 
 func Test_ingest_wrapper(t *testing.T) {
-	suites, err := Ingest(xunitSample)
+	suites, err := ingest(xunitSample)
 	assert.NoError(t, err)
 	assertXunitSampleData(t, suites, 1)
 }
@@ -81,13 +81,13 @@ func Test_ingest_file_wrapper(t *testing.T) {
 	appFs = afero.NewMemMapFs()
 	_ = appFs.Mkdir("build", os.ModeDir)
 	_ = afero.WriteFile(appFs, "build/sample.xml", xunitSample, 0644)
-	suites, err := IngestFile("build/sample.xml")
+	suites, err := ingestFile("build/sample.xml")
 	assert.NoError(t, err)
 	assertXunitSampleData(t, suites, 1)
 }
 
 func Test_ingest_file_wrapper_on_error(t *testing.T) {
-	suites, err := IngestFile("missing-file.xml")
+	suites, err := ingestFile("missing-file.xml")
 	assert.Error(t, err)
 	assert.Zero(t, suites)
 }
@@ -97,7 +97,7 @@ func Test_ingest_files_wrapper(t *testing.T) {
 	_ = appFs.Mkdir("build", os.ModeDir)
 	_ = afero.WriteFile(appFs, "build/sample1.xml", xunitSample, 0644)
 	_ = afero.WriteFile(appFs, "build/sample2.xml", xunitSample, 0644)
-	suites, err := IngestFiles([]string{"build/sample1.xml", "build/sample2.xml"})
+	suites, err := ingestFiles([]string{"build/sample1.xml", "build/sample2.xml"})
 	assert.NoError(t, err)
 	assertXunitSampleData(t, suites, 2)
 }
@@ -106,7 +106,7 @@ func Test_ingest_files_wrapper_on_error(t *testing.T) {
 	appFs = afero.NewMemMapFs()
 	_ = appFs.Mkdir("build", os.ModeDir)
 	_ = afero.WriteFile(appFs, "build/sample.xml", xunitSample, 0644)
-	suites, err := IngestFiles([]string{"build/sample.xml", "missing-file.xml"})
+	suites, err := ingestFiles([]string{"build/sample.xml", "missing-file.xml"})
 	assert.Error(t, err)
 	assert.Zero(t, suites)
 }
@@ -117,14 +117,14 @@ func Test_ingest_dir_wrapper(t *testing.T) {
 	_ = afero.WriteFile(appFs, "build/sample1.xml", xunitSample, 0644)
 	_ = afero.WriteFile(appFs, "build/sample2.xml", xunitSample, 0644)
 	_ = afero.WriteFile(appFs, "build/sample3.xml", xunitSample, 0644)
-	suites, err := IngestDir("build")
+	suites, err := ingestDir("build")
 	assert.NoError(t, err)
 	assertXunitSampleData(t, suites, 3)
 }
 
 func Test_ingest_dir_wrapper_on_error(t *testing.T) {
 	appFs = afero.NewMemMapFs()
-	suites, err := IngestDir("build")
+	suites, err := ingestDir("build")
 	assert.Error(t, err)
 	assert.Zero(t, suites)
 }

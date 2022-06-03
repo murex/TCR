@@ -23,29 +23,58 @@ SOFTWARE.
 package xunit
 
 import (
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
+	"time"
 )
 
 func Test_retrieve_xunit_test_counters(t *testing.T) {
-	var parser *Parser
 	testFlags := []struct {
 		desc              string
-		extractorFunction func() int
+		extractorFunction func(parser *Parser) int
 		expected          int
 	}{
-		{"total tests", func() int { return parser.getTotalTests() }, 3},
-		{"total tests passed", func() int { return parser.getTotalTestsPassed() }, 1},
-		{"total tests failed", func() int { return parser.getTotalTestsFailed() }, 1},
-		{"total tests in error", func() int { return parser.getTotalTestsInError() }, 0},
-		{"total tests skipped", func() int { return parser.getTotalTestsSkipped() }, 1},
-		{"total tests run", func() int { return parser.getTotalTestsRun() }, 2},
+		{
+			"total tests",
+			func(p *Parser) int { return p.getTotalTests() },
+			sampleTotalsSuite0.Tests + sampleTotalsSuite1.Tests,
+		},
+		{
+			"total tests passed",
+			func(p *Parser) int { return p.getTotalTestsPassed() },
+			sampleTotalsSuite0.Passed + sampleTotalsSuite1.Passed,
+		},
+		{
+			"total tests failed",
+			func(p *Parser) int { return p.getTotalTestsFailed() },
+			sampleTotalsSuite0.Failed + sampleTotalsSuite1.Failed,
+		},
+		{
+			"total tests in error",
+			func(p *Parser) int { return p.getTotalTestsInError() },
+			sampleTotalsSuite0.Error + sampleTotalsSuite1.Error,
+		},
+		{
+			"total tests skipped",
+			func(p *Parser) int { return p.getTotalTestsSkipped() },
+			sampleTotalsSuite0.Skipped + sampleTotalsSuite1.Skipped,
+		},
+		{
+			"total tests run",
+			func(p *Parser) int { return p.getTotalTestsRun() },
+			sampleTotalsSuite0.Passed + sampleTotalsSuite1.Passed +
+				sampleTotalsSuite0.Failed + sampleTotalsSuite1.Failed +
+				sampleTotalsSuite0.Error + sampleTotalsSuite1.Error,
+		},
 	}
+
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			parser = NewParser()
+			parser := NewParser()
 			_ = parser.parse(xunitSample)
-			assert.Equal(t, tt.expected, tt.extractorFunction())
+			assert.Equal(t, tt.expected, tt.extractorFunction(parser))
 		})
 	}
 }
@@ -89,4 +118,35 @@ func Test_parsing_invalid_data(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_parse_dir(t *testing.T) {
+	appFs = afero.NewMemMapFs()
+	_ = appFs.Mkdir("build", os.ModeDir)
+	_ = afero.WriteFile(appFs, "build/sample1.xml", xunitSample, 0644)
+	_ = afero.WriteFile(appFs, "build/sample2.xml", xunitSample, 0644)
+	_ = afero.WriteFile(appFs, "build/sample3.xml", xunitSample, 0644)
+
+	parser := NewParser()
+	assert.NoError(t, parser.ParseDir("build"))
+	assert.Equal(t, 3*(sampleTotalsSuite0.Tests+sampleTotalsSuite1.Tests), parser.getTotalTests())
+	assert.Equal(t, 3*(sampleTotalsSuite0.Duration+sampleTotalsSuite1.Duration), parser.getTotalTestDuration())
+}
+
+func Test_parse_dir_with_error(t *testing.T) {
+	appFs = afero.NewMemMapFs()
+	_ = appFs.Mkdir("build", os.ModeDir)
+	_ = afero.WriteFile(appFs, "build/sample1.xml", xunitSample, 0644)
+	_ = afero.WriteFile(appFs, "build/sample2.xml",
+		[]byte(`<?xml version="1.0" encoding="UTF-8"?><testsuites`), 0644)
+
+	parser := NewParser()
+	assert.Error(t, parser.ParseDir("build"))
+	assert.Equal(t, 0, parser.getTotalTests())
+	assert.Equal(t, 0, parser.getTotalTestsPassed())
+	assert.Equal(t, 0, parser.getTotalTestsFailed())
+	assert.Equal(t, 0, parser.getTotalTestsInError())
+	assert.Equal(t, 0, parser.getTotalTestsSkipped())
+	assert.Equal(t, 0, parser.getTotalTestsRun())
+	assert.Equal(t, time.Duration(0), parser.getTotalTestDuration())
 }

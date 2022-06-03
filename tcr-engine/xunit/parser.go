@@ -27,63 +27,87 @@ import (
 	"time"
 )
 
+// TestStats is the structure containing test Stats extracted from xUnit files
+type TestStats struct {
+	Total    int
+	Passed   int
+	Failed   int
+	Skipped  int
+	InError  int
+	Run      int
+	Duration time.Duration
+}
+
 // Parser encapsulates XUnit files parsing
 type Parser struct {
-	total    int
-	passed   int
-	failed   int
-	skipped  int
-	inError  int
-	duration time.Duration
+	Stats *TestStats
 }
 
 // NewParser returns a new XUnit parser instance
 func NewParser() *Parser {
-	return &Parser{}
-}
-
-func (p *Parser) parse(xunitData []byte) (err error) {
-	p.total, p.passed, p.failed, p.skipped, p.inError, p.duration = 0, 0, 0, 0, 0, 0
-	var suites []junit.Suite
-	suites, err = Ingest(xunitData)
-	if err != nil {
-		return
-	}
-	for _, suite := range suites {
-		p.total += suite.Totals.Tests
-		p.passed += suite.Totals.Passed
-		p.failed += suite.Totals.Failed
-		p.skipped += suite.Totals.Skipped
-		p.inError += suite.Totals.Error
-		p.duration += suite.Totals.Duration
-	}
-	return
+	return &Parser{Stats: &TestStats{}}
 }
 
 func (p *Parser) getTotalTests() int {
-	return p.total
+	return p.Stats.Total
 }
 
 func (p *Parser) getTotalTestsPassed() int {
-	return p.passed
+	return p.Stats.Passed
 }
 
 func (p *Parser) getTotalTestsFailed() int {
-	return p.failed
+	return p.Stats.Failed
 }
 
 func (p *Parser) getTotalTestsSkipped() int {
-	return p.skipped
+	return p.Stats.Skipped
 }
 
 func (p *Parser) getTotalTestsInError() int {
-	return p.inError
+	return p.Stats.InError
 }
 
 func (p *Parser) getTotalTestsRun() int {
-	return p.passed + p.failed + p.inError
+	return p.Stats.Run
 }
 
 func (p *Parser) getTotalTestDuration() time.Duration {
-	return p.duration
+	return p.Stats.Duration
+}
+
+func (p *Parser) parse(xunitData []byte) error {
+	suites, err := ingest(xunitData)
+	if err != nil {
+		return err
+	}
+	p.extractData(suites)
+	return nil
+}
+
+func (p *Parser) resetCounters() {
+	p.Stats = &TestStats{}
+}
+
+// ParseDir parses all xUnit files in the provided directory
+func (p *Parser) ParseDir(dir string) error {
+	suites, err := ingestDir(dir)
+	if err != nil {
+		return err
+	}
+	p.extractData(suites)
+	return nil
+}
+
+func (p *Parser) extractData(suites []junit.Suite) {
+	p.resetCounters()
+	for _, suite := range suites {
+		p.Stats.Total += suite.Totals.Tests
+		p.Stats.Passed += suite.Totals.Passed
+		p.Stats.Failed += suite.Totals.Failed
+		p.Stats.Skipped += suite.Totals.Skipped
+		p.Stats.InError += suite.Totals.Error
+		p.Stats.Duration += suite.Totals.Duration
+		p.Stats.Run += suite.Totals.Passed + suite.Totals.Failed + suite.Totals.Error
+	}
 }

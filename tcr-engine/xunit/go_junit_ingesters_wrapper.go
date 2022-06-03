@@ -30,10 +30,10 @@ import (
 	"strings"
 )
 
-// The purpose of this file is to wrap go-junit Ingest functions so that they can work with afero in-memory file system.
+// The purpose of this file is to wrap go-junit ingest functions so that they can work with afero in-memory file system.
 // This file is a copy of
 // (https://github.com/joshdk/go-junit/blob/6145f504ca0d053d5fd6c5379da09803fc3aef64/ingesters.go) where all
-// non-afero-compliant calls are replaced by afero's ones. Go-junit Ingest functions are then called under the hood.
+// non-afero-compliant calls are replaced by afero's ones. Go-junit ingest functions are then called under the hood.
 // Setting appFs variable to afero.NewMemMapFs() allows to use go-junit with afero's in-memory filesystem
 // instead of the OS's filesystem.
 
@@ -43,9 +43,9 @@ func init() {
 	appFs = afero.NewOsFs()
 }
 
-// IngestDir will search the given directory for XML files and return a slice
+// ingestDir will search the given directory for XML files and return a slice
 // of all contained JUnit test suite definitions.
-func IngestDir(directory string) ([]junit.Suite, error) {
+func ingestDir(directory string) ([]junit.Suite, error) {
 	var filenames []string
 
 	err := afero.Walk(appFs, directory, func(path string, info os.FileInfo, err error) error {
@@ -64,16 +64,16 @@ func IngestDir(directory string) ([]junit.Suite, error) {
 		return nil, err
 	}
 
-	return IngestFiles(filenames)
+	return ingestFiles(filenames)
 }
 
-// IngestFiles will parse the given XML files and return a slice of all
+// ingestFiles will parse the given XML files and return a slice of all
 // contained JUnit test suite definitions.
-func IngestFiles(filenames []string) ([]junit.Suite, error) {
+func ingestFiles(filenames []string) ([]junit.Suite, error) {
 	var all = make([]junit.Suite, 0)
 
 	for _, filename := range filenames {
-		suites, err := IngestFile(filename)
+		suites, err := ingestFile(filename)
 		if err != nil {
 			return nil, err
 		}
@@ -83,9 +83,9 @@ func IngestFiles(filenames []string) ([]junit.Suite, error) {
 	return all, nil
 }
 
-// IngestFile will parse the given XML file and return a slice of all contained
+// ingestFile will parse the given XML file and return a slice of all contained
 // JUnit test suite definitions.
-func IngestFile(filename string) ([]junit.Suite, error) {
+func ingestFile(filename string) ([]junit.Suite, error) {
 	file, err := appFs.Open(filename)
 	if err != nil {
 		return nil, err
@@ -94,17 +94,17 @@ func IngestFile(filename string) ([]junit.Suite, error) {
 		_ = file.Close()
 	}(file)
 
-	return IngestReader(file)
+	return ingestReader(file)
 }
 
-// IngestReader will parse the given XML reader and return a slice of all
+// ingestReader will parse the given XML reader and return a slice of all
 // contained JUnit test suite definitions.
-func IngestReader(reader io.Reader) ([]junit.Suite, error) {
+func ingestReader(reader io.Reader) ([]junit.Suite, error) {
 	return junit.IngestReader(reader)
 }
 
-// Ingest will parse the given XML data and return a slice of all contained
+// ingest will parse the given XML data and return a slice of all contained
 // JUnit test suite definitions.
-func Ingest(data []byte) ([]junit.Suite, error) {
+func ingest(data []byte) ([]junit.Suite, error) {
 	return junit.Ingest(data)
 }
