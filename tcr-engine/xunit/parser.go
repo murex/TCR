@@ -22,7 +22,9 @@ SOFTWARE.
 
 package xunit
 
-import "github.com/joshdk/go-junit"
+import (
+	"github.com/joshdk/go-junit"
+)
 
 // Parser encapsulates XUnit files parsing
 type Parser struct {
@@ -41,7 +43,7 @@ func NewParser() *Parser {
 func (p *Parser) parse(xunitData []byte) (err error) {
 	p.total, p.passed, p.failed, p.skipped, p.inError = 0, 0, 0, 0, 0
 	var suites []junit.Suite
-	suites, err = junit.Ingest(xunitData)
+	suites, err = Ingest(xunitData)
 	if err != nil {
 		return
 	}

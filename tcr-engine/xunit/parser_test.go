@@ -23,47 +23,9 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/joshdk/go-junit"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
-
-var xunitSample = []byte(`
-    <?xml version="1.0" encoding="UTF-8"?>
-    <testsuites>
-        <testsuite name="JUnitXmlReporter" errors="0" tests="0" failures="0" time="0" timestamp="2013-05-24T10:23:58" />
-        <testsuite name="JUnitXmlReporter.constructor" errors="0" skipped="1" tests="3" failures="1" time="0.006" timestamp="2013-05-24T10:23:58">
-            <properties>
-                <property name="java.vendor" value="Sun Microsystems Inc." />
-                <property name="compiler.debug" value="on" />
-                <property name="project.jdk.classpath" value="jdk.classpath.1.6" />
-            </properties>
-            <testcase classname="JUnitXmlReporter.constructor" name="should default path to an empty string" time="0.006">
-                <failure message="test failure">Assertion failed</failure>
-            </testcase>
-            <testcase classname="JUnitXmlReporter.constructor" name="should default consolidate to true" time="0">
-                <skipped />
-            </testcase>
-            <testcase classname="JUnitXmlReporter.constructor" name="should default useDotNotation to true" time="0" />
-        </testsuite>
-    </testsuites>
-`)
-
-func Test_parse_xunit_sample(t *testing.T) {
-	suites, err := junit.Ingest(xunitSample)
-	assert.NoError(t, err)
-	assert.Equal(t, 2, len(suites))
-
-	assert.Equal(t, junit.Totals{Tests: 0, Passed: 0, Skipped: 0, Failed: 0, Error: 0, Duration: 0}, suites[0].Totals)
-	assert.Equal(t, 0, len(suites[0].Tests))
-
-	assert.Equal(t, junit.Totals{Tests: 3, Passed: 1, Skipped: 1, Failed: 1, Error: 0, Duration: 6 * time.Millisecond}, suites[1].Totals)
-	assert.Equal(t, 3, len(suites[1].Tests))
-	assert.Equal(t, junit.StatusFailed, suites[1].Tests[0].Status)
-	assert.Equal(t, junit.StatusSkipped, suites[1].Tests[1].Status)
-	assert.Equal(t, junit.StatusPassed, suites[1].Tests[2].Status)
-}
 
 func Test_retrieve_xunit_test_stats(t *testing.T) {
 	var parser *Parser
@@ -89,7 +51,6 @@ func Test_retrieve_xunit_test_stats(t *testing.T) {
 }
 
 func Test_parsing_invalid_data(t *testing.T) {
-	var parser *Parser
 	testFlags := []struct {
 		desc        string
 		xunitData   []byte
@@ -114,8 +75,7 @@ func Test_parsing_invalid_data(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			parser = NewParser()
-			err := parser.parse(tt.xunitData)
+			err := NewParser().parse(tt.xunitData)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
