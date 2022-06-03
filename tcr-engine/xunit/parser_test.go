@@ -27,7 +27,7 @@ import (
 	"testing"
 )
 
-func Test_retrieve_xunit_test_stats(t *testing.T) {
+func Test_retrieve_xunit_test_counters(t *testing.T) {
 	var parser *Parser
 	testFlags := []struct {
 		desc              string
@@ -48,6 +48,12 @@ func Test_retrieve_xunit_test_stats(t *testing.T) {
 			assert.Equal(t, tt.expected, tt.extractorFunction())
 		})
 	}
+}
+
+func Test_retrieve_xunit_test_duration(t *testing.T) {
+	parser := NewParser()
+	_ = parser.parse(xunitSample)
+	assert.Equal(t, sampleTotalsSuite0.Duration+sampleTotalsSuite1.Duration, parser.getTotalTestDuration())
 }
 
 func Test_parsing_invalid_data(t *testing.T) {

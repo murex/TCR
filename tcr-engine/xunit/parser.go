@@ -24,15 +24,17 @@ package xunit
 
 import (
 	"github.com/joshdk/go-junit"
+	"time"
 )
 
 // Parser encapsulates XUnit files parsing
 type Parser struct {
-	total   int
-	passed  int
-	failed  int
-	skipped int
-	inError int
+	total    int
+	passed   int
+	failed   int
+	skipped  int
+	inError  int
+	duration time.Duration
 }
 
 // NewParser returns a new XUnit parser instance
@@ -41,7 +43,7 @@ func NewParser() *Parser {
 }
 
 func (p *Parser) parse(xunitData []byte) (err error) {
-	p.total, p.passed, p.failed, p.skipped, p.inError = 0, 0, 0, 0, 0
+	p.total, p.passed, p.failed, p.skipped, p.inError, p.duration = 0, 0, 0, 0, 0, 0
 	var suites []junit.Suite
 	suites, err = Ingest(xunitData)
 	if err != nil {
@@ -53,6 +55,7 @@ func (p *Parser) parse(xunitData []byte) (err error) {
 		p.failed += suite.Totals.Failed
 		p.skipped += suite.Totals.Skipped
 		p.inError += suite.Totals.Error
+		p.duration += suite.Totals.Duration
 	}
 	return
 }
@@ -79,4 +82,8 @@ func (p *Parser) getTotalTestsInError() int {
 
 func (p *Parser) getTotalTestsRun() int {
 	return p.passed + p.failed + p.inError
+}
+
+func (p *Parser) getTotalTestDuration() time.Duration {
+	return p.duration
 }

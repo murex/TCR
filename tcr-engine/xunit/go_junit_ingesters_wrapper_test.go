@@ -47,24 +47,27 @@ var xunitSample = []byte(`
     </testsuites>
 `)
 
-func init() {
-
-}
+var (
+	sampleTotalsSuite0 = junit.Totals{Tests: 0, Passed: 0, Skipped: 0, Failed: 0, Error: 0, Duration: 0}
+	sampleTestStatus0  []junit.Status
+	sampleTotalsSuite1 = junit.Totals{Tests: 3, Passed: 1, Skipped: 1, Failed: 1, Error: 0, Duration: 6 * time.Millisecond}
+	sampleTestStatus1  = []junit.Status{junit.StatusFailed, junit.StatusSkipped, junit.StatusPassed}
+)
 
 func assertXunitSampleData(t *testing.T, suites []junit.Suite, nbSamples int) {
 	assert.Equal(t, 2*nbSamples, len(suites))
 
 	for i := 0; i < nbSamples; i++ {
 		suite0 := suites[2*i+0]
-		assert.Equal(t, junit.Totals{Tests: 0, Passed: 0, Skipped: 0, Failed: 0, Error: 0, Duration: 0}, suite0.Totals)
-		assert.Equal(t, 0, len(suite0.Tests))
+		assert.Equal(t, sampleTotalsSuite0, suite0.Totals)
+		assert.Equal(t, len(sampleTestStatus0), len(suite0.Tests))
 
 		suite1 := suites[2*i+1]
-		assert.Equal(t, junit.Totals{Tests: 3, Passed: 1, Skipped: 1, Failed: 1, Error: 0, Duration: 6 * time.Millisecond}, suite1.Totals)
-		assert.Equal(t, 3, len(suite1.Tests))
-		assert.Equal(t, junit.StatusFailed, suite1.Tests[0].Status)
-		assert.Equal(t, junit.StatusSkipped, suite1.Tests[1].Status)
-		assert.Equal(t, junit.StatusPassed, suite1.Tests[2].Status)
+		assert.Equal(t, sampleTotalsSuite1, suite1.Totals)
+		assert.Equal(t, len(sampleTestStatus1), len(suite1.Tests))
+		assert.Equal(t, sampleTestStatus1[0], suite1.Tests[0].Status)
+		assert.Equal(t, sampleTestStatus1[1], suite1.Tests[1].Status)
+		assert.Equal(t, sampleTestStatus1[2], suite1.Tests[2].Status)
 	}
 }
 
