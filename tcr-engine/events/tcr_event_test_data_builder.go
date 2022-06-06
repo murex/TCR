@@ -24,45 +24,14 @@ SOFTWARE.
 
 package events
 
-import "time"
-
-var (
-	// snapshotTime is used as a base time for all tests using a timestamp
-	snapshotTime = time.Now()
-)
-
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
-	tcrEvent := NewTcrEvent(0, 0, StatusUnknown, StatusUnknown, 0, 0, 0, 0, 0)
-	tcrEvent.Timestamp = snapshotTime
+	tcrEvent := NewTcrEvent(0, 0, 0, 0, 0, 0, 0)
 
 	for _, build := range builders {
 		build(&tcrEvent)
 	}
 	return &tcrEvent
-}
-
-// WithTimestamp adds timestamp to TcrEvent test data builder
-func WithTimestamp(timestamp time.Time) func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.Timestamp = timestamp
-	}
-}
-
-// WithDelay adds delayed timestamp to TcrEvent test data builder
-func WithDelay(delay time.Duration) func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.Timestamp = tcrEvent.Timestamp.Add(delay)
-	}
-}
-
-// TodayAt sets TcrEvent test data builder timestamp to today and provided time
-func TodayAt(hour int, min int, sec int) time.Time {
-	return time.Date(
-		snapshotTime.Year(), snapshotTime.Month(), snapshotTime.Day(),
-		hour, min, sec,
-		0, snapshotTime.Location(),
-	)
 }
 
 // WithModifiedSrcLines sets modified source lines to TCR event test data builder
@@ -111,33 +80,5 @@ func WithTestsSkipped(count int) func(filter *TcrEvent) {
 func WithTestsWithErrors(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
 		tcrEvent.TestsWithErrors = count
-	}
-}
-
-// WithFailingBuild sets TCR event test data builder with failing build
-func WithFailingBuild() func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.BuildStatus = StatusFailed
-	}
-}
-
-// WithPassingBuild sets TCR event test data builder with passing build
-func WithPassingBuild() func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.BuildStatus = StatusPassed
-	}
-}
-
-// WithFailingTests sets TCR event test data builder with failing tests
-func WithFailingTests() func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsStatus = StatusFailed
-	}
-}
-
-// WithPassingTests sets TCR event test data builder with passing tests
-func WithPassingTests() func(filter *TcrEvent) {
-	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsStatus = StatusPassed
 	}
 }

@@ -32,7 +32,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const timeLayoutFormat = "2006-01-02 15:04:05"
@@ -95,11 +94,8 @@ func appendEvent(event TcrEvent, out io.Writer) (err error) {
 
 func toCsvRecord(event TcrEvent) []string {
 	return []string{
-		event.Timestamp.In(time.UTC).Format(timeLayoutFormat),
 		strconv.Itoa(event.ModifiedSrcLines),
 		strconv.Itoa(event.ModifiedTestLines),
-		strconv.Itoa(int(event.BuildStatus)),
-		strconv.Itoa(int(event.TestsStatus)),
 		strconv.Itoa(event.TotalTestsRun),
 		strconv.Itoa(event.TestsPassed),
 		strconv.Itoa(event.TestsFailed),
@@ -111,19 +107,15 @@ func toCsvRecord(event TcrEvent) []string {
 func toTcrEvent(csvRecord string) TcrEvent {
 	trimmedRecord := strings.Trim(csvRecord, "\n")
 	recordFields := strings.Split(trimmedRecord, ",")
-	parsedTime, _ := time.Parse(timeLayoutFormat, recordFields[0])
 
 	event := TcrEvent{
-		Timestamp:         parsedTime,
-		ModifiedSrcLines:  toInt(recordFields[1]),
-		ModifiedTestLines: toInt(recordFields[2]),
-		BuildStatus:       toTcrEventStatus(recordFields[3]),
-		TestsStatus:       toTcrEventStatus(recordFields[4]),
-		TotalTestsRun:     toInt(recordFields[5]),
-		TestsPassed:       toInt(recordFields[6]),
-		TestsFailed:       toInt(recordFields[7]),
-		TestsSkipped:      toInt(recordFields[8]),
-		TestsWithErrors:   toInt(recordFields[9]),
+		ModifiedSrcLines:  toInt(recordFields[0]),
+		ModifiedTestLines: toInt(recordFields[1]),
+		TotalTestsRun:     toInt(recordFields[2]),
+		TestsPassed:       toInt(recordFields[3]),
+		TestsFailed:       toInt(recordFields[4]),
+		TestsSkipped:      toInt(recordFields[5]),
+		TestsWithErrors:   toInt(recordFields[6]),
 	}
 	return event
 }

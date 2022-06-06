@@ -26,7 +26,6 @@ import (
 	"bytes"
 	"github.com/murex/tcr/tcr-engine/report"
 	"gopkg.in/yaml.v3"
-	"time"
 )
 
 func tcrEventToYaml(event TcrEvent) string {
@@ -39,25 +38,19 @@ func yamlToTcrEvent(yaml string) TcrEvent {
 
 // TcrEventYaml provides the mapping between of a TCR event in yaml.
 type TcrEventYaml struct {
-	Timestamp         time.Time      `yaml:"timestamp"`
-	ModifiedSrcLines  int            `yaml:"modified-src-lines"`
-	ModifiedTestLines int            `yaml:"modified-test-lines"`
-	BuildStatus       TcrEventStatus `yaml:"build-status"`
-	TestsStatus       TcrEventStatus `yaml:"tests-status"`
-	TotalTestsRun     int            `yaml:"total-tests-run"`
-	TestsPassed       int            `yaml:"tests-passed"`
-	TestsFailed       int            `yaml:"tests-failed"`
-	TestsSkipped      int            `yaml:"tests-skipped"`
-	TestsWithErrors   int            `yaml:"tests-with-errors"`
+	ModifiedSrcLines  int `yaml:"modified-src-lines"`
+	ModifiedTestLines int `yaml:"modified-test-lines"`
+	TotalTestsRun     int `yaml:"total-tests-run"`
+	TestsPassed       int `yaml:"tests-passed"`
+	TestsFailed       int `yaml:"tests-failed"`
+	TestsSkipped      int `yaml:"tests-skipped"`
+	TestsWithErrors   int `yaml:"tests-with-errors"`
 }
 
 func newTcrEventYaml(event TcrEvent) TcrEventYaml {
 	return TcrEventYaml{
-		Timestamp:         event.Timestamp,
 		ModifiedSrcLines:  event.ModifiedSrcLines,
 		ModifiedTestLines: event.ModifiedTestLines,
-		BuildStatus:       event.BuildStatus,
-		TestsStatus:       event.TestsStatus,
 		TotalTestsRun:     event.TotalTestsRun,
 		TestsPassed:       event.TestsPassed,
 		TestsFailed:       event.TestsFailed,
@@ -68,11 +61,8 @@ func newTcrEventYaml(event TcrEvent) TcrEventYaml {
 
 func (e TcrEventYaml) toTcrEvent() TcrEvent {
 	return TcrEvent{
-		Timestamp:         e.Timestamp,
 		ModifiedSrcLines:  e.ModifiedSrcLines,
 		ModifiedTestLines: e.ModifiedTestLines,
-		BuildStatus:       e.BuildStatus,
-		TestsStatus:       e.TestsStatus,
 		TotalTestsRun:     e.TotalTestsRun,
 		TestsPassed:       e.TestsPassed,
 		TestsFailed:       e.TestsFailed,

@@ -321,7 +321,6 @@ func (tcr *TcrEngine) logEvent(buildStatus, testsStatus events.TcrEventStatus, t
 	event = events.NewTcrEvent(
 		computeSrcLinesChanged(tcr.language, changedFiles),
 		computeTestLinesChanged(tcr.language, changedFiles),
-		buildStatus, testsStatus,
 		testResults.TotalRun, testResults.Passed, testResults.Failed, testResults.Skipped, testResults.WithErrors)
 	events.EventRepository.Add(event)
 	return

@@ -339,45 +339,45 @@ func Test_run_as_role_methods(t *testing.T) {
 	}
 }
 
-func Test_generate_events_from_tcr_cycle(t *testing.T) {
-	testsFlags := []struct {
-		desc                string
-		toolchainFailures   toolchain.Operations
-		expectedBuildStatus events.TcrEventStatus
-		expectedTestStatus  events.TcrEventStatus
-	}{
-		{
-			"with build failing",
-			toolchain.Operations{toolchain.BuildOperation},
-			events.StatusFailed,
-			events.StatusUnknown,
-		},
-		{
-			"with tests failing",
-			toolchain.Operations{toolchain.TestOperation},
-			events.StatusPassed,
-			events.StatusFailed,
-		},
-		{
-			"with tests passing",
-			nil,
-			events.StatusPassed,
-			events.StatusPassed,
-		},
-	}
-
-	for _, tt := range testsFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			tcr := initTcrEngineWithFakes(
-				params.AParamSet(params.WithRunMode(runmode.OneShot{})),
-				tt.toolchainFailures, nil,
-			)
-			tcr.RunTCRCycle()
-			assert.Equal(t, tt.expectedBuildStatus, events.EventRepository.Get().BuildStatus)
-			assert.Equal(t, tt.expectedTestStatus, events.EventRepository.Get().TestsStatus)
-		})
-	}
-}
+//func Test_generate_events_from_tcr_cycle(t *testing.T) {
+//	testsFlags := []struct {
+//		desc                string
+//		toolchainFailures   toolchain.Operations
+//		expectedBuildStatus events.TcrEventStatus
+//		expectedTestStatus  events.TcrEventStatus
+//	}{
+//		{
+//			"with build failing",
+//			toolchain.Operations{toolchain.BuildOperation},
+//			events.StatusFailed,
+//			events.StatusUnknown,
+//		},
+//		{
+//			"with tests failing",
+//			toolchain.Operations{toolchain.TestOperation},
+//			events.StatusPassed,
+//			events.StatusFailed,
+//		},
+//		{
+//			"with tests passing",
+//			nil,
+//			events.StatusPassed,
+//			events.StatusPassed,
+//		},
+//	}
+//
+//	for _, tt := range testsFlags {
+//		t.Run(tt.desc, func(t *testing.T) {
+//			tcr := initTcrEngineWithFakes(
+//				params.AParamSet(params.WithRunMode(runmode.OneShot{})),
+//				tt.toolchainFailures, nil,
+//			)
+//			tcr.RunTCRCycle()
+//			assert.Equal(t, tt.expectedBuildStatus, events.EventRepository.Get().BuildStatus)
+//			assert.Equal(t, tt.expectedTestStatus, events.EventRepository.Get().TestsStatus)
+//		})
+//	}
+//}
 
 func Test_set_auto_push(t *testing.T) {
 	var tcr TcrInterface

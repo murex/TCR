@@ -28,24 +28,21 @@ import (
 )
 
 func Test_empty_tcr_event_conversion_to_yaml(t *testing.T) {
-	event := emptyTcrEvent
-	expected := buildYamlString(zeroDateString, "0", "0", "0", "0", "0", "0", "0", "0", "0")
+	event := *ATcrEvent()
+	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0")
 	assert.Equal(t, expected, event.ToYaml())
 }
 
 func Test_sample_tcr_event_conversion_to_yaml(t *testing.T) {
 	event := ATcrEvent(
-		WithTimestamp(sampleDate),
 		WithModifiedSrcLines(1),
 		WithModifiedTestLines(2),
-		WithPassingBuild(),
-		WithFailingTests(),
 		WithTotalTestsRun(12),
 		WithTestsPassed(3),
 		WithTestsFailed(4),
 		WithTestsSkipped(5),
 		WithTestsWithErrors(6),
 	)
-	expected := buildYamlString(sampleDateString, "1", "2", "1", "2", "12", "3", "4", "5", "6")
+	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6")
 	assert.Equal(t, expected, event.ToYaml())
 }

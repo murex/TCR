@@ -22,8 +22,6 @@ SOFTWARE.
 
 package events
 
-import "time"
-
 // TcrEventStatus is the status of the build and/or tests in a TCR Event record
 type TcrEventStatus int
 
@@ -36,11 +34,8 @@ const (
 
 // TcrEvent is the structure containing information related to a TCR event
 type TcrEvent struct {
-	Timestamp         time.Time
 	ModifiedSrcLines  int
 	ModifiedTestLines int
-	BuildStatus       TcrEventStatus
-	TestsStatus       TcrEventStatus
 	TotalTestsRun     int
 	TestsPassed       int
 	TestsFailed       int
@@ -50,14 +45,10 @@ type TcrEvent struct {
 
 // NewTcrEvent create a new TCREvent instance
 func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
-	buildStatus, testStatus TcrEventStatus,
 	totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int) TcrEvent {
 	return TcrEvent{
-		Timestamp:         time.Now(),
 		ModifiedSrcLines:  modifiedSrcLines,
 		ModifiedTestLines: modifiedTestLines,
-		BuildStatus:       buildStatus,
-		TestsStatus:       testStatus,
 		TotalTestsRun:     totalTestsRun,
 		TestsPassed:       testsPassed,
 		TestsFailed:       testsFailed,
