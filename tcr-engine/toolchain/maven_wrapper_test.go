@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,4 +80,8 @@ func Test_maven_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
 
 func Test_maven_wrapper_toolchain_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, mavenWrapperToolchainName)
+}
+
+func Test_maven_wrapper_toolchain_test_result_dir(t *testing.T) {
+	assertTestResultDir(t, "target/surefire-reports", mavenWrapperToolchainName)
 }

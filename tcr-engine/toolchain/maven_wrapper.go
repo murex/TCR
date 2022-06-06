@@ -54,6 +54,7 @@ func init() {
 					Arguments: []string{"test"},
 				},
 			},
+			testResultDir: "target/surefire-reports",
 		},
 	)
 }
