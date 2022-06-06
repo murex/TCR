@@ -22,16 +22,6 @@ SOFTWARE.
 
 package events
 
-// TcrEventStatus is the status of the build and/or tests in a TCR Event record
-type TcrEventStatus int
-
-// List of possible values of TcrEventStatus
-const (
-	StatusUnknown TcrEventStatus = iota
-	StatusPassed
-	StatusFailed
-)
-
 // TcrEvent is the structure containing information related to a TCR event
 type TcrEvent struct {
 	ModifiedSrcLines  int

@@ -34,8 +34,6 @@ import (
 	"strings"
 )
 
-const timeLayoutFormat = "2006-01-02 15:04:05"
-
 const eventLogFileName = "event-log.csv"
 
 // AppendEventToLogFile appends a TCR event to the TCR event log file
@@ -118,10 +116,6 @@ func toTcrEvent(csvRecord string) TcrEvent {
 		TestsWithErrors:   toInt(recordFields[6]),
 	}
 	return event
-}
-
-func toTcrEventStatus(field string) TcrEventStatus {
-	return TcrEventStatus(toInt(field))
 }
 
 func toInt(field string) int {
