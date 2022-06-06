@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,10 +37,10 @@ type (
 	// - testCommands is a table of commands that can be called when running the tests. The first one
 	// matching the current OS and configuration will be the one to be called.
 	Toolchain struct {
-		name           string
-		buildCommands  []Command
-		testCommands   []Command
-		testResultsDir string
+		name          string
+		buildCommands []Command
+		testCommands  []Command
+		testResultDir string
 	}
 
 	// TchnInterface provides the interface for interacting with a toolchain
@@ -48,7 +48,8 @@ type (
 		GetName() string
 		GetBuildCommands() []Command
 		GetTestCommands() []Command
-		GetTestResultsDir() string
+		GetTestResultDir() string
+		GetTestResultPath() string
 		RunBuild() error
 		RunTests() (TestResults, error)
 		checkName() error
@@ -95,12 +96,12 @@ func GetWorkDir() string {
 }
 
 // New creates a new Toolchain instance with the provided name, buildCommands and testCommands
-func New(name string, buildCommands, testCommands []Command) *Toolchain {
+func New(name string, buildCommands, testCommands []Command, testResultDir string) *Toolchain {
 	return &Toolchain{
-		name:           name,
-		buildCommands:  buildCommands,
-		testCommands:   testCommands,
-		testResultsDir: "build", // TODO pass it as a constructor parameter
+		name:          name,
+		buildCommands: buildCommands,
+		testCommands:  testCommands,
+		testResultDir: testResultDir,
 	}
 }
 
@@ -145,14 +146,6 @@ func (tchn Toolchain) RunBuild() error {
 	_, err := findCompatibleCommand(tchn.buildCommands).run()
 	return err
 }
-
-// RunTests runs the tests with this toolchain
-//func (tchn Toolchain) RunTests() (testResults TestResults, err error) {
-//	var testOutput string
-//	testOutput, err = findCompatibleCommand(tchn.testCommands).run()
-//	testResults = extractTestResults(testOutput)
-//	return
-//}
 
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() (testResults TestResults, err error) {
@@ -212,13 +205,8 @@ func (tchn Toolchain) CheckCommandAccess(cmdPath string) (string, error) {
 }
 
 func (tchn Toolchain) parseTestResults() (TestResults, error) {
-	dir := filepath.Join(workDir, tchn.GetTestResultsDir())
-	if dir == "" {
-		return TestResults{}, nil
-	}
-
 	parser := xunit.NewParser()
-	err := parser.ParseDir(dir)
+	err := parser.ParseDir(tchn.GetTestResultPath())
 	if err != nil {
 		return TestResults{}, err
 	}
@@ -231,7 +219,12 @@ func (tchn Toolchain) parseTestResults() (TestResults, error) {
 	}, nil
 }
 
-// GetTestResultsDir returns the directory where to retrieve test results (in xUnit format)
-func (tchn Toolchain) GetTestResultsDir() string {
-	return tchn.testResultsDir
+// GetTestResultPath provides the absolute path to the test result directory
+func (tchn Toolchain) GetTestResultPath() string {
+	return filepath.Join(workDir, tchn.GetTestResultDir())
+}
+
+// GetTestResultDir returns the directory where to retrieve test results (in xUnit format)
+func (tchn Toolchain) GetTestResultDir() string {
+	return tchn.testResultDir
 }

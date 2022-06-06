@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -72,4 +72,9 @@ func Test_go_tools_toolchain_test_command_args(t *testing.T) {
 
 func Test_go_tools_toolchain_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, goToolchainName)
+}
+
+func Test_go_tools_test_result_dir(t *testing.T) {
+	// TODO tune test result dir for go tools
+	assertTestResultDir(t, ".", goToolchainName)
 }

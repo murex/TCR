@@ -38,6 +38,7 @@ func init() {
 				Path:      "make",
 				Arguments: []string{"test"},
 			}},
+			testResultDir: ".",
 		},
 	)
 }

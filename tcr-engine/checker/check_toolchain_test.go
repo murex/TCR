@@ -23,7 +23,9 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/tcr-engine/language"
 	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/tcr-engine/toolchain"
 	"testing"
 )
 
@@ -90,6 +92,37 @@ func Test_check_toolchain_returns_error_when_cannot_be_deduced_from_language_nor
 			params.WithBaseDir(""),
 		),
 	)
+}
+
+func Test_check_toolchain_return_value_for_test_result_dir(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		dir      string
+		expected CheckStatus
+	}{
+		{"when not set", "", CheckStatusWarning},
+		{"when set", ".", CheckStatusOk},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			okCmd := toolchain.ACommand(toolchain.WithPath("true"))
+			tchn := toolchain.AToolchain(
+				toolchain.WithTestResultDir(tt.dir),
+				toolchain.WithNoBuildCommand(), toolchain.WithBuildCommand(okCmd),
+				toolchain.WithNoTestCommand(), toolchain.WithTestCommand(okCmd),
+			)
+			_ = toolchain.Register(tchn)
+			lang := language.ALanguage(language.WithDefaultToolchain(tchn.GetName()))
+			_ = language.Register(lang)
+
+			assertStatus(t, tt.expected, checkToolchain,
+				*params.AParamSet(
+					params.WithToolchain(tchn.GetName()),
+					params.WithLanguage(lang.GetName()),
+				),
+			)
+		})
+	}
 }
 
 // TODO test that the build and test commands can be found

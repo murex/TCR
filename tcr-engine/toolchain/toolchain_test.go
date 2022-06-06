@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,6 +61,11 @@ func assertTestCommandPath(t *testing.T, expected string, name string) {
 func assertTestCommandArgs(t *testing.T, expected []string, name string) {
 	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, expected, toolchain.TestCommandArgs())
+}
+
+func assertTestResultDir(t *testing.T, expected string, name string) {
+	toolchain, _ := GetToolchain(name)
+	assert.Equal(t, expected, toolchain.GetTestResultDir())
 }
 
 func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {

@@ -111,6 +111,7 @@ func Test_show_toolchain_config(t *testing.T) {
 		fmt.Sprintf("%v.test.arch: %v", prefix, testCmd.Arch),
 		fmt.Sprintf("%v.test.command: %v", prefix, testCmd.Command),
 		fmt.Sprintf("%v.test.args: %v", prefix, testCmd.Arguments),
+		fmt.Sprintf("%v.test-result-dir: %v", prefix, tchn.GetTestResultDir()),
 	}
 	assertConfigTrace(t, expected,
 		func() {

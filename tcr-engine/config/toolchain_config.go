@@ -46,9 +46,10 @@ type (
 
 	// ToolchainConfig defines the structure of a toolchain configuration.
 	ToolchainConfig struct {
-		Name         string                   `yaml:"-"`
-		BuildCommand []ToolchainCommandConfig `yaml:"build"`
-		TestCommand  []ToolchainCommandConfig `yaml:"test"`
+		Name          string                   `yaml:"-"`
+		BuildCommand  []ToolchainCommandConfig `yaml:"build"`
+		TestCommand   []ToolchainCommandConfig `yaml:"test"`
+		TestResultDir string                   `yaml:"test-result-dir"`
 	}
 )
 
@@ -100,6 +101,7 @@ func asToolchain(toolchainCfg ToolchainConfig) *toolchain.Toolchain {
 		toolchainCfg.Name,
 		asToolchainCommandTable(toolchainCfg.BuildCommand),
 		asToolchainCommandTable(toolchainCfg.TestCommand),
+		toolchainCfg.TestResultDir,
 	)
 }
 
@@ -147,9 +149,10 @@ func resetToolchainConfigs() {
 
 func asToolchainConfig(tchn toolchain.TchnInterface) ToolchainConfig {
 	return ToolchainConfig{
-		Name:         tchn.GetName(),
-		BuildCommand: asToolchainCommandConfigTable(tchn.GetBuildCommands()),
-		TestCommand:  asToolchainCommandConfigTable(tchn.GetTestCommands()),
+		Name:          tchn.GetName(),
+		BuildCommand:  asToolchainCommandConfigTable(tchn.GetBuildCommands()),
+		TestCommand:   asToolchainCommandConfigTable(tchn.GetTestCommands()),
+		TestResultDir: tchn.GetTestResultDir(),
 	}
 }
 
@@ -217,6 +220,7 @@ func (t ToolchainConfig) show() {
 	for _, cmd := range t.TestCommand {
 		cmd.show("toolchain." + t.Name + ".test")
 	}
+	showConfigValue("toolchain."+t.Name+".test-result-dir", t.TestResultDir)
 }
 
 func (c ToolchainCommandConfig) show(prefix string) {

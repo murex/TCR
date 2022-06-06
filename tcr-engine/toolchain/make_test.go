@@ -73,3 +73,7 @@ func Test_make_toolchain_test_command_args(t *testing.T) {
 func Test_make_toolchain_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, makeToolchainName)
 }
+
+func Test_make_toolchain_test_result_dir(t *testing.T) {
+	assertTestResultDir(t, ".", makeToolchainName)
+}

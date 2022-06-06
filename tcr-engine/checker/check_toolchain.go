@@ -41,6 +41,7 @@ func checkToolchain(params params.Params) (cr *CheckResults) {
 		cr.ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
 		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine()))
 		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine()))
+		cr.add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath()))
 	}
 	return
 }
@@ -54,6 +55,17 @@ func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []CheckPo
 	} else {
 		cp = append(cp, okCheckPoint(name, " command path: ", path))
 	}
+	return
+}
+
+func checkTestResultDir(dir string, path string) (cp []CheckPoint) {
+	if dir == "" {
+		cp = append(cp, warningCheckPoint("test result directory parameter is not set explicitly (default: work directory)"))
+	} else {
+		cp = append(cp, okCheckPoint("test result directory parameter is ", dir))
+	}
+
+	cp = append(cp, okCheckPoint("test result directory absolute path is ", path))
 	return
 }
 

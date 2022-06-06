@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,6 +54,7 @@ func init() {
 					Arguments: []string{"test"},
 				},
 			},
+			testResultDir: "build/test-results/test",
 		},
 	)
 }

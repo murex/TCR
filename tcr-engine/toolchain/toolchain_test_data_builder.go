@@ -26,7 +26,7 @@ package toolchain
 
 // AToolchain is a test data builder for type Toolchain
 func AToolchain(toolchainBuilders ...func(tchn *Toolchain)) *Toolchain {
-	tchn := New("default-toolchain", []Command{*ACommand()}, []Command{*ACommand()})
+	tchn := New("default-toolchain", []Command{*ACommand()}, []Command{*ACommand()}, "")
 
 	for _, build := range toolchainBuilders {
 		build(tchn)
@@ -61,4 +61,9 @@ func WithTestCommand(command *Command) func(tchn *Toolchain) {
 	return func(tchn *Toolchain) {
 		tchn.testCommands = append(tchn.testCommands, *command)
 	}
+}
+
+// WithTestResultDir sets the test result directory of the created toolchain to dir
+func WithTestResultDir(dir string) func(tchn *Toolchain) {
+	return func(tchn *Toolchain) { tchn.testResultDir = dir }
 }
