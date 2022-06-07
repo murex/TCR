@@ -26,6 +26,7 @@ import (
 	"bytes"
 	"github.com/murex/tcr/tcr-engine/report"
 	"gopkg.in/yaml.v3"
+	"time"
 )
 
 func tcrEventToYaml(event TcrEvent) string {
@@ -38,13 +39,14 @@ func yamlToTcrEvent(yaml string) TcrEvent {
 
 // TcrEventYaml provides the mapping between of a TCR event in yaml.
 type TcrEventYaml struct {
-	ModifiedSrcLines  int `yaml:"modified-src-lines"`
-	ModifiedTestLines int `yaml:"modified-test-lines"`
-	TotalTestsRun     int `yaml:"total-tests-run"`
-	TestsPassed       int `yaml:"tests-passed"`
-	TestsFailed       int `yaml:"tests-failed"`
-	TestsSkipped      int `yaml:"tests-skipped"`
-	TestsWithErrors   int `yaml:"tests-with-errors"`
+	ModifiedSrcLines  int           `yaml:"modified-src-lines"`
+	ModifiedTestLines int           `yaml:"modified-test-lines"`
+	TotalTestsRun     int           `yaml:"total-tests-run"`
+	TestsPassed       int           `yaml:"tests-passed"`
+	TestsFailed       int           `yaml:"tests-failed"`
+	TestsSkipped      int           `yaml:"tests-skipped"`
+	TestsWithErrors   int           `yaml:"tests-with-errors"`
+	TestsDuration     time.Duration `yaml:"tests-duration"`
 }
 
 func newTcrEventYaml(event TcrEvent) TcrEventYaml {
@@ -56,6 +58,7 @@ func newTcrEventYaml(event TcrEvent) TcrEventYaml {
 		TestsFailed:       event.TestsFailed,
 		TestsSkipped:      event.TestsSkipped,
 		TestsWithErrors:   event.TestsWithErrors,
+		TestsDuration:     event.TestsDuration,
 	}
 }
 
@@ -68,6 +71,7 @@ func (e TcrEventYaml) toTcrEvent() TcrEvent {
 		TestsFailed:       e.TestsFailed,
 		TestsSkipped:      e.TestsSkipped,
 		TestsWithErrors:   e.TestsWithErrors,
+		TestsDuration:     e.TestsDuration,
 	}
 }
 

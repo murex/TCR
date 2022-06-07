@@ -300,15 +300,13 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build() != nil {
-		_ = tcr.createTcrEvent(toolchain.TestResults{})
 		return
 	}
 	testResults, err := tcr.test()
+	event := tcr.createTcrEvent(testResults)
 	if err == nil {
-		event := tcr.createTcrEvent(testResults)
 		tcr.commit(event)
 	} else {
-		event := tcr.createTcrEvent(testResults)
 		tcr.revert(event)
 	}
 }
@@ -321,7 +319,12 @@ func (tcr *TcrEngine) createTcrEvent(testResults toolchain.TestResults) (event e
 	return events.NewTcrEvent(
 		computeSrcLinesChanged(tcr.language, changedFiles),
 		computeTestLinesChanged(tcr.language, changedFiles),
-		testResults.TotalRun, testResults.Passed, testResults.Failed, testResults.Skipped, testResults.WithErrors)
+		testResults.TotalRun,
+		testResults.Passed,
+		testResults.Failed,
+		testResults.Skipped,
+		testResults.WithErrors,
+		testResults.Duration)
 }
 
 func (tcr *TcrEngine) build() error {

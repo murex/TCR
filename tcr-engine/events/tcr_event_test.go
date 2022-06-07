@@ -25,11 +25,12 @@ package events
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func Test_empty_tcr_event_conversion_to_yaml(t *testing.T) {
 	event := *ATcrEvent()
-	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0")
+	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0", "0s")
 	assert.Equal(t, expected, event.ToYaml())
 }
 
@@ -42,7 +43,8 @@ func Test_sample_tcr_event_conversion_to_yaml(t *testing.T) {
 		WithTestsFailed(4),
 		WithTestsSkipped(5),
 		WithTestsWithErrors(6),
+		WithTestsDuration(10*time.Second),
 	)
-	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6")
+	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6", "10s")
 	assert.Equal(t, expected, event.ToYaml())
 }

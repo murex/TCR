@@ -24,6 +24,7 @@ package toolchain
 
 import (
 	"errors"
+	"github.com/murex/tcr/tcr-engine/report"
 	"github.com/murex/tcr/tcr-engine/xunit"
 	"os"
 	"path/filepath"
@@ -150,10 +151,8 @@ func (tchn Toolchain) RunBuild() error {
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() (testResults TestResults, err error) {
 	_, err = findCompatibleCommand(tchn.testCommands).run()
-	if err != nil {
-		return TestResults{}, err
-	}
-	return tchn.parseTestResults()
+	testResults, _ = tchn.parseTestResults()
+	return
 }
 
 // BuildCommandPath returns the build command path for this toolchain
@@ -208,6 +207,7 @@ func (tchn Toolchain) parseTestResults() (TestResults, error) {
 	parser := xunit.NewParser()
 	err := parser.ParseDir(tchn.GetTestResultPath())
 	if err != nil {
+		report.PostWarning(err)
 		return TestResults{}, err
 	}
 	return TestResults{
@@ -216,6 +216,7 @@ func (tchn Toolchain) parseTestResults() (TestResults, error) {
 		Failed:     parser.Stats.Failed,
 		Skipped:    parser.Stats.Skipped,
 		WithErrors: parser.Stats.InError,
+		Duration:   parser.Stats.Duration,
 	}, nil
 }
 

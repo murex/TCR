@@ -22,6 +22,8 @@ SOFTWARE.
 
 package events
 
+import "time"
+
 // TcrEvent is the structure containing information related to a TCR event
 type TcrEvent struct {
 	ModifiedSrcLines  int
@@ -31,11 +33,13 @@ type TcrEvent struct {
 	TestsFailed       int
 	TestsSkipped      int
 	TestsWithErrors   int
+	TestsDuration     time.Duration
 }
 
 // NewTcrEvent create a new TCREvent instance
-func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
-	totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int) TcrEvent {
+func NewTcrEvent(
+	modifiedSrcLines, modifiedTestLines, totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int,
+	testsDuration time.Duration) TcrEvent {
 	return TcrEvent{
 		ModifiedSrcLines:  modifiedSrcLines,
 		ModifiedTestLines: modifiedTestLines,
@@ -44,6 +48,7 @@ func NewTcrEvent(modifiedSrcLines, modifiedTestLines int,
 		TestsFailed:       testsFailed,
 		TestsSkipped:      testsSkipped,
 		TestsWithErrors:   testsWithErrors,
+		TestsDuration:     testsDuration,
 	}
 }
 

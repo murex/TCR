@@ -41,7 +41,7 @@ func extractTestResults(mvnTestRunOutput string) TestResults {
 	testsSkipped := extractSectionInfo(testResult, regexSkipped)
 	testsWithErrors := extractSectionInfo(testResult, regexErrors)
 	testsPassed := totalTests - (testsFailed + testsSkipped + testsWithErrors)
-	return NewTestResults(totalTests, testsPassed, testsFailed, testsSkipped, testsWithErrors)
+	return NewTestResults(totalTests, testsPassed, testsFailed, testsSkipped, testsWithErrors, 0)
 }
 
 func extractTestInfo(testRunOutput string) string {

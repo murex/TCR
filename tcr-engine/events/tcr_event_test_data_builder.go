@@ -24,9 +24,11 @@ SOFTWARE.
 
 package events
 
+import "time"
+
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
-	tcrEvent := NewTcrEvent(0, 0, 0, 0, 0, 0, 0)
+	tcrEvent := NewTcrEvent(0, 0, 0, 0, 0, 0, 0, 0)
 
 	for _, build := range builders {
 		build(&tcrEvent)
@@ -76,9 +78,16 @@ func WithTestsSkipped(count int) func(filter *TcrEvent) {
 	}
 }
 
-// WithTestsWithErrors sets the number of test cases with erros to TCR event test data builder
+// WithTestsWithErrors sets the number of test cases with errors to TCR event test data builder
 func WithTestsWithErrors(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
 		tcrEvent.TestsWithErrors = count
+	}
+}
+
+// WithTestsDuration sets the test duration to TCR event test data builder
+func WithTestsDuration(duration time.Duration) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.TestsDuration = duration
 	}
 }

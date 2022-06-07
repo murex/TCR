@@ -39,7 +39,7 @@ func Test_extracting_a_test_info_from_a_maven_test_build_output(t *testing.T) {
 				"[INFO]\r" +
 				"[WARNING] Tests run: 26, Failures: 1, Errors: 3, Skipped: 4\r" +
 				"[INFO]\r",
-			NewTestResults(26, 18, 1, 4, 3),
+			NewTestResults(26, 18, 1, 4, 3, 0),
 		},
 		{
 			"another legitimate test output",
@@ -47,7 +47,7 @@ func Test_extracting_a_test_info_from_a_maven_test_build_output(t *testing.T) {
 				"[INFO]\r" +
 				"[WARNING] Tests run: 30, Failures: 5, Errors: 4, Skipped: 2\r" +
 				"[INFO]\r",
-			NewTestResults(30, 19, 5, 2, 4),
+			NewTestResults(30, 19, 5, 2, 4, 0),
 		},
 		{
 			"it takes the report line in the results section of a legitimate output",
@@ -57,17 +57,17 @@ func Test_extracting_a_test_info_from_a_maven_test_build_output(t *testing.T) {
 				"[INFO]\r" +
 				"[WARNING] Tests run: 30, Failures: 5, Errors: 4, Skipped: 2\r" +
 				"[INFO]\r",
-			NewTestResults(30, 19, 5, 2, 4),
+			NewTestResults(30, 19, 5, 2, 4, 0),
 		},
 		{
 			"incomplete test output returns a default TestResults object",
 			"[WARNING] Tests run: 26, Failures: 0",
-			NewTestResults(0, 0, 0, 0, 0),
+			NewTestResults(0, 0, 0, 0, 0, 0),
 		},
 		{
 			"an empty build output return a default TestResults object",
 			"",
-			NewTestResults(0, 0, 0, 0, 0),
+			NewTestResults(0, 0, 0, 0, 0, 0),
 		},
 	}
 

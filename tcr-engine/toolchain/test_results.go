@@ -22,6 +22,8 @@ SOFTWARE.
 
 package toolchain
 
+import "time"
+
 // TestResults is the structure containing information of the test run
 type TestResults struct {
 	TotalRun   int
@@ -29,15 +31,17 @@ type TestResults struct {
 	Failed     int
 	Skipped    int
 	WithErrors int
+	Duration   time.Duration
 }
 
 // NewTestResults create a new instance of the TestResults class
-func NewTestResults(totalRun, passed, failed, skipped, withErrors int) TestResults {
+func NewTestResults(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestResults {
 	return TestResults{
 		TotalRun:   totalRun,
 		Failed:     failed,
 		Passed:     passed,
 		Skipped:    skipped,
 		WithErrors: withErrors,
+		Duration:   duration,
 	}
 }
