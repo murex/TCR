@@ -214,13 +214,14 @@ func showToolchainConfigs() {
 }
 
 func (t ToolchainConfig) show() {
+	prefix := "toolchain." + t.Name
 	for _, cmd := range t.BuildCommand {
-		cmd.show("toolchain." + t.Name + ".build")
+		cmd.show(prefix + ".build")
 	}
 	for _, cmd := range t.TestCommand {
-		cmd.show("toolchain." + t.Name + ".test")
+		cmd.show(prefix + ".test")
 	}
-	showConfigValue("toolchain."+t.Name+".test-result-dir", t.TestResultDir)
+	showConfigValue(prefix+".test-result-dir", t.TestResultDir)
 }
 
 func (c ToolchainCommandConfig) show(prefix string) {
