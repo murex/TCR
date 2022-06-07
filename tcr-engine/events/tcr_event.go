@@ -24,16 +24,26 @@ package events
 
 import "time"
 
+// ChangedLines is the structure containing info related to the lines changes in src and test
+type ChangedLines struct {
+	Src  int
+	Test int
+}
+
+// TestStats is the structure containing info related to the tests execution
+type TestStats struct {
+	Run      int
+	Passed   int
+	Failed   int
+	Skipped  int
+	Error    int
+	Duration time.Duration
+}
+
 // TcrEvent is the structure containing information related to a TCR event
 type TcrEvent struct {
-	ModifiedSrcLines  int
-	ModifiedTestLines int
-	TotalTestsRun     int
-	TestsPassed       int
-	TestsFailed       int
-	TestsSkipped      int
-	TestsWithErrors   int
-	TestsDuration     time.Duration
+	Changes ChangedLines
+	Tests   TestStats
 }
 
 // NewTcrEvent create a new TCREvent instance
@@ -41,14 +51,18 @@ func NewTcrEvent(
 	modifiedSrcLines, modifiedTestLines, totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int,
 	testsDuration time.Duration) TcrEvent {
 	return TcrEvent{
-		ModifiedSrcLines:  modifiedSrcLines,
-		ModifiedTestLines: modifiedTestLines,
-		TotalTestsRun:     totalTestsRun,
-		TestsPassed:       testsPassed,
-		TestsFailed:       testsFailed,
-		TestsSkipped:      testsSkipped,
-		TestsWithErrors:   testsWithErrors,
-		TestsDuration:     testsDuration,
+		Changes: ChangedLines{
+			Src:  modifiedSrcLines,
+			Test: modifiedTestLines,
+		},
+		Tests: TestStats{
+			Run:      totalTestsRun,
+			Passed:   testsPassed,
+			Failed:   testsFailed,
+			Skipped:  testsSkipped,
+			Error:    testsWithErrors,
+			Duration: testsDuration,
+		},
 	}
 }
 

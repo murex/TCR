@@ -26,6 +26,7 @@ import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func Test_append_tcr_event_to_csv_writer(t *testing.T) {
@@ -97,9 +98,10 @@ func Test_append_event_to_writer(t *testing.T) {
 		WithTestsFailed(2),
 		WithTestsSkipped(1),
 		WithTestsWithErrors(3),
+		WithTestsDuration(20*time.Second),
 	)
 	_ = appendEvent(event, &b)
-	assert.Equal(t, "12,25,14,8,2,1,3\n", b.String())
+	assert.Equal(t, "12,25,14,8,2,1,3,20s\n", b.String())
 }
 
 func Test_converts_a_csv_record_to_an_event(t *testing.T) {
@@ -110,38 +112,43 @@ func Test_converts_a_csv_record_to_an_event(t *testing.T) {
 	}{
 		{
 			"modified source lines",
-			"2, 0, 0, 0, 0, 0, 0\n",
+			"2, 0, 0, 0, 0, 0, 0, 0s\n",
 			*ATcrEvent(WithModifiedSrcLines(2)),
 		},
 		{
 			"modified test lines",
-			"0, 3, 0, 0, 0, 0, 0\n",
+			"0, 3, 0, 0, 0, 0, 0, 0s\n",
 			*ATcrEvent(WithModifiedTestLines(3)),
 		},
 		{
 			"total test cases run",
-			"0, 0, 4, 0, 0, 0, 0\n",
+			"0, 0, 4, 0, 0, 0, 0, 0s\n",
 			*ATcrEvent(WithTotalTestsRun(4)),
 		},
 		{
 			"passed test cases",
-			"0, 0, 0, 3, 0, 0, 0\n",
+			"0, 0, 0, 3, 0, 0, 0, 0s\n",
 			*ATcrEvent(WithTestsPassed(3)),
 		},
 		{
 			"failed test cases",
-			"0, 0, 0, 0, 2, 0, 0\n",
+			"0, 0, 0, 0, 2, 0, 0, 0s\n",
 			*ATcrEvent(WithTestsFailed(2)),
 		},
 		{
 			"skipped test cases",
-			"0, 0, 0, 0, 0, 5, 0\n",
+			"0, 0, 0, 0, 0, 5, 0, 0s\n",
 			*ATcrEvent(WithTestsSkipped(5)),
 		},
 		{
 			"test cases with errors",
-			"0, 0, 0, 0, 0, 0, 4\n",
+			"0, 0, 0, 0, 0, 0, 4, 0s\n",
 			*ATcrEvent(WithTestsWithErrors(4)),
+		},
+		{
+			"tests duration",
+			"0, 0, 0, 0, 0, 0, 0, 20s\n",
+			*ATcrEvent(WithTestsDuration(20 * time.Second)),
 		},
 	}
 

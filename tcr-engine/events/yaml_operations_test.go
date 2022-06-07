@@ -166,16 +166,22 @@ func Test_convert_a_tcr_event_to_a_yaml_string(t *testing.T) {
 }
 
 func buildYamlString(srcLines, testLines, totalTests, testsPassed, testsFailed, testsSkipped, testsWithErrors, testDuration string) string {
-	return buildYamlLine("modified-src-lines", srcLines) +
-		buildYamlLine("modified-test-lines", testLines) +
-		buildYamlLine("total-tests-run", totalTests) +
-		buildYamlLine("tests-passed", testsPassed) +
-		buildYamlLine("tests-failed", testsFailed) +
-		buildYamlLine("tests-skipped", testsSkipped) +
-		buildYamlLine("tests-with-errors", testsWithErrors) +
-		buildYamlLine("tests-duration", testDuration)
+	return buildYamlSectionLine("changed-lines") +
+		buildYamlKeyValueLine("src", srcLines) +
+		buildYamlKeyValueLine("test", testLines) +
+		buildYamlSectionLine("test-stats") +
+		buildYamlKeyValueLine("run", totalTests) +
+		buildYamlKeyValueLine("passed", testsPassed) +
+		buildYamlKeyValueLine("failed", testsFailed) +
+		buildYamlKeyValueLine("skipped", testsSkipped) +
+		buildYamlKeyValueLine("error", testsWithErrors) +
+		buildYamlKeyValueLine("duration", testDuration)
 }
 
-func buildYamlLine(key, value string) string {
-	return key + ": " + value + "\n"
+func buildYamlSectionLine(section string) string {
+	return section + ":" + "\n"
+}
+
+func buildYamlKeyValueLine(key, value string) string {
+	return "    " + key + ": " + value + "\n"
 }

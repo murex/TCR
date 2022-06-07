@@ -39,55 +39,55 @@ func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
 // WithModifiedSrcLines sets modified source lines to TCR event test data builder
 func WithModifiedSrcLines(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.ModifiedSrcLines = count
+		tcrEvent.Changes.Src = count
 	}
 }
 
 // WithModifiedTestLines sets modified test lines to TCR event test data builder
 func WithModifiedTestLines(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.ModifiedTestLines = count
+		tcrEvent.Changes.Test = count
 	}
 }
 
 // WithTotalTestsRun sets the total number of tests run to TCR event test data builder
 func WithTotalTestsRun(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TotalTestsRun = count
+		tcrEvent.Tests.Run = count
 	}
 }
 
 // WithTestsPassed sets the number of passed test cases to TCR event test data builder
 func WithTestsPassed(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsPassed = count
+		tcrEvent.Tests.Passed = count
 	}
 }
 
 // WithTestsFailed sets the number of failed test cases to TCR event test data builder
 func WithTestsFailed(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsFailed = count
+		tcrEvent.Tests.Failed = count
 	}
 }
 
 // WithTestsSkipped sets the number of skipped test cases to TCR event test data builder
 func WithTestsSkipped(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsSkipped = count
+		tcrEvent.Tests.Skipped = count
 	}
 }
 
 // WithTestsWithErrors sets the number of test cases with errors to TCR event test data builder
 func WithTestsWithErrors(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsWithErrors = count
+		tcrEvent.Tests.Error = count
 	}
 }
 
 // WithTestsDuration sets the test duration to TCR event test data builder
 func WithTestsDuration(duration time.Duration) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {
-		tcrEvent.TestsDuration = duration
+		tcrEvent.Tests.Duration = duration
 	}
 }
