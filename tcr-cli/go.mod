@@ -11,7 +11,7 @@ require (
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/zenizh/go-capturer v0.0.0-20211219060012-52ea6c8fed04
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 )
