@@ -317,14 +317,19 @@ func (tcr *TcrEngine) createTcrEvent(testResults toolchain.TestResults) (event e
 		report.PostWarning(err)
 	}
 	return events.NewTcrEvent(
-		computeSrcLinesChanged(tcr.language, changedFiles),
-		computeTestLinesChanged(tcr.language, changedFiles),
-		testResults.TotalRun,
-		testResults.Passed,
-		testResults.Failed,
-		testResults.Skipped,
-		testResults.WithErrors,
-		testResults.Duration)
+		events.NewChangedLines(
+			computeSrcLinesChanged(tcr.language, changedFiles),
+			computeTestLinesChanged(tcr.language, changedFiles),
+		),
+		events.NewTestStats(
+			testResults.TotalRun,
+			testResults.Passed,
+			testResults.Failed,
+			testResults.Skipped,
+			testResults.WithErrors,
+			testResults.Duration,
+		),
+	)
 }
 
 func (tcr *TcrEngine) build() error {

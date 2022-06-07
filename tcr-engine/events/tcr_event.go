@@ -24,45 +24,55 @@ package events
 
 import "time"
 
-// ChangedLines is the structure containing info related to the lines changes in src and test
-type ChangedLines struct {
-	Src  int
-	Test int
-}
+type (
+	// ChangedLines is the structure containing info related to the lines changes in src and test
+	ChangedLines struct {
+		Src  int
+		Test int
+	}
 
-// TestStats is the structure containing info related to the tests execution
-type TestStats struct {
-	Run      int
-	Passed   int
-	Failed   int
-	Skipped  int
-	Error    int
-	Duration time.Duration
-}
+	// TestStats is the structure containing info related to the tests execution
+	TestStats struct {
+		Run      int
+		Passed   int
+		Failed   int
+		Skipped  int
+		Error    int
+		Duration time.Duration
+	}
 
-// TcrEvent is the structure containing information related to a TCR event
-type TcrEvent struct {
-	Changes ChangedLines
-	Tests   TestStats
-}
+	// TcrEvent is the structure containing information related to a TCR event
+	TcrEvent struct {
+		Changes ChangedLines
+		Tests   TestStats
+	}
+)
 
-// NewTcrEvent create a new TCREvent instance
-func NewTcrEvent(
-	modifiedSrcLines, modifiedTestLines, totalTestsRun, testsPassed, testsFailed, testsSkipped, testsWithErrors int,
-	testsDuration time.Duration) TcrEvent {
+// NewTcrEvent creates a new TcrEvent instance
+func NewTcrEvent(changes ChangedLines, stats TestStats) TcrEvent {
 	return TcrEvent{
-		Changes: ChangedLines{
-			Src:  modifiedSrcLines,
-			Test: modifiedTestLines,
-		},
-		Tests: TestStats{
-			Run:      totalTestsRun,
-			Passed:   testsPassed,
-			Failed:   testsFailed,
-			Skipped:  testsSkipped,
-			Error:    testsWithErrors,
-			Duration: testsDuration,
-		},
+		Changes: changes,
+		Tests:   stats,
+	}
+}
+
+// NewTestStats creates a new TestStats instance
+func NewTestStats(run int, passed int, failed int, skipped int, errors int, duration time.Duration) TestStats {
+	return TestStats{
+		Run:      run,
+		Passed:   passed,
+		Failed:   failed,
+		Skipped:  skipped,
+		Error:    errors,
+		Duration: duration,
+	}
+}
+
+// NewChangedLines creates a new ChangedLines instance
+func NewChangedLines(srcLines, testLines int) ChangedLines {
+	return ChangedLines{
+		Src:  srcLines,
+		Test: testLines,
 	}
 }
 
