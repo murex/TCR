@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	github.com/joshdk/go-junit v0.0.0-20210226021600-6145f504ca0d
+	github.com/mengdaming/go-junit v0.1.0
 	github.com/spf13/afero v1.8.2
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/pflag v1.0.5

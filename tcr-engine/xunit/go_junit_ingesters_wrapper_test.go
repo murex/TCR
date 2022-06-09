@@ -23,7 +23,7 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/joshdk/go-junit"
+	"github.com/mengdaming/go-junit"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"

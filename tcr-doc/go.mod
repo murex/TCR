@@ -46,11 +46,11 @@ require (
 	github.com/imkira/go-observer v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
-	github.com/joshdk/go-junit v0.0.0-20210226021600-6145f504ca0d // indirect
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/kevinburke/ssh_config v1.1.0 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
+	github.com/mengdaming/go-junit v0.1.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/murex/tcr/tcr-engine v0.0.0-20210704172954-4213deac264f // indirect
