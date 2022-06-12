@@ -197,8 +197,8 @@ github.com/magiconair/properties v1.8.6 h1:5ibWZ6iY0NctNGWo87LalDlEZ6R41TqbbDamh
 github.com/magiconair/properties v1.8.6/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/matryer/is v1.2.0/go.mod h1:2fLPjFQM9rhQ15aVEtbuwhJinnOqrmgXPNdZsdwlWXA=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
-github.com/mengdaming/go-junit v0.1.0 h1:1lWvCUKrUUJCKed4WNPh+HJleGluRDDWKI5FlkjyPL8=
-github.com/mengdaming/go-junit v0.1.0/go.mod h1:x6+Vb7z5rSDbccrSQwGvEYHVykvaJXTCr4g2TfqMVbg=
+github.com/mengdaming/go-junit v0.1.3 h1:soEDFsAzmJu8XpRkN/iNnkOeL/EoP9IxyzzeKgtdRmI=
+github.com/mengdaming/go-junit v0.1.3/go.mod h1:hzRLyI++R9eXJBKWbdPGaP1Q6ZwxvPBhQuYCQ+7htLo=
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
