@@ -18,6 +18,9 @@
 /**/.gradle/
 /**/.mvn/wrapper/maven-wrapper.jar
 
+# Test results folders and contents
+/**/test-results/
+
 # Log files
 *.log
 
