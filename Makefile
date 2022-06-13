@@ -42,8 +42,8 @@ test cov: $(PROD_MODULES)
 		$(MAKE) -C $$module $@; \
 	done
 
-.PHONY: build
-build: $(BUILD_MODULES)
+.PHONY: build install-tools download
+build install-tools download: $(BUILD_MODULES)
 	@for module in $^; do \
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \

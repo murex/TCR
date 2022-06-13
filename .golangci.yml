@@ -29,6 +29,7 @@ run:
   skip-dirs:
     - testdata
     - build
+    - _test_results
   skip-files:
     - .*generated.*
 linters-settings:

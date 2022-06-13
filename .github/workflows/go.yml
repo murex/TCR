@@ -38,9 +38,9 @@ jobs:
       #          sudo apt-get update
       #          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
 
-      - name: Install richgo
+      - name: Install gotestsum
         run: |
-          go install github.com/kyoh86/richgo@latest
+          go install gotest.tools/gotestsum@latest
 
       - name: Test tcr-engine module
         run: |
@@ -51,7 +51,7 @@ jobs:
         uses: shogo82148/actions-goveralls@v1
         with:
           working-directory: tcr-engine
-          path-to-profile: coverage.out
+          path-to-profile: _test_results/coverage.out
           flag-name: tcr-engine-${{ matrix.os }}
           parallel: true
 
@@ -64,7 +64,7 @@ jobs:
         uses: shogo82148/actions-goveralls@v1
         with:
           working-directory: tcr-cli
-          path-to-profile: coverage.out
+          path-to-profile: _test_results/coverage.out
           flag-name: tcr-cli-${{ matrix.os }}
           parallel: true
 
@@ -83,7 +83,7 @@ jobs:
       #          uses: shogo82148/actions-goveralls@v1
       #          with:
       #            working-directory: tcr-gui
-      #            path-to-profile: coverage.out
+      #            path-to-profile: _test_results/coverage.out
       #            flag-name: tcr-gui-${{ matrix.os }}
       #            parallel: true
       #
