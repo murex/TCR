@@ -71,7 +71,7 @@ func Test_java_compatible_toolchains(t *testing.T) {
 
 func Test_java_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"cmake"}, javaLanguageName)
-	assertIncompatibleToolchains(t, []string{"go-tools"}, javaLanguageName)
+	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, javaLanguageName)
 	assertIncompatibleToolchains(t, []string{"dotnet"}, javaLanguageName)
 }
 

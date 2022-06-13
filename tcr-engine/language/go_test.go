@@ -61,10 +61,11 @@ func Test_list_of_dirs_to_watch_in_go(t *testing.T) {
 }
 
 func Test_go_default_toolchain(t *testing.T) {
-	assertDefaultToolchain(t, "go-tools", goLanguageName)
+	assertDefaultToolchain(t, "gotestsum", goLanguageName)
 }
 
 func Test_go_compatible_toolchains(t *testing.T) {
+	assertCompatibleToolchains(t, []string{"gotestsum"}, goLanguageName)
 	assertCompatibleToolchains(t, []string{"go-tools"}, goLanguageName)
 	assertCompatibleToolchains(t, []string{"make"}, goLanguageName)
 }

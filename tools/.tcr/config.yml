@@ -6,4 +6,4 @@ config:
     duration: 5m0s
   tcr:
     language: go
-    toolchain: go-tools
+    toolchain: gotestsum

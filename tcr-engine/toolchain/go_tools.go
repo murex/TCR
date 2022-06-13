@@ -36,7 +36,7 @@ func init() {
 				Os:        GetAllOsNames(),
 				Arch:      GetAllArchNames(),
 				Path:      "go",
-				Arguments: []string{"test", "-v", "./..."},
+				Arguments: []string{"test", "-short", "./..."},
 			}},
 			testResultDir: ".",
 		},

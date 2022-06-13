@@ -72,7 +72,7 @@ func Test_csharp_compatible_toolchains(t *testing.T) {
 func Test_csharp_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, csharpLanguageName)
 	assertIncompatibleToolchains(t, []string{"cmake"}, csharpLanguageName)
-	assertIncompatibleToolchains(t, []string{"go-tools"}, csharpLanguageName)
+	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, csharpLanguageName)
 }
 
 func Test_csharp_valid_file_paths(t *testing.T) {

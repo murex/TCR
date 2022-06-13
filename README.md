@@ -76,7 +76,7 @@ provided as built-in.
 |----------|----------------------------------------------------|----------------|
 | java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 | cpp      | cmake, make                                        | cmake          |
-| go       | go-tools, make                                     | go-tools       |
+| go       | gotestsum, go-tools, make                          | gotestsum      |
 | csharp   | dotnet, make                                       | dotnet         |
 
 ### Base directory
@@ -421,20 +421,28 @@ make lint
 
 Both local run and GitHub Action use [this configuration file](.golangci.yml)
 
-#### Rich-Go utility - `Optional`
+#### gotestsum utility - `Optional`
 
-We use [Rich-Go](https://github.com/kyoh86/richgo) to run tests with coloring.
+We use [gotestsum](https://github.com/gotestyourself/gotestsum) for running tests
+with the possibility to generate a xunit-compatible test report.
 
 Although not mandatory, we advise you to install it locally on your machine as it greatly improves
-readability on the test traces.
-Refer to [Rich-Go's Installation section](https://github.com/kyoh86/richgo/blob/main/README.md)
+readability of test results.
+Refer to [gotestsum's Install section](https://github.com/gotestyourself/gotestsum#install)
 for installation.
 
-Once Rich-Go is installed, you can run make's test target from the root directory:
+Once gotestsum is installed, you can run make's test target from the root directory:
 
-```shell
-make test
-```
+- For running all tests:
+
+  ```shell
+  make test
+  ```
+- For running short tests only:
+
+  ```shell
+  make test-short
+  ```
 
 #### Fyne toolkit - `Optional`
 

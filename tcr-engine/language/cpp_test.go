@@ -73,7 +73,7 @@ func Test_cpp_compatible_toolchains(t *testing.T) {
 
 func Test_cpp_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, cppLanguageName)
-	assertIncompatibleToolchains(t, []string{"go-tools"}, cppLanguageName)
+	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, cppLanguageName)
 	assertIncompatibleToolchains(t, []string{"dotnet"}, cppLanguageName)
 }
 

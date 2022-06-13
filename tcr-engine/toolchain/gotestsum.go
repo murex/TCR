@@ -20,28 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package toolchain
 
 func init() {
 	_ = addBuiltIn(
-		&Language{
-			name: "go",
-			toolchains: Toolchains{
-				Default:    "gotestsum",
-				Compatible: []string{"gotestsum", "go-tools", "make"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories: []string{"."},
-				FilePatterns: []string{
-					buildRegex(".*\\.go"),
+		Toolchain{
+			name: "gotestsum",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "go",
+				Arguments: []string{"build", "./..."},
+			}},
+			testCommands: []Command{{
+				Os:   GetAllOsNames(),
+				Arch: GetAllArchNames(),
+				Path: "gotestsum",
+				Arguments: []string{
+					"--format", "pkgname",
+					"--junitfile", "_test_results/output.xml",
+					"--", "-short", "./...",
 				},
-			},
-			testFileFilter: FileTreeFilter{
-				Directories: []string{"."},
-				FilePatterns: []string{
-					buildRegex(".*_test\\.go"),
-				},
-			},
+			}},
+			testResultDir: "_test_results",
 		},
 	)
 }

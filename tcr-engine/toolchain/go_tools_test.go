@@ -67,7 +67,7 @@ func Test_go_tools_toolchain_test_command_path(t *testing.T) {
 }
 
 func Test_go_tools_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test", "-v", "./..."}, goToolchainName)
+	assertTestCommandArgs(t, []string{"test", "-short", "./..."}, goToolchainName)
 }
 
 func Test_go_tools_toolchain_supported_platforms(t *testing.T) {
@@ -75,6 +75,5 @@ func Test_go_tools_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_go_tools_test_result_dir(t *testing.T) {
-	// TODO tune test result dir for go tools
 	assertTestResultDir(t, ".", goToolchainName)
 }
