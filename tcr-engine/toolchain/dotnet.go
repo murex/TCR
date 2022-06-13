@@ -36,8 +36,9 @@ func init() {
 				Os:        GetAllOsNames(),
 				Arch:      GetAllArchNames(),
 				Path:      "dotnet",
-				Arguments: []string{"test"},
+				Arguments: []string{"test", "--no-build", "--logger=junit"},
 			}},
+			testResultDir: "tests",
 		},
 	)
 }

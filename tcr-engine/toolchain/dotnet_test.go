@@ -67,9 +67,13 @@ func Test_dotnet_toolchain_test_command_path(t *testing.T) {
 }
 
 func Test_dotnet_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test"}, dotnetToolchainName)
+	assertTestCommandArgs(t, []string{"test", "--no-build", "--logger=junit"}, dotnetToolchainName)
 }
 
 func Test_dotnet_toolchain_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, dotnetToolchainName)
+}
+
+func Test_dotnet_toolchain_test_result_dir(t *testing.T) {
+	assertTestResultDir(t, "tests", dotnetToolchainName)
 }
