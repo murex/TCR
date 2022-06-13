@@ -29,14 +29,6 @@ import (
 	"time"
 )
 
-func tcrEventToYaml(event TcrEvent) string {
-	return newTcrEventYaml(event).marshal()
-}
-
-func yamlToTcrEvent(yaml string) TcrEvent {
-	return unmarshal(yaml).toTcrEvent()
-}
-
 type (
 	// ChangedLinesYaml provides the YAML structure containing info related to the lines changes in src and test
 	ChangedLinesYaml struct {
@@ -61,53 +53,25 @@ type (
 	}
 )
 
+func tcrEventToYaml(event TcrEvent) string {
+	return newTcrEventYaml(event).marshal()
+}
+
+func yamlToTcrEvent(yaml string) TcrEvent {
+	return unmarshal(yaml).toTcrEvent()
+}
+
 func newTcrEventYaml(event TcrEvent) TcrEventYaml {
 	return TcrEventYaml{
-		Changes: newChangedLinesYaml(event.Changes),
-		Tests:   newTestStatsYaml(event.Tests),
-	}
-}
-
-func newChangedLinesYaml(changes ChangedLines) ChangedLinesYaml {
-	return ChangedLinesYaml{
-		Src:  changes.Src,
-		Test: changes.Test,
-	}
-}
-
-func newTestStatsYaml(tests TestStats) TestStatsYaml {
-	return TestStatsYaml{
-		Run:      tests.Run,
-		Passed:   tests.Passed,
-		Failed:   tests.Failed,
-		Skipped:  tests.Skipped,
-		Error:    tests.Error,
-		Duration: tests.Duration,
-	}
-}
-
-func (changes ChangedLinesYaml) toChangedLines() ChangedLines {
-	return ChangedLines{
-		Src:  changes.Src,
-		Test: changes.Test,
-	}
-}
-
-func (tests TestStatsYaml) toTestStats() TestStats {
-	return TestStats{
-		Run:      tests.Run,
-		Passed:   tests.Passed,
-		Failed:   tests.Failed,
-		Skipped:  tests.Skipped,
-		Error:    tests.Error,
-		Duration: tests.Duration,
+		Changes: ChangedLinesYaml(event.Changes),
+		Tests:   TestStatsYaml(event.Tests),
 	}
 }
 
 func (event TcrEventYaml) toTcrEvent() TcrEvent {
 	return TcrEvent{
-		Changes: event.Changes.toChangedLines(),
-		Tests:   event.Tests.toTestStats(),
+		Changes: ChangedLines(event.Changes),
+		Tests:   TestStats(event.Tests),
 	}
 }
 
