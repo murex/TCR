@@ -15,8 +15,8 @@ require (
 )
 
 require (
-	fyne.io/fyne/v2 v2.2.0 // indirect
-	fyne.io/systray v1.9.1-0.20220523202515-bb6f1d955cff // indirect
+	fyne.io/fyne/v2 v2.2.1 // indirect
+	fyne.io/systray v1.10.0 // indirect
 	github.com/Microsoft/go-winio v0.5.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210707164159-52430bf6b52c // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
@@ -70,6 +70,7 @@ require (
 	github.com/stretchr/testify v1.7.2 // indirect
 	github.com/subosito/gotenv v1.3.0 // indirect
 	github.com/tadvi/systray v0.0.0-20190226123456-11a2b8fa57af // indirect
+	github.com/tevino/abool v1.2.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.1 // indirect
 	github.com/yuin/goldmark v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
