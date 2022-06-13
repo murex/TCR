@@ -13,17 +13,17 @@ lint:
 vet:
 	@go vet --tags=test_helper ./...
 
-# When running outside of GitHub actions, e.g. locally, we run tests with the -short flag to prevent useless waiting times
-ifeq ($(GITHUB_ACTIONS), true)
-    SHORT_FLAG := ""
-else
-    SHORT_FLAG := "-short"
-endif
-
 .PHONY: test
 test:
 	@mkdir -p _test_results
-	@gotestsum --format pkgname --junitfile _test_results/output.xml -- ${SHORT_FLAG} -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
+	@gotestsum --format pkgname --junitfile _test_results/output.xml -- -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
+	@grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
+
+# TODO Find a way avoid replications between test and test-short targets
+.PHONY: test-short
+test-short:
+	@mkdir -p _test_results
+	@gotestsum --format pkgname --junitfile _test_results/output.xml -- -short -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
 	@grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
 
 .PHONY: cov

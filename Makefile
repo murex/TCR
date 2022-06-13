@@ -35,8 +35,8 @@ tidy vet lint: $(ALL_MODULES)
 		$(MAKE) -C $$module $@; \
 	done
 
-.PHONY: test cov
-test cov: $(PROD_MODULES)
+.PHONY: test test-short cov
+test test-short cov: $(PROD_MODULES)
 	@for module in $^; do \
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \
