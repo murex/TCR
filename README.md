@@ -76,7 +76,7 @@ provided as built-in.
 |----------|----------------------------------------------------|----------------|
 | java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 | cpp      | cmake, make                                        | cmake          |
-| go       | gotestsum, go-tools, make                          | gotestsum      |
+| go       | go-tools, gotestsum, make                          | go-tools       |
 | csharp   | dotnet, make                                       | dotnet         |
 
 ### Base directory
