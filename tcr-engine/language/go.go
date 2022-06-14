@@ -27,8 +27,8 @@ func init() {
 		&Language{
 			name: "go",
 			toolchains: Toolchains{
-				Default:    "gotestsum",
-				Compatible: []string{"gotestsum", "go-tools", "make"},
+				Default:    "go-tools",
+				Compatible: []string{"go-tools", "gotestsum", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories: []string{"."},
