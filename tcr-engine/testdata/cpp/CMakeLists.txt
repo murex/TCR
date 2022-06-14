@@ -71,7 +71,10 @@ target_link_libraries(Kata-Dummy-test
         # ApprovalTests
         gtest_main)
 
-add_test(NAME ctest-Kata-Dummy COMMAND Kata-Dummy-test)
+add_test(
+    NAME ctest-Kata-Dummy
+    COMMAND Kata-Dummy-test --gtest_brief=1 --gtest_output=xml:test-results/Kata-Dummy-test.xml
+)
 
 #add_custom_target(Docs
 #    SOURCES

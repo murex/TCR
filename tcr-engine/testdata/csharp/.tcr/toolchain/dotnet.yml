@@ -1,11 +1,11 @@
 build:
   - os: [ darwin, linux, windows ]
     arch: [ "386", amd64, arm64 ]
-    command: go
-    arguments: [ build, ./... ]
+    command: dotnet
+    arguments: [ build ]
 test:
   - os: [ darwin, linux, windows ]
     arch: [ "386", amd64, arm64 ]
-    command: go
-    arguments: [ test, -short, ./... ]
-test-result-dir: .
+    command: dotnet
+    arguments: [ test, "--no-build", "--logger=junit" ]
+test-result-dir: tests

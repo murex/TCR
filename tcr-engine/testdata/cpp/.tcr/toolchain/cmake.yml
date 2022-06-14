@@ -1,10 +1,11 @@
 build:
-  - os: [darwin, linux, windows]
-    arch: ["386", amd64, arm64]
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
     command: cmake
-    arguments: [--build, build, --config, Debug]
+    arguments: [ --build, build, --config, Debug ]
 test:
-  - os: [darwin, linux, windows]
-    arch: ["386", amd64, arm64]
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
     command: ctest
-    arguments: [--output-on-failure, --test-dir, build, --build-config, Debug]
+    arguments: [ --output-on-failure, --test-dir, build, --build-config, Debug ]
+test-result-dir: build

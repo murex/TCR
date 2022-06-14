@@ -23,10 +23,14 @@
 
 .PHONY: build
 build:
-	@go build -v ./...
+	@go build ./...
 
 .PHONY: test
 test:
-	@go test -v ./...
+	@go test -short ./...
+
+.PHONY: gotestsum
+gotestsum:
+	@gotestsum --format pkgname --junitfile _test_results/output.xml -- -short -v ./...
 
 
