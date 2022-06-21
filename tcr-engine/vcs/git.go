@@ -43,7 +43,8 @@ type GitInterface interface {
 	Pull() error
 	Stash(message string) error
 	UnStash(keep bool) error
-	Diff() (diffs []FileDiff, err error)
+	Diff() (diffs FileDiffs, err error)
+	Log(msgFilter func(msg string) bool) (logs GitLogItems, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
 	IsRemoteEnabled() bool
@@ -59,21 +60,4 @@ func IsRootBranch(branch string) bool {
 		}
 	}
 	return false
-}
-
-// FileDiff is a structure containing diff information for a file
-type FileDiff struct {
-	Path         string
-	addedLines   int
-	removedLines int
-}
-
-// NewFileDiff creates a new instance of FileDiff
-func NewFileDiff(filename string, added int, removed int) FileDiff {
-	return FileDiff{Path: filename, addedLines: added, removedLines: removed}
-}
-
-// ChangedLines returns the number of changed lines for this file
-func (fd FileDiff) ChangedLines() int {
-	return fd.addedLines + fd.removedLines
 }

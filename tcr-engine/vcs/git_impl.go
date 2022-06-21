@@ -30,6 +30,7 @@ import (
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/murex/tcr/tcr-engine/report"
@@ -288,7 +289,7 @@ func (g *gitImpl) UnStash(keep bool) error {
 
 // Diff returns the list of files modified since last commit with diff info for each file
 // Current implementation uses a direct call to git
-func (g *gitImpl) Diff() (diffs []FileDiff, err error) {
+func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 	var gitOutput []byte
 	gitOutput, err = g.runGit("diff", "--numstat", "--ignore-cr-at-eol",
 		"--ignore-all-space", "--ignore-blank-lines", "HEAD")
@@ -306,6 +307,44 @@ func (g *gitImpl) Diff() (diffs []FileDiff, err error) {
 			diffs = append(diffs, NewFileDiff(filename, added, removed))
 		}
 	}
+	return
+}
+
+// Log returns the list of git log items compliant with the provided msgFilter.
+// When no msgFilter is provided, returns all git log items unfiltered.
+// Current implementation uses go-git's Log() function
+func (g *GitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
+	plainOpenOptions := git.PlainOpenOptions{
+		DetectDotGit:          true,
+		EnableDotGitCommonDir: false,
+	}
+	var repo *git.Repository
+	repo, err = git.PlainOpenWithOptions(g.baseDir, &plainOpenOptions)
+	if err != nil {
+		return
+	}
+	var head *plumbing.Reference
+	head, err = repo.Head()
+	if err != nil {
+		return
+	}
+
+	var cIter object.CommitIter
+	cIter, err = repo.Log(&git.LogOptions{From: head.Hash()})
+	if err != nil {
+		return
+	}
+	_ = cIter.ForEach(func(c *object.Commit) error {
+		if msgFilter == nil || msgFilter(c.Message) {
+			commit := GitLogItem{
+				Hash:      c.Hash.String(),
+				Timestamp: c.Committer.When.UTC(),
+				Message:   c.Message,
+			}
+			logs.add(commit)
+		}
+		return nil
+	})
 	return
 }
 

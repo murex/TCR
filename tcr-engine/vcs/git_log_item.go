@@ -20,26 +20,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package vcs
 
 import (
-	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/vcs"
+	"sort"
+	"time"
 )
 
-func computeSrcLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsSrcFile)
-}
-
-func computeTestLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsTestFile)
-}
-
-func computeLinesChanged(files vcs.FileDiffs, predicate func(filepath string) bool) (totalChanges int) {
-	for _, fd := range files {
-		if predicate(fd.Path) {
-			totalChanges += fd.ChangedLines()
-		}
+type (
+	// GitLogItem contains git log information for a commit
+	GitLogItem struct {
+		Hash      string
+		Timestamp time.Time
+		Message   string
 	}
-	return
+
+	// GitLogItems contains a set of git log items in a slice
+	GitLogItems []GitLogItem
+)
+
+func (items GitLogItems) sort() {
+	sort.Slice(items, func(i, j int) bool {
+		return items[i].Timestamp.Before(items[j].Timestamp)
+	})
+}
+
+func (items *GitLogItems) add(d GitLogItem) {
+	*items = append(*items, d)
+}
+
+func (items GitLogItems) len() int {
+	return len(items)
 }

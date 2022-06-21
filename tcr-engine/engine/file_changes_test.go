@@ -32,21 +32,21 @@ import (
 func Test_compute_number_of_changed_lines(t *testing.T) {
 	testFlags := []struct {
 		desc         string
-		files        []vcs.FileDiff
+		files        vcs.FileDiffs
 		expectedSrc  int
 		expectedTest int
 	}{
 		{"0 file", nil, 0, 0},
 		{
 			"1 src file - 0 test file",
-			[]vcs.FileDiff{
+			vcs.FileDiffs{
 				vcs.NewFileDiff("src/main/Hello.java", 1, 2),
 			},
 			3, 0,
 		},
 		{
 			"2 src files - 0 test file",
-			[]vcs.FileDiff{
+			vcs.FileDiffs{
 				vcs.NewFileDiff("src/main/Hello1.java", 1, 2),
 				vcs.NewFileDiff("src/main/Hello2.java", 3, 4),
 			},
@@ -54,7 +54,7 @@ func Test_compute_number_of_changed_lines(t *testing.T) {
 		},
 		{
 			"1 src file - 1 test file",
-			[]vcs.FileDiff{
+			vcs.FileDiffs{
 				vcs.NewFileDiff("src/main/Hello.java", 1, 2),
 				vcs.NewFileDiff("src/test/HelloTest.java", 3, 4),
 			},
@@ -62,14 +62,14 @@ func Test_compute_number_of_changed_lines(t *testing.T) {
 		},
 		{
 			"0 src file - 1 test file",
-			[]vcs.FileDiff{
+			vcs.FileDiffs{
 				vcs.NewFileDiff("src/test/HelloTest.java", 1, 2),
 			},
 			0, 3,
 		},
 		{
 			"0 src file - 2 test files",
-			[]vcs.FileDiff{
+			vcs.FileDiffs{
 				vcs.NewFileDiff("src/test/HelloTest1.java", 1, 2),
 				vcs.NewFileDiff("src/test/HelloTest2.java", 3, 4),
 			},

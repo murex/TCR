@@ -44,7 +44,3 @@ func Test_is_git_root_branch(t *testing.T) {
 		})
 	}
 }
-
-func Test_compute_changed_lines(t *testing.T) {
-	assert.Equal(t, 6, NewFileDiff("", 4, 2).ChangedLines())
-}

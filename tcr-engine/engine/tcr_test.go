@@ -316,8 +316,12 @@ func registerFakeLanguage(toolchainName string) string {
 }
 
 func replaceGitImplWithFake(tcr TcrInterface, failures vcs.GitCommands) {
-	fake, _ := vcs.NewGitFake(failures, []vcs.FileDiff{vcs.NewFileDiff("fake-src", 1, 1)})
-	tcr.setVcs(fake)
+	fakeSettings := vcs.GitFakeSettings{
+		FailingCommands: failures,
+		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
+		Logs:            vcs.GitLogItems{},
+	}
+	tcr.setVcs(vcs.NewGitFake(fakeSettings))
 }
 
 func Test_run_as_role_methods(t *testing.T) {

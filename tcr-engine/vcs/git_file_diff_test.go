@@ -20,26 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package vcs
 
 import (
-	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/vcs"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-func computeSrcLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsSrcFile)
-}
-
-func computeTestLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsTestFile)
-}
-
-func computeLinesChanged(files vcs.FileDiffs, predicate func(filepath string) bool) (totalChanges int) {
-	for _, fd := range files {
-		if predicate(fd.Path) {
-			totalChanges += fd.ChangedLines()
-		}
-	}
-	return
+func Test_compute_changed_lines(t *testing.T) {
+	assert.Equal(t, 6, NewFileDiff("", 4, 2).ChangedLines())
 }

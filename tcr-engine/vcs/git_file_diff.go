@@ -20,26 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package engine
+package vcs
 
-import (
-	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/vcs"
+type (
+	// FileDiff is a structure containing diff information for a file
+	FileDiff struct {
+		Path         string
+		addedLines   int
+		removedLines int
+	}
+
+	// FileDiffs contains a set of FileDiff data in a slice
+	FileDiffs []FileDiff
 )
 
-func computeSrcLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsSrcFile)
+// NewFileDiff creates a new instance of FileDiff
+func NewFileDiff(filename string, added int, removed int) FileDiff {
+	return FileDiff{Path: filename, addedLines: added, removedLines: removed}
 }
 
-func computeTestLinesChanged(lang language.LangInterface, files vcs.FileDiffs) int {
-	return computeLinesChanged(files, lang.IsTestFile)
-}
-
-func computeLinesChanged(files vcs.FileDiffs, predicate func(filepath string) bool) (totalChanges int) {
-	for _, fd := range files {
-		if predicate(fd.Path) {
-			totalChanges += fd.ChangedLines()
-		}
-	}
-	return
+// ChangedLines returns the number of changed lines for this file
+func (fd FileDiff) ChangedLines() int {
+	return fd.addedLines + fd.removedLines
 }

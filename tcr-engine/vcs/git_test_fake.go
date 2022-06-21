@@ -32,11 +32,13 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-// GitCommand is the name of a Git command
-type GitCommand string
+type (
+	// GitCommand is the name of a Git command
+	GitCommand string
 
-// GitCommands is a slice of GitCommand
-type GitCommands []GitCommand
+	// GitCommands is a slice of GitCommand
+	GitCommands []GitCommand
+)
 
 func (gc GitCommands) contains(command GitCommand) bool {
 	for _, value := range gc {
@@ -52,6 +54,7 @@ const (
 	AddCommand     GitCommand = "add"
 	CommitCommand  GitCommand = "commit"
 	DiffCommand    GitCommand = "diff"
+	LogCommand     GitCommand = "log"
 	PullCommand    GitCommand = "pull"
 	PushCommand    GitCommand = "push"
 	RestoreCommand GitCommand = "restore"
@@ -60,6 +63,12 @@ const (
 	UnStashCommand GitCommand = "unStash"
 )
 
+type (
+	// GitFakeSettings provide a few ways to tune GitFake behaviour
+	GitFakeSettings struct {
+		FailingCommands GitCommands
+		ChangedFiles    FileDiffs
+		Logs            GitLogItems
 // GitFake provides a fake implementation of the git interface
 type GitFake struct {
 	impl            GitInterface
@@ -78,11 +87,25 @@ func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
 	if g.failingCommands.contains(cmd) {
 		err = errors.New("git " + string(cmd) + " fake error")
 	}
-	return
-}
+
+	// GitFake provides a fake implementation of the git interface
+	GitFake struct {
+		GitImpl
+		settings GitFakeSettings
+	}
+)
 
 // NewGitFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
+func NewGitFake(settings GitFakeSettings) GitInterface {
+	return &GitFake{settings: settings}
+}
+
+func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
+	if g.settings.FailingCommands.contains(cmd) {
+		err = errors.New("git " + string(cmd) + " fake error")
+	}
+	return
 func NewGitFake(failingCommands GitCommands, changedFiles []FileDiff) (GitInterface, error) {
 	impl, _ := newGitImpl(inMemoryRepoInit, "")
 	return &GitFake{impl: impl, failingCommands: failingCommands, changedFiles: changedFiles}, nil
@@ -114,8 +137,13 @@ func (g GitFake) Pull() error {
 }
 
 // Diff returns the list of files modified configured at fake initialization
-func (g GitFake) Diff() (_ []FileDiff, err error) {
-	return g.changedFiles, g.fakeGitCommand(DiffCommand)
+func (g GitFake) Diff() (_ FileDiffs, err error) {
+	return g.settings.ChangedFiles, g.fakeGitCommand(DiffCommand)
+}
+
+// Log returns the list of git logs configured at fake initialization
+func (g GitFake) Log(_ func(msg string) bool) (logs GitLogItems, err error) {
+	return g.settings.Logs, g.fakeGitCommand(LogCommand)
 }
 
 // Stash does nothing. Returns an error if in the list of failing commands

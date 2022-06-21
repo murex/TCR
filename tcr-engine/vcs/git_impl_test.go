@@ -85,7 +85,7 @@ func Test_git_diff_command(t *testing.T) {
 		gitDiffError  error
 		expectError   bool
 		expectedArgs  []string
-		expectedDiff  []FileDiff
+		expectedDiff  FileDiffs
 	}{
 		{"git command arguments",
 			"",
@@ -114,7 +114,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
@@ -123,7 +123,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "file1.txt"), 1, 1},
 				{filepath.Join("/", "file2.txt"), 1, 1},
 			},
@@ -133,7 +133,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "some-dir", "some-file.txt"), 1, 1},
 			},
 		},
@@ -142,7 +142,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 15, 0},
 			},
 		},
@@ -151,7 +151,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 0, 7},
 			},
 		},
@@ -162,7 +162,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			[]FileDiff{
+			FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
@@ -594,6 +594,53 @@ func Test_git_unstash_command(t *testing.T) {
 	}
 }
 
+func Test_git_log_command(t *testing.T) {
+	// Note: this test may break if for any reason the TCR repository initial commit is altered
+	tcrInitialCommit := GitLogItem{
+		Hash:      "a823c098187455bade90ee44874d2b41c7ef96d9",
+		Timestamp: time.Date(2021, time.June, 16, 15, 29, 41, 0, time.UTC),
+		Message:   "Initial commit",
+	}
+
+	testFlags := []struct {
+		desc     string
+		filter   func(msg string) bool
+		asserter func(t *testing.T, items GitLogItems)
+	}{
+		{
+			"filter matching no item",
+			func(_ string) bool { return false },
+			func(t *testing.T, items GitLogItems) {
+				assert.Equal(t, 0, items.len())
+			},
+		},
+		{
+			"filter matching all items",
+			nil,
+			func(t *testing.T, items GitLogItems) {
+				assert.Greater(t, items.len(), 100)
+			},
+		},
+		{
+			"filter matching one single item",
+			func(msg string) bool { return tcrInitialCommit.Message == msg },
+			func(t *testing.T, items GitLogItems) {
+				assert.Equal(t, 1, items.len())
+				assert.Equal(t, tcrInitialCommit, items[0])
+			},
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			g, _ := New(".")
+			items, err := g.Log(tt.filter)
+			assert.NoError(t, err)
+			tt.asserter(t, items)
+		})
+	}
+}
+
 func Test_nothing_to_commit(t *testing.T) {
 	testFlags := []struct {
 		desc           string
@@ -675,6 +722,8 @@ func Test_nothing_to_commit(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			g := tt.gitInitializer()
 			assert.Equal(t, tt.expected, g.nothingToCommit())
+
+
 		})
 	}
 }
