@@ -374,6 +374,7 @@ func (tcr *TcrEngine) revert(event events.TcrEvent) {
 		if err != nil {
 			return
 		}
+		tcr.handleError(tcr.vcs.Push(), false, status.GitError)
 	}
 	tcr.revertSrcFiles()
 }
