@@ -411,7 +411,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run("duration "+tt.timer.String(), func(t *testing.T) {
 			settings.EnableMobTimer = true
-			sniffer := report.NewFilteringSniffer(
+			sniffer := report.NewSniffer(
 				func(msg report.Message) bool {
 					return msg.Type == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
 				},
@@ -433,7 +433,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 
 func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
-	sniffer := report.NewFilteringSniffer(
+	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
 			return msg.Type == report.Info && msg.Text == "Mob Timer is off"
 		},

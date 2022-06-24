@@ -33,17 +33,10 @@ type Sniffer struct {
 	captured         []Message
 }
 
-// NewSniffer creates a new instance of report sniffer
-func NewSniffer() *Sniffer {
-	sniffer := Sniffer{}
-	sniffer.Start()
-	return &sniffer
-}
-
-// NewFilteringSniffer creates a new instance of report sniffer, with filtering.
+// NewSniffer creates a new instance of report sniffer, with filtering.
 // If more than one filter is provided, the sniffer keeps all messages satisfying at least
 // one of the filters
-func NewFilteringSniffer(filters ...messageFilter) *Sniffer {
+func NewSniffer(filters ...messageFilter) *Sniffer {
 	sniffer := Sniffer{}
 	sniffer.addFilters(filters...)
 	sniffer.Start()
