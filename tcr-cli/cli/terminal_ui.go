@@ -310,6 +310,11 @@ func (term *TerminalUI) Start() {
 		// we directly ask TCR engine to run a check and quit when done
 		term.tcr.RunCheck(term.params)
 		term.tcr.Quit()
+	case runmode.Log{}:
+		// When running TCR in check mode, there's no selection menu:
+		// we directly ask TCR engine to print the commit history and quit when done
+		term.tcr.PrintLog(term.params)
+		term.tcr.Quit()
 	default:
 		term.error("Unknown run mode: ", term.params.Mode)
 	}

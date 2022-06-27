@@ -39,6 +39,7 @@ import (
 	"github.com/murex/tcr/tcr-engine/vcs"
 	"gopkg.in/tomb.v2"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -63,6 +64,7 @@ type (
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
 		RunCheck(params params.Params)
+		PrintLog(params params.Params)
 		Quit()
 	}
 
@@ -118,9 +120,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 
 	tcr.pollingPeriod = params.PollingPeriod
 
-	tcr.sourceTree, err = filesystem.New(params.BaseDir)
-	tcr.handleError(err, true, status.ConfigError)
-	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
+	tcr.initSourceTree(params)
 
 	tcr.language, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
 	tcr.handleError(err, true, status.ConfigError)
@@ -132,9 +132,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	git, err := vcs.New(tcr.sourceTree.GetBaseDir())
-	tcr.handleError(err, true, status.GitError)
-	tcr.setVcs(git)
+	tcr.initVcs()
 	tcr.vcs.EnablePush(params.AutoPush)
 
 	tcr.SetCommitOnFail(params.CommitFailures)
@@ -144,7 +142,6 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
 	tcr.ui.ShowRunningMode(tcr.mode)
 	tcr.ui.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
-
 }
 
 // SetCommitOnFail sets git commit-on-fail option to the provided value
@@ -167,6 +164,38 @@ func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
 // RunCheck checks the provided parameters and prints out corresponding report
 func (tcr *TcrEngine) RunCheck(params params.Params) {
 	checker.Run(params)
+}
+
+func (tcr *TcrEngine) PrintLog(params params.Params) {
+	tcr.initSourceTree(params)
+
+	tcr.initVcs()
+
+	logs, _ := tcr.vcs.Log(func(msg string) bool {
+		return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
+	})
+
+	for _, log := range logs {
+		report.PostInfo("commit: " + log.Hash)
+		report.PostInfo("timestamp: " + log.Timestamp.String())
+		report.PostInfo("message: " + log.Message)
+	}
+}
+
+func (tcr *TcrEngine) initVcs() {
+	if tcr.vcs == nil {
+		var err error
+		tcr.vcs, err = vcs.New(tcr.sourceTree.GetBaseDir())
+		tcr.handleError(err, true, status.GitError)
+	}
+}
+
+func (tcr *TcrEngine) initSourceTree(params params.Params) {
+	var err error
+	tcr.sourceTree, err = filesystem.New(params.BaseDir)
+	tcr.handleError(err, true, status.ConfigError)
+	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
+	return
 }
 
 func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {

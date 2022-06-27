@@ -142,8 +142,20 @@ func (g GitFake) Diff() (_ FileDiffs, err error) {
 }
 
 // Log returns the list of git logs configured at fake initialization
-func (g GitFake) Log(_ func(msg string) bool) (logs GitLogItems, err error) {
-	return g.settings.Logs, g.fakeGitCommand(LogCommand)
+func (g GitFake) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
+	err = g.fakeGitCommand(LogCommand)
+
+	if msgFilter == nil {
+		logs = g.settings.Logs
+		return
+	}
+	
+	for _, log := range g.settings.Logs {
+		if msgFilter(log.Message) {
+			logs.add(log)
+		}
+	}
+	return
 }
 
 // Stash does nothing. Returns an error if in the list of failing commands

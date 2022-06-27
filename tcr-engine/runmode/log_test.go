@@ -20,39 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package runmode
 
 import (
-	"sort"
-	"time"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-type (
-	// GitLogItem contains git log information for a commit
-	GitLogItem struct {
-		Hash      string
-		Timestamp time.Time
-		Message   string
-	}
-
-	// GitLogItems contains a set of git log items in a slice
-	GitLogItems []GitLogItem
-)
-
-func NewGitLogItem(hash string, time time.Time, message string) GitLogItem {
-	return GitLogItem{hash, time, message}
+func Test_log_mode_name(t *testing.T) {
+	assert.Equal(t, "log", Log{}.Name())
 }
 
-func (items GitLogItems) sort() {
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].Timestamp.Before(items[j].Timestamp)
-	})
+func Test_log_mode_default_auto_push_if_false(t *testing.T) {
+	assert.False(t, Log{}.AutoPushDefault())
 }
 
-func (items *GitLogItems) add(d GitLogItem) {
-	*items = append(*items, d)
+func Test_log_mode_does_not_require_a_countdown_timer(t *testing.T) {
+	assert.False(t, Log{}.NeedsCountdownTimer())
 }
 
-func (items GitLogItems) len() int {
-	return len(items)
+func Test_log_mode_does_not_allow_user_interactions(t *testing.T) {
+	assert.False(t, Log{}.IsInteractive())
+}
+
+func Test_log_mode_is_not_an_active_mode(t *testing.T) {
+	assert.False(t, Log{}.IsActive())
 }

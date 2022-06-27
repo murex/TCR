@@ -20,39 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package cmd
 
 import (
-	"sort"
-	"time"
+	"github.com/murex/tcr/tcr-cli/cli"
+	"github.com/murex/tcr/tcr-engine/engine"
+	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/spf13/cobra"
 )
 
-type (
-	// GitLogItem contains git log information for a commit
-	GitLogItem struct {
-		Hash      string
-		Timestamp time.Time
-		Message   string
-	}
-
-	// GitLogItems contains a set of git log items in a slice
-	GitLogItems []GitLogItem
-)
-
-func NewGitLogItem(hash string, time time.Time, message string) GitLogItem {
-	return GitLogItem{hash, time, message}
+// runCmd represents the run command
+var logCmd = &cobra.Command{
+	Use:   "log",
+	Short: "Prints the TCR commit history",
+	Long:  `TBC`, //todo: add description
+	Run: func(cmd *cobra.Command, args []string) {
+		parameters.Mode = runmode.Log{}
+		u := cli.New(parameters, engine.NewTcrEngine())
+		u.Start()
+	},
 }
 
-func (items GitLogItems) sort() {
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].Timestamp.Before(items[j].Timestamp)
-	})
-}
-
-func (items *GitLogItems) add(d GitLogItem) {
-	*items = append(*items, d)
-}
-
-func (items GitLogItems) len() int {
-	return len(items)
+func init() {
+	rootCmd.AddCommand(logCmd)
 }

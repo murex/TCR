@@ -20,39 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package runmode
 
-import (
-	"sort"
-	"time"
-)
-
-type (
-	// GitLogItem contains git log information for a commit
-	GitLogItem struct {
-		Hash      string
-		Timestamp time.Time
-		Message   string
-	}
-
-	// GitLogItems contains a set of git log items in a slice
-	GitLogItems []GitLogItem
-)
-
-func NewGitLogItem(hash string, time time.Time, message string) GitLogItem {
-	return GitLogItem{hash, time, message}
+// Log is a type of run mode allowing to print commit history
+type Log struct {
 }
 
-func (items GitLogItems) sort() {
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].Timestamp.Before(items[j].Timestamp)
-	})
+// Name returns the name of this run mode
+func (mode Log) Name() string {
+	return "log"
 }
 
-func (items *GitLogItems) add(d GitLogItem) {
-	*items = append(*items, d)
+// AutoPushDefault returns the default value of git auto-push option with this run mode
+func (mode Log) AutoPushDefault() bool {
+	return false
 }
 
-func (items GitLogItems) len() int {
-	return len(items)
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (mode Log) NeedsCountdownTimer() bool {
+	return false
+}
+
+// IsInteractive indicates if this run mode allows user interaction
+func (mode Log) IsInteractive() bool {
+	return false
+}
+
+// IsActive indicates if this run mode is actively running TCR
+func (mode Log) IsActive() bool {
+	return false
 }
