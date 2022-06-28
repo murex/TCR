@@ -45,6 +45,7 @@ const (
 	TcrCallReportMobTimerStatus TcrCall = "report-mob-timer-status"
 	TcrCallRunTcrCycle          TcrCall = "run-tcr-cycle"
 	TcrCallRunCheck             TcrCall = "run-check"
+	TcrCallPrintLog             TcrCall = "print-log"
 )
 
 // FakeTcrEngine is a TCR engine fake. Used mainly for testing peripheral packages
@@ -133,4 +134,9 @@ func (fake *FakeTcrEngine) RunTCRCycle() {
 // RunCheck checks the provided parameters and prints out corresponding report
 func (fake *FakeTcrEngine) RunCheck(_ params.Params) {
 	fake.recordCall(TcrCallRunCheck)
+}
+
+// PrintLog prints the TCR git commit history
+func (fake *FakeTcrEngine) PrintLog(_ params.Params) {
+	fake.recordCall(TcrCallPrintLog)
 }

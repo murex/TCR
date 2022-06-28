@@ -166,9 +166,9 @@ func (tcr *TcrEngine) RunCheck(params params.Params) {
 	checker.Run(params)
 }
 
+// PrintLog prints the TCR git commit history
 func (tcr *TcrEngine) PrintLog(params params.Params) {
 	tcr.initSourceTree(params)
-
 	tcr.initVcs()
 
 	logs, _ := tcr.vcs.Log(func(msg string) bool {

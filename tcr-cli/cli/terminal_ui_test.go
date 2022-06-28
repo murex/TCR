@@ -329,6 +329,10 @@ func Test_show_running_mode(t *testing.T) {
 			currentMode: runmode.Check{},
 			expected:    asCyanTraceWithSeparatorLine("Running in check mode"),
 		},
+		{
+			currentMode: runmode.Log{},
+			expected:    asCyanTraceWithSeparatorLine("Running in log mode"),
+		},
 	}
 
 	for _, tt := range testFlags {
@@ -629,6 +633,13 @@ func Test_start_terminal(t *testing.T) {
 			"check mode", runmode.Check{}, []byte{},
 			[]engine.TcrCall{
 				engine.TcrCallRunCheck,
+				engine.TcrCallQuit,
+			},
+		},
+		{
+			"log mode", runmode.Log{}, []byte{},
+			[]engine.TcrCall{
+				engine.TcrCallPrintLog,
 				engine.TcrCallQuit,
 			},
 		},
