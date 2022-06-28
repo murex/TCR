@@ -102,13 +102,9 @@ func (st *SourceTreeImpl) Watch(
 	changesDetected := make(chan bool)
 
 	// We recursively watch all subdirectories for all the provided directories
-	// If anything is wrong with the subdirectories, we exit right away
 	for _, dir := range dirList {
 		report.PostText("- watching ", dir)
-		if err := filepath.Walk(dir, st.watchFile); err != nil {
-			report.PostWarning(err)
-			return false
-		}
+		_ = filepath.Walk(dir, st.watchFile)
 	}
 
 	// Event handling goroutine
