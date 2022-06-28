@@ -43,6 +43,7 @@ type GitImpl struct {
 	baseDir                     string
 	rootDir                     string
 	remoteName                  string
+	remoteEnabled               bool
 	workingBranch               string
 	workingBranchExistsOnRemote bool
 	pushEnabled                 bool
@@ -54,7 +55,8 @@ type GitImpl struct {
 func New(dir string) (GitInterface, error) {
 	var gitImpl = GitImpl{
 		baseDir:          dir,
-		remoteName:       DefaultRemoteName,
+		remoteName:       "",
+		remoteEnabled:    false,
 		pushEnabled:      DefaultPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
@@ -68,31 +70,41 @@ func New(dir string) (GitInterface, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	r, _ := findRootDir(repo)
 	gitImpl.rootDir = filepath.Dir(r)
 
-	remoteOk, err := isRemoteDefined(repo, gitImpl.GetRemoteName())
-	if !remoteOk {
-		return nil, err
+	if isRemoteDefined(repo, DefaultRemoteName) {
+		gitImpl.enableRemote()
+		gitImpl.setRemoteName(DefaultRemoteName)
 	}
 
-	head, err := repo.Head()
+	var head *plumbing.Reference
+	head, err = repo.Head()
 	if err != nil {
-		return nil, err
+		// With a brand new repo, nothing is committed yet
+		head, err = repo.Reference(plumbing.HEAD, false)
+		if err != nil {
+			return nil, err
+		}
+		gitImpl.workingBranch = head.Target().Short()
+	} else {
+		gitImpl.workingBranch = head.Name().Short()
 	}
-	gitImpl.workingBranch = head.Name().Short()
-	gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.GetWorkingBranch(), gitImpl.GetRemoteName())
+
+	if gitImpl.IsRemoteEnabled() {
+		gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.GetWorkingBranch(), gitImpl.GetRemoteName())
+	} else {
+		gitImpl.workingBranchExistsOnRemote = false
+	}
 
 	return &gitImpl, err
 }
 
 // isRemoteDefined returns true is the provided remote is defined in the repository
-func isRemoteDefined(repo *git.Repository, remoteName string) (bool, error) {
+func isRemoteDefined(repo *git.Repository, remoteName string) bool {
 	_, err := repo.Remote(remoteName)
-	if err != nil {
-		return false, errors.New("git remote " + remoteName + " is not set")
-	}
-	return true, nil
+	return err == nil
 }
 
 // isBranchOnRemote returns true is the provided branch exists in the repository for the provided remote
@@ -148,9 +160,25 @@ func (g *GitImpl) GetRootDir() string {
 	return g.rootDir
 }
 
+// setRemoteName sets the git remote name
+func (g *GitImpl) setRemoteName(name string) {
+	g.remoteName = name
+}
+
 // GetRemoteName returns the current git remote name
 func (g *GitImpl) GetRemoteName() string {
 	return g.remoteName
+}
+
+// enableRemote enables git remote. When enabled, all remote operations such as
+// pull, push are activated
+func (g *GitImpl) enableRemote() {
+	g.remoteEnabled = true
+}
+
+// IsRemoteEnabled indicates if git remote operations are enabled
+func (g *GitImpl) IsRemoteEnabled() bool {
+	return g.remoteEnabled
 }
 
 // GetWorkingBranch returns the current git working branch
@@ -205,7 +233,7 @@ func (g *GitImpl) Revert() error {
 // Push runs a git push operation.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Push() error {
-	if !g.IsPushEnabled() {
+	if !g.IsRemoteEnabled() || !g.IsPushEnabled() {
 		// There's nothing to do in this case
 		return nil
 	}
@@ -221,7 +249,7 @@ func (g *GitImpl) Push() error {
 // Pull runs a git pull operation.
 // Current implementation uses a direct call to git
 func (g *GitImpl) Pull() error {
-	if !g.workingBranchExistsOnRemote {
+	if !g.IsRemoteEnabled() || !g.workingBranchExistsOnRemote {
 		report.PostInfo("Working locally on branch ", g.GetWorkingBranch())
 		return nil
 	}
@@ -234,7 +262,6 @@ func (g *GitImpl) Pull() error {
 func (g *GitImpl) Stash(message string) error {
 	report.PostInfo("Stashing changes")
 	return g.traceGit("stash", "push", "--quiet", "--include-untracked", "--message", message)
-	//	"--", "java/src/main", "java/src/test")
 }
 
 // UnStash applies a git stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
@@ -294,8 +321,11 @@ func (g *GitImpl) IsPushEnabled() bool {
 // checking the return value of "git push --dry-run". This very likely does not guarantee that
 // git remote commands will work, but already gives an indication.
 func (g *GitImpl) CheckRemoteAccess() bool {
-	_, err := g.runGit("push", "--dry-run", g.GetRemoteName(), g.GetWorkingBranch())
-	return err == nil
+	if g.IsRemoteEnabled() {
+		_, err := g.runGit("push", "--dry-run", g.GetRemoteName(), g.GetWorkingBranch())
+		return err == nil
+	}
+	return false
 }
 
 // traceGit runs a git command and traces its output.

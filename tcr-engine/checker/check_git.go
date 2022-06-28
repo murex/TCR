@@ -69,6 +69,11 @@ func checkGitRepository() (cp []CheckPoint) {
 		cp = append(cp, warningCheckPoint("running TCR from a root branch is not recommended"))
 	}
 
+	if !checkEnv.git.IsRemoteEnabled() {
+		cp = append(cp, okCheckPoint("git remote is disabled: all operations will be done locally"))
+		return
+	}
+
 	cp = append(cp, okCheckPoint("git remote name is ", checkEnv.git.GetRemoteName()))
 
 	if checkEnv.git.CheckRemoteAccess() {
@@ -76,7 +81,6 @@ func checkGitRepository() (cp []CheckPoint) {
 	} else {
 		cp = append(cp, errorCheckPoint("git remote access does not seem to be working"))
 	}
-	// TODO check that credentials are ok (so that no password is required on each commit)
 
 	return
 }

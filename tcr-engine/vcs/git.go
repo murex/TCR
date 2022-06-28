@@ -46,6 +46,7 @@ type GitInterface interface {
 	Diff() (diffs []FileDiff, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
+	IsRemoteEnabled() bool
 	CheckRemoteAccess() bool
 }
 

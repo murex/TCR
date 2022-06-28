@@ -214,7 +214,9 @@ func Test_git_push_command(t *testing.T) {
 				traceGitFunction: func(_ []string) (err error) {
 					return tt.gitError
 				},
-				pushEnabled: tt.pushEnabled,
+				pushEnabled:   tt.pushEnabled,
+				remoteEnabled: true,
+				remoteName:    DefaultRemoteName,
 			}
 			err := git.Push()
 			if tt.expectError {
@@ -266,6 +268,8 @@ func Test_git_pull_command(t *testing.T) {
 				traceGitFunction: func(_ []string) (err error) {
 					return tt.gitError
 				},
+				remoteEnabled:               true,
+				remoteName:                  DefaultRemoteName,
 				workingBranchExistsOnRemote: tt.branchOnRemote,
 			}
 			err := git.Pull()
