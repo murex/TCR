@@ -436,53 +436,6 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 	}
 }
 
-func Test_tcr_print_log(t *testing.T) {
-	testFlags := []struct {
-		desc            string
-		filterByMsg     string
-		gitLogItems     vcs.GitLogItems
-		expectedMatches int
-	}{
-		//{
-		//	desc:            "Test Passing Message",
-		//	filterByMsg:     "message: ✅ TCR - tests passing",
-		//	gitLogItems:     vcs.GitLogItems{vcs.NewGitLogItem("1234", time.Now(), "✅ TCR - tests passing")},
-		//	expectedMatches: 1,
-		//},
-		//{
-		//	desc:            "Test Failing Message",
-		//	filterByMsg:     "message: ❌ TCR - tests failing",
-		//	gitLogItems:     vcs.GitLogItems{vcs.NewGitLogItem("2345", time.Now(), "❌ TCR - tests failing")},
-		//	expectedMatches: 1,
-		//},
-		{
-			desc:            "Test Failing Message",
-			filterByMsg:     "message: ⏪ TCR - revert changes",
-			gitLogItems:     vcs.GitLogItems{vcs.NewGitLogItem("12345", time.Now(), "⏪ TCR - revert changes")},
-			expectedMatches: 0,
-		},
-	}
-
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer(
-				func(msg report.Message) bool {
-					return msg.Type == report.Info && strings.Index(msg.Text, tt.filterByMsg) == 0
-				},
-			)
-			p := params.AParamSet(params.WithRunMode(runmode.Log{}))
-			tcr := initTcrEngineWithFakes(p, nil, nil, tt.gitLogItems)
-
-			tcr.PrintLog(*p)
-
-			time.Sleep(1 * time.Millisecond)
-			sniffer.Stop()
-			fmt.Println(sniffer.GetAllMatches())
-			assert.Equal(t, tt.expectedMatches, sniffer.GetMatchCount())
-		})
-	}
-}
-
 func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
@@ -498,4 +451,74 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	sniffer.Stop()
 	//fmt.Println(sniffer.GetAllMatches())
 	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
+func Test_tcr_print_log(t *testing.T) {
+	now := time.Now()
+	sampleItems := vcs.GitLogItems{
+		vcs.NewGitLogItem("1111", now, "✅ TCR - tests passing"),
+		vcs.NewGitLogItem("2222", now, "❌ TCR - tests failing"),
+		vcs.NewGitLogItem("3333", now, "⏪ TCR - revert changes"),
+		vcs.NewGitLogItem("4444", now, "other commit message"),
+	}
+	testFlags := []struct {
+		desc            string
+		filterByMsg     string
+		gitLogItems     vcs.GitLogItems
+		expectedMatches int
+	}{
+		{
+			desc:            "TCR passing commits are kept",
+			filterByMsg:     "message: ✅ TCR - tests passing",
+			gitLogItems:     sampleItems,
+			expectedMatches: 1,
+		},
+		{
+			desc:            "TCR failing commits are kept",
+			filterByMsg:     "message: ❌ TCR - tests failing",
+			gitLogItems:     sampleItems,
+			expectedMatches: 1,
+		},
+		{
+			desc:            "TCR revert commits are dropped",
+			filterByMsg:     "message: ⏪ TCR - revert changes",
+			gitLogItems:     sampleItems,
+			expectedMatches: 0,
+		},
+		{
+			desc:            "non-TCR commits are dropped",
+			filterByMsg:     "message: other commit message",
+			gitLogItems:     sampleItems,
+			expectedMatches: 0,
+		},
+		{
+			desc:            "commit hashtag is printed",
+			filterByMsg:     "commit: 1111",
+			gitLogItems:     sampleItems,
+			expectedMatches: 1,
+		},
+		{
+			desc:            "commit timestamp is printed",
+			filterByMsg:     "timestamp: " + now.String(),
+			gitLogItems:     sampleItems,
+			expectedMatches: 2,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer(
+				func(msg report.Message) bool {
+					return msg.Type == report.Info && strings.Index(msg.Text, tt.filterByMsg) == 0
+				},
+			)
+			p := params.AParamSet(params.WithRunMode(runmode.Log{}))
+			tcr := initTcrEngineWithFakes(p, nil, nil, tt.gitLogItems)
+			tcr.PrintLog(*p)
+			time.Sleep(1 * time.Millisecond)
+			sniffer.Stop()
+			fmt.Println(sniffer.GetAllMatches())
+			assert.Equal(t, tt.expectedMatches, sniffer.GetMatchCount())
+		})
+	}
 }

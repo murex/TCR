@@ -39,6 +39,7 @@ type (
 	GitLogItems []GitLogItem
 )
 
+// NewGitLogItem creates a new git log item instance
 func NewGitLogItem(hash string, time time.Time, message string) GitLogItem {
 	return GitLogItem{hash, time, message}
 }

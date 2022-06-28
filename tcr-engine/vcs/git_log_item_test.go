@@ -30,7 +30,7 @@ import (
 
 func Test_add_regular_git_log_item(t *testing.T) {
 	var items GitLogItems
-	item := GitLogItem{Hash: "xxx", Timestamp: time.Now(), Message: "some message"}
+	item := NewGitLogItem("xxx", time.Now(), "some message")
 	items.add(item)
 	assert.Len(t, items, 1)
 	assert.Contains(t, items, item)
@@ -38,7 +38,7 @@ func Test_add_regular_git_log_item(t *testing.T) {
 
 func Test_add_empty_git_log_item(t *testing.T) {
 	var items GitLogItems
-	item := GitLogItem{}
+	item := NewGitLogItem("", time.Time{}, "")
 	items.add(item)
 	assert.Len(t, items, 1)
 }
@@ -52,16 +52,16 @@ func Test_sort_empty_git_log_items_does_not_panic(t *testing.T) {
 }
 
 func Test_sort_already_sorted_git_log_items(t *testing.T) {
-	item1 := GitLogItem{Hash: "xxx1", Timestamp: time.Now(), Message: "first commit"}
-	item2 := GitLogItem{Hash: "xxx2", Timestamp: time.Now().Add(1 * time.Second), Message: "second commit"}
+	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
+	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
 	items := GitLogItems{item1, item2}
 	items.sort()
 	assert.Equal(t, GitLogItems{item1, item2}, items)
 }
 
 func Test_sort_unsorted_git_log_items(t *testing.T) {
-	item1 := GitLogItem{Hash: "xxx1", Timestamp: time.Now(), Message: "first commit"}
-	item2 := GitLogItem{Hash: "xxx2", Timestamp: time.Now().Add(1 * time.Second), Message: "second commit"}
+	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
+	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
 	items := GitLogItems{item2, item1}
 	items.sort()
 	assert.Equal(t, GitLogItems{item1, item2}, items)
