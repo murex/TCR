@@ -33,7 +33,10 @@ import (
 var logCmd = &cobra.Command{
 	Use:   "log",
 	Short: "Prints the TCR commit history",
-	Long:  `TBC`, //todo: add description
+	Long: `
+TCR log subcommand prints out the TCR commit history.
+
+This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Log{}
 		u := cli.New(parameters, engine.NewTcrEngine())
