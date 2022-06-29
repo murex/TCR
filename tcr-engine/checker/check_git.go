@@ -32,6 +32,7 @@ func checkGitEnvironment(_ params.Params) (cr *CheckResults) {
 	cr.add(checkGitCommand())
 	cr.add(checkGitConfig())
 	cr.add(checkGitRepository())
+	cr.add(checkGitRemote())
 	return
 }
 
@@ -68,7 +69,10 @@ func checkGitRepository() (cp []CheckPoint) {
 	if vcs.IsRootBranch(branch) {
 		cp = append(cp, warningCheckPoint("running TCR from a root branch is not recommended"))
 	}
+	return
+}
 
+func checkGitRemote() (cp []CheckPoint) {
 	if !checkEnv.git.IsRemoteEnabled() {
 		cp = append(cp, okCheckPoint("git remote is disabled: all operations will be done locally"))
 		return
@@ -81,6 +85,5 @@ func checkGitRepository() (cp []CheckPoint) {
 	} else {
 		cp = append(cp, errorCheckPoint("git remote access does not seem to be working"))
 	}
-
 	return
 }
