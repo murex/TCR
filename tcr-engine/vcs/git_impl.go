@@ -38,10 +38,17 @@ import (
 	"strings"
 )
 
+var initGitRepository func(dir string) (repo *git.Repository, err error)
+
+func init() {
+	initGitRepository = plainOpen
+}
+
 // GitImpl provides the implementation of the git interface
 type GitImpl struct {
 	baseDir                     string
 	rootDir                     string
+	repository                  *git.Repository
 	remoteName                  string
 	remoteEnabled               bool
 	workingBranch               string
@@ -62,28 +69,25 @@ func New(dir string) (GitInterface, error) {
 		traceGitFunction: traceGitCommand,
 	}
 
-	plainOpenOptions := git.PlainOpenOptions{
-		DetectDotGit:          true,
-		EnableDotGitCommonDir: false,
-	}
-	repo, err := git.PlainOpenWithOptions(gitImpl.baseDir, &plainOpenOptions)
+	var err error
+	gitImpl.repository, err = initGitRepository(dir)
 	if err != nil {
 		return nil, err
 	}
 
-	r, _ := findRootDir(repo)
-	gitImpl.rootDir = filepath.Dir(r)
+	rootDir, _ := findRootDir(gitImpl.repository)
+	gitImpl.rootDir = filepath.Dir(rootDir)
 
-	if isRemoteDefined(repo, DefaultRemoteName) {
+	if isRemoteDefined(gitImpl.repository, DefaultRemoteName) {
 		gitImpl.enableRemote()
 		gitImpl.setRemoteName(DefaultRemoteName)
 	}
 
 	var head *plumbing.Reference
-	head, err = repo.Head()
+	head, err = gitImpl.repository.Head()
 	if err != nil {
 		// With a brand new repo, nothing is committed yet
-		head, err = repo.Reference(plumbing.HEAD, false)
+		head, err = gitImpl.repository.Reference(plumbing.HEAD, false)
 		if err != nil {
 			return nil, err
 		}
@@ -93,12 +97,21 @@ func New(dir string) (GitInterface, error) {
 	}
 
 	if gitImpl.IsRemoteEnabled() {
-		gitImpl.workingBranchExistsOnRemote, err = isBranchOnRemote(repo, gitImpl.GetWorkingBranch(), gitImpl.GetRemoteName())
+		gitImpl.workingBranchExistsOnRemote, err = gitImpl.isWorkingBranchOnRemote()
 	} else {
 		gitImpl.workingBranchExistsOnRemote = false
 	}
 
 	return &gitImpl, err
+}
+
+// plainOpen is the regular function used to open a repository
+func plainOpen(dir string) (*git.Repository, error) {
+	plainOpenOptions := git.PlainOpenOptions{
+		DetectDotGit:          true,
+		EnableDotGitCommonDir: false,
+	}
+	return git.PlainOpenWithOptions(dir, &plainOpenOptions)
 }
 
 // isRemoteDefined returns true is the provided remote is defined in the repository
@@ -107,20 +120,20 @@ func isRemoteDefined(repo *git.Repository, remoteName string) bool {
 	return err == nil
 }
 
-// isBranchOnRemote returns true is the provided branch exists in the repository for the provided remote
-func isBranchOnRemote(repo *git.Repository, branchName, remoteName string) (bool, error) {
-	branches, err := remoteBranches(repo.Storer)
+// isWorkingBranchOnRemote returns true is the working branch exists on remote repository
+func (g *GitImpl) isWorkingBranchOnRemote() (onRemote bool, err error) {
+	var branches storer.ReferenceIter
+	branches, err = remoteBranches(g.repository.Storer)
 	if err != nil {
-		return false, err
+		return
 	}
 
-	remoteBranchName := fmt.Sprintf("%v/%v", remoteName, branchName)
-	var found = false
+	remoteBranchName := fmt.Sprintf("%v/%v", g.GetRemoteName(), g.GetWorkingBranch())
 	_ = branches.ForEach(func(branch *plumbing.Reference) error {
-		found = found || strings.HasSuffix(branch.Name().Short(), remoteBranchName)
+		onRemote = onRemote || strings.HasSuffix(branch.Name().Short(), remoteBranchName)
 		return nil
 	})
-	return found, nil
+	return
 }
 
 // remoteBranches returns the list of known remote branches

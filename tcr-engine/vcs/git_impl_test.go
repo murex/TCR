@@ -24,37 +24,45 @@ package vcs
 
 import (
 	"errors"
+	"github.com/go-git/go-billy/v5/memfs"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
 )
 
-// push-enabling flag
+// inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
+func inMemoryRepoInit(_ string) (*git.Repository, error) {
+	return git.Init(memory.NewStorage(), memfs.New())
+}
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
-	git, _ := New(".")
-	assert.Zero(t, git.IsPushEnabled())
+	initGitRepository = inMemoryRepoInit
+	g, _ := New(".")
+	assert.Zero(t, g.IsPushEnabled())
 }
 
 func Test_git_enable_disable_push(t *testing.T) {
-	git, _ := New(".")
-	git.EnablePush(true)
-	assert.NotZero(t, git.IsPushEnabled())
-	git.EnablePush(false)
-	assert.Zero(t, git.IsPushEnabled())
+	initGitRepository = inMemoryRepoInit
+	g, _ := New(".")
+	g.EnablePush(true)
+	assert.NotZero(t, g.IsPushEnabled())
+	g.EnablePush(false)
+	assert.Zero(t, g.IsPushEnabled())
 }
 
-// Working Branch
-
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
-	git, err := New("/")
-	assert.Zero(t, git)
+	initGitRepository = plainOpen
+	g, err := New("/")
+	assert.Zero(t, g)
 	assert.Error(t, err)
 }
 
 func Test_can_retrieve_working_branch(t *testing.T) {
-	git, _ := New(".")
-	assert.NotZero(t, git.GetWorkingBranch())
+	initGitRepository = plainOpen
+	g, _ := New(".")
+	assert.NotZero(t, g.GetWorkingBranch())
 }
 
 func Test_git_diff_command(t *testing.T) {
@@ -149,14 +157,14 @@ func Test_git_diff_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				runGitFunction: func(args []string) (output []byte, err error) {
 					actualArgs = args[2:]
 					return []byte(tt.gitDiffOutput), tt.gitDiffError
 				},
 			}
-			fileDiffs, err := git.Diff()
+			fileDiffs, err := g.Diff()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -209,7 +217,7 @@ func Test_git_push_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(_ []string) (err error) {
 					return tt.gitError
@@ -218,13 +226,13 @@ func Test_git_push_command(t *testing.T) {
 				remoteEnabled: true,
 				remoteName:    DefaultRemoteName,
 			}
-			err := git.Push()
+			err := g.Push()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.expectBranchOnRemote, git.workingBranchExistsOnRemote)
+			assert.Equal(t, tt.expectBranchOnRemote, g.workingBranchExistsOnRemote)
 		})
 	}
 }
@@ -263,7 +271,7 @@ func Test_git_pull_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(_ []string) (err error) {
 					return tt.gitError
@@ -272,7 +280,7 @@ func Test_git_pull_command(t *testing.T) {
 				remoteName:                  DefaultRemoteName,
 				workingBranchExistsOnRemote: tt.branchOnRemote,
 			}
-			err := git.Pull()
+			err := g.Pull()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -322,14 +330,14 @@ func Test_git_add_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
 					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Add(tt.paths...)
+			err := g.Add(tt.paths...)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -388,14 +396,14 @@ func Test_git_commit_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
 					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Commit(tt.amend, tt.messages...)
+			err := g.Commit(tt.amend, tt.messages...)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -425,13 +433,13 @@ func Test_git_restore_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(_ []string) (err error) {
 					return tt.gitError
 				},
 			}
-			err := git.Restore("some-path")
+			err := g.Restore("some-path")
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -464,14 +472,14 @@ func Test_git_revert_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
 					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Revert()
+			err := g.Revert()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -508,14 +516,14 @@ func Test_git_stash_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
 					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.Stash(tt.message)
+			err := g.Stash(tt.message)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -566,14 +574,14 @@ func Test_git_unstash_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			git := &GitImpl{
+			g := &GitImpl{
 				// git command calls are faked
 				traceGitFunction: func(args []string) (err error) {
 					actualArgs = args[2:]
 					return tt.gitError
 				},
 			}
-			err := git.UnStash(tt.keep)
+			err := g.UnStash(tt.keep)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
