@@ -27,16 +27,22 @@ import (
 	"testing"
 )
 
-func Test_master_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("master"))
-}
-
-func Test_main_is_a_git_root_branch(t *testing.T) {
-	assert.True(t, IsRootBranch("main"))
-}
-
-func Test_is_not_a_git_root_branch(t *testing.T) {
-	assert.False(t, IsRootBranch("x"))
+func Test_is_git_root_branch(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		name     string
+		expected bool
+	}{
+		{"master branch", "master", true},
+		{"main branch", "main", true},
+		{"other branch", "xxx", false},
+		{"empty branch", "", false},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, IsRootBranch(tt.name))
+		})
+	}
 }
 
 func Test_compute_changed_lines(t *testing.T) {
