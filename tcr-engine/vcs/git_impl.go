@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/go-git/go-billy/v5/helper/chroot"
+	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/storer"
@@ -38,17 +38,12 @@ import (
 	"strings"
 )
 
-var initGitRepository func(dir string) (repo *git.Repository, err error)
-
-func init() {
-	initGitRepository = plainOpen
-}
-
 // GitImpl provides the implementation of the git interface
 type GitImpl struct {
 	baseDir                     string
 	rootDir                     string
 	repository                  *git.Repository
+	filesystem                  billy.Filesystem
 	remoteName                  string
 	remoteEnabled               bool
 	workingBranch               string
@@ -60,62 +55,62 @@ type GitImpl struct {
 
 // New initializes the git implementation based on the provided directory from local clone
 func New(dir string) (GitInterface, error) {
+	return newGitImpl(plainOpen, dir)
+}
+
+func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error), dir string) (GitInterface, error) {
 	var gitImpl = GitImpl{
 		baseDir:          dir,
-		remoteName:       "",
-		remoteEnabled:    false,
 		pushEnabled:      DefaultPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
 	}
 
 	var err error
-	gitImpl.repository, err = initGitRepository(dir)
+	gitImpl.repository, gitImpl.filesystem, err = initRepo(dir)
 	if err != nil {
 		return nil, err
 	}
 
-	rootDir, _ := findRootDir(gitImpl.repository)
-	gitImpl.rootDir = filepath.Dir(rootDir)
-
-	if isRemoteDefined(gitImpl.repository, DefaultRemoteName) {
-		gitImpl.enableRemote()
-		gitImpl.setRemoteName(DefaultRemoteName)
-	}
-
-	var head *plumbing.Reference
-	head, err = gitImpl.repository.Head()
+	gitImpl.rootDir, err = retrieveRootDir(gitImpl.filesystem)
 	if err != nil {
-		// With a brand new repo, nothing is committed yet
-		head, err = gitImpl.repository.Reference(plumbing.HEAD, false)
-		if err != nil {
-			return nil, err
-		}
-		gitImpl.workingBranch = head.Target().Short()
-	} else {
-		gitImpl.workingBranch = head.Name().Short()
+		return nil, err
 	}
 
-	if gitImpl.IsRemoteEnabled() {
+	gitImpl.workingBranch, err = retrieveWorkingBranch(gitImpl.repository)
+	if err != nil {
+		return nil, err
+	}
+
+	if isRemoteDefined(DefaultRemoteName, gitImpl.repository) {
+		gitImpl.remoteEnabled = true
+		gitImpl.remoteName = DefaultRemoteName
 		gitImpl.workingBranchExistsOnRemote, err = gitImpl.isWorkingBranchOnRemote()
-	} else {
-		gitImpl.workingBranchExistsOnRemote = false
 	}
 
 	return &gitImpl, err
 }
 
 // plainOpen is the regular function used to open a repository
-func plainOpen(dir string) (*git.Repository, error) {
-	plainOpenOptions := git.PlainOpenOptions{
+func plainOpen(dir string) (*git.Repository, billy.Filesystem, error) {
+	repo, err := git.PlainOpenWithOptions(dir, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
+	})
+	if err != nil {
+		return nil, nil, err
 	}
-	return git.PlainOpenWithOptions(dir, &plainOpenOptions)
+
+	// Try to grab the repository Storer
+	storage, ok := repo.Storer.(*filesystem.Storage)
+	if !ok {
+		return nil, nil, errors.New("repository storage is not filesystem.Storage")
+	}
+	return repo, storage.Filesystem(), nil
 }
 
 // isRemoteDefined returns true is the provided remote is defined in the repository
-func isRemoteDefined(repo *git.Repository, remoteName string) bool {
+func isRemoteDefined(remoteName string, repo *git.Repository) bool {
 	_, err := repo.Remote(remoteName)
 	return err == nil
 }
@@ -149,23 +144,26 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 	}, refs), nil
 }
 
-// findRootDir returns the local clone's root directory of provided repository
-func findRootDir(r *git.Repository) (dir string, err error) {
-	// Try to grab the repository Storer
-	storage, ok := r.Storer.(*filesystem.Storage)
-	if !ok {
-		err = errors.New("repository storage is not filesystem.Storage")
-		return
+// retrieveRootDir returns the local clone's root directory of provided repository
+func retrieveRootDir(fs billy.Filesystem) (dir string, err error) {
+	dir = filepath.Dir(fs.Root())
+	return
+}
+
+// retrieveWorkingBranch returns the current working branch for provided repository
+func retrieveWorkingBranch(repository *git.Repository) (string, error) {
+	// Repo with at least one commit
+	head, err := repository.Head()
+	if err == nil {
+		return head.Name().Short(), nil
 	}
 
-	// Try to get the underlying billy.Filesystem
-	fs, ok := storage.Filesystem().(*chroot.ChrootHelper)
-	if !ok {
-		err = errors.New("filesystem is not chroot.ChrootHelper")
-		return
+	// Brand new repo: nothing is committed yet
+	head, err = repository.Reference(plumbing.HEAD, false)
+	if err != nil {
+		return "", err
 	}
-	dir = fs.Root()
-	return
+	return head.Target().Short(), nil
 }
 
 // GetRootDir returns the root directory path
@@ -173,20 +171,9 @@ func (g *GitImpl) GetRootDir() string {
 	return g.rootDir
 }
 
-// setRemoteName sets the git remote name
-func (g *GitImpl) setRemoteName(name string) {
-	g.remoteName = name
-}
-
 // GetRemoteName returns the current git remote name
 func (g *GitImpl) GetRemoteName() string {
 	return g.remoteName
-}
-
-// enableRemote enables git remote. When enabled, all remote operations such as
-// pull, push are activated
-func (g *GitImpl) enableRemote() {
-	g.remoteEnabled = true
 }
 
 // IsRemoteEnabled indicates if git remote operations are enabled

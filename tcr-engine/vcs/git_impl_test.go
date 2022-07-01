@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ package vcs
 
 import (
 	"errors"
+	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
@@ -33,19 +34,19 @@ import (
 )
 
 // inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
-func inMemoryRepoInit(_ string) (*git.Repository, error) {
-	return git.Init(memory.NewStorage(), memfs.New())
+func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err error) {
+	fs = memfs.New()
+	repo, err = git.Init(memory.NewStorage(), fs)
+	return
 }
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
-	initGitRepository = inMemoryRepoInit
-	g, _ := New(".")
+	g, _ := newGitImpl(inMemoryRepoInit, "")
 	assert.Zero(t, g.IsPushEnabled())
 }
 
 func Test_git_enable_disable_push(t *testing.T) {
-	initGitRepository = inMemoryRepoInit
-	g, _ := New(".")
+	g, _ := newGitImpl(inMemoryRepoInit, "")
 	g.EnablePush(true)
 	assert.NotZero(t, g.IsPushEnabled())
 	g.EnablePush(false)
@@ -53,16 +54,29 @@ func Test_git_enable_disable_push(t *testing.T) {
 }
 
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
-	initGitRepository = plainOpen
 	g, err := New("/")
 	assert.Zero(t, g)
 	assert.Error(t, err)
 }
 
-func Test_can_retrieve_working_branch(t *testing.T) {
-	initGitRepository = plainOpen
+func Test_can_retrieve_working_branch_on_in_memory_repo(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, "")
+	assert.Equal(t, "master", g.GetWorkingBranch())
+}
+
+func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
 	g, _ := New(".")
-	assert.NotZero(t, g.GetWorkingBranch())
+	assert.NotEmpty(t, g.GetWorkingBranch())
+}
+
+func Test_check_remote_access_on_current_repo(t *testing.T) {
+	g, _ := New(".")
+	assert.True(t, g.CheckRemoteAccess())
+}
+
+func Test_check_remote_access_on_in_memory_repo(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, "")
+	assert.False(t, g.CheckRemoteAccess())
 }
 
 func Test_git_diff_command(t *testing.T) {
