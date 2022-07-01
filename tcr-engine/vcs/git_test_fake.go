@@ -69,12 +69,14 @@ type (
 		FailingCommands GitCommands
 		ChangedFiles    FileDiffs
 		Logs            GitLogItems
-// GitFake provides a fake implementation of the git interface
-type GitFake struct {
-	impl            GitInterface
-	failingCommands GitCommands
-	changedFiles    []FileDiff
-}
+	}
+
+	// GitFake provides a fake implementation of the git interface
+	GitFake struct {
+		impl     GitInterface
+		settings GitFakeSettings
+	}
+)
 
 // inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
 func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err error) {
@@ -84,31 +86,17 @@ func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err 
 }
 
 func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
-	if g.failingCommands.contains(cmd) {
-		err = errors.New("git " + string(cmd) + " fake error")
-	}
-
-	// GitFake provides a fake implementation of the git interface
-	GitFake struct {
-		GitImpl
-		settings GitFakeSettings
-	}
-)
-
-// NewGitFake initializes a fake git implementation which does nothing
-// apart from emulating errors on git operations
-func NewGitFake(settings GitFakeSettings) GitInterface {
-	return &GitFake{settings: settings}
-}
-
-func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
 	if g.settings.FailingCommands.contains(cmd) {
 		err = errors.New("git " + string(cmd) + " fake error")
 	}
 	return
-func NewGitFake(failingCommands GitCommands, changedFiles []FileDiff) (GitInterface, error) {
-	impl, _ := newGitImpl(inMemoryRepoInit, "")
-	return &GitFake{impl: impl, failingCommands: failingCommands, changedFiles: changedFiles}, nil
+}
+
+// NewGitFake initializes a fake git implementation which does nothing
+// apart from emulating errors on git operations
+func NewGitFake(settings GitFakeSettings) (GitInterface, error) {
+	impl, err := newGitImpl(inMemoryRepoInit, "")
+	return &GitFake{impl: impl, settings: settings}, err
 }
 
 // Add does nothing. Returns an error if in the list of failing commands
@@ -149,7 +137,7 @@ func (g GitFake) Log(msgFilter func(msg string) bool) (logs GitLogItems, err err
 		logs = g.settings.Logs
 		return
 	}
-	
+
 	for _, log := range g.settings.Logs {
 		if msgFilter(log.Message) {
 			logs.add(log)

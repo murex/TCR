@@ -322,7 +322,8 @@ func replaceGitImplWithFake(tcr TcrInterface, failures vcs.GitCommands, gitLogIt
 		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
 		Logs:            gitLogItems,
 	}
-	tcr.setVcs(vcs.NewGitFake(fakeSettings))
+	fake, _ := vcs.NewGitFake(fakeSettings)
+	tcr.setVcs(fake)
 }
 
 func Test_run_as_role_methods(t *testing.T) {

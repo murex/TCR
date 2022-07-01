@@ -313,7 +313,7 @@ func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 // Log returns the list of git log items compliant with the provided msgFilter.
 // When no msgFilter is provided, returns all git log items unfiltered.
 // Current implementation uses go-git's Log() function
-func (g *GitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
+func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
 	plainOpenOptions := git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
