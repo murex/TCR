@@ -15,8 +15,8 @@ require (
 )
 
 require (
-	fyne.io/fyne/v2 v2.2.1 // indirect
-	fyne.io/systray v1.10.0 // indirect
+	fyne.io/fyne/v2 v2.2.2 // indirect
+	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	github.com/Microsoft/go-winio v0.5.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210707164159-52430bf6b52c // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
