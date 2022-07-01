@@ -73,6 +73,11 @@ func checkGitRepository() (cp []CheckPoint) {
 }
 
 func checkGitRemote() (cp []CheckPoint) {
+	if checkEnv.git == nil {
+		// If git is not properly initialized, no point in trying to go further
+		return
+	}
+
 	if !checkEnv.git.IsRemoteEnabled() {
 		cp = append(cp, okCheckPoint("git remote is disabled: all operations will be done locally"))
 		return
