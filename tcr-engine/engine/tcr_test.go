@@ -394,7 +394,7 @@ func Test_get_session_info(t *testing.T) {
 		LanguageName:  "fake-language",
 		ToolchainName: "fake-toolchain",
 		AutoPush:      false,
-		BranchName:    "",
+		BranchName:    "master",
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())
 }

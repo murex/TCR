@@ -24,21 +24,10 @@ package vcs
 
 import (
 	"errors"
-	"github.com/go-git/go-billy/v5"
-	"github.com/go-git/go-billy/v5/memfs"
-	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
 )
-
-// inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
-func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err error) {
-	fs = memfs.New()
-	repo, err = git.Init(memory.NewStorage(), fs)
-	return
-}
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")

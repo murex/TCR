@@ -22,4 +22,12 @@ SOFTWARE.
 
 package checker
 
-// TODO Figure out how we could test this without really accessing git
+import (
+	"github.com/murex/tcr/tcr-engine/params"
+	"testing"
+)
+
+func Test_check_git_returns_warning_with_brand_new_repo(t *testing.T) {
+	// Warning is triggered by default branch (master) being a root branch
+	assertWarning(t, checkGitEnvironment, *params.AParamSet())
+}

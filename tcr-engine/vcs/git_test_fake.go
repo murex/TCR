@@ -26,6 +26,10 @@ package vcs
 
 import (
 	"errors"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/memfs"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/storage/memory"
 )
 
 // GitCommand is the name of a Git command
@@ -58,9 +62,16 @@ const (
 
 // GitFake provides a fake implementation of the git interface
 type GitFake struct {
-	GitImpl
+	impl            GitInterface
 	failingCommands GitCommands
 	changedFiles    []FileDiff
+}
+
+// inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
+func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err error) {
+	fs = memfs.New()
+	repo, err = git.Init(memory.NewStorage(), fs)
+	return
 }
 
 func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
@@ -73,7 +84,8 @@ func (g GitFake) fakeGitCommand(cmd GitCommand) (err error) {
 // NewGitFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
 func NewGitFake(failingCommands GitCommands, changedFiles []FileDiff) (GitInterface, error) {
-	return &GitFake{failingCommands: failingCommands, changedFiles: changedFiles}, nil
+	impl, _ := newGitImpl(inMemoryRepoInit, "")
+	return &GitFake{impl: impl, failingCommands: failingCommands, changedFiles: changedFiles}, nil
 }
 
 // Add does nothing. Returns an error if in the list of failing commands
@@ -119,4 +131,39 @@ func (g GitFake) UnStash(_ bool) error {
 // Revert does nothing. Returns an error if in the list of failing commands
 func (g GitFake) Revert() error {
 	return g.fakeGitCommand(RevertCommand)
+}
+
+// GetRootDir returns the root directory path
+func (g GitFake) GetRootDir() string {
+	return g.impl.GetRootDir()
+}
+
+// GetRemoteName returns the current git remote name
+func (g GitFake) GetRemoteName() string {
+	return g.impl.GetRemoteName()
+}
+
+// GetWorkingBranch returns the current git working branch
+func (g GitFake) GetWorkingBranch() string {
+	return g.impl.GetWorkingBranch()
+}
+
+// EnablePush sets a flag allowing to turn on/off git push operations
+func (g GitFake) EnablePush(flag bool) {
+	g.impl.EnablePush(flag)
+}
+
+// IsPushEnabled indicates if git push operations are turned on
+func (g GitFake) IsPushEnabled() bool {
+	return g.impl.IsPushEnabled()
+}
+
+// IsRemoteEnabled indicates if git remote operations are enabled
+func (g GitFake) IsRemoteEnabled() bool {
+	return g.impl.IsRemoteEnabled()
+}
+
+// CheckRemoteAccess returns true if git remote can be accessed
+func (g GitFake) CheckRemoteAccess() bool {
+	return g.impl.CheckRemoteAccess()
 }
