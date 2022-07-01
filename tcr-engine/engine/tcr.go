@@ -343,6 +343,7 @@ func (tcr *TcrEngine) build() error {
 }
 
 func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
+	report.PostInfo("Running Tests")
 	testResults, err = tcr.toolchain.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
