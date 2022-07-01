@@ -7,7 +7,7 @@ replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
 require (
-	fyne.io/fyne/v2 v2.2.1
+	fyne.io/fyne/v2 v2.2.2
 	github.com/golangci/golangci-lint v1.46.2
 	github.com/goreleaser/goreleaser v1.9.2
 	github.com/murex/tcr/tcr-cli v0.0.0-20220414085711-8ca37ca267ec
@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/kms v0.1.0 // indirect
 	cloud.google.com/go/storage v1.16.1 // indirect
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
-	fyne.io/systray v1.10.0 // indirect
+	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
 	github.com/Antonboom/errname v0.1.6 // indirect
 	github.com/Antonboom/nilnil v0.1.1 // indirect
