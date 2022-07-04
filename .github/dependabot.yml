@@ -34,4 +34,28 @@ updates:
     directory: "/tcr-doc"
     schedule:
       interval: "daily"
+
+  # Maintain dependencies for maven in testsdata/java
+  - package-ecosystem: "maven"
+    directory: "/tcr-engine/testdata/java"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for gradle in testsdata/java
+  - package-ecosystem: "gradle"
+    directory: "/tcr-engine/testdata/java"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for go modules in testsdata/go
+  - package-ecosystem: "gomod"
+    directory: "/tcr-engine/testdata/go"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for Nuget in testsdata/csharp
+  - package-ecosystem: "gomod"
+    directory: "/tcr-engine/testdata/csharp"
+    schedule:
+      interval: "daily"
       
