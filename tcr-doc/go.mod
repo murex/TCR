@@ -42,7 +42,7 @@ require (
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/gopherjs/gopherwasm v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/imkira/go-observer v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
