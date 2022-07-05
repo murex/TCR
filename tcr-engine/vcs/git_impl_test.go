@@ -60,7 +60,13 @@ func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
 
 func Test_check_remote_access_on_current_repo(t *testing.T) {
 	g, _ := New(".")
-	assert.True(t, g.CheckRemoteAccess())
+	// Depending on where the test is run (local machine or CI), remote
+	// can be enabled or disabled, which has an influence on CheckRemoteAccess() result
+	if g.IsRemoteEnabled() {
+		assert.True(t, g.CheckRemoteAccess())
+	} else {
+		assert.False(t, g.CheckRemoteAccess())
+	}
 }
 
 func Test_check_remote_access_on_in_memory_repo(t *testing.T) {
