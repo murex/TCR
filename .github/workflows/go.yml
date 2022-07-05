@@ -93,7 +93,6 @@ jobs:
       #          go build -v ./...
 
       # This step must be executed after the test steps so that coverage data is sent to SonarCloud
-      # TODO Find a way to retrieve TCR version from git tag history
       - name: SonarCloud Scan
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: SonarSource/sonarcloud-github-action@master
