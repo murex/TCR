@@ -13,19 +13,19 @@ lint:
 vet:
 	@go vet --tags=test_helper ./...
 
+define RUN_TESTS =
+@mkdir -p _test_results
+@gotestsum --format pkgname --junitfile _test_results/output.xml -- $(1) -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
+@grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
+endef
+
 .PHONY: test
 test:
-	@mkdir -p _test_results
-	@echo ${SHORT_FLAG}
-	@gotestsum --format pkgname --junitfile _test_results/output.xml -- -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
-	@grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
+	$(call RUN_TESTS,)
 
-# TODO Find a way avoid replications between test and test-short targets
 .PHONY: test-short
 test-short:
-	@mkdir -p _test_results
-	@gotestsum --format pkgname --junitfile _test_results/output.xml -- -short -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
-	@grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
+	$(call RUN_TESTS,-short)
 
 .PHONY: cov
 cov:
