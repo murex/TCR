@@ -273,8 +273,8 @@ github.com/caarlos0/go-reddit/v3 v3.0.1/go.mod h1:QlwgmG5SAqxMeQvg/A2dD1x9cIZCO5
 github.com/caarlos0/go-rpmutils v0.2.1-0.20211112020245-2cd62ff89b11 h1:IRrDwVlWQr6kS1U8/EtyA1+EHcc4yl8pndcqXWrEamg=
 github.com/caarlos0/go-shellwords v1.0.12 h1:HWrUnu6lGbWfrDcFiHcZiwOLzHWjjrPVehULaTFgPp8=
 github.com/caarlos0/go-shellwords v1.0.12/go.mod h1:bYeeX1GrTLPl5cAMYEzdm272qdsQAZiaHgeF0KTk1Gw=
-github.com/caarlos0/log v0.1.0 h1:Y0QiCN6KiJ1N9Aa6OnWJI9A4Xa7Fv88Wd1J04G74wfE=
-github.com/caarlos0/log v0.1.0/go.mod h1:tnVRnjHtFPOMNYk6qiJA6tRC47MTXI+BEly06yVgcP4=
+github.com/caarlos0/log v0.1.1 h1:eVk0VPVXKB3nk18Gpj+LUZq81ojOamVQebt9wlf2VY4=
+github.com/caarlos0/log v0.1.1/go.mod h1:lYxaBNu0NYLm5tdxBysIb2LNhNUUFqNAzSHNu737Loo=
 github.com/caarlos0/sshmarshal v0.0.0-20220308164159-9ddb9f83c6b3 h1:w2ANoiT4ubmh4Nssa3/QW1M7lj3FZkma8f8V5aBDxXM=
 github.com/caarlos0/testfs v0.4.4 h1:3PHvzHi5Lt+g332CiShwS8ogTgS3HjrmzZxCm6JCDr8=
 github.com/caarlos0/testfs v0.4.4/go.mod h1:bRN55zgG4XCUVVHZCeU+/Tz1Q6AxEJOEJTliBy+1DMk=
@@ -291,8 +291,8 @@ github.com/cespare/xxhash/v2 v2.1.2/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/charithe/durationcheck v0.0.9 h1:mPP4ucLrf/rKZiIG/a9IPXHGlh8p4CzgpyTy6EEutYk=
 github.com/charithe/durationcheck v0.0.9/go.mod h1:SSbRIBVfMjCi/kEB6K65XEA83D6prSM8ap1UCpNKtgg=
 github.com/charmbracelet/keygen v0.3.0 h1:mXpsQcH7DDlST5TddmXNXjS0L7ECk4/kLQYyBcsan2Y=
-github.com/charmbracelet/lipgloss v0.5.1-0.20220604171933-77aae4ab0bf5 h1:FHeFmaVqTDMJSzaIYT8Dk4MjY8idNhO/+RWq5eITRFU=
-github.com/charmbracelet/lipgloss v0.5.1-0.20220604171933-77aae4ab0bf5/go.mod h1:zVjS7jlggirpJYwsdaMKFhT+0Y1pFdQGS9x7GIz9ov4=
+github.com/charmbracelet/lipgloss v0.5.1-0.20220615005615-2e17a8a06096 h1:ai19sA3Zyg3DARevWCbdLOWt+MfWiE3e8voBqzFOgP8=
+github.com/charmbracelet/lipgloss v0.5.1-0.20220615005615-2e17a8a06096/go.mod h1:D7uPgcyfB9T1Ug2mfJOnES17o47nz5oqIzSSVrpcviU=
 github.com/chavacava/garif v0.0.0-20220316182200-5cad0b5181d4 h1:tFXjAxje9thrTF4h57Ckik+scJjTWdwAtZqZPtOT48M=
 github.com/chavacava/garif v0.0.0-20220316182200-5cad0b5181d4/go.mod h1:W8EnPSQ8Nv4fUjc/v1/8tHFqhuOJXnRub0dTfuAQktU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
@@ -624,8 +624,8 @@ github.com/goreleaser/chglog v0.1.2 h1:tdzAb/ILeMnphzI9zQ7Nkq+T8R9qyXli8GydD8plF
 github.com/goreleaser/chglog v0.1.2/go.mod h1:tTZsFuSZK4epDXfjMkxzcGbrIOXprf0JFp47BjIr3B8=
 github.com/goreleaser/fileglob v1.3.0 h1:/X6J7U8lbDpQtBvGcwwPS6OpzkNVlVEsFUVRx9+k+7I=
 github.com/goreleaser/fileglob v1.3.0/go.mod h1:Jx6BoXv3mbYkEzwm9THo7xbr5egkAraxkGorbJb4RxU=
-github.com/goreleaser/goreleaser v1.10.0 h1:e1nWuORhYJ1ZOhzrXtn/rRH8v1zs7vhyHTAy52Zcwxo=
-github.com/goreleaser/goreleaser v1.10.0/go.mod h1:pOyFfsJx0ddkFc0Gqd1yYw3MvMwPBqhRfo58DCj9RyM=
+github.com/goreleaser/goreleaser v1.10.1 h1:NXCiqc4DJAG0y+iXDZKQew+0logeuZhYrCn4KZOrF0o=
+github.com/goreleaser/goreleaser v1.10.1/go.mod h1:v/KOnl75QsSrZlRseh24QI2EpZgahyU4UoIVt8AT2Yg=
 github.com/goreleaser/nfpm/v2 v2.16.0 h1:RtItVwSL3xqe698CkmIOfiQh4/BQANIa4yvyBERrNeo=
 github.com/goreleaser/nfpm/v2 v2.16.0/go.mod h1:NlB1cCZj68NG7ZJA6eJ1dSeX3V0UWfw30itwHvT6HPw=
 github.com/gorhill/cronexpr v0.0.0-20180427100037-88b0669f7d75/go.mod h1:g2644b03hfBX9Ov0ZBDgXXens4rxSxmqFBbhvKv2yVA=
@@ -926,9 +926,8 @@ github.com/muesli/reflow v0.2.1-0.20210115123740-9e1d0d53df68 h1:y1p/ycavWjGT9Fn
 github.com/muesli/reflow v0.2.1-0.20210115123740-9e1d0d53df68/go.mod h1:Xk+z4oIWdQqJzsxyjgl3P22oYZnHdZ8FFTHAQQt5BMQ=
 github.com/muesli/roff v0.1.0 h1:YD0lalCotmYuF5HhZliKWlIx7IEhiXeSfq7hNjFqGF8=
 github.com/muesli/roff v0.1.0/go.mod h1:pjAHQM9hdUUwm/krAfrLGgJkXJ+YuhtsfZ42kieB2Ig=
-github.com/muesli/termenv v0.12.1-0.20220604163637-eddc39a244f4/go.mod h1:bN6sPNtkiahdhHv2Xm6RGU16LSCxfbIZvMfqjOCfrR4=
-github.com/muesli/termenv v0.12.1-0.20220606102431-9500d1649068 h1:Tg+qMMarOW1WJTM6xh8GweXRIvByM4Mtj6QTO6SB7EI=
-github.com/muesli/termenv v0.12.1-0.20220606102431-9500d1649068/go.mod h1:bN6sPNtkiahdhHv2Xm6RGU16LSCxfbIZvMfqjOCfrR4=
+github.com/muesli/termenv v0.12.1-0.20220615005108-4e9068de9898 h1:0j+cbZdhLgpNxjg0nWCasHUA82fgWOXxxGgWNVOLS1I=
+github.com/muesli/termenv v0.12.1-0.20220615005108-4e9068de9898/go.mod h1:bN6sPNtkiahdhHv2Xm6RGU16LSCxfbIZvMfqjOCfrR4=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-proto-validators v0.0.0-20180403085117-0950a7990007/go.mod h1:m2XC9Qq0AlmmVksL6FktJCdTYyLk7V3fKyp0sl1yWQo=
