@@ -43,7 +43,7 @@ func checkGitCommand() (cp []CheckPoint) {
 	}
 	cp = append(cp, okCheckPoint("git command path is ", vcs.GetGitCommandPath()))
 	cp = append(cp, okCheckPoint("git version is ", vcs.GetGitCommandVersion()))
-	// TODO check git minimum version?
+	// We could add here a check on git minimum version. No specific need for now.
 	return
 }
 
