@@ -24,7 +24,9 @@ package vcs
 
 import (
 	"errors"
+	"github.com/go-git/go-git/v5"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -111,7 +113,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{"some-file.txt", 1, 1},
+				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
 		{"2 files changed",
@@ -120,8 +122,8 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{"file1.txt", 1, 1},
-				{"file2.txt", 1, 1},
+				{filepath.Join("/", "file1.txt"), 1, 1},
+				{filepath.Join("/", "file2.txt"), 1, 1},
 			},
 		},
 		{"file changed in sub-directory",
@@ -130,7 +132,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{filepath.Join("some-dir", "some-file.txt"), 1, 1},
+				{filepath.Join("/", "some-dir", "some-file.txt"), 1, 1},
 			},
 		},
 		{"1 file changed with added lines only",
@@ -139,7 +141,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{"some-file.txt", 15, 0},
+				{filepath.Join("/", "some-file.txt"), 15, 0},
 			},
 		},
 		{"1 file changed with removed lines only",
@@ -148,7 +150,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{"some-file.txt", 0, 7},
+				{filepath.Join("/", "some-file.txt"), 0, 7},
 			},
 		},
 		{"noise in output trace",
@@ -159,19 +161,17 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			[]FileDiff{
-				{"some-file.txt", 1, 1},
+				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				runGitFunction: func(args []string) (output []byte, err error) {
-					actualArgs = args[2:]
-					return []byte(tt.gitDiffOutput), tt.gitDiffError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.runGitFunction = func(args []string) (output []byte, err error) {
+				actualArgs = args[2:]
+				return []byte(tt.gitDiffOutput), tt.gitDiffError
 			}
 			fileDiffs, err := g.Diff()
 			if tt.expectError {
@@ -226,15 +226,14 @@ func Test_git_push_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(_ []string) (err error) {
-					return tt.gitError
-				},
-				pushEnabled:   tt.pushEnabled,
-				remoteEnabled: true,
-				remoteName:    DefaultRemoteName,
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(_ []string) (err error) {
+				return tt.gitError
 			}
+			g.pushEnabled = tt.pushEnabled
+			g.remoteEnabled = true
+			g.remoteName = DefaultRemoteName
+
 			err := g.Push()
 			if tt.expectError {
 				assert.Error(t, err)
@@ -280,15 +279,14 @@ func Test_git_pull_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(_ []string) (err error) {
-					return tt.gitError
-				},
-				remoteEnabled:               true,
-				remoteName:                  DefaultRemoteName,
-				workingBranchExistsOnRemote: tt.branchOnRemote,
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(_ []string) (err error) {
+				return tt.gitError
 			}
+			g.remoteEnabled = true
+			g.remoteName = DefaultRemoteName
+			g.workingBranchExistsOnRemote = tt.branchOnRemote
+
 			err := g.Pull()
 			if tt.expectError {
 				assert.Error(t, err)
@@ -339,13 +337,12 @@ func Test_git_add_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(args []string) (err error) {
-					actualArgs = args[2:]
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(args []string) (err error) {
+				actualArgs = args[2:]
+				return tt.gitError
 			}
+
 			err := g.Add(tt.paths...)
 			if tt.expectError {
 				assert.Error(t, err)
@@ -405,12 +402,10 @@ func Test_git_commit_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(args []string) (err error) {
-					actualArgs = args[2:]
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(args []string) error {
+				actualArgs = args[2:]
+				return tt.gitError
 			}
 			err := g.Commit(tt.amend, tt.messages...)
 			if tt.expectError {
@@ -442,12 +437,11 @@ func Test_git_restore_command(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(_ []string) (err error) {
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(_ []string) (err error) {
+				return tt.gitError
 			}
+
 			err := g.Restore("some-path")
 			if tt.expectError {
 				assert.Error(t, err)
@@ -481,13 +475,12 @@ func Test_git_revert_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(args []string) (err error) {
-					actualArgs = args[2:]
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(args []string) (err error) {
+				actualArgs = args[2:]
+				return tt.gitError
 			}
+
 			err := g.Revert()
 			if tt.expectError {
 				assert.Error(t, err)
@@ -525,13 +518,12 @@ func Test_git_stash_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(args []string) (err error) {
-					actualArgs = args[2:]
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(args []string) (err error) {
+				actualArgs = args[2:]
+				return tt.gitError
 			}
+
 			err := g.Stash(tt.message)
 			if tt.expectError {
 				assert.Error(t, err)
@@ -583,13 +575,12 @@ func Test_git_unstash_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g := &GitImpl{
-				// git command calls are faked
-				traceGitFunction: func(args []string) (err error) {
-					actualArgs = args[2:]
-					return tt.gitError
-				},
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.traceGitFunction = func(args []string) (err error) {
+				actualArgs = args[2:]
+				return tt.gitError
 			}
+
 			err := g.UnStash(tt.keep)
 			if tt.expectError {
 				assert.Error(t, err)
@@ -597,6 +588,89 @@ func Test_git_unstash_command(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.expectedArgs, actualArgs)
+		})
+	}
+}
+
+func Test_nothing_to_commit(t *testing.T) {
+	testFlags := []struct {
+		desc           string
+		gitInitializer func() *gitImpl
+		expected       bool
+	}{
+		{
+			"with empty working tree",
+			func() *gitImpl {
+				g, _ := newGitImpl(inMemoryRepoInit, "")
+				return g
+			},
+			true,
+		},
+		{
+			"with a new file",
+			func() *gitImpl {
+				g, _ := newGitImpl(inMemoryRepoInit, "")
+				filePath := "my-file.txt"
+				newFile, _ := g.filesystem.Create(filePath)
+				_, _ = newFile.Write([]byte("My new file\n"))
+				_ = newFile.Close()
+				return g
+			},
+			false,
+		},
+		{
+			"with a new added uncommitted file",
+			func() *gitImpl {
+				g, _ := newGitImpl(inMemoryRepoInit, "")
+				filePath := "my-file.txt"
+				newFile, _ := g.filesystem.Create(filePath)
+				_, _ = newFile.Write([]byte("My new file\n"))
+				_ = newFile.Close()
+				worktree, _ := g.repository.Worktree()
+				_, _ = worktree.Add(filePath)
+				return g
+			},
+			false,
+		},
+		{
+			"with a committed file",
+			func() *gitImpl {
+				g, _ := newGitImpl(inMemoryRepoInit, "")
+				filePath := "my-file.txt"
+				newFile, _ := g.filesystem.Create(filePath)
+				_, _ = newFile.Write([]byte("My new file\n"))
+				_ = newFile.Close()
+				worktree, _ := g.repository.Worktree()
+				_, _ = worktree.Add(filePath)
+				_, _ = worktree.Commit("", &git.CommitOptions{})
+				return g
+			},
+			true,
+		},
+		{
+			"with a modified file",
+			func() *gitImpl {
+				g, _ := newGitImpl(inMemoryRepoInit, "")
+				filePath := "my-file.txt"
+				newFile, _ := g.filesystem.Create(filePath)
+				_, _ = newFile.Write([]byte("My new file\n"))
+				_ = newFile.Close()
+				worktree, _ := g.repository.Worktree()
+				_, _ = worktree.Add(filePath)
+				_, _ = worktree.Commit("", &git.CommitOptions{})
+				openFile, _ := g.filesystem.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0644)
+				_, _ = openFile.Write([]byte("A new line\n"))
+				_ = openFile.Close()
+				return g
+			},
+			false,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			g := tt.gitInitializer()
+			assert.Equal(t, tt.expected, g.nothingToCommit())
 		})
 	}
 }
