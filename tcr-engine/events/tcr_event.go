@@ -80,3 +80,8 @@ func NewChangedLines(srcLines, testLines int) ChangedLines {
 func (event TcrEvent) ToYaml() string {
 	return tcrEventToYaml(event)
 }
+
+// FromYaml converts a a yaml string to a TcrEvent
+func FromYaml(yaml string) TcrEvent {
+	return yamlToTcrEvent(yaml)
+}

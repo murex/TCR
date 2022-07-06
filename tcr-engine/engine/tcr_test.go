@@ -523,3 +523,69 @@ func Test_tcr_print_log(t *testing.T) {
 		})
 	}
 }
+
+func Test_parse_commit_message(t *testing.T) {
+	testFlags := []struct {
+		desc             string
+		commitMessage    string
+		expectedTitle    string
+		expectedTcrEvent events.TcrEvent
+	}{
+		{
+			desc:             "empty commit message",
+			commitMessage:    "",
+			expectedTitle:    "",
+			expectedTcrEvent: events.TcrEvent{},
+		},
+		{
+			desc: "test-passing commit",
+			commitMessage: "✅ TCR - tests passing\n" +
+				"\n" +
+				"changed-lines:\n" +
+				"    src: 2\n" +
+				"    test: 7\n" +
+				"test-stats:\n" +
+				"    run: 1\n" +
+				"    passed: 1\n" +
+				"    failed: 0\n" +
+				"    skipped: 1\n" +
+				"    error: 0\n" +
+				"    duration: 2ms\n" +
+				"\n",
+			expectedTitle: commitMessageOk,
+			expectedTcrEvent: events.NewTcrEvent(
+				events.NewChangedLines(2, 7),
+				events.NewTestStats(1, 1, 0, 1, 0, 2*time.Millisecond),
+			),
+		},
+		{
+			desc: "test-failing commit",
+			commitMessage: "❌ TCR - tests failing\n" +
+				"\n" +
+				"changed-lines:\n" +
+				"    src: 1\n" +
+				"    test: 3\n" +
+				"test-stats:\n" +
+				"    run: 10\n" +
+				"    passed: 8\n" +
+				"    failed: 2\n" +
+				"    skipped: 1\n" +
+				"    error: 0\n" +
+				"    duration: 40ms\n" +
+				"\n",
+			expectedTitle: commitMessageFail,
+			expectedTcrEvent: events.NewTcrEvent(
+				events.NewChangedLines(1, 3),
+				events.NewTestStats(10, 8, 2, 1, 0, 40*time.Millisecond),
+			),
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			title, event := parseCommitMessage(tt.commitMessage)
+			assert.Equal(t, tt.expectedTitle, title)
+			assert.Equal(t, tt.expectedTcrEvent, event)
+		})
+	}
+}

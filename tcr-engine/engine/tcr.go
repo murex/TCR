@@ -182,6 +182,17 @@ func (tcr *TcrEngine) PrintLog(params params.Params) {
 	}
 }
 
+func parseCommitMessage(message string) (string, events.TcrEvent) {
+	// First line is the main commit message
+	// Second line is a blank line
+	// The yaml-structured data starts on the third line
+	parts := strings.SplitN(message, "\n", 3)
+	if len(parts) == 3 {
+		return parts[0], events.FromYaml(parts[2])
+	}
+	return "", events.TcrEvent{}
+}
+
 func (tcr *TcrEngine) initVcs() {
 	if tcr.vcs == nil {
 		var err error
@@ -195,7 +206,6 @@ func (tcr *TcrEngine) initSourceTree(params params.Params) {
 	tcr.sourceTree, err = filesystem.New(params.BaseDir)
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
-	return
 }
 
 func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {
