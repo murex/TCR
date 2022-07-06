@@ -25,10 +25,12 @@ package vcs
 import (
 	"errors"
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
@@ -642,7 +644,8 @@ func Test_nothing_to_commit(t *testing.T) {
 				_ = newFile.Close()
 				worktree, _ := g.repository.Worktree()
 				_, _ = worktree.Add(filePath)
-				_, _ = worktree.Commit("", &git.CommitOptions{})
+				_, _ = worktree.Commit("", &git.CommitOptions{
+					Author: &object.Signature{Name: "John Doe", Email: "john@doe.org", When: time.Now()}})
 				return g
 			},
 			true,
@@ -657,7 +660,8 @@ func Test_nothing_to_commit(t *testing.T) {
 				_ = newFile.Close()
 				worktree, _ := g.repository.Worktree()
 				_, _ = worktree.Add(filePath)
-				_, _ = worktree.Commit("", &git.CommitOptions{})
+				_, _ = worktree.Commit("", &git.CommitOptions{
+					Author: &object.Signature{Name: "John Doe", Email: "john@doe.org", When: time.Now()}})
 				openFile, _ := g.filesystem.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0644)
 				_, _ = openFile.Write([]byte("A new line\n"))
 				_ = openFile.Close()
