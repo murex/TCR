@@ -9,7 +9,7 @@ replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 require (
 	fyne.io/fyne/v2 v2.2.2
 	github.com/golangci/golangci-lint v1.46.2
-	github.com/goreleaser/goreleaser v1.10.1
+	github.com/goreleaser/goreleaser v1.10.2
 	github.com/murex/tcr/tcr-cli v0.0.0-20220414085711-8ca37ca267ec
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.5.0
@@ -179,7 +179,7 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/imkira/go-observer v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/invopop/jsonschema v0.4.0 // indirect
+	github.com/invopop/jsonschema v0.5.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jgautheron/goconst v1.5.1 // indirect
 	github.com/jingyugao/rowserrcheck v1.1.1 // indirect
