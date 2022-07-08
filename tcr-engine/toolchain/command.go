@@ -50,6 +50,23 @@ type (
 		Path      string
 		Arguments []string
 	}
+
+	// CommandStatus is the result status of a Command execution
+	CommandStatus string
+
+	// CommandResult contains the result from running a Command
+	// - Status
+	CommandResult struct {
+		Status CommandStatus
+		Output string
+	}
+)
+
+// List of possible values for CommandStatus
+const (
+	CommandStatusPass    CommandStatus = "pass"
+	CommandStatusFail    CommandStatus = "fail"
+	CommandStatusUnknown CommandStatus = "unknown"
 )
 
 // List of possible values for OsName
@@ -102,14 +119,22 @@ func (command Command) runsWithArch(arch ArchName) bool {
 	return false
 }
 
-func (command Command) run() (output string, err error) {
+func (command Command) run() (output string, result CommandResult, err error) {
+	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
 	report.PostText(command.asCommandLine())
 	session := sh.NewSession().SetDir(GetWorkDir())
 	var outputBytes []byte
 	outputBytes, err = session.Command(command.Path, command.Arguments).CombinedOutput()
+	if err != nil {
+		result.Status = CommandStatusFail
+	} else {
+		result.Status = CommandStatusPass
+	}
+
 	if outputBytes != nil {
 		output = string(outputBytes)
-		report.PostText(output)
+		result.Output = output
+		report.PostText(result.Output)
 	}
 	return
 }

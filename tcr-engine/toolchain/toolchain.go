@@ -51,8 +51,8 @@ type (
 		GetTestCommands() []Command
 		GetTestResultDir() string
 		GetTestResultPath() string
-		RunBuild() error
-		RunTests() (TestStats, error)
+		RunBuild() (result CommandResult, err error)
+		RunTests() (result CommandResult, testStats TestStats, err error)
 		checkName() error
 		BuildCommandLine() string
 		BuildCommandPath() string
@@ -143,14 +143,14 @@ func (tchn Toolchain) GetTestCommands() []Command {
 }
 
 // RunBuild runs the build with this toolchain
-func (tchn Toolchain) RunBuild() error {
-	_, err := findCompatibleCommand(tchn.buildCommands).run()
-	return err
+func (tchn Toolchain) RunBuild() (result CommandResult, err error) {
+	_, result, err = findCompatibleCommand(tchn.buildCommands).run()
+	return
 }
 
 // RunTests runs the tests with this toolchain
-func (tchn Toolchain) RunTests() (testStats TestStats, err error) {
-	_, err = findCompatibleCommand(tchn.testCommands).run()
+func (tchn Toolchain) RunTests() (result CommandResult, testStats TestStats, err error) {
+	_, result, err = findCompatibleCommand(tchn.testCommands).run()
 	testStats, _ = tchn.parseTestReport()
 	return
 }

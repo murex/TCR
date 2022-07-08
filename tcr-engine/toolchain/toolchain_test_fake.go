@@ -79,19 +79,23 @@ func (tchn FakeToolchain) checkTestCommand() error {
 
 // RunBuild returns an error if build is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunBuild() error {
+func (tchn FakeToolchain) RunBuild() (result CommandResult, err error) {
 	return tchn.fakeOperation(BuildOperation)
 }
 
 // RunTests returns an error if test is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunTests() (TestStats, error) {
-	return tchn.testStats, tchn.fakeOperation(TestOperation)
+func (tchn FakeToolchain) RunTests() (result CommandResult, testStats TestStats, err error) {
+	result, err = tchn.fakeOperation(TestOperation)
+	return result, tchn.testStats, err
 }
 
-func (tchn FakeToolchain) fakeOperation(operation Operation) (err error) {
+func (tchn FakeToolchain) fakeOperation(operation Operation) (result CommandResult, err error) {
 	if tchn.failingOperations.contains(operation) {
 		err = errors.New("toolchain " + string(operation) + " fake error")
+		result = CommandResult{Status: CommandStatusFail, Output: "toolchain " + string(operation) + " fake error"}
+	} else {
+		result = CommandResult{Status: CommandStatusPass, Output: ""}
 	}
 	return
 }

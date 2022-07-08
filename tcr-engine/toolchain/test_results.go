@@ -24,15 +24,17 @@ package toolchain
 
 import "time"
 
-// TestStats is the structure containing information of the test run
-type TestStats struct {
-	TotalRun   int
-	Passed     int
-	Failed     int
-	Skipped    int
-	WithErrors int
-	Duration   time.Duration
-}
+type (
+	// TestStats is the structure containing information of the test run
+	TestStats struct {
+		TotalRun   int
+		Passed     int
+		Failed     int
+		Skipped    int
+		WithErrors int
+		Duration   time.Duration
+	}
+)
 
 // NewTestStats create a new instance of the TestStats class
 func NewTestStats(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestStats {

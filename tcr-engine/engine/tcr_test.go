@@ -44,53 +44,48 @@ import (
 
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
-		desc           string
-		command        func() error
-		expectedStatus status.Status
-		expectingError bool
+		desc              string
+		command           func() toolchain.CommandResult
+		expectedCmdStatus toolchain.CommandStatus
+		expectedAppStatus status.Status
 	}{
 		{
 			"build with no failure",
-			func() error {
+			func() toolchain.CommandResult {
 				return initTcrEngineWithFakes(nil, nil, nil, nil).build()
 			},
-			status.Ok, false,
+			toolchain.CommandStatusPass, status.Ok,
 		},
 		{
 			"build with failure",
-			func() error {
+			func() toolchain.CommandResult {
 				return initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.BuildOperation}, nil, nil).build()
 			},
-			status.BuildFailed, true,
+			toolchain.CommandStatusFail, status.BuildFailed,
 		},
 		{
 			"test with no failure",
-			func() error {
-				_, err := initTcrEngineWithFakes(nil, nil, nil, nil).test()
-				return err
+			func() toolchain.CommandResult {
+				_, result := initTcrEngineWithFakes(nil, nil, nil, nil).test()
+				return result
 			},
-			status.Ok, false,
+			toolchain.CommandStatusPass, status.Ok,
 		},
 		{
 			"test with failure",
-			func() error {
-				_, err := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil).test()
-				return err
+			func() toolchain.CommandResult {
+				_, result := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil).test()
+				return result
 			},
-			status.TestFailed, true,
+			toolchain.CommandStatusFail, status.TestFailed,
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			status.RecordState(status.Ok)
-			err := tt.command()
-			if tt.expectingError {
-				assert.Error(t, err)
-			} else {
-				assert.Zero(t, err)
-			}
-			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
+			assert.Equal(t, tt.expectedCmdStatus, tt.command().Status)
+			assert.Equal(t, tt.expectedAppStatus, status.GetCurrentState())
 		})
 	}
 }
