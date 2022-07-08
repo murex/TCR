@@ -301,7 +301,7 @@ func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operat
 }
 
 func registerFakeToolchain(failures toolchain.Operations) string {
-	fake := toolchain.NewFakeToolchain(failures, toolchain.TestResults{})
+	fake := toolchain.NewFakeToolchain(failures, toolchain.TestStats{})
 	if err := toolchain.Register(fake); err != nil {
 		fmt.Println(err)
 	}

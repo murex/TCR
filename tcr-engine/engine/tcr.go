@@ -57,7 +57,7 @@ type (
 		Stop()
 		RunTCRCycle()
 		build() error
-		test() (toolchain.TestResults, error)
+		test() (toolchain.TestStats, error)
 		commit(event events.TcrEvent)
 		revert(events.TcrEvent)
 		GetSessionInfo() SessionInfo
@@ -350,7 +350,7 @@ func (tcr *TcrEngine) RunTCRCycle() {
 	}
 }
 
-func (tcr *TcrEngine) createTcrEvent(testResults toolchain.TestResults) (event events.TcrEvent) {
+func (tcr *TcrEngine) createTcrEvent(testStats toolchain.TestStats) (event events.TcrEvent) {
 	changedFiles, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -361,12 +361,12 @@ func (tcr *TcrEngine) createTcrEvent(testResults toolchain.TestResults) (event e
 			computeTestLinesChanged(tcr.language, changedFiles),
 		),
 		events.NewTestStats(
-			testResults.TotalRun,
-			testResults.Passed,
-			testResults.Failed,
-			testResults.Skipped,
-			testResults.WithErrors,
-			testResults.Duration,
+			testStats.TotalRun,
+			testStats.Passed,
+			testStats.Failed,
+			testStats.Skipped,
+			testStats.WithErrors,
+			testStats.Duration,
 		),
 	)
 }
@@ -381,9 +381,9 @@ func (tcr *TcrEngine) build() error {
 	return err
 }
 
-func (tcr *TcrEngine) test() (testResults toolchain.TestResults, err error) {
+func (tcr *TcrEngine) test() (testStats toolchain.TestStats, err error) {
 	report.PostInfo("Running Tests")
-	testResults, err = tcr.toolchain.RunTests()
+	testStats, err = tcr.toolchain.RunTests()
 	if err != nil {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")

@@ -24,8 +24,8 @@ package toolchain
 
 import "time"
 
-// TestResults is the structure containing information of the test run
-type TestResults struct {
+// TestStats is the structure containing information of the test run
+type TestStats struct {
 	TotalRun   int
 	Passed     int
 	Failed     int
@@ -34,9 +34,9 @@ type TestResults struct {
 	Duration   time.Duration
 }
 
-// NewTestResults create a new instance of the TestResults class
-func NewTestResults(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestResults {
-	return TestResults{
+// NewTestStats create a new instance of the TestStats class
+func NewTestStats(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestStats {
+	return TestStats{
 		TotalRun:   totalRun,
 		Failed:     failed,
 		Passed:     passed,

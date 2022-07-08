@@ -53,11 +53,11 @@ func (operations Operations) contains(operation Operation) bool {
 type FakeToolchain struct {
 	Toolchain
 	failingOperations Operations
-	testResults       TestResults
+	testStats         TestStats
 }
 
 // NewFakeToolchain creates a FakeToolchain instance
-func NewFakeToolchain(failingOperations Operations, testResults TestResults) *FakeToolchain {
+func NewFakeToolchain(failingOperations Operations, testStats TestStats) *FakeToolchain {
 	return &FakeToolchain{
 		Toolchain: Toolchain{
 			name:          "fake-toolchain",
@@ -65,7 +65,7 @@ func NewFakeToolchain(failingOperations Operations, testResults TestResults) *Fa
 			testCommands:  nil,
 		},
 		failingOperations: failingOperations,
-		testResults:       testResults,
+		testStats:         testStats,
 	}
 }
 
@@ -85,8 +85,8 @@ func (tchn FakeToolchain) RunBuild() error {
 
 // RunTests returns an error if test is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunTests() (TestResults, error) {
-	return tchn.testResults, tchn.fakeOperation(TestOperation)
+func (tchn FakeToolchain) RunTests() (TestStats, error) {
+	return tchn.testStats, tchn.fakeOperation(TestOperation)
 }
 
 func (tchn FakeToolchain) fakeOperation(operation Operation) (err error) {

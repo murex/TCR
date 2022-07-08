@@ -52,7 +52,7 @@ type (
 		GetTestResultDir() string
 		GetTestResultPath() string
 		RunBuild() error
-		RunTests() (TestResults, error)
+		RunTests() (TestStats, error)
 		checkName() error
 		BuildCommandLine() string
 		BuildCommandPath() string
@@ -149,9 +149,9 @@ func (tchn Toolchain) RunBuild() error {
 }
 
 // RunTests runs the tests with this toolchain
-func (tchn Toolchain) RunTests() (testResults TestResults, err error) {
+func (tchn Toolchain) RunTests() (testStats TestStats, err error) {
 	_, err = findCompatibleCommand(tchn.testCommands).run()
-	testResults, _ = tchn.parseTestResults()
+	testStats, _ = tchn.parseTestReport()
 	return
 }
 
@@ -203,21 +203,21 @@ func (tchn Toolchain) CheckCommandAccess(cmdPath string) (string, error) {
 	return checkCommandPath(cmdPath)
 }
 
-func (tchn Toolchain) parseTestResults() (TestResults, error) {
+func (tchn Toolchain) parseTestReport() (TestStats, error) {
 	parser := xunit.NewParser()
 	err := parser.ParseDir(tchn.GetTestResultPath())
 	if err != nil {
 		report.PostWarning(err)
-		return TestResults{}, err
+		return TestStats{}, err
 	}
-	return TestResults{
-		TotalRun:   parser.Stats.Run,
-		Passed:     parser.Stats.Passed,
-		Failed:     parser.Stats.Failed,
-		Skipped:    parser.Stats.Skipped,
-		WithErrors: parser.Stats.InError,
-		Duration:   parser.Stats.Duration,
-	}, nil
+	return NewTestStats(
+		parser.Stats.Run,
+		parser.Stats.Passed,
+		parser.Stats.Failed,
+		parser.Stats.Skipped,
+		parser.Stats.InError,
+		parser.Stats.Duration,
+	), nil
 }
 
 // GetTestResultPath provides the absolute path to the test result directory
