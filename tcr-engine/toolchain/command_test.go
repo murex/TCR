@@ -28,36 +28,38 @@ import (
 	"testing"
 )
 
-func Test_os_darwin_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllOsNames(), OsName("darwin"))
+func Test_recognized_os(t *testing.T) {
+	testFlags := []struct {
+		osName   string
+		expected bool
+	}{
+		{"darwin", true},
+		{"linux", true},
+		{"windows", true},
+		{"dummy", false},
+	}
+	for _, tt := range testFlags {
+		t.Run(fmt.Sprint(tt.osName, "-", tt.expected), func(t *testing.T) {
+			assert.Equal(t, tt.expected, ACommand().runsWithOs(OsName(tt.osName)))
+		})
+	}
 }
 
-func Test_os_linux_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllOsNames(), OsName("linux"))
-}
-
-func Test_os_windows_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllOsNames(), OsName("windows"))
-}
-
-func Test_arch_386_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllArchNames(), ArchName("386"))
-}
-
-func Test_arch_amd64_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllArchNames(), ArchName("amd64"))
-}
-
-func Test_arch_arm64_is_recognized(t *testing.T) {
-	assert.Contains(t, GetAllArchNames(), ArchName("arm64"))
-}
-
-func Test_unrecognized_os(t *testing.T) {
-	assert.False(t, ACommand().runsWithOs(OsName("dummy")))
-}
-
-func Test_unrecognized_architecture(t *testing.T) {
-	assert.False(t, ACommand().runsWithArch(ArchName("dummy")))
+func Test_recognized_arch(t *testing.T) {
+	testFlags := []struct {
+		archName string
+		expected bool
+	}{
+		{"386", true},
+		{"amd64", true},
+		{"arm64", true},
+		{"dummy", false},
+	}
+	for _, tt := range testFlags {
+		t.Run(fmt.Sprint(tt.archName, "-", tt.expected), func(t *testing.T) {
+			assert.Equal(t, tt.expected, ACommand().runsWithArch(ArchName(tt.archName)))
+		})
+	}
 }
 
 func Test_unrecognized_platform(t *testing.T) {
