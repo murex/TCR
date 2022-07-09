@@ -129,21 +129,21 @@ func (command Command) runsWithArch(arch ArchName) bool {
 	return false
 }
 
-func (command Command) run() (output string, result CommandResult, err error) {
+func (command Command) run() (result CommandResult) {
 	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
 	report.PostText(command.asCommandLine())
+
 	session := sh.NewSession().SetDir(GetWorkDir())
-	var outputBytes []byte
-	outputBytes, err = session.Command(command.Path, command.Arguments).CombinedOutput()
-	if err != nil {
-		result.Status = CommandStatusFail
-	} else {
+	outputBytes, err := session.Command(command.Path, command.Arguments).CombinedOutput()
+
+	if err == nil {
 		result.Status = CommandStatusPass
+	} else {
+		result.Status = CommandStatusFail
 	}
 
 	if outputBytes != nil {
-		output = string(outputBytes)
-		result.Output = output
+		result.Output = string(outputBytes)
 		report.PostText(result.Output)
 	}
 	return

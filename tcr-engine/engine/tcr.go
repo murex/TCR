@@ -373,7 +373,7 @@ func (tcr *TcrEngine) createTcrEvent(testStats toolchain.TestStats) (event event
 
 func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 	report.PostInfo("Launching Build")
-	result, _ = tcr.toolchain.RunBuild()
+	result = tcr.toolchain.RunBuild()
 	if result.Failed() {
 		status.RecordState(status.BuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
@@ -383,7 +383,7 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 
 func (tcr *TcrEngine) test() (testStats toolchain.TestStats, result toolchain.CommandResult) {
 	report.PostInfo("Running Tests")
-	result, testStats, _ = tcr.toolchain.RunTests()
+	result, testStats = tcr.toolchain.RunTests()
 	if result.Failed() {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")

@@ -24,8 +24,6 @@ SOFTWARE.
 
 package toolchain
 
-import "errors"
-
 type (
 	// Operation is the name of a toolchain operation
 	Operation string
@@ -79,20 +77,18 @@ func (tchn FakeToolchain) checkTestCommand() error {
 
 // RunBuild returns an error if build is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunBuild() (result CommandResult, err error) {
+func (tchn FakeToolchain) RunBuild() (result CommandResult) {
 	return tchn.fakeOperation(BuildOperation)
 }
 
 // RunTests returns an error if test is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunTests() (result CommandResult, testStats TestStats, err error) {
-	result, err = tchn.fakeOperation(TestOperation)
-	return result, tchn.testStats, err
+func (tchn FakeToolchain) RunTests() (result CommandResult, testStats TestStats) {
+	return tchn.fakeOperation(TestOperation), tchn.testStats
 }
 
-func (tchn FakeToolchain) fakeOperation(operation Operation) (result CommandResult, err error) {
+func (tchn FakeToolchain) fakeOperation(operation Operation) (result CommandResult) {
 	if tchn.failingOperations.contains(operation) {
-		err = errors.New("toolchain " + string(operation) + " fake error")
 		result = CommandResult{Status: CommandStatusFail, Output: "toolchain " + string(operation) + " fake error"}
 	} else {
 		result = CommandResult{Status: CommandStatusPass, Output: ""}

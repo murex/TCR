@@ -72,8 +72,7 @@ func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			result, _ := toolchain.RunBuild()
-			assert.Equal(t, result.Status, CommandStatusFail)
+			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusFail)
 		})
 }
 
@@ -81,8 +80,7 @@ func assertNoErrorWhenBuildPasses(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			result, _ := toolchain.RunBuild()
-			assert.Equal(t, result.Status, CommandStatusPass)
+			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusPass)
 		})
 }
 
@@ -90,7 +88,7 @@ func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			result, _, _ := toolchain.RunTests()
+			result, _ := toolchain.RunTests()
 			assert.Equal(t, result.Status, CommandStatusFail)
 		})
 }
@@ -99,7 +97,7 @@ func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
 	toolchain, _ := GetToolchain(name)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			result, _, _ := toolchain.RunTests()
+			result, _ := toolchain.RunTests()
 			assert.Equal(t, result.Status, CommandStatusPass)
 		})
 }
