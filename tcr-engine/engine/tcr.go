@@ -338,12 +338,12 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
 func (tcr *TcrEngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
-	if tcr.build().Status != toolchain.CommandStatusPass {
+	if tcr.build().Failed() {
 		return
 	}
 	stats, result := tcr.test()
 	event := tcr.createTcrEvent(stats)
-	if result.Status == toolchain.CommandStatusPass {
+	if result.Passed() {
 		tcr.commit(event)
 	} else {
 		tcr.revert(event)
@@ -374,7 +374,7 @@ func (tcr *TcrEngine) createTcrEvent(testStats toolchain.TestStats) (event event
 func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 	report.PostInfo("Launching Build")
 	result, _ = tcr.toolchain.RunBuild()
-	if result.Status == toolchain.CommandStatusFail {
+	if result.Failed() {
 		status.RecordState(status.BuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
 	}
@@ -384,7 +384,7 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 func (tcr *TcrEngine) test() (testStats toolchain.TestStats, result toolchain.CommandResult) {
 	report.PostInfo("Running Tests")
 	result, testStats, _ = tcr.toolchain.RunTests()
-	if result.Status == toolchain.CommandStatusFail {
+	if result.Failed() {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}

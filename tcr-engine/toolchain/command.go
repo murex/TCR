@@ -62,6 +62,16 @@ type (
 	}
 )
 
+// Failed indicates is a Command failed
+func (r CommandResult) Failed() bool {
+	return r.Status == CommandStatusFail
+}
+
+// Passed indicates is a Command passed
+func (r CommandResult) Passed() bool {
+	return r.Status == CommandStatusPass
+}
+
 // List of possible values for CommandStatus
 const (
 	CommandStatusPass    CommandStatus = "pass"

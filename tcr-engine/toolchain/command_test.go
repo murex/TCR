@@ -133,3 +133,23 @@ func Test_a_command_arch_cannot_be_empty(t *testing.T) {
 func Test_a_valid_command_should_have_path_os_and_arch_non_empty(t *testing.T) {
 	assert.NoError(t, ACommand(WithPath("some-path"), WithOs("some-os"), WithArch("some-arch")).check())
 }
+
+func Test_command_result_outcome(t *testing.T) {
+
+	testFlags := []struct {
+		status         CommandStatus
+		expectedPassed bool
+		expectedFailed bool
+	}{
+		{"pass", true, false},
+		{"fail", false, true},
+		{"unknown", false, false},
+	}
+	for _, tt := range testFlags {
+		t.Run(fmt.Sprint(tt.status, "_status"), func(t *testing.T) {
+			result := CommandResult{Status: tt.status}
+			assert.Equal(t, tt.expectedPassed, result.Passed())
+			assert.Equal(t, tt.expectedFailed, result.Failed())
+		})
+	}
+}
