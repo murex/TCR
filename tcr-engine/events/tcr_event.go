@@ -81,7 +81,7 @@ func (event TcrEvent) ToYaml() string {
 	return tcrEventToYaml(event)
 }
 
-// FromYaml converts a a yaml string to a TcrEvent
+// FromYaml converts a yaml string to a TcrEvent
 func FromYaml(yaml string) TcrEvent {
 	return yamlToTcrEvent(yaml)
 }

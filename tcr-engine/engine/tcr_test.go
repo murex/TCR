@@ -265,7 +265,6 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures vcs.GitCommands, gitLogItems vcs.GitLogItems) TcrInterface {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
-	events.EventRepository = &events.TcrEventInMemoryRepository{}
 
 	var parameters params.Params
 	if p == nil {

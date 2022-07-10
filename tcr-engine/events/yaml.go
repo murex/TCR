@@ -36,7 +36,7 @@ type (
 		Test int `yaml:"test"`
 	}
 
-	// TestStatsYaml provides the YAML structure structure containing info related to the tests execution
+	// TestStatsYaml provides the YAML structure containing info related to the tests execution
 	TestStatsYaml struct {
 		Run      int           `yaml:"run"`
 		Passed   int           `yaml:"passed"`
@@ -46,7 +46,7 @@ type (
 		Duration time.Duration `yaml:"duration"`
 	}
 
-	// TcrEventYaml provides the YAML structure structure containing information related to a TCR event
+	// TcrEventYaml provides the YAML structure containing information related to a TCR event
 	TcrEventYaml struct {
 		Changes ChangedLinesYaml `yaml:"changed-lines"`
 		Tests   TestStatsYaml    `yaml:"test-stats"`
