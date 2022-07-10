@@ -65,6 +65,7 @@ type (
 		SetRunMode(m runmode.RunMode)
 		RunCheck(params params.Params)
 		PrintLog(params params.Params)
+		PrintStats(params params.Params)
 		Quit()
 	}
 
@@ -168,18 +169,36 @@ func (tcr *TcrEngine) RunCheck(params params.Params) {
 
 // PrintLog prints the TCR git commit history
 func (tcr *TcrEngine) PrintLog(params params.Params) {
+	for _, log := range tcr.queryGitLogs(params) {
+		report.PostInfo("commit: ", log.Hash)
+		report.PostInfo("timestamp: ", log.Timestamp)
+		report.PostInfo("message: ", log.Message)
+	}
+	// TODO print a message when no matching git log is found
+}
+
+// PrintStats prints the TCR execution stats
+func (tcr *TcrEngine) PrintStats(params params.Params) {
+	for _, log := range tcr.queryGitLogs(params) {
+		report.PostInfo("timestamp: ", log.Timestamp)
+		header, event := parseCommitMessage(log.Message)
+		report.PostInfo("Test result: ", header)
+		report.PostInfo("Test stats: ", event)
+	}
+	// TODO print a message when no matching git log is found
+}
+
+func (tcr *TcrEngine) queryGitLogs(params params.Params) vcs.GitLogItems {
 	tcr.initSourceTree(params)
 	tcr.initVcs()
 
-	logs, _ := tcr.vcs.Log(func(msg string) bool {
-		return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
-	})
+	logs, _ := tcr.vcs.Log(isTcrCommitMessage)
+	// TODO handle error
+	return logs
+}
 
-	for _, log := range logs {
-		report.PostInfo("commit: " + log.Hash)
-		report.PostInfo("timestamp: " + log.Timestamp.String())
-		report.PostInfo("message: " + log.Message)
-	}
+func isTcrCommitMessage(msg string) bool {
+	return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
 }
 
 func parseCommitMessage(message string) (string, events.TcrEvent) {

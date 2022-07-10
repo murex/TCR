@@ -643,6 +643,13 @@ func Test_start_terminal(t *testing.T) {
 				engine.TcrCallQuit,
 			},
 		},
+		{
+			"stats mode", runmode.Stats{}, []byte{},
+			[]engine.TcrCall{
+				engine.TcrCallPrintStats,
+				engine.TcrCallQuit,
+			},
+		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {

@@ -46,6 +46,7 @@ const (
 	TcrCallRunTcrCycle          TcrCall = "run-tcr-cycle"
 	TcrCallRunCheck             TcrCall = "run-check"
 	TcrCallPrintLog             TcrCall = "print-log"
+	TcrCallPrintStats           TcrCall = "print-stats"
 )
 
 // FakeTcrEngine is a TCR engine fake. Used mainly for testing peripheral packages
@@ -139,4 +140,9 @@ func (fake *FakeTcrEngine) RunCheck(_ params.Params) {
 // PrintLog prints the TCR git commit history
 func (fake *FakeTcrEngine) PrintLog(_ params.Params) {
 	fake.recordCall(TcrCallPrintLog)
+}
+
+// PrintStats prints the TCR execution stats
+func (fake *FakeTcrEngine) PrintStats(params params.Params) {
+	fake.recordCall(TcrCallPrintStats)
 }

@@ -20,30 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package runmode
 
-import (
-	"github.com/murex/tcr/tcr-cli/cli"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/spf13/cobra"
-)
-
-// logCmd represents the log command
-var logCmd = &cobra.Command{
-	Use:   "log",
-	Short: "Prints the TCR commit history",
-	Long: `
-TCR log subcommand prints out the TCR commit history.
-
-This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		parameters.Mode = runmode.Log{}
-		u := cli.New(parameters, engine.NewTcrEngine())
-		u.Start()
-	},
+// Stats is a type of run mode allowing to print TCR execution stats
+type Stats struct {
 }
 
-func init() {
-	rootCmd.AddCommand(logCmd)
+// Name returns the name of this run mode
+func (mode Stats) Name() string {
+	return "stats"
+}
+
+// AutoPushDefault returns the default value of git auto-push option with this run mode
+func (mode Stats) AutoPushDefault() bool {
+	return false
+}
+
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (mode Stats) NeedsCountdownTimer() bool {
+	return false
+}
+
+// IsInteractive indicates if this run mode allows user interaction
+func (mode Stats) IsInteractive() bool {
+	return false
+}
+
+// IsActive indicates if this run mode is actively running TCR
+func (mode Stats) IsActive() bool {
+	return false
 }

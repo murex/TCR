@@ -20,30 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package runmode
 
 import (
-	"github.com/murex/tcr/tcr-cli/cli"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// logCmd represents the log command
-var logCmd = &cobra.Command{
-	Use:   "log",
-	Short: "Prints the TCR commit history",
-	Long: `
-TCR log subcommand prints out the TCR commit history.
-
-This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		parameters.Mode = runmode.Log{}
-		u := cli.New(parameters, engine.NewTcrEngine())
-		u.Start()
-	},
+func Test_stats_mode_name(t *testing.T) {
+	assert.Equal(t, "stats", Stats{}.Name())
 }
 
-func init() {
-	rootCmd.AddCommand(logCmd)
+func Test_stats_mode_default_auto_push_if_false(t *testing.T) {
+	assert.False(t, Stats{}.AutoPushDefault())
+}
+
+func Test_stats_mode_does_not_require_a_countdown_timer(t *testing.T) {
+	assert.False(t, Stats{}.NeedsCountdownTimer())
+}
+
+func Test_stats_mode_does_not_allow_user_interactions(t *testing.T) {
+	assert.False(t, Stats{}.IsInteractive())
+}
+
+func Test_stats_mode_is_not_an_active_mode(t *testing.T) {
+	assert.False(t, Stats{}.IsActive())
 }

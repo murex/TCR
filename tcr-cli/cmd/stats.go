@@ -29,21 +29,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// logCmd represents the log command
-var logCmd = &cobra.Command{
-	Use:   "log",
-	Short: "Prints the TCR commit history",
+// statsCmd represents the stats command
+var statsCmd = &cobra.Command{
+	Use:   "stats",
+	Short: "Prints TCR stats",
 	Long: `
-TCR log subcommand prints out the TCR commit history.
+TCR stats subcommand prints out the TCR stats based on commit history.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		parameters.Mode = runmode.Log{}
+		parameters.Mode = runmode.Stats{}
 		u := cli.New(parameters, engine.NewTcrEngine())
 		u.Start()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(logCmd)
+	rootCmd.AddCommand(statsCmd)
 }
