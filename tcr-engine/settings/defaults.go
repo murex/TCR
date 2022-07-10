@@ -22,8 +22,6 @@ SOFTWARE.
 
 package settings
 
-import "time"
-
 // Default values
 
 const (
@@ -31,9 +29,4 @@ const (
 	ApplicationName = "TCR"
 	// ApplicationShortDescription is a short description the application
 	ApplicationShortDescription = "TCR (Test && Commit || Revert)"
-
-	// DefaultInactivityPeriod is the default inactivity period until TCR sends an inactivity teaser message
-	DefaultInactivityPeriod = 1 * time.Minute
-	// DefaultInactivityTimeout is the default timeout after which TCR stops sending inactivity teaser messages
-	DefaultInactivityTimeout = 5 * time.Minute
 )

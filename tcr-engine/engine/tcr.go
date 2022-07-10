@@ -253,18 +253,13 @@ func (tcr *TcrEngine) RunAsDriver() {
 			tcr.startTimer()
 		},
 		func(interrupt <-chan bool) bool {
-			inactivityTeaser := timer.GetInactivityTeaserInstance()
-			inactivityTeaser.Start()
 			if tcr.waitForChange(interrupt) {
 				// Some file changes were detected
-				inactivityTeaser.Reset()
 				tcr.RunTCRCycle()
-				inactivityTeaser.Start()
 				return true
 			}
 			// If we arrive here this means that the end of waitForChange
 			// was triggered by the user
-			inactivityTeaser.Reset()
 			return false
 		},
 		func() {
