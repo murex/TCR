@@ -24,9 +24,58 @@ package vcs
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
 func Test_compute_changed_lines(t *testing.T) {
 	assert.Equal(t, 6, NewFileDiff("", 4, 2).ChangedLines())
+}
+
+func Test_total_number_of_changed_lines(t *testing.T) {
+	var diffs = FileDiffs{
+		NewFileDiff("dir1/File1", 1, 2),
+		NewFileDiff("dir1/File2", 3, 4),
+		NewFileDiff("dir2/File3", 5, 6),
+		NewFileDiff("dir2/File4", 7, 8),
+	}
+
+	testFlags := []struct {
+		desc      string
+		predicate func(filepath string) bool
+		expected  int
+	}{
+		{
+			"no predicate", nil, 36},
+		{
+			"all files",
+			func(filepath string) bool { return true },
+			36,
+		},
+		{
+			"no files",
+			func(filepath string) bool { return false },
+			0,
+		},
+		{
+			"file1 only",
+			func(filepath string) bool {
+				return filepath == "dir1/File1"
+			},
+			3,
+		},
+		{
+			"dir1 only",
+			func(filepath string) bool {
+				return strings.Index(filepath, "dir1/") == 0
+			},
+			10,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, diffs.ChangedLines(tt.predicate))
+		})
+	}
 }

@@ -584,3 +584,61 @@ func Test_parse_commit_message(t *testing.T) {
 		})
 	}
 }
+
+func Test_compute_number_of_changed_lines(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		diffs        vcs.FileDiffs
+		expectedSrc  int
+		expectedTest int
+	}{
+		{"0 file", nil, 0, 0},
+		{
+			"1 src file - 0 test file",
+			vcs.FileDiffs{
+				vcs.NewFileDiff("src/main/Hello.java", 1, 2),
+			},
+			3, 0,
+		},
+		{
+			"2 src files - 0 test file",
+			vcs.FileDiffs{
+				vcs.NewFileDiff("src/main/Hello1.java", 1, 2),
+				vcs.NewFileDiff("src/main/Hello2.java", 3, 4),
+			},
+			10, 0,
+		},
+		{
+			"1 src file - 1 test file",
+			vcs.FileDiffs{
+				vcs.NewFileDiff("src/main/Hello.java", 1, 2),
+				vcs.NewFileDiff("src/test/HelloTest.java", 3, 4),
+			},
+			3, 7,
+		},
+		{
+			"0 src file - 1 test file",
+			vcs.FileDiffs{
+				vcs.NewFileDiff("src/test/HelloTest.java", 1, 2),
+			},
+			0, 3,
+		},
+		{
+			"0 src file - 2 test files",
+			vcs.FileDiffs{
+				vcs.NewFileDiff("src/test/HelloTest1.java", 1, 2),
+				vcs.NewFileDiff("src/test/HelloTest2.java", 3, 4),
+			},
+			0, 10,
+		},
+	}
+
+	lang, _ := language.Get("java")
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedSrc, tt.diffs.ChangedLines(lang.IsSrcFile))
+			assert.Equal(t, tt.expectedTest, tt.diffs.ChangedLines(lang.IsTestFile))
+		})
+	}
+}

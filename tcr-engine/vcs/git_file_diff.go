@@ -43,3 +43,13 @@ func NewFileDiff(filename string, added int, removed int) FileDiff {
 func (fd FileDiff) ChangedLines() int {
 	return fd.addedLines + fd.removedLines
 }
+
+// ChangedLines returns the total number of changed lines for this set of files
+func (diffs FileDiffs) ChangedLines(predicate func(filepath string) bool) (changes int) {
+	for _, fd := range diffs {
+		if predicate == nil || predicate(fd.Path) {
+			changes += fd.ChangedLines()
+		}
+	}
+	return
+}

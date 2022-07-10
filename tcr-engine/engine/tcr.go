@@ -351,14 +351,14 @@ func (tcr *TcrEngine) RunTCRCycle() {
 }
 
 func (tcr *TcrEngine) createTcrEvent(testStats toolchain.TestStats) (event events.TcrEvent) {
-	changedFiles, err := tcr.vcs.Diff()
+	diffs, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
 	}
 	return events.NewTcrEvent(
 		events.NewChangedLines(
-			computeSrcLinesChanged(tcr.language, changedFiles),
-			computeTestLinesChanged(tcr.language, changedFiles),
+			diffs.ChangedLines(tcr.language.IsSrcFile),
+			diffs.ChangedLines(tcr.language.IsTestFile),
 		),
 		events.NewTestStats(
 			testStats.TotalRun,
