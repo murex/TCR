@@ -27,6 +27,7 @@ import (
 	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/vcs"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -83,14 +84,19 @@ func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 	// The warning is triggered by the mob timer duration being under the min threshold
-	t.Skip("disabled due to git remote access check failing when running from CI")
 	Run(*params.AParamSet(
 		params.WithConfigDir(testDataDirJava),
 		params.WithBaseDir(testDataDirJava),
 		params.WithWorkDir(testDataDirJava),
 		params.WithMobTimerDuration(1*time.Second),
 	))
-	assert.Equal(t, 1, status.GetReturnCode())
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		// Depending on the context while running on CI, checkGitRemote() can return an error.
+		// For this reason this test case is a bit more permissive when running on CI
+		assert.GreaterOrEqual(t, 1, status.GetReturnCode())
+	} else {
+		assert.Equal(t, 1, status.GetReturnCode())
+	}
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {

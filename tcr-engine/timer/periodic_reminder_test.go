@@ -41,14 +41,14 @@ func TestMain(m *testing.M) {
 	// Most tests in this file are designed so that reminders fire twice, and then go in time out.
 	// We differentiate CI and local machine to optimize test speed execution when run on local machine
 	// while not failing when run on CI (which runs slower)
-	if testing.Short() {
-		fmt.Println("Running tests with fast timers")
-		testTimeout = 100 * time.Millisecond
-		testTickPeriod = 40 * time.Millisecond
-	} else {
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
 		fmt.Println("Running tests with long timers")
 		testTimeout = 3000 * time.Millisecond
 		testTickPeriod = 1200 * time.Millisecond
+	} else {
+		fmt.Println("Running tests with fast timers")
+		testTimeout = 100 * time.Millisecond
+		testTickPeriod = 40 * time.Millisecond
 	}
 	// Run tests
 	exitVal := m.Run()
