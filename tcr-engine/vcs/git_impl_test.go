@@ -64,8 +64,11 @@ func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
 
 func Test_check_remote_access_on_current_repo(t *testing.T) {
 	g, _ := New(".")
-	// Depending on where the test is run (local machine or CI), remote
-	// can be enabled or disabled, which has an influence on CheckRemoteAccess() result
+	// Depending on where the test is run (local machine or CI) and which is the current branch,
+	// CheckRemoteAccess() result can vary.
+	if os.Getenv("GITHUB_ACTIONS") == "true" && g.GetWorkingBranch() != "main" {
+		t.Skip("skipped when on GitHub Actions and not on main branch")
+	}
 	if g.IsRemoteEnabled() {
 		assert.True(t, g.CheckRemoteAccess())
 	} else {
@@ -722,7 +725,6 @@ func Test_nothing_to_commit(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			g := tt.gitInitializer()
 			assert.Equal(t, tt.expected, g.nothingToCommit())
-
 
 		})
 	}
