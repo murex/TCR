@@ -32,17 +32,23 @@ import (
 	"strings"
 )
 
-// sttyCommandDisabled allows to turn on/off the underlying call to stty command.
+// sttyCmdDisabled allows to turn on/off the underlying call to stty command.
 // It's false by default (regular usage). Most test methods should turn it on
-// as a command call is generally useless when running tests, and time consuming.
-var sttyCommandDisabled bool
+// as a command call is generally useless when running tests, and time-consuming.
+var sttyCmdDisabled bool
+
+// tputCmdDisabled allows to turn on/off the underlying call to tput command.
+// We try to run tput once, and if not available from the terminal at hand,
+// we stop calling it and use default terminal width instead.
+var tputCmdDisabled bool
 
 func init() {
-	sttyCommandDisabled = false
+	sttyCmdDisabled = false
+	tputCmdDisabled = false
 }
 
 func readStty(state *bytes.Buffer) (err error) {
-	if sttyCommandDisabled {
+	if sttyCmdDisabled {
 		return
 	}
 	cmd := exec.Command("stty", "-g")
@@ -52,7 +58,7 @@ func readStty(state *bytes.Buffer) (err error) {
 }
 
 func setStty(state *bytes.Buffer) (err error) {
-	if sttyCommandDisabled {
+	if sttyCmdDisabled {
 		return
 	}
 	cmd := exec.Command("stty", state.String()) //nolint:gosec
@@ -98,7 +104,7 @@ func Restore() {
 }
 
 // getTerminalColumns returns the terminal's current number of column. If anything goes wrong (for
-// example when running from Windows PowerShell), we fallback on a fixed number of columns
+// example when running from Windows PowerShell), we fall back on a fixed number of columns
 func getTerminalColumns() int {
 	if tputCmdDisabled {
 		return defaultTerminalWidth

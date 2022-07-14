@@ -34,9 +34,8 @@ const (
 )
 
 var (
-	colorizer       = aurora.NewAurora(true)
-	linePrefix      = ""
-	tputCmdDisabled = false
+	colorizer  = aurora.NewAurora(true)
+	linePrefix = ""
 )
 
 func setLinePrefix(value string) {

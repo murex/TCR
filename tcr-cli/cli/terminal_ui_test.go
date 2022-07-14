@@ -69,9 +69,9 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	os.Stderr = os.NewFile(0, os.DevNull)
 
 	term := New(params.Params{}, engine.NewTcrEngine())
-	sttyCommandDisabled = true
+	sttyCmdDisabled = true
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
-	sttyCommandDisabled = false
+	sttyCmdDisabled = false
 }
 
 func fakeStdin(t *testing.T, input []byte) *os.File {
@@ -99,7 +99,7 @@ func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcr
 	setLinePrefix("TCR")
 	fakeEngine = engine.NewFakeTcrEngine()
 	term = TerminalUI{params: p, tcr: fakeEngine}
-	sttyCommandDisabled = true
+	sttyCmdDisabled = true
 	report.Reset()
 	term.MuteDesktopNotifications(true)
 	term.StartReporting()
@@ -108,7 +108,7 @@ func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcr
 
 func terminalTeardown(term TerminalUI) {
 	term.StopReporting()
-	sttyCommandDisabled = false
+	sttyCmdDisabled = false
 	term.MuteDesktopNotifications(false)
 }
 
