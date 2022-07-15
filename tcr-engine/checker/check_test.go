@@ -93,7 +93,7 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 	if os.Getenv("GITHUB_ACTIONS") == "true" {
 		// Depending on the context while running on CI, checkGitRemote() can return an error.
 		// For this reason this test case is a bit more permissive when running on CI
-		assert.GreaterOrEqual(t, 1, status.GetReturnCode())
+		assert.GreaterOrEqual(t, status.GetReturnCode(), 1)
 	} else {
 		assert.Equal(t, 1, status.GetReturnCode())
 	}
