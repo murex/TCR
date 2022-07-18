@@ -336,12 +336,7 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 	}
 	_ = cIter.ForEach(func(c *object.Commit) error {
 		if msgFilter == nil || msgFilter(c.Message) {
-			commit := GitLogItem{
-				Hash:      c.Hash.String(),
-				Timestamp: c.Committer.When.UTC(),
-				Message:   c.Message,
-			}
-			logs.add(commit)
+			logs.add(NewGitLogItem(c.Hash.String(), c.Committer.When.UTC(), c.Message))
 		}
 		return nil
 	})
