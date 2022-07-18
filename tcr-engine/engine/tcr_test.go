@@ -460,61 +460,77 @@ func Test_tcr_print_log(t *testing.T) {
 	}
 	testFlags := []struct {
 		desc            string
-		filterByMsg     string
+		filter          func(msg report.Message) bool
 		gitLogItems     vcs.GitLogItems
 		expectedMatches int
 	}{
 		{
-			desc:            "TCR passing commits are kept",
-			filterByMsg:     "message: ✅ TCR - tests passing",
+			desc: "TCR passing commits are kept",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "message: ✅ TCR - tests passing") == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
 		},
 		{
-			desc:            "TCR failing commits are kept",
-			filterByMsg:     "message: ❌ TCR - tests failing",
+			desc: "TCR failing commits are kept",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "message: ❌ TCR - tests failing") == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
 		},
 		{
-			desc:            "TCR revert commits are dropped",
-			filterByMsg:     "message: ⏪ TCR - revert changes",
+			desc: "TCR revert commits are dropped",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "message: ⏪ TCR - revert changes") == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
 		},
 		{
-			desc:            "non-TCR commits are dropped",
-			filterByMsg:     "message: other commit message",
+			desc: "non-TCR commits are dropped",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "message: other commit message") == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
 		},
 		{
-			desc:            "commit hashtag is printed",
-			filterByMsg:     "commit: 1111",
+			desc: "commit hashtag is printed",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "commit: 1111") == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
 		},
 		{
-			desc:            "commit timestamp is printed",
-			filterByMsg:     "timestamp: " + now.String(),
+			desc: "commit timestamp is printed",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
+			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 2,
+		},
+		{
+			desc: "warning when no record found",
+			filter: func(msg report.Message) bool {
+				return msg.Type == report.Warning && strings.Index(msg.Text, "no TCR commit found in branch") == 0
+			},
+			gitLogItems:     nil,
+			expectedMatches: 1,
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer(
-				func(msg report.Message) bool {
-					return msg.Type == report.Info && strings.Index(msg.Text, tt.filterByMsg) == 0
-				},
-			)
+			sniffer := report.NewSniffer(tt.filter)
 			p := params.AParamSet(params.WithRunMode(runmode.Log{}))
 			tcr := initTcrEngineWithFakes(p, nil, nil, tt.gitLogItems)
 			tcr.PrintLog(*p)
 			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
-			fmt.Println(sniffer.GetAllMatches())
+			//fmt.Println(sniffer.GetAllMatches())
 			assert.Equal(t, tt.expectedMatches, sniffer.GetMatchCount())
 		})
 	}

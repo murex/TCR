@@ -174,7 +174,6 @@ func (tcr *TcrEngine) PrintLog(params params.Params) {
 		report.PostInfo("timestamp: ", log.Timestamp)
 		report.PostInfo("message: ", log.Message)
 	}
-	// TODO print a message when no matching git log is found
 }
 
 // PrintStats prints the TCR execution stats
@@ -185,15 +184,19 @@ func (tcr *TcrEngine) PrintStats(params params.Params) {
 		report.PostInfo("Test result: ", header)
 		report.PostInfo("Test stats: ", event)
 	}
-	// TODO print a message when no matching git log is found
 }
 
 func (tcr *TcrEngine) queryGitLogs(params params.Params) vcs.GitLogItems {
 	tcr.initSourceTree(params)
 	tcr.initVcs()
 
-	logs, _ := tcr.vcs.Log(isTcrCommitMessage)
-	// TODO handle error
+	logs, err := tcr.vcs.Log(isTcrCommitMessage)
+	if err != nil {
+		report.PostError(err)
+	}
+	if len(logs) == 0 {
+		report.PostWarning("no TCR commit found in branch ", tcr.vcs.GetWorkingBranch(), "'s history")
+	}
 	return logs
 }
 
