@@ -77,14 +77,14 @@ func (tchn FakeToolchain) checkTestCommand() error {
 
 // RunBuild returns an error if build is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunBuild() (result CommandResult) {
+func (tchn FakeToolchain) RunBuild() CommandResult {
 	return tchn.fakeOperation(BuildOperation)
 }
 
 // RunTests returns an error if test is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunTests() (result CommandResult, testStats TestStats) {
-	return tchn.fakeOperation(TestOperation), tchn.testStats
+func (tchn FakeToolchain) RunTests() TestCommandResult {
+	return TestCommandResult{tchn.fakeOperation(TestOperation), tchn.testStats}
 }
 
 func (tchn FakeToolchain) fakeOperation(operation Operation) (result CommandResult) {

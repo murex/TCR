@@ -44,6 +44,12 @@ type (
 		testResultDir string
 	}
 
+	// TestCommandResult is a CommandResult enriched with test Stats
+	TestCommandResult struct {
+		CommandResult
+		Stats TestStats
+	}
+
 	// TchnInterface provides the interface for interacting with a toolchain
 	TchnInterface interface {
 		GetName() string
@@ -51,8 +57,8 @@ type (
 		GetTestCommands() []Command
 		GetTestResultDir() string
 		GetTestResultPath() string
-		RunBuild() (result CommandResult)
-		RunTests() (result CommandResult, testStats TestStats)
+		RunBuild() CommandResult
+		RunTests() TestCommandResult
 		checkName() error
 		BuildCommandLine() string
 		BuildCommandPath() string
@@ -143,15 +149,15 @@ func (tchn Toolchain) GetTestCommands() []Command {
 }
 
 // RunBuild runs the build with this toolchain
-func (tchn Toolchain) RunBuild() (result CommandResult) {
+func (tchn Toolchain) RunBuild() CommandResult {
 	return findCompatibleCommand(tchn.buildCommands).run()
 }
 
 // RunTests runs the tests with this toolchain
-func (tchn Toolchain) RunTests() (result CommandResult, testStats TestStats) {
-	result = findCompatibleCommand(tchn.testCommands).run()
-	testStats, _ = tchn.parseTestReport()
-	return
+func (tchn Toolchain) RunTests() TestCommandResult {
+	result := findCompatibleCommand(tchn.testCommands).run()
+	testStats, _ := tchn.parseTestReport()
+	return TestCommandResult{result, testStats}
 }
 
 // BuildCommandPath returns the build command path for this toolchain

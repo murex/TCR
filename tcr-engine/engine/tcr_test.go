@@ -66,16 +66,16 @@ func Test_tcr_command_end_state(t *testing.T) {
 		{
 			"test with no failure",
 			func() toolchain.CommandResult {
-				_, result := initTcrEngineWithFakes(nil, nil, nil, nil).test()
-				return result
+				result := initTcrEngineWithFakes(nil, nil, nil, nil).test()
+				return result.CommandResult
 			},
 			toolchain.CommandStatusPass, status.Ok,
 		},
 		{
 			"test with failure",
 			func() toolchain.CommandResult {
-				_, result := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil).test()
-				return result
+				result := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil).test()
+				return result.CommandResult
 			},
 			toolchain.CommandStatusFail, status.TestFailed,
 		},

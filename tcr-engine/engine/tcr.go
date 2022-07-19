@@ -57,7 +57,7 @@ type (
 		Stop()
 		RunTCRCycle()
 		build() (result toolchain.CommandResult)
-		test() (testStats toolchain.TestStats, result toolchain.CommandResult)
+		test() (result toolchain.TestCommandResult)
 		commit(event events.TcrEvent)
 		revert(events.TcrEvent)
 		GetSessionInfo() SessionInfo
@@ -358,8 +358,8 @@ func (tcr *TcrEngine) RunTCRCycle() {
 	if tcr.build().Failed() {
 		return
 	}
-	stats, result := tcr.test()
-	event := tcr.createTcrEvent(stats)
+	result := tcr.test()
+	event := tcr.createTcrEvent(result.Stats)
 	if result.Passed() {
 		tcr.commit(event)
 	} else {
@@ -398,9 +398,9 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 	return
 }
 
-func (tcr *TcrEngine) test() (testStats toolchain.TestStats, result toolchain.CommandResult) {
+func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 	report.PostInfo("Running Tests")
-	result, testStats = tcr.toolchain.RunTests()
+	result = tcr.toolchain.RunTests()
 	if result.Failed() {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
