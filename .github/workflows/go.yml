@@ -45,6 +45,7 @@ jobs:
       - name: Test tcr-engine module
         run: |
           cd tcr-engine
+          make tidy
           make test
 
       - name: Send tcr-engine coverage to coveralls.io
@@ -58,6 +59,7 @@ jobs:
       - name: Test tcr-cli module
         run: |
           cd tcr-cli
+          make tidy
           make test
 
       - name: Send tcr-cli coverage to coveralls.io
@@ -77,6 +79,7 @@ jobs:
       #      - name: Test tcr-gui module
       #        run: |
       #          cd tcr-gui
+      #          make tidy
       #          make test
       #
       #        - name: Send tcr-gui coverage
