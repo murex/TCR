@@ -69,10 +69,7 @@ func newTcrEventYaml(event TcrEvent) TcrEventYaml {
 }
 
 func (event TcrEventYaml) toTcrEvent() TcrEvent {
-	return TcrEvent{
-		Changes: ChangedLines(event.Changes),
-		Tests:   TestStats(event.Tests),
-	}
+	return NewTcrEvent(StatusUnknown, ChangedLines(event.Changes), TestStats(event.Tests))
 }
 
 func (event TcrEventYaml) marshal() string {

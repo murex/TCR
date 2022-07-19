@@ -180,8 +180,7 @@ func (tcr *TcrEngine) PrintLog(params params.Params) {
 func (tcr *TcrEngine) PrintStats(params params.Params) {
 	for _, log := range tcr.queryGitLogs(params) {
 		report.PostInfo("timestamp: ", log.Timestamp)
-		header, event := parseCommitMessage(log.Message)
-		report.PostInfo("Test result: ", header)
+		event := parseCommitMessage(log.Message)
 		report.PostInfo("Test stats: ", event)
 	}
 }
@@ -204,15 +203,25 @@ func isTcrCommitMessage(msg string) bool {
 	return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
 }
 
-func parseCommitMessage(message string) (string, events.TcrEvent) {
+func parseCommitMessage(message string) (event events.TcrEvent) {
+	var header string
 	// First line is the main commit message
 	// Second line is a blank line
 	// The yaml-structured data starts on the third line
 	parts := strings.SplitN(message, "\n", 3)
 	if len(parts) == 3 {
-		return parts[0], events.FromYaml(parts[2])
+		header = parts[0]
+		event = events.FromYaml(parts[2])
 	}
-	return "", events.TcrEvent{}
+	switch header {
+	case commitMessageOk:
+		event.Status = events.StatusPass
+	case commitMessageFail:
+		event.Status = events.StatusFail
+	default:
+		event.Status = events.StatusUnknown
+	}
+	return
 }
 
 func (tcr *TcrEngine) initVcs() {
@@ -359,7 +368,7 @@ func (tcr *TcrEngine) RunTCRCycle() {
 		return
 	}
 	result := tcr.test()
-	event := tcr.createTcrEvent(result.Stats)
+	event := tcr.createTcrEvent(result)
 	if result.Passed() {
 		tcr.commit(event)
 	} else {
@@ -367,23 +376,28 @@ func (tcr *TcrEngine) RunTCRCycle() {
 	}
 }
 
-func (tcr *TcrEngine) createTcrEvent(testStats toolchain.TestStats) (event events.TcrEvent) {
+func (tcr *TcrEngine) createTcrEvent(testResult toolchain.TestCommandResult) (event events.TcrEvent) {
 	diffs, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
 	}
+	commandStatus := events.StatusFail
+	if testResult.Passed() {
+		commandStatus = events.StatusPass
+	}
 	return events.NewTcrEvent(
+		commandStatus,
 		events.NewChangedLines(
 			diffs.ChangedLines(tcr.language.IsSrcFile),
 			diffs.ChangedLines(tcr.language.IsTestFile),
 		),
 		events.NewTestStats(
-			testStats.TotalRun,
-			testStats.Passed,
-			testStats.Failed,
-			testStats.Skipped,
-			testStats.WithErrors,
-			testStats.Duration,
+			testResult.Stats.TotalRun,
+			testResult.Stats.Passed,
+			testResult.Stats.Failed,
+			testResult.Stats.Skipped,
+			testResult.Stats.WithErrors,
+			testResult.Stats.Duration,
 		),
 	)
 }

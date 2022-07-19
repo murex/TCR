@@ -29,6 +29,7 @@ import "time"
 // ATcrEvent is a test data builder for a TCR event
 func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
 	tcrEvent := NewTcrEvent(
+		StatusUnknown,
 		NewChangedLines(0, 0),
 		NewTestStats(0, 0, 0, 0, 0, 0),
 	)

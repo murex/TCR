@@ -25,6 +25,9 @@ package events
 import "time"
 
 type (
+	// CommandStatus is the status of a test command
+	CommandStatus string
+
 	// ChangedLines is the structure containing info related to the lines changes in src and test
 	ChangedLines struct {
 		Src  int
@@ -43,14 +46,23 @@ type (
 
 	// TcrEvent is the structure containing information related to a TCR event
 	TcrEvent struct {
+		Status  CommandStatus
 		Changes ChangedLines
 		Tests   TestStats
 	}
 )
 
+// Possible values for CommandStatus
+const (
+	StatusPass    CommandStatus = "pass"
+	StatusFail    CommandStatus = "fail"
+	StatusUnknown CommandStatus = "unknown"
+)
+
 // NewTcrEvent creates a new TcrEvent instance
-func NewTcrEvent(changes ChangedLines, stats TestStats) TcrEvent {
+func NewTcrEvent(status CommandStatus, changes ChangedLines, stats TestStats) TcrEvent {
 	return TcrEvent{
+		Status:  status,
 		Changes: changes,
 		Tests:   stats,
 	}
