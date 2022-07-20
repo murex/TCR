@@ -73,10 +73,7 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 		return nil, err
 	}
 
-	g.rootDir, err = retrieveRootDir(g.filesystem)
-	if err != nil {
-		return nil, err
-	}
+	g.rootDir = retrieveRootDir(g.filesystem)
 
 	g.workingBranch, err = retrieveWorkingBranch(g.repository)
 	if err != nil {
@@ -146,9 +143,8 @@ func remoteBranches(s storer.ReferenceStorer) (storer.ReferenceIter, error) {
 }
 
 // retrieveRootDir returns the local clone's root directory of provided repository
-func retrieveRootDir(fs billy.Filesystem) (dir string, err error) {
-	dir = filepath.Dir(fs.Root())
-	return
+func retrieveRootDir(fs billy.Filesystem) string {
+	return filepath.Dir(fs.Root())
 }
 
 // retrieveWorkingBranch returns the current working branch for provided repository
