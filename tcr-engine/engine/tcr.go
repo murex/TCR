@@ -170,9 +170,11 @@ func (tcr *TcrEngine) RunCheck(params params.Params) {
 // PrintLog prints the TCR git commit history
 func (tcr *TcrEngine) PrintLog(params params.Params) {
 	for _, log := range tcr.queryGitLogs(params) {
-		report.PostInfo("commit: ", log.Hash)
+		report.PostTitle("commit: ", log.Hash)
 		report.PostInfo("timestamp: ", log.Timestamp)
 		report.PostInfo("message: ", log.Message)
+		// Giving trace reporter some time to flush its contents
+		time.Sleep(10 * time.Millisecond)
 	}
 }
 
