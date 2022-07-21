@@ -22,7 +22,9 @@ SOFTWARE.
 
 package events
 
-import "time"
+import (
+	"time"
+)
 
 type (
 	// CommandStatus is the status of a test command
@@ -50,6 +52,9 @@ type (
 		Changes ChangedLines
 		Tests   TestStats
 	}
+
+	// TcrEvents is a map of TcrEvent instances. Key is the commit timestamp
+	TcrEvents map[time.Time]TcrEvent
 )
 
 // Possible values for CommandStatus
@@ -96,4 +101,41 @@ func (event TcrEvent) ToYaml() string {
 // FromYaml converts a yaml string to a TcrEvent
 func FromYaml(yaml string) TcrEvent {
 	return yamlToTcrEvent(yaml)
+}
+
+// NewTcrEvents initializes a TcrEvents instance
+func NewTcrEvents(n int) *TcrEvents {
+	events := make(TcrEvents, n)
+	return &events
+}
+
+// NbRecords provides the number of records in TcrEvents
+func (events TcrEvents) NbRecords() int {
+	return len(events)
+}
+
+// TimeSpan returns the total duration of TcrEvents (from first record to the last).
+// Returns 0 if TcrEvents contains 0 or 1 record
+func (events TcrEvents) TimeSpan() time.Duration {
+	if events.NbRecords() < 2 {
+		return 0
+	}
+	start, end := events.getBoundaryTimes()
+	return end.Sub(start)
+}
+
+func (events TcrEvents) getBoundaryTimes() (start, end time.Time) {
+	var MinTime = time.Unix(0, 0) // Jan 1, 1970
+	var MaxTime = MinTime.Add(1<<63 - 1)
+
+	start, end = MaxTime, MinTime
+	for key := range events {
+		if key.Before(start) {
+			start = key
+		}
+		if key.After(end) {
+			end = key
+		}
+	}
+	return
 }

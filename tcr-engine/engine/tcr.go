@@ -180,11 +180,19 @@ func (tcr *TcrEngine) PrintLog(params params.Params) {
 
 // PrintStats prints the TCR execution stats
 func (tcr *TcrEngine) PrintStats(params params.Params) {
-	for _, log := range tcr.queryGitLogs(params) {
-		report.PostInfo("timestamp: ", log.Timestamp)
-		event := parseCommitMessage(log.Message)
-		report.PostInfo("Test stats: ", event)
+	tcrLogs := tcr.queryGitLogs(params)
+	tcrEvents := tcrLogsToEvents(tcrLogs)
+	// TODO add more stats
+	report.PostInfo("Number of TCR events: ", tcrEvents.NbRecords())
+	report.PostInfo("Total duration: ", tcrEvents.TimeSpan())
+}
+
+func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
+	tcrEvents = *events.NewTcrEvents(len(tcrLogs))
+	for _, log := range tcrLogs {
+		tcrEvents[log.Timestamp] = parseCommitMessage(log.Message)
 	}
+	return
 }
 
 func (tcr *TcrEngine) queryGitLogs(params params.Params) vcs.GitLogItems {
@@ -356,7 +364,7 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
 	// We need to wait a bit to make sure the file watcher
 	// does not get triggered again following a revert operation
-	time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 	return tcr.sourceTree.Watch(
 		tcr.language.DirsToWatch(tcr.sourceTree.GetBaseDir()),
 		tcr.language.IsLanguageFile,

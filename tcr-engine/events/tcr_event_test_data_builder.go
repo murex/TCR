@@ -40,6 +40,13 @@ func ATcrEvent(builders ...func(tcrEvent *TcrEvent)) *TcrEvent {
 	return &tcrEvent
 }
 
+// WithCommandStatus sets command status to TCR event test data builder
+func WithCommandStatus(status CommandStatus) func(filter *TcrEvent) {
+	return func(tcrEvent *TcrEvent) {
+		tcrEvent.Status = status
+	}
+}
+
 // WithModifiedSrcLines sets modified source lines to TCR event test data builder
 func WithModifiedSrcLines(count int) func(filter *TcrEvent) {
 	return func(tcrEvent *TcrEvent) {

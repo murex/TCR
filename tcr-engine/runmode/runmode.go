@@ -32,7 +32,7 @@ type RunMode interface {
 }
 
 var (
-	allModes = []RunMode{Mob{}, Solo{}, OneShot{}, Check{}}
+	allModes = []RunMode{Mob{}, Solo{}, OneShot{}, Check{}, Log{}, Stats{}}
 )
 
 // InteractiveModes returns the list of names of available interactive run modes

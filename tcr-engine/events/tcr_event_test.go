@@ -48,3 +48,73 @@ func Test_sample_tcr_event_conversion_to_yaml(t *testing.T) {
 	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6", "10s")
 	assert.Equal(t, expected, event.ToYaml())
 }
+
+func Test_events_nb_records(t *testing.T) {
+	now := time.Now()
+	testFlags := []struct {
+		desc     string
+		events   TcrEvents
+		expected int
+	}{
+		{
+			"nil",
+			nil,
+			0,
+		},
+		{
+			"no record",
+			TcrEvents{},
+			0,
+		},
+		{
+			"2 records",
+			TcrEvents{now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
+			2,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.events.NbRecords())
+		})
+	}
+}
+
+func Test_events_time_span(t *testing.T) {
+	now := time.Now()
+	testFlags := []struct {
+		desc     string
+		events   TcrEvents
+		expected time.Duration
+	}{
+		{
+			"nil",
+			nil,
+			0,
+		},
+		{
+			"no record",
+			TcrEvents{},
+			0,
+		},
+		{
+			"1 records",
+			TcrEvents{now: *ATcrEvent()},
+			0,
+		},
+		{
+			"2 records",
+			TcrEvents{now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
+			1 * time.Second,
+		},
+		{
+			"3 records unordered",
+			TcrEvents{now.Add(2 * time.Second): *ATcrEvent(), now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
+			2 * time.Second,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.events.TimeSpan())
+		})
+	}
+}
