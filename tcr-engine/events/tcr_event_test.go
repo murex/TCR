@@ -82,35 +82,74 @@ func Test_events_nb_records(t *testing.T) {
 func Test_events_records_counters(t *testing.T) {
 	now := time.Now().UTC()
 	testFlags := []struct {
-		desc            string
-		events          TcrEvents
-		expectedPassing int
-		expectedFailing int
+		desc                      string
+		events                    TcrEvents
+		expectedPassingCount      int
+		expectedPassingPercentage int
+		expectedFailingCount      int
+		expectedFailingPercentage int
 	}{
 		{
-			desc:            "nil",
-			events:          nil,
-			expectedPassing: 0,
-			expectedFailing: 0,
+			"nil",
+			nil,
+			0,
+			0,
+			0,
+			0,
 		},
 		{
 			"no record",
 			TcrEvents{},
 			0,
 			0,
-		},
-		{
-			"1 passing record",
-			TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusPass))},
-			1,
+			0,
 			0,
 		},
-		// TODO add more test cases
+		{
+			"1 passing",
+			TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusPass))},
+			1,
+			100,
+			0,
+			0,
+		},
+		{
+			"1 failing",
+			TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusFail))},
+			0,
+			0,
+			1,
+			100,
+		},
+		{
+			"1 passing 1 failing",
+			TcrEvents{
+				now:                      *ATcrEvent(WithCommandStatus(StatusPass)),
+				now.Add(1 * time.Second): *ATcrEvent(WithCommandStatus(StatusFail)),
+			},
+			1,
+			50,
+			1,
+			50,
+		},
+		{
+			"2 passing",
+			TcrEvents{
+				now:                      *ATcrEvent(WithCommandStatus(StatusPass)),
+				now.Add(1 * time.Second): *ATcrEvent(WithCommandStatus(StatusPass)),
+			},
+			2,
+			100,
+			0,
+			0,
+		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expectedPassing, tt.events.NbPassingRecords())
-			assert.Equal(t, tt.expectedFailing, tt.events.NbFailingRecords())
+			assert.Equal(t, tt.expectedPassingCount, tt.events.NbPassingRecords(), "passing count")
+			assert.Equal(t, tt.expectedPassingPercentage, tt.events.PercentPassing(), "passing percentage")
+			assert.Equal(t, tt.expectedFailingCount, tt.events.NbFailingRecords(), " failing count")
+			assert.Equal(t, tt.expectedFailingPercentage, tt.events.PercentFailing(), "failing percentage")
 		})
 	}
 }

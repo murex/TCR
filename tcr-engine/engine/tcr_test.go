@@ -467,7 +467,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR passing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message: ✅ TCR - tests passing") == 0
+				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
@@ -475,7 +475,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR failing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message: ❌ TCR - tests failing") == 0
+				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
@@ -483,7 +483,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR revert commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message: ⏪ TCR - revert changes") == 0
+				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
@@ -491,7 +491,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "non-TCR commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message: other commit message") == 0
+				return msg.Type == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
@@ -499,7 +499,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit hashtag is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "commit: 1111") == 0
+				return msg.Type == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,

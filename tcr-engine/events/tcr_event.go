@@ -181,3 +181,25 @@ func (events TcrEvents) nbRecordsWithStatus(status CommandStatus) (count int) {
 	}
 	return count
 }
+
+// PercentPassing provides the percentage (rounded) of passing records out of the total number of records.
+// Returns 0 if there is no record.
+func (events TcrEvents) PercentPassing() int {
+	if len(events) == 0 {
+		return 0
+	}
+	return roundClosestInt(100*events.NbPassingRecords(), events.NbRecords())
+}
+
+// PercentFailing provides the percentage (rounded) of failing records out of the total number of records.
+// Returns 0 if there is no record.
+func (events TcrEvents) PercentFailing() int {
+	if len(events) == 0 {
+		return 0
+	}
+	return roundClosestInt(100*events.NbFailingRecords(), events.NbRecords())
+}
+
+func roundClosestInt(dividend, divisor int) int {
+	return (dividend + (divisor / 2)) / divisor
+}

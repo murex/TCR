@@ -169,10 +169,12 @@ func (tcr *TcrEngine) RunCheck(params params.Params) {
 
 // PrintLog prints the TCR git commit history
 func (tcr *TcrEngine) PrintLog(params params.Params) {
-	for _, log := range tcr.queryGitLogs(params) {
-		report.PostTitle("commit:\t", log.Hash)
-		report.PostInfo("timestamp:\t", log.Timestamp)
-		report.PostInfo("message:\t", log.Message)
+	tcrLogs := tcr.queryGitLogs(params)
+	report.PostInfo("Printing TCR log for branch ", tcr.vcs.GetWorkingBranch())
+	for _, log := range tcrLogs {
+		report.PostTitle("commit:    ", log.Hash)
+		report.PostInfo("timestamp: ", log.Timestamp)
+		report.PostInfo("message:   ", log.Message)
 		// Giving trace reporter some time to flush its contents
 		time.Sleep(10 * time.Millisecond)
 	}
@@ -188,8 +190,8 @@ func (tcr *TcrEngine) PrintStats(params params.Params) {
 	report.PostInfo("- First commit:\t\t", tcrEvents.StartingTime())
 	report.PostInfo("- Last commit:\t\t", tcrEvents.EndingTime())
 	report.PostInfo("- Number of commits:\t", tcrEvents.NbRecords())
-	report.PostInfo("- Passing commits:\t", tcrEvents.NbPassingRecords())
-	report.PostInfo("- Failing commits:\t", tcrEvents.NbFailingRecords())
+	report.PostInfo("- Passing commits:\t", tcrEvents.NbPassingRecords(), " (", tcrEvents.PercentPassing(), "%)")
+	report.PostInfo("- Failing commits:\t", tcrEvents.NbFailingRecords(), " (", tcrEvents.PercentFailing(), "%)")
 }
 
 func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
