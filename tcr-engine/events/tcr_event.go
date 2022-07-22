@@ -64,6 +64,12 @@ const (
 	StatusUnknown CommandStatus = "unknown"
 )
 
+// Min and Max values for time
+var (
+	MinTime = time.Unix(0, 0).UTC() // Jan 1, 1970
+	MaxTime = MinTime.Add(1<<63 - 1)
+)
+
 // NewTcrEvent creates a new TcrEvent instance
 func NewTcrEvent(status CommandStatus, changes ChangedLines, stats TestStats) TcrEvent {
 	return TcrEvent{
@@ -125,9 +131,6 @@ func (events TcrEvents) TimeSpan() time.Duration {
 }
 
 func (events TcrEvents) getBoundaryTimes() (start, end time.Time) {
-	var MinTime = time.Unix(0, 0) // Jan 1, 1970
-	var MaxTime = MinTime.Add(1<<63 - 1)
-
 	start, end = MaxTime, MinTime
 	for key := range events {
 		if key.Before(start) {
@@ -138,4 +141,43 @@ func (events TcrEvents) getBoundaryTimes() (start, end time.Time) {
 		}
 	}
 	return
+}
+
+// StartingTime provides the starting times for all stored events.
+// Returns Unix 0-time if there is no record
+func (events TcrEvents) StartingTime() time.Time {
+	if len(events) == 0 {
+		return MinTime
+	}
+	start, _ := events.getBoundaryTimes()
+	return start
+}
+
+// EndingTime provides the ending times for all stored events
+// Returns Unix 0-time if there is no record
+func (events TcrEvents) EndingTime() time.Time {
+	if len(events) == 0 {
+		return MinTime
+	}
+	_, end := events.getBoundaryTimes()
+	return end
+}
+
+// NbPassingRecords provides the total number of passing records
+func (events TcrEvents) NbPassingRecords() int {
+	return events.nbRecordsWithStatus(StatusPass)
+}
+
+// NbFailingRecords provides the total number of failing records
+func (events TcrEvents) NbFailingRecords() (count int) {
+	return events.nbRecordsWithStatus(StatusFail)
+}
+
+func (events TcrEvents) nbRecordsWithStatus(status CommandStatus) (count int) {
+	for _, event := range events {
+		if event.Status == status {
+			count++
+		}
+	}
+	return count
 }
