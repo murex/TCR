@@ -21,7 +21,7 @@ require (
 )
 
 require (
-	github.com/golangci/golangci-lint v1.47.1
+	github.com/golangci/golangci-lint v1.47.2
 	github.com/goreleaser/goreleaser v1.10.2
 	github.com/mengdaming/go-junit v0.1.3
 	github.com/spf13/afero v1.9.2
