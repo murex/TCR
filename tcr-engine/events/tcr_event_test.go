@@ -154,90 +154,57 @@ func Test_events_records_counters(t *testing.T) {
 	}
 }
 
-func Test_events_time_span(t *testing.T) {
-	now := time.Now().UTC()
-	testFlags := []struct {
-		desc     string
-		events   TcrEvents
-		expected time.Duration
-	}{
-		{
-			"nil",
-			nil,
-			0,
-		},
-		{
-			"no record",
-			TcrEvents{},
-			0,
-		},
-		{
-			"1 records",
-			TcrEvents{now: *ATcrEvent()},
-			0,
-		},
-		{
-			"2 records",
-			TcrEvents{now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
-			1 * time.Second,
-		},
-		{
-			"3 records unsorted",
-			TcrEvents{now.Add(2 * time.Second): *ATcrEvent(), now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
-			2 * time.Second,
-		},
-	}
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expected, tt.events.TimeSpan())
-		})
-	}
-}
-
-func Test_events_time_boundaries(t *testing.T) {
+func Test_events_time_span_and_boundaries(t *testing.T) {
 	now := time.Now().UTC()
 	zeroTime := time.Unix(0, 0).UTC()
 	testFlags := []struct {
-		desc          string
-		events        TcrEvents
-		expectedStart time.Time
-		expectedEnd   time.Time
+		desc             string
+		events           TcrEvents
+		expectedStart    time.Time
+		expectedEnd      time.Time
+		expectedTimespan time.Duration
 	}{
 		{
 			"nil",
 			nil,
 			zeroTime,
 			zeroTime,
+			0,
 		},
 		{
 			"no record",
-			TcrEvents{},
+			*NewTcrEvents(0),
 			zeroTime,
 			zeroTime,
+			0,
 		},
 		{
 			"1 records",
 			TcrEvents{now: *ATcrEvent()},
 			now,
 			now,
+			0,
 		},
 		{
 			"2 records",
 			TcrEvents{now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
 			now,
 			now.Add(1 * time.Second),
+			1 * time.Second,
 		},
 		{
 			"3 records unsorted",
 			TcrEvents{now.Add(2 * time.Second): *ATcrEvent(), now: *ATcrEvent(), now.Add(1 * time.Second): *ATcrEvent()},
 			now,
 			now.Add(2 * time.Second),
+			2 * time.Second,
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expectedStart, tt.events.StartingTime())
-			assert.Equal(t, tt.expectedEnd, tt.events.EndingTime())
+			assert.Equal(t, tt.expectedStart, tt.events.StartingTime(), "starting time")
+			assert.Equal(t, tt.expectedEnd, tt.events.EndingTime(), "ending time")
+			assert.Equal(t, tt.expectedTimespan, tt.events.TimeSpan(), "time span")
 		})
 	}
 }
