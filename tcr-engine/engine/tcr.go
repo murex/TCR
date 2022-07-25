@@ -176,7 +176,7 @@ func (tcr *TcrEngine) PrintLog(params params.Params) {
 		report.PostInfo("timestamp: ", log.Timestamp)
 		report.PostInfo("message:   ", log.Message)
 		// Giving trace reporter some time to flush its contents
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(100 * time.Millisecond)
 	}
 }
 
