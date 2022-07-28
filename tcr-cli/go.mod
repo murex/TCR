@@ -8,7 +8,7 @@ require (
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/gen2brain/beeep v0.0.0-20210529141713-5586760f0cc1
 	github.com/golangci/golangci-lint v1.47.2
-	github.com/goreleaser/goreleaser v1.10.2
+	github.com/goreleaser/goreleaser v1.10.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/pkg/errors v0.9.1
