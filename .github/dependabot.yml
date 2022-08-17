@@ -54,7 +54,7 @@ updates:
       interval: "daily"
 
   # Maintain dependencies for Nuget in testsdata/csharp
-  - package-ecosystem: "gomod"
+  - package-ecosystem: "nuget"
     directory: "/tcr-engine/testdata/csharp"
     schedule:
       interval: "daily"
