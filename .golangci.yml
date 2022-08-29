@@ -12,7 +12,6 @@ linters:
     - megacheck
     - misspell
     - nakedret
-    - revive
     - staticcheck
     - structcheck
     - typecheck
@@ -23,8 +22,9 @@ linters:
   disable:
     - goimports
     - errcheck
+    - revive
 run:
-  go: 1.18
+  go: "1.18"
   timeout: 5m
   skip-dirs:
     - testdata
@@ -47,31 +47,3 @@ issues:
   exclude-use-default: false
   exclude:
     - parameter .* always receives
-  exclude-rules:
-    # These are copied from the default exclude rules, except for "ineffective break statement"
-    # and GoDoc checks.
-    # https://github.com/golangci/golangci-lint/blob/0cc87df732aaf1d5ad9ce9ca538d38d916918b36/pkg/config/config.go#L36
-    - text: "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
-      linters:
-        - errcheck
-    - text: "func name will be used as test\\.Test.* by other packages, and that stutters; consider calling this"
-      linters:
-        - golint
-    - text: "G103: Use of unsafe calls should be audited"
-      linters:
-        - gosec
-    - text: "G104: Errors unhandled"
-      linters:
-        - gosec
-    - text: "G204: Subprocess launch(ed with (variable|function call)|ing should be audited)"
-      linters:
-        - gosec
-    - text: "(G301|G302): (Expect directory permissions to be 0750 or less|Expect file permissions to be 0600 or less)"
-      linters:
-        - gosec
-    - text: "G304: Potential file inclusion via variable"
-      linters:
-        - gosec
-    - text: "(G201|G202): SQL string (formatting|concatenation)"
-      linters:
-        - gosec
