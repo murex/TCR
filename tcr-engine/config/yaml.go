@@ -41,7 +41,7 @@ func loadFromYaml(filename string, out interface{}) {
 	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
 	// Cf. https://pkg.go.dev/os#Expand
 
-	data, err := os.ReadFile(filename)
+	data, err := os.ReadFile(filepath.Clean(filename))
 	if err != nil {
 		trace("Error while reading configuration file: ", err)
 	}
