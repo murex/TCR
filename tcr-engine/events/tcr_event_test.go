@@ -28,13 +28,16 @@ import (
 	"time"
 )
 
-func Test_empty_tcr_event_conversion_to_yaml(t *testing.T) {
+func Test_yaml_conversion_on_empty_tcr_event(t *testing.T) {
 	event := *ATcrEvent()
 	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0", "0s")
-	assert.Equal(t, expected, event.ToYaml())
+
+	yaml := event.ToYaml()
+	assert.Equal(t, expected, yaml)
+	assert.Equal(t, event, FromYaml(yaml))
 }
 
-func Test_sample_tcr_event_conversion_to_yaml(t *testing.T) {
+func Test_yaml_conversion_on_sample_tcr_event(t *testing.T) {
 	event := ATcrEvent(
 		WithModifiedSrcLines(1),
 		WithModifiedTestLines(2),
@@ -46,7 +49,10 @@ func Test_sample_tcr_event_conversion_to_yaml(t *testing.T) {
 		WithTestsDuration(10*time.Second),
 	)
 	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6", "10s")
-	assert.Equal(t, expected, event.ToYaml())
+
+	yaml := event.ToYaml()
+	assert.Equal(t, expected, yaml)
+	assert.Equal(t, *event, FromYaml(yaml))
 }
 
 func Test_events_nb_records(t *testing.T) {
