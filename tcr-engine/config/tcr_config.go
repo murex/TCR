@@ -211,14 +211,14 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
-func UpdateEngineParams(params *params.Params) {
-	params.BaseDir = Config.BaseDir.GetValue()
-	params.WorkDir = Config.WorkDir.GetValue()
-	params.ConfigDir = Config.ConfigDir.GetValue()
-	params.MobTurnDuration = Config.MobTimerDuration.GetValue()
-	params.Language = Config.Language.GetValue()
-	params.Toolchain = Config.Toolchain.GetValue()
-	params.PollingPeriod = Config.PollingPeriod.GetValue()
-	params.AutoPush = Config.AutoPush.GetValue()
-	params.CommitFailures = Config.CommitFailures.GetValue()
+func UpdateEngineParams(p *params.Params) {
+	p.BaseDir = Config.BaseDir.GetValue()
+	p.WorkDir = Config.WorkDir.GetValue()
+	p.ConfigDir = Config.ConfigDir.GetValue()
+	p.MobTurnDuration = Config.MobTimerDuration.GetValue()
+	p.Language = Config.Language.GetValue()
+	p.Toolchain = Config.Toolchain.GetValue()
+	p.PollingPeriod = Config.PollingPeriod.GetValue()
+	p.AutoPush = Config.AutoPush.GetValue()
+	p.CommitFailures = Config.CommitFailures.GetValue()
 }

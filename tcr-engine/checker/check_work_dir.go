@@ -26,17 +26,17 @@ import (
 	"github.com/murex/tcr/tcr-engine/params"
 )
 
-func checkWorkDirectory(params params.Params) (cr *CheckResults) {
+func checkWorkDirectory(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("work directory")
 
-	if params.WorkDir == "" {
+	if p.WorkDir == "" {
 		cr.ok("work directory parameter is not set explicitly")
 	} else {
-		cr.ok("work directory parameter is ", params.WorkDir)
+		cr.ok("work directory parameter is ", p.WorkDir)
 	}
 
 	if checkEnv.workDirErr != nil {
-		cr.add(checkpointsForDirAccessError(params.WorkDir, checkEnv.workDirErr))
+		cr.add(checkpointsForDirAccessError(p.WorkDir, checkEnv.workDirErr))
 	} else {
 		cr.ok("work directory absolute path is ", checkEnv.workDir)
 	}

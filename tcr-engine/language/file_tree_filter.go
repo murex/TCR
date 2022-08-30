@@ -56,8 +56,8 @@ func toSlashedPath(input string) string {
 	return path.Join(strings.Split(input, "\\")...)
 }
 
-func (treeFilter FileTreeFilter) isInFileTree(path string, baseDir string) bool {
-	absPath, _ := filepath.Abs(path)
+func (treeFilter FileTreeFilter) isInFileTree(aPath string, baseDir string) bool {
+	absPath, _ := filepath.Abs(aPath)
 	// If no directory is configured, any path that is under baseDir path is ok
 	if treeFilter.Directories == nil || len(treeFilter.Directories) == 0 {
 		if isSubPathOf(absPath, baseDir) {
@@ -74,29 +74,29 @@ func (treeFilter FileTreeFilter) isInFileTree(path string, baseDir string) bool 
 	return false
 }
 
-func isSubPathOf(path string, refPath string) bool {
-	// If refPath is empty, we consider it as being the root, thus path is a sub-path of refPath
+func isSubPathOf(aPath string, refPath string) bool {
+	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
 	if refPath == "" {
 		return true
 	}
-	if refPath == path || strings.HasPrefix(path, refPath+string(os.PathSeparator)) {
+	if refPath == aPath || strings.HasPrefix(aPath, refPath+string(os.PathSeparator)) {
 		return true
 	}
 	return false
 }
 
-func (treeFilter FileTreeFilter) matches(filepath string, baseDir string) bool {
-	if filepath == "" {
+func (treeFilter FileTreeFilter) matches(p string, baseDir string) bool {
+	if p == "" {
 		return false
 	}
-	if treeFilter.isInFileTree(filepath, baseDir) {
+	if treeFilter.isInFileTree(p, baseDir) {
 		// If no pattern is set, any file matches as long as it's in the file tree
 		if treeFilter.FilePatterns == nil || len(treeFilter.FilePatterns) == 0 {
 			return true
 		}
 		for _, filter := range treeFilter.FilePatterns {
 			re := regexp.MustCompile(filter)
-			if re.MatchString(filepath) {
+			if re.MatchString(p) {
 				return true
 			}
 		}

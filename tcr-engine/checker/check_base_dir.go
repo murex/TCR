@@ -26,17 +26,17 @@ import (
 	"github.com/murex/tcr/tcr-engine/params"
 )
 
-func checkBaseDirectory(params params.Params) (cr *CheckResults) {
+func checkBaseDirectory(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("base directory")
 
-	if params.BaseDir == "" {
+	if p.BaseDir == "" {
 		cr.ok("base directory parameter is not set explicitly")
 	} else {
-		cr.ok("base directory parameter is ", params.BaseDir)
+		cr.ok("base directory parameter is ", p.BaseDir)
 	}
 
 	if checkEnv.sourceTreeErr != nil {
-		cr.add(checkpointsForDirAccessError(params.BaseDir, checkEnv.sourceTreeErr))
+		cr.add(checkpointsForDirAccessError(p.BaseDir, checkEnv.sourceTreeErr))
 	} else {
 		cr.ok("base directory absolute path is ", checkEnv.sourceTree.GetBaseDir())
 	}

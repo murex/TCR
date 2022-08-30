@@ -44,7 +44,7 @@ func setLinePrefix(value string) {
 
 func printPrefixedAndColored(fgColor aurora.Color, message string) {
 	setupTerminal()
-	fmt.Println(
+	_, _ = fmt.Println(
 		colorizer.Colorize(linePrefix, fgColor),
 		colorizer.Colorize(message, fgColor))
 }
@@ -66,7 +66,7 @@ func printInRed(a ...interface{}) {
 }
 
 func printUntouched(a ...interface{}) {
-	fmt.Println(a...)
+	_, _ = fmt.Println(a...)
 }
 
 func printHorizontalLine() {

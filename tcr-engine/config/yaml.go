@@ -61,7 +61,7 @@ func saveToYaml(in interface{}, filename string) {
 		trace("Error while marshalling configuration data: ", err)
 	}
 	// Then we save it
-	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec // We want people to be able to share this
+	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec,revive // We want people to be able to share this
 	if err != nil {
 		trace("Error while saving configuration: ", err)
 	}

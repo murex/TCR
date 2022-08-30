@@ -256,7 +256,7 @@ func (g *gitImpl) Push() error {
 // Pull runs a git pull operation.
 // Current implementation uses a direct call to git
 func (g *gitImpl) Pull() error {
-	if !g.IsRemoteEnabled() || !g.workingBranchExistsOnRemote {
+	if !g.workingBranchExistsOnRemote || !g.IsRemoteEnabled() {
 		report.PostInfo("Working locally on branch ", g.GetWorkingBranch())
 		return nil
 	}
@@ -296,7 +296,7 @@ func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))
 	for scanner.Scan() {
 		fields := strings.Split(scanner.Text(), "\t")
-		if len(fields) == 3 {
+		if len(fields) == 3 { //nolint:revive
 			added, _ := strconv.Atoi(fields[0])
 			removed, _ := strconv.Atoi(fields[1])
 			filename := filepath.Join(g.rootDir, fields[2])

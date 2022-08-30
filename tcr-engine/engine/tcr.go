@@ -46,8 +46,8 @@ import (
 type (
 	// TcrInterface provides the API for interacting with TCR engine
 	TcrInterface interface {
-		Init(u ui.UserInterface, params params.Params)
-		setVcs(vcs vcs.GitInterface)
+		Init(u ui.UserInterface, p params.Params)
+		setVcs(gitInterface vcs.GitInterface)
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
@@ -63,9 +63,9 @@ type (
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
-		RunCheck(params params.Params)
-		PrintLog(params params.Params)
-		PrintStats(params params.Params)
+		RunCheck(p params.Params)
+		PrintLog(p params.Params)
+		PrintStats(p params.Params)
 		Quit()
 	}
 
@@ -106,39 +106,39 @@ func NewTcrEngine() TcrInterface {
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
-func (tcr *TcrEngine) Init(u ui.UserInterface, params params.Params) {
+func (tcr *TcrEngine) Init(u ui.UserInterface, p params.Params) {
 	var err error
 	status.RecordState(status.Ok)
 	tcr.ui = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
-	tcr.SetRunMode(params.Mode)
+	tcr.SetRunMode(p.Mode)
 	if !tcr.mode.IsActive() {
 		tcr.ui.ShowRunningMode(tcr.mode)
 		return
 	}
 
-	tcr.pollingPeriod = params.PollingPeriod
+	tcr.pollingPeriod = p.PollingPeriod
 
-	tcr.initSourceTree(params)
+	tcr.initSourceTree(p)
 
-	tcr.language, err = language.GetLanguage(params.Language, tcr.sourceTree.GetBaseDir())
+	tcr.language, err = language.GetLanguage(p.Language, tcr.sourceTree.GetBaseDir())
 	tcr.handleError(err, true, status.ConfigError)
 
-	tcr.toolchain, err = tcr.language.GetToolchain(params.Toolchain)
+	tcr.toolchain, err = tcr.language.GetToolchain(p.Toolchain)
 	tcr.handleError(err, true, status.ConfigError)
 
-	err = toolchain.SetWorkDir(params.WorkDir)
+	err = toolchain.SetWorkDir(p.WorkDir)
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
 	tcr.initVcs()
-	tcr.vcs.EnablePush(params.AutoPush)
+	tcr.vcs.EnablePush(p.AutoPush)
 
-	tcr.SetCommitOnFail(params.CommitFailures)
+	tcr.SetCommitOnFail(p.CommitFailures)
 
-	tcr.setMobTimerDuration(params.MobTurnDuration)
+	tcr.setMobTimerDuration(p.MobTurnDuration)
 
 	tcr.ui.ShowRunningMode(tcr.mode)
 	tcr.ui.ShowSessionInfo()
@@ -163,26 +163,28 @@ func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
 }
 
 // RunCheck checks the provided parameters and prints out corresponding report
-func (tcr *TcrEngine) RunCheck(params params.Params) {
-	checker.Run(params)
+func (tcr *TcrEngine) RunCheck(p params.Params) {
+	checker.Run(p)
 }
 
 // PrintLog prints the TCR git commit history
-func (tcr *TcrEngine) PrintLog(params params.Params) {
-	tcrLogs := tcr.queryGitLogs(params)
+func (tcr *TcrEngine) PrintLog(p params.Params) {
+	const traceReporterWaitingTime = 100 * time.Millisecond
+
+	tcrLogs := tcr.queryGitLogs(p)
 	report.PostInfo("Printing TCR log for branch ", tcr.vcs.GetWorkingBranch())
 	for _, log := range tcrLogs {
 		report.PostTitle("commit:    ", log.Hash)
 		report.PostInfo("timestamp: ", log.Timestamp)
 		report.PostInfo("message:   ", log.Message)
 		// Giving trace reporter some time to flush its contents
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(traceReporterWaitingTime)
 	}
 }
 
 // PrintStats prints the TCR execution stats
-func (tcr *TcrEngine) PrintStats(params params.Params) {
-	tcrLogs := tcr.queryGitLogs(params)
+func (tcr *TcrEngine) PrintStats(p params.Params) {
+	tcrLogs := tcr.queryGitLogs(p)
 	tcrEvents := tcrLogsToEvents(tcrLogs)
 	// TODO add more stats
 	report.PostInfo("- Branch:\t\t\t", tcr.vcs.GetWorkingBranch())
@@ -202,8 +204,8 @@ func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
 	return
 }
 
-func (tcr *TcrEngine) queryGitLogs(params params.Params) vcs.GitLogItems {
-	tcr.initSourceTree(params)
+func (tcr *TcrEngine) queryGitLogs(p params.Params) vcs.GitLogItems {
+	tcr.initSourceTree(p)
 	tcr.initVcs()
 
 	logs, err := tcr.vcs.Log(isTcrCommitMessage)
@@ -225,10 +227,11 @@ func parseCommitMessage(message string) (event events.TcrEvent) {
 	// First line is the main commit message
 	// Second line is a blank line
 	// The yaml-structured data starts on the third line
-	parts := strings.SplitN(message, "\n", 3)
-	if len(parts) == 3 {
+	const nbParts = 3
+	parts := strings.SplitN(message, "\n", nbParts)
+	if len(parts) == nbParts {
 		header = parts[0]
-		event = events.FromYaml(parts[2])
+		event = events.FromYaml(parts[nbParts-1])
 	}
 	switch header {
 	case commitMessageOk:
@@ -249,15 +252,15 @@ func (tcr *TcrEngine) initVcs() {
 	}
 }
 
-func (tcr *TcrEngine) initSourceTree(params params.Params) {
+func (tcr *TcrEngine) initSourceTree(p params.Params) {
 	var err error
-	tcr.sourceTree, err = filesystem.New(params.BaseDir)
+	tcr.sourceTree, err = filesystem.New(p.BaseDir)
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 }
 
-func (tcr *TcrEngine) setVcs(vcs vcs.GitInterface) {
-	tcr.vcs = vcs
+func (tcr *TcrEngine) setVcs(gitInterface vcs.GitInterface) {
+	tcr.vcs = gitInterface
 }
 
 func (tcr *TcrEngine) warnIfOnRootBranch(branch string, interactive bool) {
@@ -588,9 +591,8 @@ func (tcr *TcrEngine) handleError(err error, fatal bool, s status.Status) {
 			report.PostError(err)
 			time.Sleep(1 * time.Millisecond)
 			os.Exit(status.GetReturnCode())
-		} else {
-			report.PostWarning(err)
 		}
+		report.PostWarning(err)
 	} else {
 		status.RecordState(status.Ok)
 	}

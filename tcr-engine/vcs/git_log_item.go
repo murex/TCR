@@ -40,13 +40,13 @@ type (
 )
 
 // NewGitLogItem creates a new git log item instance
-func NewGitLogItem(hash string, time time.Time, message string) GitLogItem {
-	return GitLogItem{hash, time, message}
+func NewGitLogItem(hash string, timestamp time.Time, message string) GitLogItem {
+	return GitLogItem{hash, timestamp, message}
 }
 
-func (items GitLogItems) sort() {
-	sort.Slice(items, func(i, j int) bool {
-		return items[i].Timestamp.Before(items[j].Timestamp)
+func (items *GitLogItems) sortByDate() {
+	sort.Slice(*items, func(i, j int) bool {
+		return (*items)[i].Timestamp.Before((*items)[j].Timestamp)
 	})
 }
 
@@ -54,6 +54,6 @@ func (items *GitLogItems) add(d GitLogItem) {
 	*items = append(*items, d)
 }
 
-func (items GitLogItems) len() int {
-	return len(items)
+func (items *GitLogItems) len() int {
+	return len(*items)
 }

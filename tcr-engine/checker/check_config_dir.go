@@ -28,16 +28,16 @@ import (
 	"path/filepath"
 )
 
-func checkConfigDirectory(params params.Params) (cr *CheckResults) {
+func checkConfigDirectory(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("configuration directory")
 
 	// TODO see how we can handle incorrect configuration settings, knowing that conf is already loaded when we get here
 
-	if params.ConfigDir == "" {
+	if p.ConfigDir == "" {
 		cr.ok("configuration directory parameter is not set explicitly")
 		cr.ok("using current directory as configuration directory")
 	} else {
-		cr.ok("configuration directory parameter is: ", params.ConfigDir)
+		cr.ok("configuration directory parameter is: ", p.ConfigDir)
 	}
 	tcrDirPath, _ := filepath.Abs(config.GetConfigDirPath())
 	cr.ok("TCR configuration root directory is ", tcrDirPath)

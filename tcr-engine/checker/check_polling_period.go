@@ -32,14 +32,14 @@ const (
 	pollingPeriodHighThreshold = 1 * time.Minute
 )
 
-func checkPollingPeriod(params params.Params) (cr *CheckResults) {
+func checkPollingPeriod(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git polling period")
-	cr.ok("git polling period is ", params.PollingPeriod.String())
-	if params.PollingPeriod == 0 {
+	cr.ok("git polling period is ", p.PollingPeriod.String())
+	if p.PollingPeriod == 0 {
 		cr.warning("git code refresh for navigator is turned off")
-	} else if params.PollingPeriod > pollingPeriodHighThreshold {
+	} else if p.PollingPeriod > pollingPeriodHighThreshold {
 		cr.warning("git polling period is very slow (above ", pollingPeriodHighThreshold, ")")
-	} else if params.PollingPeriod < pollingPeriodLowThreshold {
+	} else if p.PollingPeriod < pollingPeriodLowThreshold {
 		cr.warning("git polling period is very fast (below ", pollingPeriodLowThreshold, ")")
 	} else {
 		cr.ok("git polling period is in the recommended range")

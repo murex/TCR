@@ -224,7 +224,6 @@ func (gui *GUI) initApp() {
 	)
 	gui.win.SetContent(gui.topLevel)
 	gui.BuildMainMenu()
-
 }
 
 func (gui *GUI) setRunMode(mode runmode.RunMode) {

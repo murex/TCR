@@ -178,7 +178,6 @@ func (term *TerminalUI) whatShallWeDo() {
 }
 
 func (term *TerminalUI) startAs(r role.Role) {
-
 	// We ask TCR engine to start...
 	switch r {
 	case role.Navigator{}:
@@ -251,7 +250,6 @@ func (term *TerminalUI) ShowSessionInfo() {
 
 // Confirm asks the user for confirmation
 func (term *TerminalUI) Confirm(message string, defaultAnswer bool) bool {
-
 	_ = SetRaw()
 	defer Restore()
 

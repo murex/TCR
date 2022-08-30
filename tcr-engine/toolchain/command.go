@@ -107,22 +107,22 @@ func (command Command) runsOnLocalMachine() bool {
 	return command.runsOnPlatform(OsName(runtime.GOOS), ArchName(runtime.GOARCH))
 }
 
-func (command Command) runsOnPlatform(os OsName, arch ArchName) bool {
-	return command.runsWithOs(os) && command.runsWithArch(arch)
+func (command Command) runsOnPlatform(osName OsName, archName ArchName) bool {
+	return command.runsWithOs(osName) && command.runsWithArch(archName)
 }
 
-func (command Command) runsWithOs(os OsName) bool {
-	for _, osName := range command.Os {
-		if osName == os {
+func (command Command) runsWithOs(osName OsName) bool {
+	for _, o := range command.Os {
+		if o == osName {
 			return true
 		}
 	}
 	return false
 }
 
-func (command Command) runsWithArch(arch ArchName) bool {
-	for _, archName := range command.Arch {
-		if archName == arch {
+func (command Command) runsWithArch(archName ArchName) bool {
+	for _, a := range command.Arch {
+		if a == archName {
 			return true
 		}
 	}
@@ -156,10 +156,7 @@ func (command Command) check() error {
 	if err := command.checkOsTable(); err != nil {
 		return err
 	}
-	if err := command.checkArchTable(); err != nil {
-		return err
-	}
-	return nil
+	return command.checkArchTable()
 }
 
 func (command Command) checkPath() error {
@@ -197,9 +194,9 @@ func (command Command) asCommandLine() string {
 	return command.Path + " " + strings.Join(command.Arguments, " ")
 }
 
-func findCommand(commands []Command, os OsName, arch ArchName) *Command {
+func findCommand(commands []Command, osName OsName, archName ArchName) *Command {
 	for _, cmd := range commands {
-		if cmd.runsOnPlatform(os, arch) {
+		if cmd.runsOnPlatform(osName, archName) {
 			return &cmd
 		}
 	}

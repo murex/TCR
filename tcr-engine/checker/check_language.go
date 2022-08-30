@@ -26,13 +26,13 @@ import (
 	"github.com/murex/tcr/tcr-engine/params"
 )
 
-func checkLanguage(params params.Params) (cr *CheckResults) {
+func checkLanguage(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("language")
 
-	if params.Language == "" {
+	if p.Language == "" {
 		cr.add(checkpointsWhenLanguageIsNotSet())
 	} else {
-		cr.add(checkpointsWhenLanguageIsSet(params.Language))
+		cr.add(checkpointsWhenLanguageIsSet(p.Language))
 	}
 
 	if checkEnv.lang != nil {

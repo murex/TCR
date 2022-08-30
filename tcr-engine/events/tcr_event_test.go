@@ -214,3 +214,26 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 		})
 	}
 }
+
+func Test_events_duration_in_green(t *testing.T) {
+	//now := time.Now().UTC()
+	//zeroTime := time.Unix(0, 0).UTC()
+	testFlags := []struct {
+		desc                    string
+		events                  TcrEvents
+		expectedDurationInGreen time.Duration
+		expectedDurationInRed   time.Duration
+	}{
+		{
+			"nil",
+			nil,
+			0,
+			0,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedDurationInGreen, tt.events.DurationInGreen(), "duration in green")
+		})
+	}
+}

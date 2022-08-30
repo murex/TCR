@@ -54,8 +54,8 @@ type (
 		GetTestFileFilter() FileTreeFilter
 		GetToolchain(toolchainName string) (toolchain.TchnInterface, error)
 		DirsToWatch(baseDir string) []string
-		IsSrcFile(filepath string) bool
-		IsTestFile(filepath string) bool
+		IsSrcFile(aPath string) bool
+		IsTestFile(aPath string) bool
 		IsLanguageFile(filename string) bool
 		AllSrcFiles() ([]string, error)
 		AllTestFiles() ([]string, error)
@@ -117,22 +117,22 @@ func (lang *Language) GetTestFileFilter() FileTreeFilter {
 }
 
 // IsSrcFile returns true if the provided filePath is recognized as a source file for this language
-func (lang *Language) IsSrcFile(filepath string) bool {
+func (lang *Language) IsSrcFile(aPath string) bool {
 	// test files take precedence over source files in case of overlapping (such as with go language)
-	if lang.IsTestFile(filepath) {
+	if lang.IsTestFile(aPath) {
 		return false
 	}
-	return lang.GetSrcFileFilter().matches(filepath, lang.baseDir)
+	return lang.GetSrcFileFilter().matches(aPath, lang.baseDir)
 }
 
 // IsTestFile returns true if the provided filePath is recognized as a test file for this language
-func (lang *Language) IsTestFile(filepath string) bool {
-	return lang.GetTestFileFilter().matches(filepath, lang.baseDir)
+func (lang *Language) IsTestFile(aPath string) bool {
+	return lang.GetTestFileFilter().matches(aPath, lang.baseDir)
 }
 
 // IsLanguageFile returns true if the provided filePath is recognized as either a source or a test file for this language
-func (lang *Language) IsLanguageFile(filepath string) bool {
-	return lang.IsSrcFile(filepath) || lang.IsTestFile(filepath)
+func (lang *Language) IsLanguageFile(aPath string) bool {
+	return lang.IsSrcFile(aPath) || lang.IsTestFile(aPath)
 }
 
 // DirsToWatch returns the list of directories that TCR engine needs to watch for this language

@@ -45,13 +45,13 @@ func init() {
 					Os:        []OsName{OsDarwin, OsLinux},
 					Arch:      GetAllArchNames(),
 					Path:      "./gradlew",
-					Arguments: []string{"test"},
+					Arguments: []string{"test"}, //nolint:revive
 				},
 				{
 					Os:        []OsName{OsWindows},
 					Arch:      GetAllArchNames(),
 					Path:      ".\\gradlew.bat",
-					Arguments: []string{"test"},
+					Arguments: []string{"test"}, //nolint:revive
 				},
 			},
 			testResultDir: "build/test-results/test",

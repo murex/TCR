@@ -28,13 +28,13 @@ import (
 	"runtime"
 )
 
-func checkToolchain(params params.Params) (cr *CheckResults) {
+func checkToolchain(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("toolchain")
 
-	if params.Toolchain == "" {
+	if p.Toolchain == "" {
 		cr.add(checkpointsWhenToolchainIsNotSet())
 	} else {
-		cr.add(checkpointsWhenToolchainIsSet(params.Toolchain))
+		cr.add(checkpointsWhenToolchainIsSet(p.Toolchain))
 	}
 
 	if checkEnv.tchn != nil {

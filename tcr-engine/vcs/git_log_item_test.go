@@ -46,7 +46,7 @@ func Test_add_empty_git_log_item(t *testing.T) {
 func Test_sort_empty_git_log_items_does_not_panic(t *testing.T) {
 	var items GitLogItems
 	assert.NotPanics(t, func() {
-		items.sort()
+		items.sortByDate()
 	})
 	assert.Len(t, items, 0)
 }
@@ -55,7 +55,7 @@ func Test_sort_already_sorted_git_log_items(t *testing.T) {
 	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
 	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
 	items := GitLogItems{item1, item2}
-	items.sort()
+	items.sortByDate()
 	assert.Equal(t, GitLogItems{item1, item2}, items)
 }
 
@@ -63,6 +63,6 @@ func Test_sort_unsorted_git_log_items(t *testing.T) {
 	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
 	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
 	items := GitLogItems{item2, item1}
-	items.sort()
+	items.sortByDate()
 	assert.Equal(t, GitLogItems{item1, item2}, items)
 }

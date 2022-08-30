@@ -68,7 +68,7 @@ type (
 		TestCommandPath() string
 		TestCommandArgs() []string
 		checkTestCommand() error
-		runsOnPlatform(os OsName, arch ArchName) bool
+		runsOnPlatform(osName OsName, archName ArchName) bool
 		CheckCommandAccess(cmdPath string) (string, error)
 	}
 )
@@ -190,16 +190,16 @@ func (tchn Toolchain) TestCommandLine() string {
 	return findCompatibleCommand(tchn.testCommands).asCommandLine()
 }
 
-func (tchn Toolchain) runsOnPlatform(os OsName, arch ArchName) bool {
-	return tchn.findBuildCommandFor(os, arch) != nil && tchn.findTestCommandFor(os, arch) != nil
+func (tchn Toolchain) runsOnPlatform(osName OsName, archName ArchName) bool {
+	return tchn.findBuildCommandFor(osName, archName) != nil && tchn.findTestCommandFor(osName, archName) != nil
 }
 
-func (tchn Toolchain) findBuildCommandFor(os OsName, arch ArchName) *Command {
-	return findCommand(tchn.buildCommands, os, arch)
+func (tchn Toolchain) findBuildCommandFor(osName OsName, archName ArchName) *Command {
+	return findCommand(tchn.buildCommands, osName, archName)
 }
 
-func (tchn Toolchain) findTestCommandFor(os OsName, arch ArchName) *Command {
-	return findCommand(tchn.testCommands, os, arch)
+func (tchn Toolchain) findTestCommandFor(osName OsName, archName ArchName) *Command {
+	return findCommand(tchn.testCommands, osName, archName)
 }
 
 // CheckCommandAccess verifies if the provided command path can be accessed. Returns the path as

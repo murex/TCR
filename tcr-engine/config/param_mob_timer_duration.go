@@ -45,7 +45,7 @@ func AddMobTimerDurationParam(cmd *cobra.Command) *DurationParam {
 		},
 		v: paramValueDuration{
 			value:        0,
-			defaultValue: 5 * time.Minute,
+			defaultValue: 5 * time.Minute, // nolint:revive
 		},
 	}
 	param.addToCommand(cmd)

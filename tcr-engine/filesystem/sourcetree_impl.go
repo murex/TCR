@@ -85,7 +85,6 @@ func (st *SourceTreeImpl) Watch(
 	filenameMatcher func(filename string) bool,
 	interrupt <-chan bool,
 ) bool {
-
 	// The file watcher
 	st.watcher, _ = fsnotify.NewWatcher()
 	defer func(watcher *fsnotify.Watcher) {
@@ -143,11 +142,11 @@ func (st *SourceTreeImpl) watchFile(path string, fi os.FileInfo, err error) erro
 
 	// If the filename matches our filter, we add it to the watching list
 	if st.matcher(path) {
-		err = st.watcher.Add(path)
-		if err != nil {
-			report.PostError(err)
+		err2 := st.watcher.Add(path)
+		if err2 != nil {
+			report.PostError(err2)
 		}
-		return err
+		return err2
 	}
 	return nil
 }

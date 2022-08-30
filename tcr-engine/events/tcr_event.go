@@ -188,7 +188,7 @@ func (events TcrEvents) PercentPassing() int {
 	if len(events) == 0 {
 		return 0
 	}
-	return roundClosestInt(100*events.NbPassingRecords(), events.NbRecords())
+	return asPercentage(events.NbPassingRecords(), events.NbRecords())
 }
 
 // PercentFailing provides the percentage (rounded) of failing records out of the total number of records.
@@ -197,7 +197,16 @@ func (events TcrEvents) PercentFailing() int {
 	if len(events) == 0 {
 		return 0
 	}
-	return roundClosestInt(100*events.NbFailingRecords(), events.NbRecords())
+	return asPercentage(events.NbFailingRecords(), events.NbRecords())
+}
+
+// DurationInGreen returns the total duration spent in green, e.g. with no failing tests.
+func (events TcrEvents) DurationInGreen() time.Duration {
+	return 0
+}
+
+func asPercentage(dividend, divisor int) int {
+	return roundClosestInt(100*dividend, divisor) //nolint:revive
 }
 
 func roundClosestInt(dividend, divisor int) int {

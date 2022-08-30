@@ -32,14 +32,14 @@ const (
 	mobTimerHighThreshold = 15 * time.Minute
 )
 
-func checkMobTimer(params params.Params) (cr *CheckResults) {
+func checkMobTimer(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("mob timer")
-	cr.ok("mob timer duration is ", params.MobTurnDuration.String())
-	if params.MobTurnDuration == 0 {
+	cr.ok("mob timer duration is ", p.MobTurnDuration.String())
+	if p.MobTurnDuration == 0 {
 		cr.warning("mob timer is turned off")
-	} else if params.MobTurnDuration < mobTimerLowThreshold {
+	} else if p.MobTurnDuration < mobTimerLowThreshold {
 		cr.warning("mob timer duration is quite short (under ", mobTimerLowThreshold, ")")
-	} else if params.MobTurnDuration > mobTimerHighThreshold {
+	} else if p.MobTurnDuration > mobTimerHighThreshold {
 		cr.warning("mob timer duration is quite long (above ", mobTimerHighThreshold, ")")
 	} else {
 		cr.ok("mob timer duration is in the recommended range")

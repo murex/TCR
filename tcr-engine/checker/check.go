@@ -108,25 +108,25 @@ func recordCheckState(s CheckStatus) {
 	status.RecordState(status.NewStatus(int(s)))
 }
 
-func initCheckEnv(params params.Params) {
+func initCheckEnv(p params.Params) {
 	recordCheckState(CheckStatusOk)
 
 	checkEnv.configDir = config.GetConfigDirPath()
-	checkEnv.sourceTree, checkEnv.sourceTreeErr = filesystem.New(params.BaseDir)
+	checkEnv.sourceTree, checkEnv.sourceTreeErr = filesystem.New(p.BaseDir)
 
 	if checkEnv.sourceTreeErr == nil {
-		checkEnv.lang, checkEnv.langErr = language.GetLanguage(params.Language, checkEnv.sourceTree.GetBaseDir())
+		checkEnv.lang, checkEnv.langErr = language.GetLanguage(p.Language, checkEnv.sourceTree.GetBaseDir())
 	} else {
-		checkEnv.lang, checkEnv.langErr = language.Get(params.Language)
+		checkEnv.lang, checkEnv.langErr = language.Get(p.Language)
 	}
 
 	if checkEnv.langErr == nil {
-		checkEnv.tchn, checkEnv.tchnErr = checkEnv.lang.GetToolchain(params.Toolchain)
+		checkEnv.tchn, checkEnv.tchnErr = checkEnv.lang.GetToolchain(p.Toolchain)
 	} else {
-		checkEnv.tchn, checkEnv.tchnErr = toolchain.GetToolchain(params.Toolchain)
+		checkEnv.tchn, checkEnv.tchnErr = toolchain.GetToolchain(p.Toolchain)
 	}
 
-	checkEnv.workDirErr = toolchain.SetWorkDir(params.WorkDir)
+	checkEnv.workDirErr = toolchain.SetWorkDir(p.WorkDir)
 	checkEnv.workDir = toolchain.GetWorkDir()
 
 	if checkEnv.sourceTreeErr == nil {
@@ -198,11 +198,11 @@ func (cr *CheckResults) warning(a ...interface{}) {
 //	cr.addCheckPoint(errorCheckPoint(a...))
 //}
 
-func (cr *CheckResults) getStatus() (status CheckStatus) {
-	status = CheckStatusOk
+func (cr *CheckResults) getStatus() (s CheckStatus) {
+	s = CheckStatusOk
 	for _, check := range cr.checkPoints {
-		if check.rc > status {
-			status = check.rc
+		if check.rc > s {
+			s = check.rc
 		}
 	}
 	return

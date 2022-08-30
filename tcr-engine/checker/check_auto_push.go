@@ -26,9 +26,9 @@ import (
 	"github.com/murex/tcr/tcr-engine/params"
 )
 
-func checkAutoPush(params params.Params) (cr *CheckResults) {
+func checkAutoPush(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git auto-push")
-	if params.AutoPush {
+	if p.AutoPush {
 		cr.ok("git auto-push is turned on: every commit will be pushed to origin")
 	} else {
 		cr.ok("git auto-push is turned off: commits will only be applied locally")
