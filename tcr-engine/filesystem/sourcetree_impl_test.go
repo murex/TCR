@@ -24,7 +24,6 @@ package filesystem
 
 import (
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -94,7 +93,7 @@ func Test_init_source_tree(t *testing.T) {
 }
 
 func Test_watch_can_detect_changes_on_matching_files(t *testing.T) {
-	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	baseDir, _ := os.MkdirTemp("", "tcr-test-watch")
 	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
 
 	srcDir := filepath.Join(baseDir, "src")
@@ -114,7 +113,7 @@ func Test_watch_can_detect_changes_on_matching_files(t *testing.T) {
 }
 
 func Test_watch_ignores_changes_on_non_matching_files(t *testing.T) {
-	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	baseDir, _ := os.MkdirTemp("", "tcr-test-watch")
 	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
 
 	srcDir := filepath.Join(baseDir, "src")
@@ -135,7 +134,7 @@ func Test_watch_ignores_changes_on_non_matching_files(t *testing.T) {
 }
 
 func Test_watch_can_be_stopped_on_request(t *testing.T) {
-	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	baseDir, _ := os.MkdirTemp("", "tcr-test-watch")
 	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
 
 	srcDir := filepath.Join(baseDir, "src")
@@ -155,7 +154,7 @@ func Test_watch_can_be_stopped_on_request(t *testing.T) {
 }
 
 func Test_watch_exits_if_missing_directory(t *testing.T) {
-	baseDir, _ := ioutil.TempDir("", "tcr-test-watch")
+	baseDir, _ := os.MkdirTemp("", "tcr-test-watch")
 	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
 
 	srcDir := filepath.Join(baseDir, "src")
