@@ -22,7 +22,7 @@ require (
 
 require (
 	github.com/golangci/golangci-lint v1.49.0
-	github.com/goreleaser/goreleaser v1.11.1
+	github.com/goreleaser/goreleaser v1.11.2
 	github.com/mengdaming/go-junit v0.1.3
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/cobra v1.5.0
