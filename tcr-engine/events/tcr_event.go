@@ -202,6 +202,19 @@ func (events TcrEvents) PercentFailing() int {
 
 // DurationInGreen returns the total duration spent in green, e.g. with no failing tests.
 func (events TcrEvents) DurationInGreen() time.Duration {
+	if len(events) < 2 {
+		return 0
+	}
+	// TODO loop on all records ordered by timestamp
+	return events.TimeSpan()
+}
+
+// DurationInRed returns the total duration spent in red, e.g. with at least 1 failing test.
+func (events TcrEvents) DurationInRed() time.Duration {
+	if len(events) < 2 {
+		return 0
+	}
+	// TODO (WIP)
 	return 0
 }
 

@@ -185,7 +185,7 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 			0,
 		},
 		{
-			"1 records",
+			"1 record",
 			TcrEvents{now: *ATcrEvent()},
 			now,
 			now,
@@ -215,8 +215,8 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 	}
 }
 
-func Test_events_duration_in_green(t *testing.T) {
-	//now := time.Now().UTC()
+func Test_events_duration_in_green_and_red(t *testing.T) {
+	now := time.Now().UTC()
 	//zeroTime := time.Unix(0, 0).UTC()
 	testFlags := []struct {
 		desc                    string
@@ -226,14 +226,34 @@ func Test_events_duration_in_green(t *testing.T) {
 	}{
 		{
 			"nil",
+			TcrEvents{now: *ATcrEvent()},
+			0,
+			0,
+		},
+		{
+			"1 record",
 			nil,
 			0,
 			0,
 		},
+		{
+			"2 records starting green",
+			TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusPass)), now.Add(1 * time.Second): *ATcrEvent()},
+			1 * time.Second,
+			0,
+		},
+		// TODO (WIP)
+		//{
+		//	"2 records starting red",
+		//	TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusFail)), now.Add(1 * time.Second): *ATcrEvent()},
+		//	0,
+		//	1 * time.Second,
+		//},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expectedDurationInGreen, tt.events.DurationInGreen(), "duration in green")
+			assert.Equal(t, tt.expectedDurationInRed, tt.events.DurationInRed(), "duration in red")
 		})
 	}
 }
