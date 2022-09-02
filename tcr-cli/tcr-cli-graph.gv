@@ -1,0 +1,104 @@
+digraph G {
+    node [penwidth = 2 fontsize = 10 shape = rectangle target = "_graphviz"];
+    edge [tailport = e penwidth = 2];
+    compound = true;
+    rankdir = LR;
+    newrank = true;
+    ranksep = "1.5";
+    quantum = "0.5";
+    subgraph "cluster_github.com/mengdaming/go-junit" {
+    label = "github.com/mengdaming/go-junit@v0.1.3"
+    tooltip = "github.com/mengdaming/go-junit@v0.1.3"
+    href = "https://pkg.go.dev/github.com/mengdaming/go-junit@v0.1.3"
+    "github.com/mengdaming/go-junit" [label = "" tooltip = "github.com/mengdaming/go-junit" shape = point color = "#071291b2" rank = 0];
+    }
+    subgraph "cluster_github.com/murex/tcr" {
+    label = "github.com/murex/tcr"
+    tooltip = "github.com/murex/tcr"
+    href = "https://pkg.go.dev/github.com/murex/tcr"
+    subgraph "cluster_github.com/murex/tcr/tcr-cli" {
+    label = "github.com/murex/tcr/tcr-cli (local)"
+    tooltip = "github.com/murex/tcr/tcr-cli (local)"
+    href = "https://pkg.go.dev/github.com/murex/tcr/tcr-cli@"
+    "github.com/murex/tcr/tcr-cli" [label = "" tooltip = "github.com/murex/tcr/tcr-cli" shape = circle color = "#510791b2" rank = 0];
+    "github.com/murex/tcr/tcr-cli/cli" [label = "cli\l523 / 17.8KB\l" tooltip = "github.com/murex/tcr/tcr-cli/cli" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-cli/cli" color = "#918207b2"];
+    "github.com/murex/tcr/tcr-cli/cmd" [label = "cmd\l452 / 18.3KB\l" tooltip = "github.com/murex/tcr/tcr-cli/cmd" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-cli/cmd" color = "#4a0791b2"];
+    "github.com/murex/tcr/tcr-cli/desktop" [label = "desktop\l79 / 2.9KB\l" tooltip = "github.com/murex/tcr/tcr-cli/desktop" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-cli/desktop" color = "#079175b2"];
+    }
+    subgraph "cluster_github.com/murex/tcr/tcr-engine" {
+    label = "github.com/murex/tcr/tcr-engine@v0.0.0-00010101000000-000000000000 =>\n../tcr-engine"
+    tooltip = "github.com/murex/tcr/tcr-engine@v0.0.0-00010101000000-000000000000 =>\n../tcr-engine"
+    href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine@v0.0.0-00010101000000-000000000000"
+    "github.com/murex/tcr/tcr-engine/checker" [label = "checker\l763 / 29.2KB\l" tooltip = "github.com/murex/tcr/tcr-engine/checker" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/checker" color = "#91074ab2"];
+    "github.com/murex/tcr/tcr-engine/config" [label = "config\l1383 / 47.6KB\l" tooltip = "github.com/murex/tcr/tcr-engine/config" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/config" color = "#915707b2"];
+    "github.com/murex/tcr/tcr-engine/engine" [label = "engine\l564 / 17.7KB\l" tooltip = "github.com/murex/tcr/tcr-engine/engine" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/engine" color = "#91077fb2"];
+    "github.com/murex/tcr/tcr-engine/events" [label = "events\l261 / 8.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/events" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/events" color = "#07916eb2"];
+    "github.com/murex/tcr/tcr-engine/filesystem" [label = "filesystem\l163 / 5.6KB\l" tooltip = "github.com/murex/tcr/tcr-engine/filesystem" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/filesystem" color = "#078691b2"];
+    "github.com/murex/tcr/tcr-engine/language" [label = "language\l639 / 22.4KB\l" tooltip = "github.com/murex/tcr/tcr-engine/language" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/language" color = "#650791b2"];
+    "github.com/murex/tcr/tcr-engine/params" [label = "params\l36 / 1.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/params" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-engine/report" [label = "report\l112 / 3.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/report" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/role" [label = "role\l100 / 4.4KB\l" tooltip = "github.com/murex/tcr/tcr-engine/role" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/role" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/runmode" [label = "runmode\l300 / 12.3KB\l" tooltip = "github.com/murex/tcr/tcr-engine/runmode" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-engine/settings" [label = "settings\l103 / 4.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/settings" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/settings" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/status" [label = "status\l49 / 2.1KB\l" tooltip = "github.com/murex/tcr/tcr-engine/status" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/status" color = "#4f0791b2"];
+    "github.com/murex/tcr/tcr-engine/timer" [label = "timer\l288 / 9.1KB\l" tooltip = "github.com/murex/tcr/tcr-engine/timer" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/timer" color = "#609107b2"];
+    "github.com/murex/tcr/tcr-engine/toolchain" [label = "toolchain\l937 / 32.6KB\l" tooltip = "github.com/murex/tcr/tcr-engine/toolchain" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/toolchain" color = "#0e9107b2"];
+    "github.com/murex/tcr/tcr-engine/ui" [label = "ui\l36 / 1.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/ui" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/ui" color = "#1f0791b2"];
+    "github.com/murex/tcr/tcr-engine/vcs" [label = "vcs\l582 / 21.5KB\l" tooltip = "github.com/murex/tcr/tcr-engine/vcs" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/vcs" color = "#91077db2"];
+    "github.com/murex/tcr/tcr-engine/xunit" [label = "xunit\l184 / 6.2KB\l" tooltip = "github.com/murex/tcr/tcr-engine/xunit" href = "https://pkg.go.dev/github.com/murex/tcr/tcr-engine/xunit" color = "#913c07b2"];
+    }
+    }
+    "github.com/murex/tcr/tcr-cli" -> "github.com/murex/tcr/tcr-cli/cmd" [tooltip = "github.com/murex/tcr/tcr-cli -> github.com/murex/tcr/tcr-cli/cmd" color = "#4a0791b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-cli/desktop" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-cli/desktop" color = "#079175b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/engine" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/engine" color = "#91077fb2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/params" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/role" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/role" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/settings" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/settings" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-cli/cli" -> "github.com/murex/tcr/tcr-engine/ui" [tooltip = "github.com/murex/tcr/tcr-cli/cli -> github.com/murex/tcr/tcr-engine/ui" color = "#1f0791b2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-cli/cli" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-cli/cli" color = "#918207b2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-engine/config" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-engine/config" color = "#915707b2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-engine/engine" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-engine/engine" color = "#91077fb2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-engine/params" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-cli/cmd" -> "github.com/murex/tcr/tcr-engine/settings" [tooltip = "github.com/murex/tcr/tcr-cli/cmd -> github.com/murex/tcr/tcr-engine/settings" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/config" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/config" color = "#915707b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/filesystem" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/filesystem" color = "#078691b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/language" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/language" color = "#650791b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/params" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/status" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/status" color = "#4f0791b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/toolchain" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/toolchain" color = "#0e9107b2"];
+    "github.com/murex/tcr/tcr-engine/checker" -> "github.com/murex/tcr/tcr-engine/vcs" [tooltip = "github.com/murex/tcr/tcr-engine/checker -> github.com/murex/tcr/tcr-engine/vcs" color = "#91077db2"];
+    "github.com/murex/tcr/tcr-engine/config" -> "github.com/murex/tcr/tcr-engine/language" [tooltip = "github.com/murex/tcr/tcr-engine/config -> github.com/murex/tcr/tcr-engine/language" color = "#650791b2"];
+    "github.com/murex/tcr/tcr-engine/config" -> "github.com/murex/tcr/tcr-engine/params" [tooltip = "github.com/murex/tcr/tcr-engine/config -> github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-engine/config" -> "github.com/murex/tcr/tcr-engine/settings" [tooltip = "github.com/murex/tcr/tcr-engine/config -> github.com/murex/tcr/tcr-engine/settings" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/config" -> "github.com/murex/tcr/tcr-engine/toolchain" [tooltip = "github.com/murex/tcr/tcr-engine/config -> github.com/murex/tcr/tcr-engine/toolchain" color = "#0e9107b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/checker" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/checker" color = "#91074ab2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/events" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/events" color = "#07916eb2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/filesystem" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/filesystem" color = "#078691b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/language" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/language" color = "#650791b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/params" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/params" color = "#07916fb2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/role" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/role" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/settings" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/settings" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/status" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/status" color = "#4f0791b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/timer" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/timer" color = "#609107b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/toolchain" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/toolchain" color = "#0e9107b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/ui" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/ui" color = "#1f0791b2"];
+    "github.com/murex/tcr/tcr-engine/engine" -> "github.com/murex/tcr/tcr-engine/vcs" [tooltip = "github.com/murex/tcr/tcr-engine/engine -> github.com/murex/tcr/tcr-engine/vcs" color = "#91077db2"];
+    "github.com/murex/tcr/tcr-engine/events" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/events -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/filesystem" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/filesystem -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/language" -> "github.com/murex/tcr/tcr-engine/toolchain" [tooltip = "github.com/murex/tcr/tcr-engine/language -> github.com/murex/tcr/tcr-engine/toolchain" color = "#0e9107b2"];
+    "github.com/murex/tcr/tcr-engine/params" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-engine/params -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-engine/timer" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/timer -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/timer" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-engine/timer -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-engine/toolchain" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/toolchain -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/toolchain" -> "github.com/murex/tcr/tcr-engine/xunit" [tooltip = "github.com/murex/tcr/tcr-engine/toolchain -> github.com/murex/tcr/tcr-engine/xunit" color = "#913c07b2"];
+    "github.com/murex/tcr/tcr-engine/ui" -> "github.com/murex/tcr/tcr-engine/role" [tooltip = "github.com/murex/tcr/tcr-engine/ui -> github.com/murex/tcr/tcr-engine/role" color = "#4b9107b2"];
+    "github.com/murex/tcr/tcr-engine/ui" -> "github.com/murex/tcr/tcr-engine/runmode" [tooltip = "github.com/murex/tcr/tcr-engine/ui -> github.com/murex/tcr/tcr-engine/runmode" color = "#075f91b2"];
+    "github.com/murex/tcr/tcr-engine/vcs" -> "github.com/murex/tcr/tcr-engine/report" [tooltip = "github.com/murex/tcr/tcr-engine/vcs -> github.com/murex/tcr/tcr-engine/report" color = "#078b91b2"];
+    "github.com/murex/tcr/tcr-engine/xunit" -> "github.com/mengdaming/go-junit" [tooltip = "github.com/murex/tcr/tcr-engine/xunit -> github.com/mengdaming/go-junit" lhead = "cluster_github.com/mengdaming/go-junit" color = "#071291b2"];
+}
