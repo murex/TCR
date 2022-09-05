@@ -22,35 +22,30 @@ SOFTWARE.
 
 package events
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
-)
+import "time"
 
-func Test_yaml_conversion_on_empty_tcr_event(t *testing.T) {
-	event := *ATcrEvent()
-	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0", "0s")
+var zeroTime = time.Unix(0, 0).UTC()
 
-	yaml := event.ToYaml()
-	assert.Equal(t, expected, yaml)
-	assert.Equal(t, event, FromYaml(yaml))
+// ADatedTcrEvent is a test data builder for a dated TCR event
+func ADatedTcrEvent(builders ...func(datedEvent *DatedTcrEvent)) *DatedTcrEvent {
+	datedEvent := NewDatedTcrEvent(zeroTime, *ATcrEvent())
+
+	for _, build := range builders {
+		build(&datedEvent)
+	}
+	return &datedEvent
 }
 
-func Test_yaml_conversion_on_sample_tcr_event(t *testing.T) {
-	event := ATcrEvent(
-		WithModifiedSrcLines(1),
-		WithModifiedTestLines(2),
-		WithTotalTestsRun(12),
-		WithTestsPassed(3),
-		WithTestsFailed(4),
-		WithTestsSkipped(5),
-		WithTestsWithErrors(6),
-		WithTestsDuration(10*time.Second),
-	)
-	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6", "10s")
+// WithTimestamp sets the timestamp to DatedTcrEvent test data builder
+func WithTimestamp(t time.Time) func(filter *DatedTcrEvent) {
+	return func(datedEvent *DatedTcrEvent) {
+		datedEvent.Timestamp = t
+	}
+}
 
-	yaml := event.ToYaml()
-	assert.Equal(t, expected, yaml)
-	assert.Equal(t, *event, FromYaml(yaml))
+// WithTcrEvent sets the TcrEvent to DatedTcrEvent test data builder
+func WithTcrEvent(event TcrEvent) func(filter *DatedTcrEvent) {
+	return func(datedEvent *DatedTcrEvent) {
+		datedEvent.Event = event
+	}
 }

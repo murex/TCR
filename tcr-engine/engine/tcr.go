@@ -199,7 +199,7 @@ func (tcr *TcrEngine) PrintStats(p params.Params) {
 func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
 	tcrEvents = *events.NewTcrEvents(len(tcrLogs))
 	for _, log := range tcrLogs {
-		tcrEvents[log.Timestamp] = parseCommitMessage(log.Message)
+		tcrEvents.Add(log.Timestamp, parseCommitMessage(log.Message))
 	}
 	return
 }
