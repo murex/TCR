@@ -24,14 +24,12 @@ package events
 
 import (
 	"github.com/stretchr/testify/assert"
+	"sort"
 	"testing"
 	"time"
 )
 
 func Test_events_nb_records(t *testing.T) {
-	now := time.Now().UTC()
-	later := now.Add(1 * time.Second)
-
 	testFlags := []struct {
 		desc     string
 		events   TcrEvents
@@ -50,8 +48,8 @@ func Test_events_nb_records(t *testing.T) {
 		{
 			"2 records",
 			TcrEvents{
-				now:   *ADatedTcrEvent(WithTimestamp(now)),
-				later: *ADatedTcrEvent(WithTimestamp(later)),
+				*ADatedTcrEvent(),
+				*ADatedTcrEvent(),
 			},
 			2,
 		},
@@ -64,9 +62,6 @@ func Test_events_nb_records(t *testing.T) {
 }
 
 func Test_events_records_counters(t *testing.T) {
-	now := time.Now().UTC()
-	later := now.Add(1 * time.Second)
-
 	testFlags := []struct {
 		desc                      string
 		events                    TcrEvents
@@ -94,9 +89,7 @@ func Test_events_records_counters(t *testing.T) {
 		{
 			"1 passing",
 			TcrEvents{
-				now: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
-				),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 			},
 			1,
 			100,
@@ -106,9 +99,7 @@ func Test_events_records_counters(t *testing.T) {
 		{
 			"1 failing",
 			TcrEvents{
-				now: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
-				),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail)))),
 			},
 			0,
 			0,
@@ -118,12 +109,8 @@ func Test_events_records_counters(t *testing.T) {
 		{
 			"1 passing 1 failing",
 			TcrEvents{
-				now: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
-				),
-				later: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
-				),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail)))),
 			},
 			1,
 			50,
@@ -133,12 +120,8 @@ func Test_events_records_counters(t *testing.T) {
 		{
 			"2 passing",
 			TcrEvents{
-				now: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
-				),
-				later: *ADatedTcrEvent(
-					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
-				),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 			},
 			2,
 			100,
@@ -156,11 +139,111 @@ func Test_events_records_counters(t *testing.T) {
 	}
 }
 
+func Test_events_adding(t *testing.T) {
+	now := time.Now().UTC()
+
+	testFlags := []struct {
+		desc         string
+		input        TcrEvents
+		expectedSize int
+	}{
+		{
+			"adding to nil",
+			nil,
+			1,
+		},
+		{
+			"adding to empty slice",
+			TcrEvents{},
+			1,
+		},
+		{
+			"adding to slice with 1 event",
+			TcrEvents{*ADatedTcrEvent()},
+			2,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			tt.input.Add(now, *ATcrEvent())
+			assert.Equal(t, tt.expectedSize, tt.input.Len())
+		})
+	}
+}
+
+func Test_events_sorting(t *testing.T) {
+	now := time.Now().UTC()
+	later := now.Add(1 * time.Second)
+	earlier := now.Add(-1 * time.Second)
+
+	testFlags := []struct {
+		desc     string
+		input    TcrEvents
+		expected TcrEvents
+	}{
+		{
+			"nil",
+			nil,
+			nil,
+		},
+		{
+			"empty slice",
+			TcrEvents{},
+			TcrEvents{},
+		},
+		{
+			"1 event",
+			TcrEvents{*ADatedTcrEvent(WithTimestamp(now))},
+			TcrEvents{*ADatedTcrEvent(WithTimestamp(now))},
+		},
+		{
+			"2 time-ordered events",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(later)),
+			},
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(later)),
+			},
+		},
+		{
+			"2 time-inverted events",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(later)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+			},
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(later)),
+			},
+		},
+		{
+			"3 unsorted events",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(later)),
+				*ADatedTcrEvent(WithTimestamp(earlier)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+			},
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(earlier)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(later)),
+			},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			sort.Sort(&tt.input)
+			assert.Equal(t, tt.expected, tt.input)
+		})
+	}
+}
+
 func Test_events_time_span_and_boundaries(t *testing.T) {
 	now := time.Now().UTC()
 	oneSecLater := now.Add(1 * time.Second)
 	twoSecLater := now.Add(2 * time.Second)
-	zeroTime := time.Unix(0, 0).UTC()
 
 	testFlags := []struct {
 		desc             string
@@ -172,21 +255,21 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 		{
 			"nil",
 			nil,
-			zeroTime,
-			zeroTime,
+			ZeroTime,
+			ZeroTime,
 			0,
 		},
 		{
 			"no record",
-			*NewTcrEvents(0),
-			zeroTime,
-			zeroTime,
+			*NewTcrEvents(),
+			ZeroTime,
+			ZeroTime,
 			0,
 		},
 		{
 			"1 record",
 			TcrEvents{
-				now: *ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(now)),
 			},
 			now,
 			now,
@@ -195,8 +278,8 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 		{
 			"2 records",
 			TcrEvents{
-				now:         *ADatedTcrEvent(WithTimestamp(now)),
-				oneSecLater: *ADatedTcrEvent(WithTimestamp(oneSecLater)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
 			},
 			now,
 			oneSecLater,
@@ -205,9 +288,9 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 		{
 			"3 records unsorted",
 			TcrEvents{
-				twoSecLater: *ADatedTcrEvent(WithTimestamp(twoSecLater)),
-				now:         *ADatedTcrEvent(WithTimestamp(now)),
-				oneSecLater: *ADatedTcrEvent(WithTimestamp(oneSecLater)),
+				*ADatedTcrEvent(WithTimestamp(twoSecLater)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
 			},
 			now,
 			twoSecLater,
@@ -225,7 +308,7 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 
 func Test_events_duration_in_green_and_red(t *testing.T) {
 	now := time.Now().UTC()
-	later := now.Add(1 * time.Second)
+	oneSecLater := now.Add(1 * time.Second)
 
 	testFlags := []struct {
 		desc                    string
@@ -241,33 +324,42 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 		},
 		{
 			"1 record",
-			TcrEvents{now: *ADatedTcrEvent(WithTimestamp(now))},
+			TcrEvents{*ADatedTcrEvent(WithTimestamp(now))},
 			0,
 			0,
 		},
 		{
 			"2 records starting green",
 			TcrEvents{
-				now: *ADatedTcrEvent(
+				*ADatedTcrEvent(
 					WithTimestamp(now),
 					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
 				),
-				later: *ADatedTcrEvent(
-					WithTimestamp(later),
+				*ADatedTcrEvent(
+					WithTimestamp(oneSecLater),
 					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
 				),
 			},
 			1 * time.Second,
 			0,
 		},
-		// TODO (WIP)
-		//{
-		//	"2 records starting red",
-		//	TcrEvents{now: *ATcrEvent(WithCommandStatus(StatusFail)), now.Add(1 * time.Second): *ATcrEvent()},
-		//	0,
-		//	1 * time.Second,
-		//},
+		{
+			"2 records starting red",
+			TcrEvents{
+				*ADatedTcrEvent(
+					WithTimestamp(now),
+					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
+				),
+				*ADatedTcrEvent(
+					WithTimestamp(oneSecLater),
+					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
+				),
+			},
+			0,
+			1 * time.Second,
+		},
 	}
+
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expectedDurationInGreen, tt.events.DurationInGreen(), "duration in green")

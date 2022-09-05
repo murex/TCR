@@ -194,10 +194,12 @@ func (tcr *TcrEngine) PrintStats(p params.Params) {
 	report.PostInfo("- Number of commits:\t", tcrEvents.NbRecords())
 	report.PostInfo("- Passing commits:\t", tcrEvents.NbPassingRecords(), " (", tcrEvents.PercentPassing(), "%)")
 	report.PostInfo("- Failing commits:\t", tcrEvents.NbFailingRecords(), " (", tcrEvents.PercentFailing(), "%)")
+	report.PostInfo("- Time in green:\t\t", tcrEvents.DurationInGreen())
+	report.PostInfo("- Time in red:\t\t", tcrEvents.DurationInRed())
 }
 
 func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
-	tcrEvents = *events.NewTcrEvents(len(tcrLogs))
+	tcrEvents = *events.NewTcrEvents()
 	for _, log := range tcrLogs {
 		tcrEvents.Add(log.Timestamp, parseCommitMessage(log.Message))
 	}

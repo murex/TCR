@@ -1,3 +1,5 @@
+//go:build test_helper
+
 /*
 Copyright (c) 2022 Murex
 
@@ -24,11 +26,9 @@ package events
 
 import "time"
 
-var zeroTime = time.Unix(0, 0).UTC()
-
 // ADatedTcrEvent is a test data builder for a dated TCR event
 func ADatedTcrEvent(builders ...func(datedEvent *DatedTcrEvent)) *DatedTcrEvent {
-	datedEvent := NewDatedTcrEvent(zeroTime, *ATcrEvent())
+	datedEvent := NewDatedTcrEvent(ZeroTime, *ATcrEvent())
 
 	for _, build := range builders {
 		build(&datedEvent)
