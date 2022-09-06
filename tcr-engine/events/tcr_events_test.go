@@ -309,6 +309,7 @@ func Test_events_time_span_and_boundaries(t *testing.T) {
 func Test_events_duration_in_green_and_red(t *testing.T) {
 	now := time.Now().UTC()
 	oneSecLater := now.Add(1 * time.Second)
+	twoSecLater := now.Add(2 * time.Second)
 
 	testFlags := []struct {
 		desc                    string
@@ -319,6 +320,12 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 		{
 			"nil",
 			nil,
+			0,
+			0,
+		},
+		{
+			"no record",
+			TcrEvents{},
 			0,
 			0,
 		},
@@ -356,6 +363,25 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 				),
 			},
 			0,
+			1 * time.Second,
+		},
+		{
+			"3 records",
+			TcrEvents{
+				*ADatedTcrEvent(
+					WithTimestamp(now),
+					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
+				),
+				*ADatedTcrEvent(
+					WithTimestamp(oneSecLater),
+					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
+				),
+				*ADatedTcrEvent(
+					WithTimestamp(twoSecLater),
+					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
+				),
+			},
+			1 * time.Second,
 			1 * time.Second,
 		},
 	}

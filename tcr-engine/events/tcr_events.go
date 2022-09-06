@@ -30,22 +30,8 @@ import (
 // ZeroTime is Unix starting time, e.g. Jan 1, 1970
 var ZeroTime = time.Unix(0, 0).UTC()
 
-// DatedTcrEvent is a TcrEvent with a timestamp
-type DatedTcrEvent struct {
-	Timestamp time.Time
-	Event     TcrEvent
-}
-
 // TcrEvents is a slice of DatedTcrEvent instances
 type TcrEvents []DatedTcrEvent
-
-// NewDatedTcrEvent creates a new DatedTcrEvent instance
-func NewDatedTcrEvent(t time.Time, e TcrEvent) DatedTcrEvent {
-	return DatedTcrEvent{
-		Timestamp: t,
-		Event:     e,
-	}
-}
 
 // NewTcrEvents initializes a TcrEvents instance
 func NewTcrEvents() *TcrEvents {
@@ -154,41 +140,23 @@ func (events *TcrEvents) PercentFailing() int {
 
 // DurationInGreen returns the total duration spent in green, e.g. with no failing tests.
 func (events *TcrEvents) DurationInGreen() (t time.Duration) {
-	if len(*events) < 2 {
-		return 0
-	}
-	sort.Sort(events)
-	for i := range (*events)[:(events.Len() - 1)] {
-		startEvent := (*events)[i]
-		endEvent := (*events)[i+1]
-		t += timeInState(StatusPass, startEvent, endEvent)
-	}
-	return
+	return events.durationInState(StatusPass)
 }
 
 // DurationInRed returns the total duration spent in red, e.g. with at least 1 failing test.
 func (events *TcrEvents) DurationInRed() (t time.Duration) {
+	return events.durationInState(StatusFail)
+}
+
+func (events *TcrEvents) durationInState(status CommandStatus) (t time.Duration) {
 	if len(*events) < 2 {
 		return 0
 	}
 	sort.Sort(events)
 	for i := range (*events)[:(events.Len() - 1)] {
-		startEvent := (*events)[i]
-		endEvent := (*events)[i+1]
-		t += timeInState(StatusFail, startEvent, endEvent)
+		t += (*events)[i].timeInState(status, &(*events)[i+1])
 	}
 	return
-}
-
-func timeInState(status CommandStatus, startEvent DatedTcrEvent, endEvent DatedTcrEvent) time.Duration {
-	if startEvent.Event.Status == status {
-		return timeSpan(startEvent, endEvent)
-	}
-	return 0
-}
-
-func timeSpan(startEvent DatedTcrEvent, endEvent DatedTcrEvent) time.Duration {
-	return endEvent.Timestamp.Sub(startEvent.Timestamp)
 }
 
 func asPercentage(dividend, divisor int) int {
