@@ -59,11 +59,11 @@ func (events *TcrEvents) TimeSpan() time.Duration {
 	return end.Sub(start)
 }
 
-func (events *TcrEvents) getBoundaryTimes() (start, end time.Time) {
+// sortByTime sorts items by timestamp.
+// This is a prerequisite for all duration-related stats operations
+// to return the expected value
+func (events *TcrEvents) sortByTime() {
 	sort.Sort(events)
-	start = (*events)[0].Timestamp
-	end = (*events)[events.Len()-1].Timestamp
-	return
 }
 
 // Less is the function indicating ordering between events.
@@ -99,6 +99,13 @@ func (events *TcrEvents) EndingTime() time.Time {
 	}
 	_, end := events.getBoundaryTimes()
 	return end
+}
+
+func (events *TcrEvents) getBoundaryTimes() (start, end time.Time) {
+	events.sortByTime()
+	start = (*events)[0].Timestamp
+	end = (*events)[events.Len()-1].Timestamp
+	return
 }
 
 // NbPassingRecords provides the total number of passing records
@@ -152,11 +159,36 @@ func (events *TcrEvents) durationInState(status CommandStatus) (t time.Duration)
 	if len(*events) < 2 {
 		return 0
 	}
-	sort.Sort(events)
+	events.sortByTime()
 	for i := range (*events)[:(events.Len() - 1)] {
 		t += (*events)[i].timeInState(status, &(*events)[i+1])
 	}
 	return
+}
+
+// PercentDurationInGreen provides the percentage (rounded) of time spent in green,
+// e.g. with no failing tests.
+// Returns 0 if there are less than 2 records.
+func (events *TcrEvents) PercentDurationInGreen() int {
+	return events.percentDurationInState(StatusPass)
+}
+
+// PercentDurationInRed provides the percentage (rounded) of time spent in red,
+// e.g. with at least 1 failing test.
+// Returns 0 if there are less than 2 records.
+func (events *TcrEvents) PercentDurationInRed() int {
+	return events.percentDurationInState(StatusFail)
+}
+
+func (events *TcrEvents) percentDurationInState(status CommandStatus) int {
+	return asPercentage(
+		inSeconds(events.durationInState(status)),
+		inSeconds(events.TimeSpan()),
+	)
+}
+
+func inSeconds(duration time.Duration) int {
+	return int(duration / time.Second)
 }
 
 func asPercentage(dividend, divisor int) int {
@@ -164,5 +196,8 @@ func asPercentage(dividend, divisor int) int {
 }
 
 func roundClosestInt(dividend, divisor int) int {
+	if divisor == 0 {
+		return 0
+	}
 	return (dividend + (divisor / 2)) / divisor
 }

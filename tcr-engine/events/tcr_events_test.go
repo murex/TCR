@@ -312,14 +312,18 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 	twoSecLater := now.Add(2 * time.Second)
 
 	testFlags := []struct {
-		desc                    string
-		events                  TcrEvents
-		expectedDurationInGreen time.Duration
-		expectedDurationInRed   time.Duration
+		desc                      string
+		events                    TcrEvents
+		expectedDurationInGreen   time.Duration
+		expectedPercentageInGreen int
+		expectedDurationInRed     time.Duration
+		expectedPercentageInRed   int
 	}{
 		{
 			"nil",
 			nil,
+			0,
+			0,
 			0,
 			0,
 		},
@@ -328,10 +332,14 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 			TcrEvents{},
 			0,
 			0,
+			0,
+			0,
 		},
 		{
 			"1 record",
 			TcrEvents{*ADatedTcrEvent(WithTimestamp(now))},
+			0,
+			0,
 			0,
 			0,
 		},
@@ -348,6 +356,8 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 				),
 			},
 			1 * time.Second,
+			100,
+			0,
 			0,
 		},
 		{
@@ -363,7 +373,9 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 				),
 			},
 			0,
+			0,
 			1 * time.Second,
+			100,
 		},
 		{
 			"3 records",
@@ -382,14 +394,18 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 				),
 			},
 			1 * time.Second,
+			50,
 			1 * time.Second,
+			50,
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expectedDurationInGreen, tt.events.DurationInGreen(), "duration in green")
+			assert.Equal(t, tt.expectedPercentageInGreen, tt.events.PercentDurationInGreen(), "percentage in green")
 			assert.Equal(t, tt.expectedDurationInRed, tt.events.DurationInRed(), "duration in red")
+			assert.Equal(t, tt.expectedPercentageInRed, tt.events.PercentDurationInRed(), "percentage in red")
 		})
 	}
 }

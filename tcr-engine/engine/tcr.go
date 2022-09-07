@@ -188,14 +188,14 @@ func (tcr *TcrEngine) PrintStats(p params.Params) {
 	tcrEvents := tcrLogsToEvents(tcrLogs)
 	// TODO add more stats
 	report.PostInfo("- Branch:\t\t\t", tcr.vcs.GetWorkingBranch())
-	report.PostInfo("- Time span:\t\t", tcrEvents.TimeSpan())
 	report.PostInfo("- First commit:\t\t", tcrEvents.StartingTime())
 	report.PostInfo("- Last commit:\t\t", tcrEvents.EndingTime())
 	report.PostInfo("- Number of commits:\t", tcrEvents.NbRecords())
 	report.PostInfo("- Passing commits:\t", tcrEvents.NbPassingRecords(), " (", tcrEvents.PercentPassing(), "%)")
 	report.PostInfo("- Failing commits:\t", tcrEvents.NbFailingRecords(), " (", tcrEvents.PercentFailing(), "%)")
-	report.PostInfo("- Time in green:\t\t", tcrEvents.DurationInGreen())
-	report.PostInfo("- Time in red:\t\t", tcrEvents.DurationInRed())
+	report.PostInfo("- Time span:\t\t", tcrEvents.TimeSpan())
+	report.PostInfo("- Time in green:\t\t", tcrEvents.DurationInGreen(), " (", tcrEvents.PercentDurationInGreen(), "%)")
+	report.PostInfo("- Time in red:\t\t", tcrEvents.DurationInRed(), " (", tcrEvents.PercentDurationInRed(), "%)")
 }
 
 func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
