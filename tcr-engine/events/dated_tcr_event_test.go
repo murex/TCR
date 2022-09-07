@@ -73,4 +73,83 @@ func Test_dated_event_timespan_until(t *testing.T) {
 	}
 }
 
-// TODO add test case for timeInState method
+func Test_dated_event_time_in_state(t *testing.T) {
+	now := time.Now().UTC()
+	oneSecLater := now.Add(1 * time.Second)
+	oneSecEarlier := now.Add(-1 * time.Second)
+
+	testFlags := []struct {
+		desc                    string
+		event                   *DatedTcrEvent
+		nextEvent               *DatedTcrEvent
+		expectedDurationPass    time.Duration
+		expectedDurationFail    time.Duration
+		expectedDurationUnknown time.Duration
+	}{
+		{
+			"next event is nil",
+			ADatedTcrEvent(),
+			nil,
+			0,
+			0,
+			0,
+		},
+		{
+			"next event is synchronous",
+			ADatedTcrEvent(WithTimestamp(now)),
+			ADatedTcrEvent(WithTimestamp(now)),
+			0,
+			0,
+			0,
+		},
+		{
+			"next event happens earlier",
+			ADatedTcrEvent(WithTimestamp(now)),
+			ADatedTcrEvent(WithTimestamp(oneSecEarlier)),
+			0,
+			0,
+			0,
+		},
+		{
+			"status pass",
+			ADatedTcrEvent(
+				WithTimestamp(now),
+				WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
+			),
+			ADatedTcrEvent(WithTimestamp(oneSecLater)),
+			1 * time.Second,
+			0,
+			0,
+		},
+		{
+			"status fail",
+			ADatedTcrEvent(
+				WithTimestamp(now),
+				WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
+			),
+			ADatedTcrEvent(WithTimestamp(oneSecLater)),
+			0,
+			1 * time.Second,
+			0,
+		},
+		{
+			"status unknown",
+			ADatedTcrEvent(
+				WithTimestamp(now),
+				WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusUnknown))),
+			),
+			ADatedTcrEvent(WithTimestamp(oneSecLater)),
+			0,
+			0,
+			1 * time.Second,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedDurationPass, tt.event.timeInState(StatusPass, tt.nextEvent), "status "+StatusPass)
+			assert.Equal(t, tt.expectedDurationFail, tt.event.timeInState(StatusFail, tt.nextEvent), "status "+StatusFail)
+			assert.Equal(t, tt.expectedDurationUnknown, tt.event.timeInState(StatusUnknown, tt.nextEvent), "status "+StatusUnknown)
+		})
+	}
+}
