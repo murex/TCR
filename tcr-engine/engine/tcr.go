@@ -32,6 +32,7 @@ import (
 	"github.com/murex/tcr/tcr-engine/role"
 	"github.com/murex/tcr/tcr-engine/runmode"
 	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/tcr-engine/stats"
 	"github.com/murex/tcr/tcr-engine/status"
 	"github.com/murex/tcr/tcr-engine/timer"
 	"github.com/murex/tcr/tcr-engine/toolchain"
@@ -185,17 +186,7 @@ func (tcr *TcrEngine) PrintLog(p params.Params) {
 // PrintStats prints the TCR execution stats
 func (tcr *TcrEngine) PrintStats(p params.Params) {
 	tcrLogs := tcr.queryGitLogs(p)
-	tcrEvents := tcrLogsToEvents(tcrLogs)
-	// TODO add more stats
-	report.PostInfo("- Branch:\t\t\t", tcr.vcs.GetWorkingBranch())
-	report.PostInfo("- First commit:\t\t", tcrEvents.StartingTime())
-	report.PostInfo("- Last commit:\t\t", tcrEvents.EndingTime())
-	report.PostInfo("- Number of commits:\t", tcrEvents.NbRecords())
-	report.PostInfo("- Passing commits:\t", tcrEvents.NbPassingRecords(), " (", tcrEvents.PercentPassing(), "%)")
-	report.PostInfo("- Failing commits:\t", tcrEvents.NbFailingRecords(), " (", tcrEvents.PercentFailing(), "%)")
-	report.PostInfo("- Time span:\t\t", tcrEvents.TimeSpan())
-	report.PostInfo("- Time in green:\t\t", tcrEvents.DurationInGreen(), " (", tcrEvents.PercentDurationInGreen(), "%)")
-	report.PostInfo("- Time in red:\t\t", tcrEvents.DurationInRed(), " (", tcrEvents.PercentDurationInRed(), "%)")
+	stats.Print(tcr.vcs.GetWorkingBranch(), tcrLogsToEvents(tcrLogs))
 }
 
 func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
