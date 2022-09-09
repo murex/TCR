@@ -25,6 +25,7 @@ package report
 import (
 	"fmt"
 	"github.com/imkira/go-observer"
+	"sync"
 	"time"
 )
 
@@ -69,7 +70,10 @@ func Subscribe(onReport func(msg Message)) chan bool {
 	//fmt.Printf("initial value: %v\n", msg)
 
 	unsubscribe := make(chan bool)
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func(s observer.Stream) {
+		wg.Done()
 		for {
 			select {
 			// wait for changes
@@ -84,6 +88,7 @@ func Subscribe(onReport func(msg Message)) chan bool {
 			}
 		}
 	}(stream)
+	wg.Wait()
 	return unsubscribe
 }
 
