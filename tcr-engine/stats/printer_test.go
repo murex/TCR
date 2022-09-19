@@ -41,13 +41,13 @@ func Test_print_stat(t *testing.T) {
 			"int value",
 			"some stat",
 			5,
-			"- some stat:           5",
+			"- some stat:            5",
 		},
 		{
 			"string value",
 			"some stat",
 			"some value",
-			"- some stat:           some value",
+			"- some stat:            some value",
 		},
 	}
 
@@ -75,21 +75,21 @@ func Test_print_stat_with_percentage(t *testing.T) {
 			"some stat",
 			5,
 			0,
-			"- some stat:           5 (0%)",
+			"- some stat:            5 (0%)",
 		},
 		{
 			"string value at 12%",
 			"some stat",
 			"some value",
 			12,
-			"- some stat:           some value (12%)",
+			"- some stat:            some value (12%)",
 		},
 		{
 			"boolean value at 100%",
 			"some stat",
 			false,
 			100,
-			"- some stat:           false (100%)",
+			"- some stat:            false (100%)",
 		},
 	}
 
@@ -121,15 +121,16 @@ func Test_print(t *testing.T) {
 		),
 	}
 	expected := []string{
-		"- Branch:              some-branch",
-		"- First commit:        2022-09-24 13:24:35 +0000 UTC",
-		"- Last commit:         2022-09-24 14:42:33 +0000 UTC",
-		"- Number of commits:   3",
-		"- Passing commits:     1 (33%)",
-		"- Failing commits:     2 (67%)",
-		"- Time span:           1h17m58s",
-		"- Time in green:       51m21s (66%)",
-		"- Time in red:         26m37s (34%)",
+		"- Branch:               some-branch",
+		"- First commit:         2022-09-24 13:24:35 +0000 UTC",
+		"- Last commit:          2022-09-24 14:42:33 +0000 UTC",
+		"- Number of commits:    3",
+		"- Passing commits:      1 (33%)",
+		"- Failing commits:      2 (67%)",
+		"- Time span:            1h17m58s",
+		"- Time in green:        51m21s (66%)",
+		"- Time in red:          26m37s (34%)",
+		"- Time between commits: 26m37s (min) / 38m59s (avg) / 51m21s (max)",
 	}
 	sniffer := report.NewSniffer()
 	Print(branch, inputEvents)

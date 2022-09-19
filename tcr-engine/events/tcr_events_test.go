@@ -409,3 +409,83 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 		})
 	}
 }
+
+func Test_events_time_between_commits(t *testing.T) {
+	now := time.Now().UTC()
+	oneSecLater := now.Add(1 * time.Second)
+	twoSecLater := now.Add(2 * time.Second)
+	oneMinLater := now.Add(1 * time.Minute)
+
+	testFlags := []struct {
+		desc        string
+		events      TcrEvents
+		expectedMin time.Duration
+		expectedAvg time.Duration
+		expectedMax time.Duration
+	}{
+		{
+			"nil",
+			nil,
+			0,
+			0,
+			0,
+		},
+		{
+			"no record",
+			*NewTcrEvents(),
+			0,
+			0,
+			0,
+		},
+		{
+			"1 record",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+			},
+			0,
+			0,
+			0,
+		},
+		{
+			"2 records",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
+			},
+			1 * time.Second,
+			1 * time.Second,
+			1 * time.Second,
+		},
+		{
+			"3 records unsorted",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(twoSecLater)),
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
+			},
+			1 * time.Second,
+			1 * time.Second,
+			1 * time.Second,
+		},
+		{
+			"4 records",
+			TcrEvents{
+				*ADatedTcrEvent(WithTimestamp(now)),
+				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
+				*ADatedTcrEvent(WithTimestamp(twoSecLater)),
+				*ADatedTcrEvent(WithTimestamp(oneMinLater)),
+			},
+			1 * time.Second,
+			20 * time.Second,
+			58 * time.Second,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			result := tt.events.TimeBetweenCommits()
+			assert.Equal(t, tt.expectedMin, result.Min(), "min time")
+			assert.Equal(t, tt.expectedAvg, result.Avg(), "avg time")
+			assert.Equal(t, tt.expectedMax, result.Max(), "max time")
+		})
+	}
+}

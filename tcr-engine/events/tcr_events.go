@@ -27,9 +27,6 @@ import (
 	"time"
 )
 
-// ZeroTime is Unix starting time, e.g. Jan 1, 1970
-var ZeroTime = time.Unix(0, 0).UTC()
-
 // TcrEvents is a slice of DatedTcrEvent instances
 type TcrEvents []DatedTcrEvent
 
@@ -187,17 +184,30 @@ func (events *TcrEvents) percentDurationInState(status CommandStatus) int {
 	)
 }
 
-func inSeconds(duration time.Duration) int {
-	return int(duration / time.Second)
-}
-
-func asPercentage(dividend, divisor int) int {
-	return roundClosestInt(100*dividend, divisor) //nolint:revive
-}
-
-func roundClosestInt(dividend, divisor int) int {
-	if divisor == 0 {
-		return 0
+// TimeBetweenCommits returns the minimum, average and maximum time between commits
+func (events *TcrEvents) TimeBetweenCommits() MinMaxAvgDuration {
+	if len(*events) < 2 {
+		return MinMaxAvgDuration{0 * time.Second, 0 * time.Second, 0 * time.Second}
 	}
-	return (dividend + (divisor / 2)) / divisor
+
+	var result MinMaxAvgDuration
+	events.sortByTime()
+	for i := range (*events)[:(events.Len() - 1)] {
+		t := (*events)[i].timeSpanUntil(&(*events)[i+1])
+		if i == 0 || t < result.min {
+			result.min = t
+		}
+		if t > result.max {
+			result.max = t
+		}
+	}
+	result.avg = events.averageDuration()
+	return result
+}
+
+func (events *TcrEvents) averageDuration() time.Duration {
+	if len(*events) < 2 {
+		return 0 * time.Second
+	}
+	return time.Duration(inSeconds(events.TimeSpan())/(events.Len()-1)) * time.Second
 }
