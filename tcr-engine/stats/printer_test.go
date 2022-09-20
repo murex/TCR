@@ -137,7 +137,34 @@ func Test_print_stat_min_max_avg(t *testing.T) {
 	}
 }
 
-func Test_print(t *testing.T) {
+func Test_print_stat_evolution(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		name     string
+		value    events.ValueEvolution
+		expected string
+	}{
+		{
+			desc:     "int value evolution",
+			name:     "some stat",
+			value:    events.IntValueEvolution{},
+			expected: "- some stat:                 from 0 to 0",
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer()
+			printStatEvolution(tt.name, tt.value)
+			time.Sleep(1 * time.Millisecond)
+			sniffer.Stop()
+			assert.Equal(t, 1, sniffer.GetMatchCount())
+			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
+		})
+	}
+}
+
+func Test_print_all_stats(t *testing.T) {
 	branch := "some-branch"
 	inputEvents := events.TcrEvents{
 		*events.ADatedTcrEvent(
@@ -146,6 +173,9 @@ func Test_print(t *testing.T) {
 				events.WithCommandStatus(events.StatusFail),
 				events.WithModifiedSrcLines(1),
 				events.WithModifiedTestLines(0),
+				events.WithTestsPassed(2),
+				events.WithTestsFailed(1),
+				events.WithTestsSkipped(5),
 			)),
 		),
 		*events.ADatedTcrEvent(
@@ -154,6 +184,9 @@ func Test_print(t *testing.T) {
 				events.WithCommandStatus(events.StatusPass),
 				events.WithModifiedSrcLines(10),
 				events.WithModifiedTestLines(3),
+				events.WithTestsPassed(3),
+				events.WithTestsFailed(1),
+				events.WithTestsSkipped(3),
 			)),
 		),
 		*events.ADatedTcrEvent(
@@ -162,6 +195,9 @@ func Test_print(t *testing.T) {
 				events.WithCommandStatus(events.StatusFail),
 				events.WithModifiedSrcLines(4),
 				events.WithModifiedTestLines(1),
+				events.WithTestsPassed(8),
+				events.WithTestsFailed(2),
+				events.WithTestsSkipped(1),
 			)),
 		),
 	}
@@ -178,6 +214,9 @@ func Test_print(t *testing.T) {
 		"- Time between commits:      26m37s (min) / 38m59s (avg) / 51m21s (max)",
 		"- Changes per commit (src):  1 (min) / 5 (avg) / 10 (max)",
 		"- Changes per commit (test): 0 (min) / 1.3 (avg) / 3 (max)",
+		"- Passing tests count:       from 2 to 8",
+		"- Failing tests count:       from 1 to 2",
+		"- Skipped tests count:       from 5 to 1",
 	}
 	sniffer := report.NewSniffer()
 	Print(branch, inputEvents)

@@ -264,3 +264,40 @@ func (events *TcrEvents) lineChangesPerCommit(metricFunc func(e DatedTcrEvent) i
 
 	return result
 }
+
+// PassingTestsEvolution returns the evolution of the number of passing tests
+// from the first to the last TCR event
+func (events *TcrEvents) PassingTestsEvolution() IntValueEvolution {
+	return events.testEvolution(
+		func(events *TcrEvents, index int) int {
+			return (*events)[index].Event.Tests.Passed
+		})
+}
+
+// FailingTestsEvolution returns the evolution of the number of failing tests
+// from the first to the last TCR event
+func (events *TcrEvents) FailingTestsEvolution() IntValueEvolution {
+	return events.testEvolution(
+		func(events *TcrEvents, index int) int {
+			return (*events)[index].Event.Tests.Failed
+		})
+}
+
+// SkippedTestsEvolution returns the evolution of the number of skipped tests
+// from the first to the last TCR event
+func (events *TcrEvents) SkippedTestsEvolution() IntValueEvolution {
+	return events.testEvolution(
+		func(events *TcrEvents, index int) int {
+			return (*events)[index].Event.Tests.Skipped
+		})
+}
+
+func (events *TcrEvents) testEvolution(metricFunc func(events *TcrEvents, index int) int) IntValueEvolution {
+	if len(*events) == 0 {
+		return IntValueEvolution{from: 0, to: 0}
+	}
+	return IntValueEvolution{
+		from: metricFunc(events, 0),
+		to:   metricFunc(events, len(*events)-1),
+	}
+}

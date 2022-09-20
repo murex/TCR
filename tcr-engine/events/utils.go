@@ -92,3 +92,25 @@ func (ia IntAggregates) Avg() interface{} {
 func (ia IntAggregates) Max() interface{} {
 	return ia.max
 }
+
+// ValueEvolution describes evolution of a value between first and last record
+type ValueEvolution interface {
+	From() interface{}
+	To() interface{}
+}
+
+// IntValueEvolution implements ValueEvolution interface for an int value
+type IntValueEvolution struct {
+	from int
+	to   int
+}
+
+// From returns the starting value of an IntValueEvolution instance
+func (iv IntValueEvolution) From() interface{} {
+	return iv.from
+}
+
+// To returns the ending value of an IntValueEvolution instance
+func (iv IntValueEvolution) To() interface{} {
+	return iv.to
+}

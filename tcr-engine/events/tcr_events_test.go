@@ -569,3 +569,89 @@ func Test_events_line_changes_per_commit(t *testing.T) {
 		})
 	}
 }
+
+func Test_test_counters_evolution(t *testing.T) {
+	testFlags := []struct {
+		desc            string
+		events          TcrEvents
+		expectedPassing IntValueEvolution
+		expectedFailing IntValueEvolution
+		expectedSkipped IntValueEvolution
+	}{
+		{
+			"nil",
+			nil,
+			IntValueEvolution{0, 0},
+			IntValueEvolution{0, 0},
+			IntValueEvolution{0, 0},
+		},
+		{
+			"no record",
+			*NewTcrEvents(),
+			IntValueEvolution{0, 0},
+			IntValueEvolution{0, 0},
+			IntValueEvolution{0, 0},
+		},
+		{
+			"1 record",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(1),
+					WithTestsFailed(2),
+					WithTestsSkipped(3),
+				))),
+			},
+			IntValueEvolution{1, 1},
+			IntValueEvolution{2, 2},
+			IntValueEvolution{3, 3},
+		},
+		{
+			"2 records",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(1),
+					WithTestsFailed(2),
+					WithTestsSkipped(3),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(5),
+					WithTestsFailed(1),
+					WithTestsSkipped(2),
+				))),
+			},
+			IntValueEvolution{1, 5},
+			IntValueEvolution{2, 1},
+			IntValueEvolution{3, 2},
+		},
+		{
+			"3 records",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(1),
+					WithTestsFailed(2),
+					WithTestsSkipped(3),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(10),
+					WithTestsFailed(2),
+					WithTestsSkipped(4),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithTestsPassed(5),
+					WithTestsFailed(3),
+					WithTestsSkipped(6),
+				))),
+			},
+			IntValueEvolution{1, 5},
+			IntValueEvolution{2, 3},
+			IntValueEvolution{3, 6},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedPassing, tt.events.PassingTestsEvolution(), "passing tests")
+			assert.Equal(t, tt.expectedFailing, tt.events.FailingTestsEvolution(), "failing tests")
+			assert.Equal(t, tt.expectedSkipped, tt.events.SkippedTestsEvolution(), "skipped tests")
+		})
+	}
+}
