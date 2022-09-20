@@ -141,7 +141,7 @@ func Test_print(t *testing.T) {
 	branch := "some-branch"
 	inputEvents := events.TcrEvents{
 		*events.ADatedTcrEvent(
-			events.WithTimestamp(time.Date(2022, 9, 24, 13, 24, 35, 0, time.UTC)),
+			events.WithTimestamp(time.Date(2022, 9, 22, 13, 24, 35, 0, time.UTC)),
 			events.WithTcrEvent(*events.ATcrEvent(
 				events.WithCommandStatus(events.StatusFail),
 				events.WithModifiedSrcLines(1),
@@ -149,7 +149,7 @@ func Test_print(t *testing.T) {
 			)),
 		),
 		*events.ADatedTcrEvent(
-			events.WithTimestamp(time.Date(2022, 9, 24, 13, 51, 12, 0, time.UTC)),
+			events.WithTimestamp(time.Date(2022, 9, 22, 13, 51, 12, 0, time.UTC)),
 			events.WithTcrEvent(*events.ATcrEvent(
 				events.WithCommandStatus(events.StatusPass),
 				events.WithModifiedSrcLines(10),
@@ -157,7 +157,7 @@ func Test_print(t *testing.T) {
 			)),
 		),
 		*events.ADatedTcrEvent(
-			events.WithTimestamp(time.Date(2022, 9, 24, 14, 42, 33, 0, time.UTC)),
+			events.WithTimestamp(time.Date(2022, 9, 22, 14, 42, 33, 0, time.UTC)),
 			events.WithTcrEvent(*events.ATcrEvent(
 				events.WithCommandStatus(events.StatusFail),
 				events.WithModifiedSrcLines(4),
@@ -167,8 +167,8 @@ func Test_print(t *testing.T) {
 	}
 	expected := []string{
 		"- Branch:                    some-branch",
-		"- First commit:              2022-09-24 13:24:35 +0000 UTC",
-		"- Last commit:               2022-09-24 14:42:33 +0000 UTC",
+		"- First commit:              Thursday 22 Sep 2022 at 13:24:35",
+		"- Last commit:               Thursday 22 Sep 2022 at 14:42:33",
 		"- Number of commits:         3",
 		"- Passing commits:           1 (33%)",
 		"- Failing commits:           2 (67%)",

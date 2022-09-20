@@ -26,13 +26,14 @@ import (
 	"fmt"
 	"github.com/murex/tcr/tcr-engine/events"
 	"github.com/murex/tcr/tcr-engine/report"
+	"time"
 )
 
 // Print prints all TCR stats for the provided list of TCR events.
 func Print(branch string, tcrEvents events.TcrEvents) {
 	printStat("Branch", branch)
-	printStat("First commit", tcrEvents.StartingTime())
-	printStat("Last commit", tcrEvents.EndingTime())
+	printStat("First commit", humanDate(tcrEvents.StartingTime()))
+	printStat("Last commit", humanDate(tcrEvents.EndingTime()))
 	printStat("Number of commits", tcrEvents.NbRecords())
 	printStatWithPercentage("Passing commits", tcrEvents.NbPassingRecords(), tcrEvents.PercentPassing())
 	printStatWithPercentage("Failing commits", tcrEvents.NbFailingRecords(), tcrEvents.PercentFailing())
@@ -58,4 +59,10 @@ func printStat(name string, value ...interface{}) {
 		fmt.Sprintf("- %-26s ", name+":"),
 		fmt.Sprint(value...),
 	)
+}
+
+// humanDate function returns a nicely formatted string
+// representation of a time.Time object.
+func humanDate(t time.Time) string {
+	return t.Format("Monday 02 Jan 2006 at 15:04:05")
 }
