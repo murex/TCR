@@ -27,33 +27,33 @@ import "time"
 // ZeroTime is Unix starting time, e.g. Jan 1, 1970
 var ZeroTime = time.Unix(0, 0).UTC()
 
-// MinMaxAvg is a convenience type for returning min, max and average values altogether
-type MinMaxAvg interface {
+// Aggregates is a convenience type for returning min, max, average, etc. altogether
+type Aggregates interface {
 	Min() interface{}
 	Avg() interface{}
 	Max() interface{}
 }
 
-// MinMaxAvgDuration is the MinMaxAvg implementation for time.Duration type
-type MinMaxAvgDuration struct {
+// DurationAggregates is the Aggregates implementation for time.Duration type
+type DurationAggregates struct {
 	min time.Duration
 	avg time.Duration
 	max time.Duration
 }
 
-// Min returns the min value
-func (m MinMaxAvgDuration) Min() interface{} {
-	return m.min
+// Min returns the min duration value
+func (da DurationAggregates) Min() interface{} {
+	return da.min
 }
 
-// Avg returns the average value
-func (m MinMaxAvgDuration) Avg() interface{} {
-	return m.avg
+// Avg returns the average duration value
+func (da DurationAggregates) Avg() interface{} {
+	return da.avg
 }
 
-// Max returns the max value
-func (m MinMaxAvgDuration) Max() interface{} {
-	return m.max
+// Max returns the max duration value
+func (da DurationAggregates) Max() interface{} {
+	return da.max
 }
 
 func inSeconds(duration time.Duration) int {
@@ -69,4 +69,26 @@ func roundToClosestInt(dividend, divisor int) int {
 		return 0
 	}
 	return (dividend + (divisor / 2)) / divisor
+}
+
+// IntAggregates is the Aggregates implementation for int type
+type IntAggregates struct {
+	min int
+	avg float32
+	max int
+}
+
+// Min returns the min value
+func (ia IntAggregates) Min() interface{} {
+	return ia.min
+}
+
+// Avg returns the average value
+func (ia IntAggregates) Avg() interface{} {
+	return ia.avg
+}
+
+// Max returns the max value
+func (ia IntAggregates) Max() interface{} {
+	return ia.max
 }

@@ -489,3 +489,83 @@ func Test_events_time_between_commits(t *testing.T) {
 		})
 	}
 }
+
+func Test_events_line_changes_per_commit(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		events       TcrEvents
+		expectedSrc  IntAggregates
+		expectedTest IntAggregates
+		expectedAll  IntAggregates
+	}{
+		{
+			"nil",
+			nil,
+			IntAggregates{0, 0, 0},
+			IntAggregates{min: 0, avg: 0, max: 0},
+			IntAggregates{min: 0, avg: 0, max: 0},
+		},
+		{
+			"no record",
+			*NewTcrEvents(),
+			IntAggregates{0, 0, 0},
+			IntAggregates{min: 0, avg: 0, max: 0},
+			IntAggregates{min: 0, avg: 0, max: 0},
+		},
+		{
+			"1 record",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(1),
+					WithModifiedTestLines(2),
+				))),
+			},
+			IntAggregates{1, 1, 1},
+			IntAggregates{min: 2, avg: 2, max: 2},
+			IntAggregates{min: 3, avg: 3, max: 3},
+		},
+		{
+			"2 records",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(1),
+					WithModifiedTestLines(2),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(2),
+					WithModifiedTestLines(3),
+				))),
+			},
+			IntAggregates{1, 1.5, 2},
+			IntAggregates{min: 2, avg: 2.5, max: 3},
+			IntAggregates{min: 3, avg: 4, max: 5},
+		},
+		{
+			"3 records with rounded avg",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(1),
+					WithModifiedTestLines(2),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(2),
+					WithModifiedTestLines(3),
+				))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithModifiedSrcLines(4),
+					WithModifiedTestLines(5),
+				))),
+			},
+			IntAggregates{1, 2.3, 4},
+			IntAggregates{min: 2, avg: 3.3, max: 5},
+			IntAggregates{min: 3, avg: 5.6, max: 9},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedSrc, tt.events.SrcLineChangesPerCommit(), "src lines aggregates")
+			assert.Equal(t, tt.expectedTest, tt.events.TestLineChangesPerCommit(), "test lines aggregates")
+			assert.Equal(t, tt.expectedAll, tt.events.AllLineChangesPerCommit(), "all lines aggregates")
+		})
+	}
+}

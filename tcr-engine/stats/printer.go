@@ -40,11 +40,12 @@ func Print(branch string, tcrEvents events.TcrEvents) {
 	printStatWithPercentage("Time in green", tcrEvents.DurationInGreen(), tcrEvents.PercentDurationInGreen())
 	printStatWithPercentage("Time in red", tcrEvents.DurationInRed(), tcrEvents.PercentDurationInRed())
 	printStatMinMaxAvg("Time between commits", tcrEvents.TimeBetweenCommits())
+	printStatMinMaxAvg("Changes per commit (src)", tcrEvents.SrcLineChangesPerCommit())
+	printStatMinMaxAvg("Changes per commit (test)", tcrEvents.TestLineChangesPerCommit())
 	// TODO add stats on test cases (executed, failed, passed, percentage)
-	// TODO add # of lines changed per commit (test, src, both) (min, avg, max)
 }
 
-func printStatMinMaxAvg(name string, values events.MinMaxAvg) {
+func printStatMinMaxAvg(name string, values events.Aggregates) {
 	printStat(name, values.Min(), " (min) / ", values.Avg(), " (avg) / ", values.Max(), " (max)")
 }
 
@@ -54,7 +55,7 @@ func printStatWithPercentage(name string, value interface{}, percentage int) {
 
 func printStat(name string, value ...interface{}) {
 	report.PostInfo(
-		fmt.Sprintf("- %-21s ", name+":"),
+		fmt.Sprintf("- %-26s ", name+":"),
 		fmt.Sprint(value...),
 	)
 }

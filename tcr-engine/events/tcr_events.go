@@ -185,12 +185,12 @@ func (events *TcrEvents) percentDurationInState(status CommandStatus) int {
 }
 
 // TimeBetweenCommits returns the minimum, average and maximum time between commits
-func (events *TcrEvents) TimeBetweenCommits() MinMaxAvgDuration {
+func (events *TcrEvents) TimeBetweenCommits() DurationAggregates {
 	if len(*events) < 2 {
-		return MinMaxAvgDuration{0 * time.Second, 0 * time.Second, 0 * time.Second}
+		return DurationAggregates{0 * time.Second, 0 * time.Second, 0 * time.Second}
 	}
 
-	var result MinMaxAvgDuration
+	var result DurationAggregates
 	events.sortByTime()
 	for i := range (*events)[:(events.Len() - 1)] {
 		t := (*events)[i].timeSpanUntil(&(*events)[i+1])
@@ -210,4 +210,57 @@ func (events *TcrEvents) averageDuration() time.Duration {
 		return 0 * time.Second
 	}
 	return time.Duration(inSeconds(events.TimeSpan())/(events.Len()-1)) * time.Second
+}
+
+// SrcLineChangesPerCommit returns the minimum, average and maximum number of changed
+// source lines per commit
+func (events *TcrEvents) SrcLineChangesPerCommit() IntAggregates {
+	return events.lineChangesPerCommit(
+		func(e DatedTcrEvent) int {
+			return e.Event.Changes.Src
+		})
+}
+
+// TestLineChangesPerCommit returns the minimum, average and maximum number of changed
+// test lines per commit
+func (events *TcrEvents) TestLineChangesPerCommit() IntAggregates {
+	return events.lineChangesPerCommit(
+		func(e DatedTcrEvent) int {
+			return e.Event.Changes.Test
+		})
+}
+
+// AllLineChangesPerCommit returns the minimum, average and maximum number of changed
+// lines per commit (source and tests)
+func (events *TcrEvents) AllLineChangesPerCommit() IntAggregates {
+	return events.lineChangesPerCommit(
+		func(e DatedTcrEvent) int {
+			return e.Event.Changes.Src + e.Event.Changes.Test
+		})
+}
+
+func (events *TcrEvents) lineChangesPerCommit(metricFunc func(e DatedTcrEvent) int) IntAggregates {
+	if len(*events) == 0 {
+		return IntAggregates{0, 0, 0}
+	}
+
+	var result IntAggregates
+	var totalChangedLines int
+
+	for i, e := range *events {
+		changedLines := metricFunc(e)
+		if i == 0 || changedLines < result.min {
+			result.min = changedLines
+		}
+		if changedLines > result.max {
+			result.max = changedLines
+		}
+		totalChangedLines += changedLines
+	}
+
+	// We keep only 1 decimal for average value
+	// (higher precision would just add meaningless noise)
+	result.avg = float32(10*totalChangedLines/len(*events)) / 10 //nolint:revive
+
+	return result
 }
