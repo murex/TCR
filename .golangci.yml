@@ -134,9 +134,9 @@ linters-settings:
         disabled: false
         arguments: [ 11 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#datarace
-      - name: datarace
-        severity: warning
-        disabled: false
+      #      - name: datarace
+      #        severity: warning
+      #        disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#deep-exit
       - name: deep-exit
         severity: warning
