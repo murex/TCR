@@ -22,22 +22,38 @@ SOFTWARE.
 
 package events
 
-import "time"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
+)
 
-// ZeroTime is Unix starting time, e.g. Jan 1, 1970
-var ZeroTime = time.Unix(0, 0).UTC()
-
-func inSeconds(duration time.Duration) int {
-	return int(duration / time.Second)
-}
-
-func asPercentage(dividend, divisor int) int {
-	return roundToClosestInt(100*dividend, divisor) //nolint:revive
-}
-
-func roundToClosestInt(dividend, divisor int) int {
-	if divisor == 0 {
-		return 0
+func Test_value_evolution_getters(t *testing.T) {
+	testFlags := []struct {
+		desc           string
+		valueEvolution ValueEvolution
+		expectedFrom   interface{}
+		expectedTo     interface{}
+	}{
+		{
+			"int value evolution",
+			IntValueEvolution{from: 2, to: 5},
+			2,
+			5,
+		},
+		{
+			"duration value evolution",
+			DurationValueEvolution{500 * time.Millisecond, 5 * time.Second},
+			500 * time.Millisecond,
+			5 * time.Second,
+		},
 	}
-	return (dividend + (divisor / 2)) / divisor
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedFrom, tt.valueEvolution.From(), "from")
+			assert.Equal(t, tt.expectedTo, tt.valueEvolution.To(), "to")
+
+		})
+	}
 }

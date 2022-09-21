@@ -24,20 +24,40 @@ package events
 
 import "time"
 
-// ZeroTime is Unix starting time, e.g. Jan 1, 1970
-var ZeroTime = time.Unix(0, 0).UTC()
-
-func inSeconds(duration time.Duration) int {
-	return int(duration / time.Second)
+// ValueEvolution describes evolution of a value between first and last record
+type ValueEvolution interface {
+	From() interface{}
+	To() interface{}
 }
 
-func asPercentage(dividend, divisor int) int {
-	return roundToClosestInt(100*dividend, divisor) //nolint:revive
+// DurationValueEvolution implements ValueEvolution interface for a time.Duration value
+type DurationValueEvolution struct {
+	from time.Duration
+	to   time.Duration
 }
 
-func roundToClosestInt(dividend, divisor int) int {
-	if divisor == 0 {
-		return 0
-	}
-	return (dividend + (divisor / 2)) / divisor
+// From returns the starting value of an DurationValueEvolution instance
+func (dve DurationValueEvolution) From() interface{} {
+	return dve.from
+}
+
+// To returns the ending value of an DurationValueEvolution instance
+func (dve DurationValueEvolution) To() interface{} {
+	return dve.to
+}
+
+// IntValueEvolution implements ValueEvolution interface for an int value
+type IntValueEvolution struct {
+	from int
+	to   int
+}
+
+// From returns the starting value of an IntValueEvolution instance
+func (ive IntValueEvolution) From() interface{} {
+	return ive.from
+}
+
+// To returns the ending value of an IntValueEvolution instance
+func (ive IntValueEvolution) To() interface{} {
+	return ive.to
 }

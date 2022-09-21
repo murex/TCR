@@ -260,7 +260,7 @@ func (events *TcrEvents) lineChangesPerCommit(metricFunc func(e DatedTcrEvent) i
 
 	// We keep only 1 decimal for average value
 	// (higher precision would just add meaningless noise)
-	result.avg = float32(10*totalChangedLines/len(*events)) / 10 //nolint:revive
+	result.avg = float64(10*totalChangedLines/len(*events)) / 10 //nolint:revive
 
 	return result
 }
@@ -268,7 +268,7 @@ func (events *TcrEvents) lineChangesPerCommit(metricFunc func(e DatedTcrEvent) i
 // PassingTestsEvolution returns the evolution of the number of passing tests
 // from the first to the last TCR event
 func (events *TcrEvents) PassingTestsEvolution() IntValueEvolution {
-	return events.testEvolution(
+	return events.testCounterEvolution(
 		func(events *TcrEvents, index int) int {
 			return (*events)[index].Event.Tests.Passed
 		})
@@ -277,7 +277,7 @@ func (events *TcrEvents) PassingTestsEvolution() IntValueEvolution {
 // FailingTestsEvolution returns the evolution of the number of failing tests
 // from the first to the last TCR event
 func (events *TcrEvents) FailingTestsEvolution() IntValueEvolution {
-	return events.testEvolution(
+	return events.testCounterEvolution(
 		func(events *TcrEvents, index int) int {
 			return (*events)[index].Event.Tests.Failed
 		})
@@ -286,18 +286,30 @@ func (events *TcrEvents) FailingTestsEvolution() IntValueEvolution {
 // SkippedTestsEvolution returns the evolution of the number of skipped tests
 // from the first to the last TCR event
 func (events *TcrEvents) SkippedTestsEvolution() IntValueEvolution {
-	return events.testEvolution(
+	return events.testCounterEvolution(
 		func(events *TcrEvents, index int) int {
 			return (*events)[index].Event.Tests.Skipped
 		})
 }
 
-func (events *TcrEvents) testEvolution(metricFunc func(events *TcrEvents, index int) int) IntValueEvolution {
+func (events *TcrEvents) testCounterEvolution(counterFunc func(events *TcrEvents, index int) int) IntValueEvolution {
 	if len(*events) == 0 {
 		return IntValueEvolution{from: 0, to: 0}
 	}
 	return IntValueEvolution{
-		from: metricFunc(events, 0),
-		to:   metricFunc(events, len(*events)-1),
+		from: counterFunc(events, 0),
+		to:   counterFunc(events, len(*events)-1),
+	}
+}
+
+// TestDurationEvolution returns the evolution of the test execution duration
+// from the first to the last TCR event
+func (events *TcrEvents) TestDurationEvolution() DurationValueEvolution {
+	if len(*events) == 0 {
+		return DurationValueEvolution{from: 0, to: 0}
+	}
+	return DurationValueEvolution{
+		from: (*events)[0].Event.Tests.Duration,
+		to:   (*events)[len(*events)-1].Event.Tests.Duration,
 	}
 }

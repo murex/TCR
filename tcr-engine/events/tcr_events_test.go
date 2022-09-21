@@ -417,34 +417,26 @@ func Test_events_time_between_commits(t *testing.T) {
 	oneMinLater := now.Add(1 * time.Minute)
 
 	testFlags := []struct {
-		desc        string
-		events      TcrEvents
-		expectedMin time.Duration
-		expectedAvg time.Duration
-		expectedMax time.Duration
+		desc     string
+		events   TcrEvents
+		expected DurationAggregates
 	}{
 		{
 			"nil",
 			nil,
-			0,
-			0,
-			0,
+			DurationAggregates{0, 0, 0},
 		},
 		{
 			"no record",
 			*NewTcrEvents(),
-			0,
-			0,
-			0,
+			DurationAggregates{0, 0, 0},
 		},
 		{
 			"1 record",
 			TcrEvents{
 				*ADatedTcrEvent(WithTimestamp(now)),
 			},
-			0,
-			0,
-			0,
+			DurationAggregates{0, 0, 0},
 		},
 		{
 			"2 records",
@@ -452,9 +444,7 @@ func Test_events_time_between_commits(t *testing.T) {
 				*ADatedTcrEvent(WithTimestamp(now)),
 				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
 			},
-			1 * time.Second,
-			1 * time.Second,
-			1 * time.Second,
+			DurationAggregates{1 * time.Second, 1 * time.Second, 1 * time.Second},
 		},
 		{
 			"3 records unsorted",
@@ -463,9 +453,7 @@ func Test_events_time_between_commits(t *testing.T) {
 				*ADatedTcrEvent(WithTimestamp(now)),
 				*ADatedTcrEvent(WithTimestamp(oneSecLater)),
 			},
-			1 * time.Second,
-			1 * time.Second,
-			1 * time.Second,
+			DurationAggregates{1 * time.Second, 1 * time.Second, 1 * time.Second},
 		},
 		{
 			"4 records",
@@ -475,17 +463,12 @@ func Test_events_time_between_commits(t *testing.T) {
 				*ADatedTcrEvent(WithTimestamp(twoSecLater)),
 				*ADatedTcrEvent(WithTimestamp(oneMinLater)),
 			},
-			1 * time.Second,
-			20 * time.Second,
-			58 * time.Second,
+			DurationAggregates{1 * time.Second, 20 * time.Second, 58 * time.Second},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			result := tt.events.TimeBetweenCommits()
-			assert.Equal(t, tt.expectedMin, result.Min(), "min time")
-			assert.Equal(t, tt.expectedAvg, result.Avg(), "avg time")
-			assert.Equal(t, tt.expectedMax, result.Max(), "max time")
+			assert.Equal(t, tt.expected, tt.events.TimeBetweenCommits())
 		})
 	}
 }
@@ -572,11 +555,12 @@ func Test_events_line_changes_per_commit(t *testing.T) {
 
 func Test_test_counters_evolution(t *testing.T) {
 	testFlags := []struct {
-		desc            string
-		events          TcrEvents
-		expectedPassing IntValueEvolution
-		expectedFailing IntValueEvolution
-		expectedSkipped IntValueEvolution
+		desc             string
+		events           TcrEvents
+		expectedPassing  IntValueEvolution
+		expectedFailing  IntValueEvolution
+		expectedSkipped  IntValueEvolution
+		expectedDuration DurationValueEvolution
 	}{
 		{
 			"nil",
@@ -584,6 +568,7 @@ func Test_test_counters_evolution(t *testing.T) {
 			IntValueEvolution{0, 0},
 			IntValueEvolution{0, 0},
 			IntValueEvolution{0, 0},
+			DurationValueEvolution{0, 0},
 		},
 		{
 			"no record",
@@ -591,6 +576,7 @@ func Test_test_counters_evolution(t *testing.T) {
 			IntValueEvolution{0, 0},
 			IntValueEvolution{0, 0},
 			IntValueEvolution{0, 0},
+			DurationValueEvolution{0, 0},
 		},
 		{
 			"1 record",
@@ -599,11 +585,13 @@ func Test_test_counters_evolution(t *testing.T) {
 					WithTestsPassed(1),
 					WithTestsFailed(2),
 					WithTestsSkipped(3),
+					WithTestsDuration(1*time.Second),
 				))),
 			},
 			IntValueEvolution{1, 1},
 			IntValueEvolution{2, 2},
 			IntValueEvolution{3, 3},
+			DurationValueEvolution{1 * time.Second, 1 * time.Second},
 		},
 		{
 			"2 records",
@@ -612,16 +600,19 @@ func Test_test_counters_evolution(t *testing.T) {
 					WithTestsPassed(1),
 					WithTestsFailed(2),
 					WithTestsSkipped(3),
+					WithTestsDuration(500*time.Millisecond),
 				))),
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
 					WithTestsPassed(5),
 					WithTestsFailed(1),
 					WithTestsSkipped(2),
+					WithTestsDuration(1*time.Second),
 				))),
 			},
 			IntValueEvolution{1, 5},
 			IntValueEvolution{2, 1},
 			IntValueEvolution{3, 2},
+			DurationValueEvolution{500 * time.Millisecond, 1 * time.Second},
 		},
 		{
 			"3 records",
@@ -630,21 +621,25 @@ func Test_test_counters_evolution(t *testing.T) {
 					WithTestsPassed(1),
 					WithTestsFailed(2),
 					WithTestsSkipped(3),
+					WithTestsDuration(500*time.Millisecond),
 				))),
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
 					WithTestsPassed(10),
 					WithTestsFailed(2),
 					WithTestsSkipped(4),
+					WithTestsDuration(1*time.Second),
 				))),
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
 					WithTestsPassed(5),
 					WithTestsFailed(3),
 					WithTestsSkipped(6),
+					WithTestsDuration(400*time.Millisecond),
 				))),
 			},
 			IntValueEvolution{1, 5},
 			IntValueEvolution{2, 3},
 			IntValueEvolution{3, 6},
+			DurationValueEvolution{500 * time.Millisecond, 400 * time.Millisecond},
 		},
 	}
 	for _, tt := range testFlags {
@@ -652,6 +647,7 @@ func Test_test_counters_evolution(t *testing.T) {
 			assert.Equal(t, tt.expectedPassing, tt.events.PassingTestsEvolution(), "passing tests")
 			assert.Equal(t, tt.expectedFailing, tt.events.FailingTestsEvolution(), "failing tests")
 			assert.Equal(t, tt.expectedSkipped, tt.events.SkippedTestsEvolution(), "skipped tests")
+			assert.Equal(t, tt.expectedDuration, tt.events.TestDurationEvolution(), "test duration")
 		})
 	}
 }

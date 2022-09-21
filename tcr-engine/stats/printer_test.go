@@ -176,6 +176,7 @@ func Test_print_all_stats(t *testing.T) {
 				events.WithTestsPassed(2),
 				events.WithTestsFailed(1),
 				events.WithTestsSkipped(5),
+				events.WithTestsDuration(500*time.Millisecond),
 			)),
 		),
 		*events.ADatedTcrEvent(
@@ -187,6 +188,7 @@ func Test_print_all_stats(t *testing.T) {
 				events.WithTestsPassed(3),
 				events.WithTestsFailed(1),
 				events.WithTestsSkipped(3),
+				events.WithTestsDuration(1*time.Second),
 			)),
 		),
 		*events.ADatedTcrEvent(
@@ -198,6 +200,7 @@ func Test_print_all_stats(t *testing.T) {
 				events.WithTestsPassed(8),
 				events.WithTestsFailed(2),
 				events.WithTestsSkipped(1),
+				events.WithTestsDuration(2*time.Second),
 			)),
 		),
 	}
@@ -217,6 +220,7 @@ func Test_print_all_stats(t *testing.T) {
 		"- Passing tests count:       from 2 to 8",
 		"- Failing tests count:       from 1 to 2",
 		"- Skipped tests count:       from 5 to 1",
+		"- Test execution duration:   from 500ms to 2s",
 	}
 	sniffer := report.NewSniffer()
 	Print(branch, inputEvents)

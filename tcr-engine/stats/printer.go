@@ -46,6 +46,7 @@ func Print(branch string, tcrEvents events.TcrEvents) {
 	printStatEvolution("Passing tests count", tcrEvents.PassingTestsEvolution())
 	printStatEvolution("Failing tests count", tcrEvents.FailingTestsEvolution())
 	printStatEvolution("Skipped tests count", tcrEvents.SkippedTestsEvolution())
+	printStatEvolution("Test execution duration", tcrEvents.TestDurationEvolution())
 }
 
 func printStatEvolution(name string, values events.ValueEvolution) {

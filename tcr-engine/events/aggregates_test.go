@@ -22,22 +22,45 @@ SOFTWARE.
 
 package events
 
-import "time"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
+)
 
-// ZeroTime is Unix starting time, e.g. Jan 1, 1970
-var ZeroTime = time.Unix(0, 0).UTC()
-
-func inSeconds(duration time.Duration) int {
-	return int(duration / time.Second)
-}
-
-func asPercentage(dividend, divisor int) int {
-	return roundToClosestInt(100*dividend, divisor) //nolint:revive
-}
-
-func roundToClosestInt(dividend, divisor int) int {
-	if divisor == 0 {
-		return 0
+func Test_aggregates_getters(t *testing.T) {
+	testFlags := []struct {
+		desc        string
+		aggregates  Aggregates
+		expectedMin interface{}
+		expectedAvg interface{}
+		expectedMax interface{}
+	}{
+		{
+			"int aggregates",
+			IntAggregates{1, 2.5, 4},
+			1,
+			2.5,
+			4,
+		},
+		{
+			"duration aggregates",
+			DurationAggregates{
+				500 * time.Millisecond,
+				1*time.Second + 500*time.Millisecond,
+				5 * time.Second,
+			},
+			500 * time.Millisecond,
+			1*time.Second + 500*time.Millisecond,
+			5 * time.Second,
+		},
 	}
-	return (dividend + (divisor / 2)) / divisor
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expectedMin, tt.aggregates.Min())
+			assert.Equal(t, tt.expectedAvg, tt.aggregates.Avg())
+			assert.Equal(t, tt.expectedMax, tt.aggregates.Max())
+		})
+	}
 }
