@@ -32,9 +32,17 @@ import (
 // logCmd represents the log command
 var logCmd = &cobra.Command{
 	Use:   "log",
-	Short: "Prints the TCR commit history",
+	Short: "Print the TCR commit history",
 	Long: `
 TCR log subcommand prints out the TCR commit history.
+
+The output format is similar to "git log" command's output format.
+
+The commit history is retrieved for the repository containing
+TCR base directory (cf. -b option). The branch is the current working
+branch set for this repository.
+
+Only TCR commits are printed. All other commits are filtered out.
 
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {

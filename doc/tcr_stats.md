@@ -1,39 +1,10 @@
-/*
-Copyright (c) 2022 Murex
+## tcr stats
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Print TCR stats
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+### Synopsis
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
 
-package cmd
-
-import (
-	"github.com/murex/tcr/tcr-cli/cli"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/spf13/cobra"
-)
-
-// statsCmd represents the stats command
-var statsCmd = &cobra.Command{
-	Use:   "stats",
-	Short: "Print TCR stats",
-	Long: `
 TCR stats subcommand prints out TCR usage stats based on commit history.
 
 The commit history is retrieved for the repository containing
@@ -64,14 +35,33 @@ The following stats are reported:
 > - "Number of failing commits" and "time in red" will always be at 0%
 > - "Failing tests" will always be at 0
 
-This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		parameters.Mode = runmode.Stats{}
-		u := cli.New(parameters, engine.NewTcrEngine())
-		u.Start()
-	},
-}
+This subcommand does not start TCR engine.
 
-func init() {
-	rootCmd.AddCommand(statsCmd)
-}
+```
+tcr stats [flags]
+```
+
+### Options
+
+```
+  -h, --help   help for stats
+```
+
+### Options inherited from parent commands
+
+```
+  -p, --auto-push           enable git push after every commit
+  -b, --base-dir string     indicate the directory from which TCR is looking for files (default: current directory)
+  -f, --commit-failures     enable committing reverts on tests failure
+  -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
+  -d, --duration duration   set the duration for role rotation countdown timer
+  -l, --language string     indicate the programming language to be used by TCR
+  -o, --polling duration    set git polling period when running as navigator
+  -t, --toolchain string    indicate the toolchain to be used by TCR
+  -w, --work-dir string     indicate the directory from which TCR is running (default: current directory)
+```
+
+### SEE ALSO
+
+* [tcr](tcr.md)	 - TCR (Test && Commit || Revert)
+

@@ -1,20 +1,33 @@
-## tcr
+## tcr log
 
-TCR (Test && Commit || Revert)
+Print the TCR commit history
 
 ### Synopsis
 
 
-This application is a tool for practicing TCR (Test && Commit || Revert).
-It can be used either in solo, or as a group within a mob or pair session.
+TCR log subcommand prints out the TCR commit history.
 
-This application runs within a terminal.
+The output format is similar to "git log" command's output format.
+
+The commit history is retrieved for the repository containing
+TCR base directory (cf. -b option). The branch is the current working
+branch set for this repository.
+
+Only TCR commits are printed. All other commits are filtered out.
+
+This subcommand does not start TCR engine.
 
 ```
-tcr [flags]
+tcr log [flags]
 ```
 
 ### Options
+
+```
+  -h, --help   help for log
+```
+
+### Options inherited from parent commands
 
 ```
   -p, --auto-push           enable git push after every commit
@@ -22,7 +35,6 @@ tcr [flags]
   -f, --commit-failures     enable committing reverts on tests failure
   -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration   set the duration for role rotation countdown timer
-  -h, --help                help for tcr
   -l, --language string     indicate the programming language to be used by TCR
   -o, --polling duration    set git polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
@@ -31,12 +43,5 @@ tcr [flags]
 
 ### SEE ALSO
 
-* [tcr check](tcr_check.md)	 - Check TCR configuration and parameters and exit
-* [tcr config](tcr_config.md)	 - Manage TCR configuration
-* [tcr info](tcr_info.md)	 - Display TCR build information
-* [tcr log](tcr_log.md)	 - Print the TCR commit history
-* [tcr mob](tcr_mob.md)	 - Run TCR in mob mode
-* [tcr one-shot](tcr_one-shot.md)	 - Run one TCR cycle and exit
-* [tcr solo](tcr_solo.md)	 - Run TCR in solo mode
-* [tcr stats](tcr_stats.md)	 - Print TCR stats
+* [tcr](tcr.md)	 - TCR (Test && Commit || Revert)
 
