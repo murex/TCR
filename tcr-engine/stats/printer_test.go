@@ -62,41 +62,25 @@ func Test_print_stat(t *testing.T) {
 	}
 }
 
-func Test_print_stat_with_percentage(t *testing.T) {
+func Test_print_stat_value_and_ratio(t *testing.T) {
 	testFlags := []struct {
-		desc       string
-		name       string
-		value      interface{}
-		percentage int
-		expected   string
+		desc     string
+		name     string
+		stat     events.ValueAndRatio
+		expected string
 	}{
 		{
-			"int value at 0%",
+			"int value",
 			"some stat",
-			5,
-			0,
-			"- some stat:                 5 (0%)",
-		},
-		{
-			"string value at 12%",
-			"some stat",
-			"some value",
-			12,
-			"- some stat:                 some value (12%)",
-		},
-		{
-			"boolean value at 100%",
-			"some stat",
-			false,
-			100,
-			"- some stat:                 false (100%)",
+			events.IntValueAndRatio{},
+			"- some stat:                 0 (0%)",
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			sniffer := report.NewSniffer()
-			printStatWithPercentage(tt.name, tt.value, tt.percentage)
+			printStatValueAndRatio(tt.name, tt.stat)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
@@ -108,27 +92,27 @@ func Test_print_stat_min_max_avg(t *testing.T) {
 	testFlags := []struct {
 		desc     string
 		name     string
-		value    events.Aggregates
+		stat     events.Aggregates
 		expected string
 	}{
 		{
-			desc:     "duration aggregates",
-			name:     "some stat",
-			value:    events.DurationAggregates{},
-			expected: "- some stat:                 0s (min) / 0s (avg) / 0s (max)",
+			"duration aggregates",
+			"some stat",
+			events.DurationAggregates{},
+			"- some stat:                 0s (min) / 0s (avg) / 0s (max)",
 		},
 		{
-			desc:     "int aggregates",
-			name:     "some stat",
-			value:    events.IntAggregates{},
-			expected: "- some stat:                 0 (min) / 0 (avg) / 0 (max)",
+			"int aggregates",
+			"some stat",
+			events.IntAggregates{},
+			"- some stat:                 0 (min) / 0 (avg) / 0 (max)",
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			sniffer := report.NewSniffer()
-			printStatMinMaxAvg(tt.name, tt.value)
+			printStatMinMaxAvg(tt.name, tt.stat)
 			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
@@ -148,7 +132,7 @@ func Test_print_stat_evolution(t *testing.T) {
 			desc:     "int value evolution",
 			name:     "some stat",
 			value:    events.IntValueEvolution{},
-			expected: "- some stat:                 from 0 to 0",
+			expected: "- some stat:                 0 --> 0",
 		},
 	}
 
@@ -217,10 +201,10 @@ func Test_print_all_stats(t *testing.T) {
 		"- Time between commits:      26m37s (min) / 38m59s (avg) / 51m21s (max)",
 		"- Changes per commit (src):  1 (min) / 5 (avg) / 10 (max)",
 		"- Changes per commit (test): 0 (min) / 1.3 (avg) / 3 (max)",
-		"- Passing tests count:       from 2 to 8",
-		"- Failing tests count:       from 1 to 2",
-		"- Skipped tests count:       from 5 to 1",
-		"- Test execution duration:   from 500ms to 2s",
+		"- Passing tests count:       2 --> 8",
+		"- Failing tests count:       1 --> 2",
+		"- Skipped tests count:       5 --> 1",
+		"- Test execution duration:   500ms --> 2s",
 	}
 	sniffer := report.NewSniffer()
 	Print(branch, inputEvents)

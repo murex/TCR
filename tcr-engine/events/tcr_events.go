@@ -43,7 +43,7 @@ func (events *TcrEvents) Add(t time.Time, e TcrEvent) {
 
 // NbRecords provides the number of records in TcrEvents
 func (events *TcrEvents) NbRecords() int {
-	return len(*events)
+	return events.Len()
 }
 
 // TimeSpan returns the total duration of TcrEvents (from first record to the last).
@@ -57,8 +57,8 @@ func (events *TcrEvents) TimeSpan() time.Duration {
 }
 
 // sortByTime sorts items by timestamp.
-// This is a prerequisite for all duration-related stats operations
-// to return the expected value
+// This is a prerequisite for all time-related stats operations
+// to return an accurate value
 func (events *TcrEvents) sortByTime() {
 	sort.Sort(events)
 }
@@ -105,51 +105,22 @@ func (events *TcrEvents) getBoundaryTimes() (start, end time.Time) {
 	return
 }
 
-// NbPassingRecords provides the total number of passing records
-func (events *TcrEvents) NbPassingRecords() int {
-	return events.nbRecordsWithStatus(StatusPass)
-}
-
-// NbFailingRecords provides the total number of failing records
-func (events *TcrEvents) NbFailingRecords() (count int) {
-	return events.nbRecordsWithStatus(StatusFail)
-}
-
-func (events *TcrEvents) nbRecordsWithStatus(status CommandStatus) (count int) {
-	for _, te := range *events {
-		if te.Event.Status == status {
-			count++
-		}
+// DurationInGreen returns the duration spent in green, e.g. with no failing tests,
+// and its percentage vs the total duration.
+func (events *TcrEvents) DurationInGreen() DurationValueAndRatio {
+	return DurationValueAndRatio{
+		value:      events.durationInState(StatusPass),
+		percentage: events.percentDurationInState(StatusPass),
 	}
-	return count
 }
 
-// PercentPassing provides the percentage (rounded) of passing records out of the total number of records.
-// Returns 0 if there is no record.
-func (events *TcrEvents) PercentPassing() int {
-	if len(*events) == 0 {
-		return 0
+// DurationInRed returns the total duration spent in red, e.g. with at least 1 failing test,
+// and its percentage vs the total duration.
+func (events *TcrEvents) DurationInRed() DurationValueAndRatio {
+	return DurationValueAndRatio{
+		value:      events.durationInState(StatusFail),
+		percentage: events.percentDurationInState(StatusFail),
 	}
-	return asPercentage(events.NbPassingRecords(), events.NbRecords())
-}
-
-// PercentFailing provides the percentage (rounded) of failing records out of the total number of records.
-// Returns 0 if there is no record.
-func (events *TcrEvents) PercentFailing() int {
-	if len(*events) == 0 {
-		return 0
-	}
-	return asPercentage(events.NbFailingRecords(), events.NbRecords())
-}
-
-// DurationInGreen returns the total duration spent in green, e.g. with no failing tests.
-func (events *TcrEvents) DurationInGreen() (t time.Duration) {
-	return events.durationInState(StatusPass)
-}
-
-// DurationInRed returns the total duration spent in red, e.g. with at least 1 failing test.
-func (events *TcrEvents) DurationInRed() (t time.Duration) {
-	return events.durationInState(StatusFail)
 }
 
 func (events *TcrEvents) durationInState(status CommandStatus) (t time.Duration) {
@@ -163,20 +134,9 @@ func (events *TcrEvents) durationInState(status CommandStatus) (t time.Duration)
 	return
 }
 
-// PercentDurationInGreen provides the percentage (rounded) of time spent in green,
-// e.g. with no failing tests.
+// percentDurationInState provides the percentage (rounded) of time spent in
+// the provided status.
 // Returns 0 if there are less than 2 records.
-func (events *TcrEvents) PercentDurationInGreen() int {
-	return events.percentDurationInState(StatusPass)
-}
-
-// PercentDurationInRed provides the percentage (rounded) of time spent in red,
-// e.g. with at least 1 failing test.
-// Returns 0 if there are less than 2 records.
-func (events *TcrEvents) PercentDurationInRed() int {
-	return events.percentDurationInState(StatusFail)
-}
-
 func (events *TcrEvents) percentDurationInState(status CommandStatus) int {
 	return asPercentage(
 		inSeconds(events.durationInState(status)),
@@ -312,4 +272,36 @@ func (events *TcrEvents) TestDurationEvolution() DurationValueEvolution {
 		from: (*events)[0].Event.Tests.Duration,
 		to:   (*events)[len(*events)-1].Event.Tests.Duration,
 	}
+}
+
+// PassingRecords provides the total number of passing records and their percentage
+// vs the total number of records
+func (events *TcrEvents) PassingRecords() IntValueAndRatio {
+	return events.recordsWithState(StatusPass)
+}
+
+// FailingRecords provides the total number of failing records and their percentage
+// vs the total number of records
+func (events *TcrEvents) FailingRecords() IntValueAndRatio {
+	return events.recordsWithState(StatusFail)
+}
+
+func (events *TcrEvents) recordsWithState(status CommandStatus) IntValueAndRatio {
+	if len(*events) == 0 {
+		return IntValueAndRatio{0, 0}
+	}
+	count := events.nbRecordsWithState(status)
+	return IntValueAndRatio{
+		value:      count,
+		percentage: asPercentage(count, events.NbRecords()),
+	}
+}
+
+func (events *TcrEvents) nbRecordsWithState(status CommandStatus) (count int) {
+	for _, te := range *events {
+		if te.Event.Status == status {
+			count++
+		}
+	}
+	return
 }

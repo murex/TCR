@@ -32,14 +32,14 @@ import (
 // Print prints all TCR stats for the provided list of TCR events.
 func Print(branch string, tcrEvents events.TcrEvents) {
 	printStat("Branch", branch)
-	printStat("First commit", humanDate(tcrEvents.StartingTime()))
-	printStat("Last commit", humanDate(tcrEvents.EndingTime()))
+	printHumanDate("First commit", tcrEvents.StartingTime())
+	printHumanDate("Last commit", tcrEvents.EndingTime())
 	printStat("Number of commits", tcrEvents.NbRecords())
-	printStatWithPercentage("Passing commits", tcrEvents.NbPassingRecords(), tcrEvents.PercentPassing())
-	printStatWithPercentage("Failing commits", tcrEvents.NbFailingRecords(), tcrEvents.PercentFailing())
+	printStatValueAndRatio("Passing commits", tcrEvents.PassingRecords())
+	printStatValueAndRatio("Failing commits", tcrEvents.FailingRecords())
 	printStat("Time span", tcrEvents.TimeSpan())
-	printStatWithPercentage("Time in green", tcrEvents.DurationInGreen(), tcrEvents.PercentDurationInGreen())
-	printStatWithPercentage("Time in red", tcrEvents.DurationInRed(), tcrEvents.PercentDurationInRed())
+	printStatValueAndRatio("Time in green", tcrEvents.DurationInGreen())
+	printStatValueAndRatio("Time in red", tcrEvents.DurationInRed())
 	printStatMinMaxAvg("Time between commits", tcrEvents.TimeBetweenCommits())
 	printStatMinMaxAvg("Changes per commit (src)", tcrEvents.SrcLineChangesPerCommit())
 	printStatMinMaxAvg("Changes per commit (test)", tcrEvents.TestLineChangesPerCommit())
@@ -49,23 +49,28 @@ func Print(branch string, tcrEvents events.TcrEvents) {
 	printStatEvolution("Test execution duration", tcrEvents.TestDurationEvolution())
 }
 
-func printStatEvolution(name string, values events.ValueEvolution) {
-	printStat(name, "from ", values.From(), " to ", values.To())
+func printStatEvolution(name string, stat events.ValueEvolution) {
+	//printStat(name, "from ", stat.From(), " to ", stat.To())
+	printStat(name, stat.From(), " --> ", stat.To())
 }
 
-func printStatMinMaxAvg(name string, values events.Aggregates) {
-	printStat(name, values.Min(), " (min) / ", values.Avg(), " (avg) / ", values.Max(), " (max)")
+func printStatMinMaxAvg(name string, stat events.Aggregates) {
+	printStat(name, stat.Min(), " (min) / ", stat.Avg(), " (avg) / ", stat.Max(), " (max)")
 }
 
-func printStatWithPercentage(name string, value interface{}, percentage int) {
-	printStat(name, value, " (", percentage, "%)")
+func printStatValueAndRatio(name string, stat events.ValueAndRatio) {
+	printStat(name, stat.Value(), " (", stat.Percentage(), "%)")
 }
 
-func printStat(name string, value ...interface{}) {
+func printStat(name string, stat ...interface{}) {
 	report.PostInfo(
 		fmt.Sprintf("- %-26s ", name+":"),
-		fmt.Sprint(value...),
+		fmt.Sprint(stat...),
 	)
+}
+
+func printHumanDate(name string, t time.Time) {
+	printStat(name, humanDate(t))
 }
 
 // humanDate function returns a nicely formatted string

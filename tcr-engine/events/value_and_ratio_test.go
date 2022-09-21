@@ -28,31 +28,31 @@ import (
 	"time"
 )
 
-func Test_value_evolution_getters(t *testing.T) {
+func Test_value_and_ratio_getters(t *testing.T) {
 	testFlags := []struct {
-		desc           string
-		valueEvolution ValueEvolution
-		expectedFrom   interface{}
-		expectedTo     interface{}
+		desc               string
+		valueAndRatio      ValueAndRatio
+		expectedValue      interface{}
+		expectedPercentage int
 	}{
 		{
-			"int value evolution",
-			IntValueEvolution{from: 2, to: 5},
-			2,
-			5,
+			"int value and ratio",
+			IntValueAndRatio{10, 34},
+			10,
+			34,
 		},
 		{
-			"duration value evolution",
-			DurationValueEvolution{500 * time.Millisecond, 5 * time.Second},
-			500 * time.Millisecond,
-			5 * time.Second,
+			"duration value and ratio",
+			DurationValueAndRatio{1 * time.Second, 28},
+			1 * time.Second,
+			28,
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expectedFrom, tt.valueEvolution.From(), "from")
-			assert.Equal(t, tt.expectedTo, tt.valueEvolution.To(), "to")
+			assert.Equal(t, tt.expectedValue, tt.valueAndRatio.Value(), "value")
+			assert.Equal(t, tt.expectedPercentage, tt.valueAndRatio.Percentage(), "percentage")
 		})
 	}
 }

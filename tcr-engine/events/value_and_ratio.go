@@ -24,40 +24,41 @@ package events
 
 import "time"
 
-// ValueEvolution describes evolution of a value between first and last record
-type ValueEvolution interface {
-	From() interface{}
-	To() interface{}
+// ValueAndRatio provides a value with its associated percentage.
+// The percentage is rounded to an int value (ex: percentage=50 means 50%)
+type ValueAndRatio interface {
+	Value() interface{}
+	Percentage() int
 }
 
-// DurationValueEvolution implements ValueEvolution interface for a time.Duration value
-type DurationValueEvolution struct {
-	from time.Duration
-	to   time.Duration
+// DurationValueAndRatio implements ValueAndRatio interface for a time.Duration value
+type DurationValueAndRatio struct {
+	value      time.Duration
+	percentage int
 }
 
-// From returns the starting value of a DurationValueEvolution instance
-func (dve DurationValueEvolution) From() interface{} {
-	return dve.from
+// Value returns the value of a DurationValueAndRatio instance
+func (dvr DurationValueAndRatio) Value() interface{} {
+	return dvr.value
 }
 
-// To returns the ending value of a DurationValueEvolution instance
-func (dve DurationValueEvolution) To() interface{} {
-	return dve.to
+// Percentage returns the percentage of a DurationValueAndRatio instance
+func (dvr DurationValueAndRatio) Percentage() int {
+	return dvr.percentage
 }
 
-// IntValueEvolution implements ValueEvolution interface for an int value
-type IntValueEvolution struct {
-	from int
-	to   int
+// IntValueAndRatio implements ValueAndRatio interface for an int value
+type IntValueAndRatio struct {
+	value      int
+	percentage int
 }
 
-// From returns the starting value of an IntValueEvolution instance
-func (ive IntValueEvolution) From() interface{} {
-	return ive.from
+// Value returns the value of an IntValueAndRatio instance
+func (ivr IntValueAndRatio) Value() interface{} {
+	return ivr.value
 }
 
-// To returns the ending value of an IntValueEvolution instance
-func (ive IntValueEvolution) To() interface{} {
-	return ive.to
+// Percentage returns the percentage of an IntValueAndRatio instance
+func (ivr IntValueAndRatio) Percentage() int {
+	return ivr.percentage
 }

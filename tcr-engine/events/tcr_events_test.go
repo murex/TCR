@@ -63,48 +63,38 @@ func Test_events_nb_records(t *testing.T) {
 
 func Test_events_records_counters(t *testing.T) {
 	testFlags := []struct {
-		desc                      string
-		events                    TcrEvents
-		expectedPassingCount      int
-		expectedPassingPercentage int
-		expectedFailingCount      int
-		expectedFailingPercentage int
+		desc            string
+		events          TcrEvents
+		expectedPassing ValueAndRatio
+		expectedFailing ValueAndRatio
 	}{
 		{
 			"nil",
 			nil,
-			0,
-			0,
-			0,
-			0,
+			IntValueAndRatio{0, 0},
+			IntValueAndRatio{0, 0},
 		},
 		{
 			"no record",
 			TcrEvents{},
-			0,
-			0,
-			0,
-			0,
+			IntValueAndRatio{0, 0},
+			IntValueAndRatio{0, 0},
 		},
 		{
 			"1 passing",
 			TcrEvents{
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 			},
-			1,
-			100,
-			0,
-			0,
+			IntValueAndRatio{1, 100},
+			IntValueAndRatio{0, 0},
 		},
 		{
 			"1 failing",
 			TcrEvents{
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail)))),
 			},
-			0,
-			0,
-			1,
-			100,
+			IntValueAndRatio{0, 0},
+			IntValueAndRatio{1, 100},
 		},
 		{
 			"1 passing 1 failing",
@@ -112,10 +102,8 @@ func Test_events_records_counters(t *testing.T) {
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail)))),
 			},
-			1,
-			50,
-			1,
-			50,
+			IntValueAndRatio{1, 50},
+			IntValueAndRatio{1, 50},
 		},
 		{
 			"2 passing",
@@ -123,18 +111,14 @@ func Test_events_records_counters(t *testing.T) {
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass)))),
 			},
-			2,
-			100,
-			0,
-			0,
+			IntValueAndRatio{2, 100},
+			IntValueAndRatio{0, 0},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expectedPassingCount, tt.events.NbPassingRecords(), "passing count")
-			assert.Equal(t, tt.expectedPassingPercentage, tt.events.PercentPassing(), "passing percentage")
-			assert.Equal(t, tt.expectedFailingCount, tt.events.NbFailingRecords(), " failing count")
-			assert.Equal(t, tt.expectedFailingPercentage, tt.events.PercentFailing(), "failing percentage")
+			assert.Equal(t, tt.expectedPassing, tt.events.PassingRecords(), "passing records")
+			assert.Equal(t, tt.expectedFailing, tt.events.FailingRecords(), "failing records")
 		})
 	}
 }
@@ -312,36 +296,28 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 	twoSecLater := now.Add(2 * time.Second)
 
 	testFlags := []struct {
-		desc                      string
-		events                    TcrEvents
-		expectedDurationInGreen   time.Duration
-		expectedPercentageInGreen int
-		expectedDurationInRed     time.Duration
-		expectedPercentageInRed   int
+		desc            string
+		events          TcrEvents
+		expectedInGreen ValueAndRatio
+		expectedInRed   ValueAndRatio
 	}{
 		{
 			"nil",
 			nil,
-			0,
-			0,
-			0,
-			0,
+			DurationValueAndRatio{0, 0},
+			DurationValueAndRatio{0, 0},
 		},
 		{
 			"no record",
 			TcrEvents{},
-			0,
-			0,
-			0,
-			0,
+			DurationValueAndRatio{0, 0},
+			DurationValueAndRatio{0, 0},
 		},
 		{
 			"1 record",
 			TcrEvents{*ADatedTcrEvent(WithTimestamp(now))},
-			0,
-			0,
-			0,
-			0,
+			DurationValueAndRatio{0, 0},
+			DurationValueAndRatio{0, 0},
 		},
 		{
 			"2 records starting green",
@@ -355,10 +331,8 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
 				),
 			},
-			1 * time.Second,
-			100,
-			0,
-			0,
+			DurationValueAndRatio{1 * time.Second, 100},
+			DurationValueAndRatio{0, 0},
 		},
 		{
 			"2 records starting red",
@@ -372,10 +346,8 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusPass))),
 				),
 			},
-			0,
-			0,
-			1 * time.Second,
-			100,
+			DurationValueAndRatio{0, 0},
+			DurationValueAndRatio{1 * time.Second, 100},
 		},
 		{
 			"3 records",
@@ -393,19 +365,15 @@ func Test_events_duration_in_green_and_red(t *testing.T) {
 					WithTcrEvent(*ATcrEvent(WithCommandStatus(StatusFail))),
 				),
 			},
-			1 * time.Second,
-			50,
-			1 * time.Second,
-			50,
+			DurationValueAndRatio{1 * time.Second, 50},
+			DurationValueAndRatio{1 * time.Second, 50},
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expectedDurationInGreen, tt.events.DurationInGreen(), "duration in green")
-			assert.Equal(t, tt.expectedPercentageInGreen, tt.events.PercentDurationInGreen(), "percentage in green")
-			assert.Equal(t, tt.expectedDurationInRed, tt.events.DurationInRed(), "duration in red")
-			assert.Equal(t, tt.expectedPercentageInRed, tt.events.PercentDurationInRed(), "percentage in red")
+			assert.Equal(t, tt.expectedInGreen, tt.events.DurationInGreen(), "duration in green")
+			assert.Equal(t, tt.expectedInRed, tt.events.DurationInRed(), "duration in red")
 		})
 	}
 }
