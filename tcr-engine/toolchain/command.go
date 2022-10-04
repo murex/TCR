@@ -146,7 +146,7 @@ func (command Command) run() (result CommandResult) {
 		result.Output = string(outputBytes)
 		report.PostText(result.Output)
 	}
-	return
+	return result
 }
 
 func (command Command) check() error {

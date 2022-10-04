@@ -27,7 +27,7 @@ type Navigator struct {
 }
 
 // Name returns the name of the navigator role
-func (role Navigator) Name() string {
+func (Navigator) Name() string {
 	return "navigator"
 }
 
@@ -37,6 +37,6 @@ func (role Navigator) LongName() string {
 }
 
 // RunsWithTimer indicates whether this role uses a timer
-func (role Navigator) RunsWithTimer() bool {
+func (Navigator) RunsWithTimer() bool {
 	return false
 }

@@ -102,7 +102,7 @@ func (events *TcrEvents) getBoundaryTimes() (start, end time.Time) {
 	events.sortByTime()
 	start = (*events)[0].Timestamp
 	end = (*events)[events.Len()-1].Timestamp
-	return
+	return start, end
 }
 
 // DurationInGreen returns the duration spent in green, e.g. with no failing tests,
@@ -131,7 +131,7 @@ func (events *TcrEvents) durationInState(status CommandStatus) (t time.Duration)
 	for i := range (*events)[:(events.Len() - 1)] {
 		t += (*events)[i].timeInState(status, &(*events)[i+1])
 	}
-	return
+	return t
 }
 
 // percentDurationInState provides the percentage (rounded) of time spent in
@@ -303,5 +303,5 @@ func (events *TcrEvents) nbRecordsWithState(status CommandStatus) (count int) {
 			count++
 		}
 	}
-	return
+	return count
 }

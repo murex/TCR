@@ -94,7 +94,7 @@ func listYamlFilesIn(dirPath string) (list []string) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil || len(entries) == 0 {
 		// If we cannot open the directory or if it's empty, we don't go any further
-		return
+		return nil
 	}
 	// Loop on all YAML files in the directory
 	for _, entry := range entries {
@@ -102,5 +102,5 @@ func listYamlFilesIn(dirPath string) (list []string) {
 			list = append(list, entry.Name())
 		}
 	}
-	return
+	return list
 }

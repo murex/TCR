@@ -43,7 +43,7 @@ func checkToolchain(p params.Params) (cr *CheckResults) {
 		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine()))
 		cr.add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath()))
 	}
-	return
+	return cr
 }
 
 func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []CheckPoint) {
@@ -55,18 +55,19 @@ func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []CheckPo
 	} else {
 		cp = append(cp, okCheckPoint(name, " command path: ", path))
 	}
-	return
+	return cp
 }
 
 func checkTestResultDir(dir string, path string) (cp []CheckPoint) {
 	if dir == "" {
-		cp = append(cp, warningCheckPoint("test result directory parameter is not set explicitly (default: work directory)"))
+		cp = append(cp, warningCheckPoint(
+			"test result directory parameter is not set explicitly (default: work directory)"))
 	} else {
 		cp = append(cp, okCheckPoint("test result directory parameter is ", dir))
 	}
 
 	cp = append(cp, okCheckPoint("test result directory absolute path is ", path))
-	return
+	return cp
 }
 
 func checkpointsWhenToolchainIsSet(name string) (cp []CheckPoint) {
@@ -82,7 +83,7 @@ func checkpointsWhenToolchainIsSet(name string) (cp []CheckPoint) {
 			cp = append(cp, warningCheckPoint("skipping toolchain/language compatibility check"))
 		}
 	}
-	return
+	return cp
 }
 
 func checkpointsWhenToolchainIsNotSet() (cp []CheckPoint) {
@@ -100,5 +101,5 @@ func checkpointsWhenToolchainIsNotSet() (cp []CheckPoint) {
 				" language is ", checkEnv.tchn.GetName()))
 		}
 	}
-	return
+	return cp
 }

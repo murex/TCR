@@ -27,26 +27,26 @@ type Check struct {
 }
 
 // Name returns the name of this run mode
-func (mode Check) Name() string {
+func (Check) Name() string {
 	return "check"
 }
 
 // AutoPushDefault returns the default value of git auto-push option with this run mode
-func (mode Check) AutoPushDefault() bool {
+func (Check) AutoPushDefault() bool {
 	return false
 }
 
 // NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (mode Check) NeedsCountdownTimer() bool {
+func (Check) NeedsCountdownTimer() bool {
 	return false
 }
 
 // IsInteractive indicates if this run mode allows user interaction
-func (mode Check) IsInteractive() bool {
+func (Check) IsInteractive() bool {
 	return false
 }
 
 // IsActive indicates if this run mode is actively running TCR
-func (mode Check) IsActive() bool {
+func (Check) IsActive() bool {
 	return false
 }

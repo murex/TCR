@@ -44,5 +44,5 @@ func checkMobTimer(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("mob timer duration is in the recommended range")
 	}
-	return
+	return cr
 }

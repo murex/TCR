@@ -56,7 +56,7 @@ var (
 // ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
 func ShowNotification(level NotificationLevel, title string, message string) (err error) {
 	if IsMuted() {
-		return
+		return nil
 	}
 	switch level {
 	case NormalLevel:
@@ -64,7 +64,7 @@ func ShowNotification(level NotificationLevel, title string, message string) (er
 	case HighLevel:
 		err = notifier.highLevelNotification(title, message)
 	}
-	return
+	return err
 }
 
 // IsMuted indicates if desktop notifications are muted
@@ -87,10 +87,10 @@ func newBeeepNotifier() notifierInterface {
 	return beeepNotifier{}
 }
 
-func (b beeepNotifier) highLevelNotification(title string, message string) error {
+func (beeepNotifier) highLevelNotification(title string, message string) error {
 	return beeep.Alert(title, message, "")
 }
 
-func (b beeepNotifier) normalLevelNotification(title string, message string) error {
+func (beeepNotifier) normalLevelNotification(title string, message string) error {
 	return beeep.Notify(title, message, "")
 }

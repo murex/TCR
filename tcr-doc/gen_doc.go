@@ -25,23 +25,24 @@ package main
 import (
 	cli "github.com/murex/tcr/tcr-cli/cmd"
 	gui "github.com/murex/tcr/tcr-gui/cmd"
+	"log"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
-
-	"log"
 )
 
 const docDirectory = "../doc"
 
 func main() {
-	genDocFor(cli.GetRootCmd())
-	genDocFor(gui.GetRootCmd())
+	if genDocFor(cli.GetRootCmd()) != nil {
+		log.Fatal("generation of markdown documentation for CLI command")
+	}
+	if genDocFor(gui.GetRootCmd()) != nil {
+		log.Fatal("generation of markdown documentation for GUI command")
+	}
 }
 
-func genDocFor(cmd *cobra.Command) {
+func genDocFor(cmd *cobra.Command) error {
 	cmd.DisableAutoGenTag = true
-	if doc.GenMarkdownTree(cmd, docDirectory) != nil {
-		log.Fatal(doc.GenMarkdownTree(cmd, docDirectory))
-	}
+	return doc.GenMarkdownTree(cmd, docDirectory)
 }

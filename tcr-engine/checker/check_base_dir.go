@@ -40,5 +40,5 @@ func checkBaseDirectory(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("base directory absolute path is ", checkEnv.sourceTree.GetBaseDir())
 	}
-	return
+	return cr
 }

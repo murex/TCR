@@ -37,7 +37,7 @@ type (
 )
 
 // NewTestStats create a new instance of the TestStats class
-func NewTestStats(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestStats {
+func NewTestStats(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestStats { //nolint:revive
 	return TestStats{
 		TotalRun:   totalRun,
 		Failed:     failed,

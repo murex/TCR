@@ -78,7 +78,7 @@ func (term *TerminalUI) StartReporting() {
 
 // MuteDesktopNotifications allows preventing desktop notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
-func (term *TerminalUI) MuteDesktopNotifications(muted bool) {
+func (*TerminalUI) MuteDesktopNotifications(muted bool) {
 	if muted {
 		desktop.MuteNotifications()
 	} else {
@@ -103,20 +103,20 @@ func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
 	term.info("Ending ", r.LongName())
 }
 
-func (term *TerminalUI) info(a ...interface{}) {
+func (*TerminalUI) info(a ...interface{}) {
 	printInCyan(a...)
 }
 
-func (term *TerminalUI) title(a ...interface{}) {
+func (*TerminalUI) title(a ...interface{}) {
 	printHorizontalLine()
 	printInCyan(a...)
 }
 
-func (term *TerminalUI) warning(a ...interface{}) {
+func (*TerminalUI) warning(a ...interface{}) {
 	printInYellow(a...)
 }
 
-func (term *TerminalUI) error(a ...interface{}) {
+func (*TerminalUI) error(a ...interface{}) {
 	printInRed(a...)
 }
 
@@ -128,7 +128,7 @@ func (term *TerminalUI) notification(a ...interface{}) {
 	}
 }
 
-func (term *TerminalUI) trace(a ...interface{}) {
+func (*TerminalUI) trace(a ...interface{}) {
 	printUntouched(a...)
 }
 

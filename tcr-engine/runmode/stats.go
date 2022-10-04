@@ -27,26 +27,26 @@ type Stats struct {
 }
 
 // Name returns the name of this run mode
-func (mode Stats) Name() string {
+func (Stats) Name() string {
 	return "stats"
 }
 
 // AutoPushDefault returns the default value of git auto-push option with this run mode
-func (mode Stats) AutoPushDefault() bool {
+func (Stats) AutoPushDefault() bool {
 	return false
 }
 
 // NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (mode Stats) NeedsCountdownTimer() bool {
+func (Stats) NeedsCountdownTimer() bool {
 	return false
 }
 
 // IsInteractive indicates if this run mode allows user interaction
-func (mode Stats) IsInteractive() bool {
+func (Stats) IsInteractive() bool {
 	return false
 }
 
 // IsActive indicates if this run mode is actively running TCR
-func (mode Stats) IsActive() bool {
+func (Stats) IsActive() bool {
 	return false
 }

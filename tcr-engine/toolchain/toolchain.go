@@ -78,7 +78,7 @@ var workDir string
 // SetWorkDir sets the work directory from which toolchain commands will be launched
 func SetWorkDir(dir string) (err error) {
 	workDir, err = dirAbsPath(dir)
-	return
+	return err
 }
 
 // dirAbsPath returns the absolute path for the provided directory.
@@ -204,7 +204,7 @@ func (tchn Toolchain) findTestCommandFor(osName OsName, archName ArchName) *Comm
 
 // CheckCommandAccess verifies if the provided command path can be accessed. Returns the path as
 // an absolute command path if found. Returns an empty path otherwise, together with the corresponding error
-func (tchn Toolchain) CheckCommandAccess(cmdPath string) (string, error) {
+func (Toolchain) CheckCommandAccess(cmdPath string) (string, error) {
 	return checkCommandPath(cmdPath)
 }
 

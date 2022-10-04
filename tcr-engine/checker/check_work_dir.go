@@ -40,5 +40,5 @@ func checkWorkDirectory(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("work directory absolute path is ", checkEnv.workDir)
 	}
-	return
+	return cr
 }

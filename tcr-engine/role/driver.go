@@ -27,7 +27,7 @@ type Driver struct {
 }
 
 // Name returns the name of the driver role
-func (role Driver) Name() string {
+func (Driver) Name() string {
 	return "driver"
 }
 
@@ -37,6 +37,6 @@ func (role Driver) LongName() string {
 }
 
 // RunsWithTimer indicates whether this role uses a timer
-func (role Driver) RunsWithTimer() bool {
+func (Driver) RunsWithTimer() bool {
 	return true
 }

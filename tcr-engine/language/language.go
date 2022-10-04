@@ -130,7 +130,8 @@ func (lang *Language) IsTestFile(aPath string) bool {
 	return lang.GetTestFileFilter().matches(aPath, lang.baseDir)
 }
 
-// IsLanguageFile returns true if the provided filePath is recognized as either a source or a test file for this language
+// IsLanguageFile returns true if the provided filePath is recognized as either a source
+// or a test file for this language
 func (lang *Language) IsLanguageFile(aPath string) bool {
 	return lang.IsSrcFile(aPath) || lang.IsTestFile(aPath)
 }

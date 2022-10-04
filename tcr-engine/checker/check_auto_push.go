@@ -33,5 +33,5 @@ func checkAutoPush(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("git auto-push is turned off: commits will only be applied locally")
 	}
-	return
+	return cr
 }

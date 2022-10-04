@@ -149,13 +149,13 @@ func checkpointsForDirAccessError(dir string, err error) []CheckPoint {
 func checkpointsForList(headerMsg string, emptyMsg string, values []string) (cp []CheckPoint) {
 	if len(values) == 0 {
 		cp = append(cp, warningCheckPoint(emptyMsg))
-		return
+		return cp
 	}
 	cp = append(cp, okCheckPoint(headerMsg))
 	for _, value := range values {
 		cp = append(cp, okCheckPoint("- ", value))
 	}
-	return
+	return cp
 }
 
 func okCheckPoint(a ...interface{}) CheckPoint {
@@ -205,7 +205,7 @@ func (cr *CheckResults) getStatus() (s CheckStatus) {
 			s = check.rc
 		}
 	}
-	return
+	return s
 }
 
 func (cr *CheckResults) print() {

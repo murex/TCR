@@ -27,26 +27,26 @@ type Log struct {
 }
 
 // Name returns the name of this run mode
-func (mode Log) Name() string {
+func (Log) Name() string {
 	return "log"
 }
 
 // AutoPushDefault returns the default value of git auto-push option with this run mode
-func (mode Log) AutoPushDefault() bool {
+func (Log) AutoPushDefault() bool {
 	return false
 }
 
 // NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (mode Log) NeedsCountdownTimer() bool {
+func (Log) NeedsCountdownTimer() bool {
 	return false
 }
 
 // IsInteractive indicates if this run mode allows user interaction
-func (mode Log) IsInteractive() bool {
+func (Log) IsInteractive() bool {
 	return false
 }
 
 // IsActive indicates if this run mode is actively running TCR
-func (mode Log) IsActive() bool {
+func (Log) IsActive() bool {
 	return false
 }

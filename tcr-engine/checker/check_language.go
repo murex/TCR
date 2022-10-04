@@ -44,7 +44,7 @@ func checkLanguage(p params.Params) (cr *CheckResults) {
 		cr.add(checkTestPatterns())
 		cr.add(checkTestFiles())
 	}
-	return
+	return cr
 }
 
 func languageInText() string {
@@ -58,7 +58,7 @@ func checkpointsWhenLanguageIsSet(name string) (cp []CheckPoint) {
 	} else {
 		cp = append(cp, okCheckPoint(languageInText()+" is valid"))
 	}
-	return
+	return cp
 }
 
 func checkpointsWhenLanguageIsNotSet() (cp []CheckPoint) {
@@ -75,7 +75,7 @@ func checkpointsWhenLanguageIsNotSet() (cp []CheckPoint) {
 	} else {
 		cp = append(cp, errorCheckPoint("cannot retrieve language from base directory name"))
 	}
-	return
+	return cp
 }
 
 func checkSrcDirectories() []CheckPoint {
@@ -104,7 +104,7 @@ func checkSrcFiles() (cp []CheckPoint) {
 		"no matching source file found",
 		srcFiles,
 	)...)
-	return
+	return cp
 }
 
 func checkTestDirectories() []CheckPoint {
@@ -133,5 +133,5 @@ func checkTestFiles() (cp []CheckPoint) {
 		"no matching test file found",
 		testFiles,
 	)...)
-	return
+	return cp
 }

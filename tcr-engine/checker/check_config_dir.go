@@ -45,7 +45,7 @@ func checkConfigDirectory(p params.Params) (cr *CheckResults) {
 	cr.add(checkLanguageConfig())
 	cr.add(checkToolchainConfig())
 
-	return
+	return cr
 }
 
 func checkLanguageConfig() []CheckPoint {
@@ -68,5 +68,5 @@ func checkpointsForConfigSubDir(name string, path string, files []string) (cp []
 		"no "+name+" configuration file found",
 		files,
 	)...)
-	return
+	return cp
 }

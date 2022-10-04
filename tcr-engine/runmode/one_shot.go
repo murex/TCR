@@ -27,26 +27,26 @@ type OneShot struct {
 }
 
 // Name returns the name of this run mode
-func (mode OneShot) Name() string {
+func (OneShot) Name() string {
 	return "one-shot"
 }
 
 // AutoPushDefault returns the default value of git auto-push option with this run mode
-func (mode OneShot) AutoPushDefault() bool {
+func (OneShot) AutoPushDefault() bool {
 	return false
 }
 
 // NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (mode OneShot) NeedsCountdownTimer() bool {
+func (OneShot) NeedsCountdownTimer() bool {
 	return false
 }
 
 // IsInteractive indicates if this run mode allows user interaction
-func (mode OneShot) IsInteractive() bool {
+func (OneShot) IsInteractive() bool {
 	return false
 }
 
 // IsActive indicates if this run mode is actively running TCR
-func (mode OneShot) IsActive() bool {
+func (OneShot) IsActive() bool {
 	return true
 }

@@ -51,5 +51,5 @@ func (diffs FileDiffs) ChangedLines(predicate func(filepath string) bool) (chang
 			changes += fd.ChangedLines()
 		}
 	}
-	return
+	return changes
 }

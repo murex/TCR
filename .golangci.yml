@@ -12,14 +12,15 @@ linters:
     - megacheck
     - misspell
     - nakedret
+    - revive
     - staticcheck
     - typecheck
     - unconvert
-    - revive
     - unparam
     - unused
   disable:
     - deadcode
+    - golint
     - goimports
     - structcheck
     - varcheck
@@ -42,7 +43,6 @@ linters-settings:
   nakedret:
     command: nakedret
     pattern: ^(?P<path>.*?\\.go):(?P<line>\\d+)\\s*(?P<message>.*)$
-  linters-settings:
   revive:
     # Maximum number of open files at the same time.
     # See https://github.com/mgechev/revive#command-line-flags
@@ -67,7 +67,7 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
       - name: add-constant
         severity: warning
-        disabled: false
+        disabled: true
         arguments:
           - maxLitCount: "3"
             allowStrs: '""'
@@ -77,7 +77,7 @@ linters-settings:
       - name: argument-limit
         severity: warning
         disabled: false
-        arguments: [ 6 ]
+        arguments: [ 4 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#atomic
       - name: atomic
         severity: warning
@@ -90,7 +90,7 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#bare-return
       - name: bare-return
         severity: warning
-        disabled: true
+        disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#blank-imports
       - name: blank-imports
         severity: warning
@@ -107,7 +107,7 @@ linters-settings:
       - name: cognitive-complexity
         severity: warning
         disabled: false
-        arguments: [ 15 ]
+        arguments: [ 13 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#confusing-naming
       - name: confusing-naming
         severity: warning
@@ -131,16 +131,16 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#cyclomatic
       - name: cyclomatic
         severity: warning
-        disabled: false
-        arguments: [ 11 ]
+        disabled: true
+        arguments: [ 3 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#datarace
-      #      - name: datarace
-      #        severity: warning
-      #        disabled: false
+      #- name: datarace
+      #  severity: warning
+      #  disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#deep-exit
       - name: deep-exit
         severity: warning
-        disabled: true
+        disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#defer
       - name: defer
         severity: warning
@@ -203,7 +203,7 @@ linters-settings:
       - name: function-result-limit
         severity: warning
         disabled: false
-        arguments: [ 6 ]
+        arguments: [ 3 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#function-length
       - name: function-length
         severity: warning
@@ -243,8 +243,8 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
       - name: line-length-limit
         severity: warning
-        disabled: true
-        arguments: [ 80 ]
+        disabled: false
+        arguments: [ 120 ]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
       - name: max-public-structs
         severity: warning
@@ -369,7 +369,7 @@ linters-settings:
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-receiver
       - name: unused-receiver
         severity: warning
-        disabled: true
+        disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#useless-break
       - name: useless-break
         severity: warning

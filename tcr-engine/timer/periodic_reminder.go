@@ -75,7 +75,8 @@ type ReminderContext struct {
 	remaining time.Duration
 }
 
-// NewPeriodicReminder returns a new PeriodicReminder that will trigger action onEventAction() every tickPeriod, until timeout expires.
+// NewPeriodicReminder returns a new PeriodicReminder that will trigger action onEventAction() every tickPeriod,
+// until timeout expires.
 // The returned PeriodicReminder is ready to start, but is not counting yet.
 func NewPeriodicReminder(
 	timeout time.Duration,

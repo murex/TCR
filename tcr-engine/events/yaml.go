@@ -88,5 +88,5 @@ func unmarshal(yamlString string) (out TcrEventYaml) {
 	if err := yaml.Unmarshal([]byte(yamlString), &out); err != nil {
 		report.PostWarning(err)
 	}
-	return
+	return out
 }

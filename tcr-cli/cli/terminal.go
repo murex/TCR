@@ -49,7 +49,7 @@ func init() {
 
 func readStty(state *bytes.Buffer) (err error) {
 	if sttyCmdDisabled {
-		return
+		return nil
 	}
 	cmd := exec.Command("stty", "-g")
 	cmd.Stdin = os.Stdin
@@ -59,7 +59,7 @@ func readStty(state *bytes.Buffer) (err error) {
 
 func setStty(state *bytes.Buffer) (err error) {
 	if sttyCmdDisabled {
-		return
+		return nil
 	}
 	cmd := exec.Command("stty", state.String()) //nolint:gosec
 	cmd.Stdin = os.Stdin
@@ -90,7 +90,7 @@ func SetRaw() bytes.Buffer {
 	return initialState
 }
 
-//Restore puts back the terminal state to a "normal" state
+// Restore puts back the terminal state to a "normal" state
 func Restore() {
 	//func Restore(state *bytes.Buffer)
 	// For some unknown reason restoring previous stty state

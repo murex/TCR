@@ -27,26 +27,26 @@ type Solo struct {
 }
 
 // Name returns the name of this run mode
-func (mode Solo) Name() string {
+func (Solo) Name() string {
 	return "solo"
 }
 
 // AutoPushDefault returns the default value of git auto-push option with this run mode
-func (mode Solo) AutoPushDefault() bool {
+func (Solo) AutoPushDefault() bool {
 	return false
 }
 
 // NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (mode Solo) NeedsCountdownTimer() bool {
+func (Solo) NeedsCountdownTimer() bool {
 	return false
 }
 
 // IsInteractive indicates if this run mode allows user interaction
-func (mode Solo) IsInteractive() bool {
+func (Solo) IsInteractive() bool {
 	return true
 }
 
 // IsActive indicates if this run mode is actively running TCR
-func (mode Solo) IsActive() bool {
+func (Solo) IsActive() bool {
 	return true
 }

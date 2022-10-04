@@ -71,7 +71,7 @@ func NewTcrEvent(status CommandStatus, changes ChangedLines, stats TestStats) Tc
 }
 
 // NewTestStats creates a new TestStats instance
-func NewTestStats(run int, passed int, failed int, skipped int, errors int, duration time.Duration) TestStats {
+func NewTestStats(run int, passed int, failed int, skipped int, errors int, duration time.Duration) TestStats { //nolint:revive
 	return TestStats{
 		Run:      run,
 		Passed:   passed,

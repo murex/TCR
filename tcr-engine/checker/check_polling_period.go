@@ -44,5 +44,5 @@ func checkPollingPeriod(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("git polling period is in the recommended range")
 	}
-	return
+	return cr
 }

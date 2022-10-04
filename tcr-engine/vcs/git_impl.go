@@ -118,7 +118,7 @@ func (g *gitImpl) isWorkingBranchOnRemote() (onRemote bool, err error) {
 	var branches storer.ReferenceIter
 	branches, err = remoteBranches(g.repository.Storer)
 	if err != nil {
-		return
+		return false, err
 	}
 
 	remoteBranchName := fmt.Sprintf("%v/%v", g.GetRemoteName(), g.GetWorkingBranch())
@@ -126,7 +126,7 @@ func (g *gitImpl) isWorkingBranchOnRemote() (onRemote bool, err error) {
 		onRemote = onRemote || strings.HasSuffix(branch.Name().Short(), remoteBranchName)
 		return nil
 	})
-	return
+	return onRemote, err
 }
 
 // remoteBranches returns the list of known remote branches
@@ -303,7 +303,7 @@ func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 			diffs = append(diffs, NewFileDiff(filename, added, removed))
 		}
 	}
-	return
+	return diffs, nil
 }
 
 // Log returns the list of git log items compliant with the provided msgFilter.
@@ -317,18 +317,18 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 	var repo *git.Repository
 	repo, err = git.PlainOpenWithOptions(g.baseDir, &plainOpenOptions)
 	if err != nil {
-		return
+		return nil, err
 	}
 	var head *plumbing.Reference
 	head, err = repo.Head()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	var cIter object.CommitIter
 	cIter, err = repo.Log(&git.LogOptions{From: head.Hash()})
 	if err != nil {
-		return
+		return nil, err
 	}
 	_ = cIter.ForEach(func(c *object.Commit) error {
 		if msgFilter == nil || msgFilter(c.Message) {
@@ -336,7 +336,7 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 		}
 		return nil
 	})
-	return
+	return logs, nil
 }
 
 // EnablePush sets a flag allowing to turn on/off git push operations

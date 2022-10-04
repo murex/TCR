@@ -33,5 +33,5 @@ func checkCommitFailures(p params.Params) (cr *CheckResults) {
 	} else {
 		cr.ok("git commit-failures is turned off: test-breaking changes will not be committed")
 	}
-	return
+	return cr
 }

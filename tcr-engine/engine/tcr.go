@@ -164,7 +164,7 @@ func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
 }
 
 // RunCheck checks the provided parameters and prints out corresponding report
-func (tcr *TcrEngine) RunCheck(p params.Params) {
+func (*TcrEngine) RunCheck(p params.Params) {
 	checker.Run(p)
 }
 
@@ -194,7 +194,7 @@ func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
 	for _, log := range tcrLogs {
 		tcrEvents.Add(log.Timestamp, parseCommitMessage(log.Message))
 	}
-	return
+	return tcrEvents
 }
 
 func (tcr *TcrEngine) queryGitLogs(p params.Params) vcs.GitLogItems {
@@ -234,7 +234,7 @@ func parseCommitMessage(message string) (event events.TcrEvent) {
 	default:
 		event.Status = events.StatusUnknown
 	}
-	return
+	return event
 }
 
 func (tcr *TcrEngine) initVcs() {
@@ -422,7 +422,7 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 		status.RecordState(status.BuildFailed)
 		report.PostWarning("There are build errors! I can't go any further")
 	}
-	return
+	return result
 }
 
 func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
@@ -432,7 +432,7 @@ func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 		status.RecordState(status.TestFailed)
 		report.PostWarning("Some tests are failing! That's unfortunate")
 	}
-	return
+	return result
 }
 
 func (tcr *TcrEngine) commit(event events.TcrEvent) {
@@ -467,31 +467,31 @@ func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err erro
 	// Create stash with the changes
 	err = tcr.vcs.Stash(commitMessageFail)
 	if err != nil {
-		return
+		return err
 	}
 	// Apply changes back in the working tree
 	err = tcr.vcs.UnStash(true)
 	if err != nil {
-		return
+		return err
 	}
 	// Commit changes with failure message into git index
 	err = tcr.vcs.Add()
 	if err != nil {
-		return
+		return err
 	}
 	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYaml())
 	if err != nil {
-		return
+		return err
 	}
 	// Revert changes (both in git index and working tree)
 	err = tcr.vcs.Revert()
 	if err != nil {
-		return
+		return err
 	}
 	// Amend commit message on revert operation in git index
 	err = tcr.vcs.Commit(true, commitMessageRevert)
 	if err != nil {
-		return
+		return err
 	}
 	// Re-apply changes in the working tree and get rid of stash
 	err = tcr.vcs.UnStash(false)
@@ -571,19 +571,19 @@ func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
 }
 
 // Quit is the exit point for TCR application
-func (tcr *TcrEngine) Quit() {
+func (*TcrEngine) Quit() {
 	report.PostInfo("That's All Folks!")
 	time.Sleep(1 * time.Millisecond)
-	os.Exit(status.GetReturnCode())
+	os.Exit(status.GetReturnCode()) //nolint:revive
 }
 
-func (tcr *TcrEngine) handleError(err error, fatal bool, s status.Status) {
+func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
 	if err != nil {
 		status.RecordState(s)
 		if fatal {
 			report.PostError(err)
 			time.Sleep(1 * time.Millisecond)
-			os.Exit(status.GetReturnCode())
+			os.Exit(status.GetReturnCode()) //nolint:revive
 		}
 		report.PostWarning(err)
 	} else {

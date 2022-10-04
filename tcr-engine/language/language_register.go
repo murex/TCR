@@ -119,7 +119,7 @@ func GetLanguage(name string, baseDir string) (lang LangInterface, err error) {
 	if lang != nil {
 		lang.setBaseDir(baseDir)
 	}
-	return
+	return lang, err
 }
 
 func getRegisteredLanguage(name string) (LangInterface, error) {
