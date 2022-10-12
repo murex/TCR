@@ -14,7 +14,7 @@ require (
 	github.com/murex/tcr/tcr-engine v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/cobra-cli v1.3.0
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.3.8
 	gotest.tools/gotestsum v1.8.2
 )
 
