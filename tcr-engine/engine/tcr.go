@@ -88,6 +88,8 @@ type (
 	}
 )
 
+const traceReporterWaitingTime = 100 * time.Millisecond
+
 const (
 	commitMessageOk     = "✅ TCR - tests passing"
 	commitMessageFail   = "❌ TCR - tests failing"
@@ -170,8 +172,6 @@ func (*TcrEngine) RunCheck(p params.Params) {
 
 // PrintLog prints the TCR git commit history
 func (tcr *TcrEngine) PrintLog(p params.Params) {
-	const traceReporterWaitingTime = 100 * time.Millisecond
-
 	tcrLogs := tcr.queryGitLogs(p)
 	report.PostInfo("Printing TCR log for branch ", tcr.vcs.GetWorkingBranch())
 	for _, log := range tcrLogs {
@@ -573,8 +573,10 @@ func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
 // Quit is the exit point for TCR application
 func (*TcrEngine) Quit() {
 	report.PostInfo("That's All Folks!")
-	time.Sleep(1 * time.Millisecond)
-	os.Exit(status.GetReturnCode()) //nolint:revive
+	// Give trace reporter some time to flush whatever has not been posted yet
+	time.Sleep(traceReporterWaitingTime)
+	rc := status.GetReturnCode()
+	os.Exit(rc) //nolint:revive
 }
 
 func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
@@ -582,7 +584,7 @@ func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
 		status.RecordState(s)
 		if fatal {
 			report.PostError(err)
-			time.Sleep(1 * time.Millisecond)
+			time.Sleep(traceReporterWaitingTime)
 			os.Exit(status.GetReturnCode()) //nolint:revive
 		}
 		report.PostWarning(err)
