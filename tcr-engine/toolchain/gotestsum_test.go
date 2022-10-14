@@ -59,7 +59,7 @@ func Test_gotestsum_toolchain_build_command_path(t *testing.T) {
 }
 
 func Test_gotestsum_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build", "./..."}, gotestsumToolchainName)
+	assertBuildCommandArgs(t, []string{"test", "-count=0", "./..."}, gotestsumToolchainName)
 }
 
 func Test_gotestsum_toolchain_test_command_path(t *testing.T) {

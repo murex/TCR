@@ -23,7 +23,7 @@
 
 .PHONY: build
 build:
-	@go build ./...
+	@go test -count=0 ./...
 
 .PHONY: test
 test:

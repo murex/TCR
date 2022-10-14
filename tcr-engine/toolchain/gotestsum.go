@@ -30,7 +30,7 @@ func init() {
 				Os:        GetAllOsNames(),
 				Arch:      GetAllArchNames(),
 				Path:      "go",
-				Arguments: []string{"build", "./..."},
+				Arguments: []string{"test", "-count=0", "./..."},
 			}},
 			testCommands: []Command{{
 				Os:   GetAllOsNames(),
