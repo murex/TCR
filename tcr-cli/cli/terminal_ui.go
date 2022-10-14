@@ -53,6 +53,7 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 	var term = TerminalUI{params: p, tcr: tcr}
 	term.MuteDesktopNotifications(false)
 	term.StartReporting()
+	StartInterruptHandler()
 	return &term
 }
 

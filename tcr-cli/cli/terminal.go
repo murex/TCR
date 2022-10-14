@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/tcr-engine/report"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strconv"
 	"strings"
 )
@@ -120,4 +121,21 @@ func getTerminalColumns() int {
 		return defaultTerminalWidth
 	}
 	return columns
+}
+
+// StartInterruptHandler enforces that program interruptions such as Ctrl-C (SIGINT)
+// are handled properly, cleaning up whatever needs to be cleaned up before exiting
+func StartInterruptHandler() {
+	sigCh := make(chan os.Signal, 1)
+	// TODO clarify if SIGTERM needs to be handled as well
+	//signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(sigCh, os.Interrupt)
+
+	go func() {
+		if <-sigCh; true {
+			report.PostError("Execution aborted on Ctrl-C")
+			Restore()
+			os.Exit(-1) //nolint
+		}
+	}()
 }
