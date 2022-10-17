@@ -127,15 +127,12 @@ func getTerminalColumns() int {
 // are handled properly, cleaning up whatever needs to be cleaned up before exiting
 func StartInterruptHandler() {
 	sigCh := make(chan os.Signal, 1)
-	// TODO clarify if SIGTERM needs to be handled as well
-	//signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
 	signal.Notify(sigCh, os.Interrupt)
 
 	go func() {
-		if <-sigCh; true {
-			report.PostError("Execution aborted on Ctrl-C")
-			Restore()
-			os.Exit(-1) //nolint
-		}
+		<-sigCh
+		report.PostError("Execution aborted on Ctrl-C")
+		Restore()
+		os.Exit(-1) //nolint
 	}()
 }
