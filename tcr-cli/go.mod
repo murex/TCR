@@ -10,7 +10,7 @@ require (
 	github.com/golangci/golangci-lint v1.50.0
 	github.com/goreleaser/goreleaser v1.12.1
 	github.com/logrusorgru/aurora v2.0.3+incompatible
-	github.com/murex/tcr/tcr-engine v0.0.0-20221017075925-c5c85ea45785
+	github.com/murex/tcr/tcr-engine v0.0.0-20221018074106-0750859aa76c
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/cobra-cli v1.3.0
