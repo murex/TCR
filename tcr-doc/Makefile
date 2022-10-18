@@ -3,7 +3,7 @@ default: doc ;
 
 .PHONY: deps
 deps:
-	@go get
+	@go get -u -t -d ./...
 
 .PHONY: lint
 lint:
