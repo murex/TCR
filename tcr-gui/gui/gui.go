@@ -99,7 +99,7 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 // StartReporting tells the GUI to start reporting information
 func (gui *GUI) StartReporting() {
 	gui.reporting = report.Subscribe(func(msg report.Message) {
-		switch msg.Type {
+		switch msg.Type.Severity {
 		case report.Normal:
 			gui.trace(msg.Text)
 		case report.Title:

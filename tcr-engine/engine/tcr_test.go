@@ -95,7 +95,7 @@ func Test_tcr_reports_tests_failures(t *testing.T) {
 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type == report.Warning && msg.Text == "Some tests are failing! That's unfortunate"
+			return msg.Type.Severity == report.Warning && msg.Text == "Some tests are failing! That's unfortunate"
 		},
 	)
 
@@ -113,7 +113,7 @@ func Test_tcr_displays_notifications_on_tests_failures(t *testing.T) {
 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type == report.Notification && msg.Text == "Some tests are failing! That's unfortunate"
+			return msg.Type.Severity == report.Notification && msg.Text == "Some tests are failing! That's unfortunate"
 		},
 	)
 
@@ -451,7 +451,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			settings.EnableMobTimer = true
 			sniffer := report.NewSniffer(
 				func(msg report.Message) bool {
-					return msg.Type == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
+					return msg.Type.Severity == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
 				},
 			)
 			tcr = initTcrEngineWithFakes(params.AParamSet(
@@ -473,7 +473,7 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type == report.Info && msg.Text == "Mob Timer is off"
+			return msg.Type.Severity == report.Info && msg.Text == "Mob Timer is off"
 		},
 	)
 	tcr := initTcrEngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Solo{})), nil, nil, nil)
@@ -503,7 +503,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR passing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
+				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
@@ -511,7 +511,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR failing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
+				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
@@ -519,7 +519,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR revert commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
+				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
@@ -527,7 +527,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "non-TCR commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
+				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 0,
@@ -535,7 +535,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit hashtag is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
+				return msg.Type.Severity == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 1,
@@ -543,7 +543,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit timestamp is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
+				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
 			},
 			gitLogItems:     sampleItems,
 			expectedMatches: 2,
@@ -551,7 +551,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "warning when no record found",
 			filter: func(msg report.Message) bool {
-				return msg.Type == report.Warning && strings.Index(msg.Text, "no TCR commit found in branch") == 0
+				return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "no TCR commit found in branch") == 0
 			},
 			gitLogItems:     nil,
 			expectedMatches: 1,
