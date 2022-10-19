@@ -136,7 +136,7 @@ func PostError(a ...interface{}) {
 
 // PostNotification posts an event message for reporting
 func PostNotification(a ...interface{}) {
-	postMessage(MessageType{Severity: Notification}, a...)
+	postMessage(MessageType{Severity: Notification, Emphasis: true}, a...)
 }
 
 func postMessage(msgType MessageType, a ...interface{}) {

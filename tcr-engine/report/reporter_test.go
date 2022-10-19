@@ -129,7 +129,7 @@ func Test_report_notification_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostNotification(text)
 	})
-	assertMessageMatch(t, text, MessageType{Severity: Notification}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Notification, Emphasis: true}, result)
 }
 
 func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {
