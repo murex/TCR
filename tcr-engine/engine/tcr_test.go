@@ -113,7 +113,10 @@ func Test_tcr_displays_notifications_on_tests_failures(t *testing.T) {
 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Notification && msg.Text == "Some tests are failing! That's unfortunate"
+			return msg.Type == report.MessageType{
+				Severity: report.Info,
+				Emphasis: true,
+			} && msg.Text == "Some tests are failing! That's unfortunate"
 		},
 	)
 

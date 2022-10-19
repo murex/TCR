@@ -62,18 +62,19 @@ func (term *TerminalUI) StartReporting() {
 	term.reportingChannel = report.Subscribe(func(msg report.Message) {
 		if msg.Type.Emphasis {
 			term.notification(msg.Text)
-		}
-		switch msg.Type.Severity {
-		case report.Normal:
-			term.trace(msg.Text)
-		case report.Title:
-			term.title(msg.Text)
-		case report.Info:
-			term.info(msg.Text)
-		case report.Warning:
-			term.warning(msg.Text)
-		case report.Error:
-			term.error(msg.Text)
+		} else {
+			switch msg.Type.Severity {
+			case report.Normal:
+				term.trace(msg.Text)
+			case report.Title:
+				term.title(msg.Text)
+			case report.Info:
+				term.info(msg.Text)
+			case report.Warning:
+				term.warning(msg.Text)
+			case report.Error:
+				term.error(msg.Text)
+			}
 		}
 	})
 }
