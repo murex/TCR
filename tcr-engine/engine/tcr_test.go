@@ -102,7 +102,27 @@ func Test_tcr_reports_tests_failures(t *testing.T) {
 	tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
 	tcr.test()
 
+	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
+
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
+func Test_tcr_displays_notifications_on_tests_failures(t *testing.T) {
+	status.RecordState(status.Ok)
+
+	sniffer := report.NewSniffer(
+		func(msg report.Message) bool {
+			return msg.Type == report.Notification && msg.Text == "Some tests are failing! That's unfortunate"
+		},
+	)
+
+	tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
+	tcr.test()
+
+	time.Sleep(1 * time.Millisecond)
+	sniffer.Stop()
+
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
 
