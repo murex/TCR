@@ -45,6 +45,7 @@ const (
 // MessageType type used for message characterization
 type MessageType struct {
 	Severity Severity
+	Emphasis bool
 }
 
 // Message is the placeholder for any reported message
@@ -62,7 +63,7 @@ func init() {
 
 // Reset resets the reporter pipeline
 func Reset() {
-	msgProperty = observer.NewProperty(Message{Type: MessageType{Normal}, Text: ""})
+	msgProperty = observer.NewProperty(Message{Type: MessageType{Severity: Normal}, Text: ""})
 }
 
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
@@ -110,32 +111,32 @@ func Post(a ...interface{}) {
 
 // PostText posts some text for reporting
 func PostText(a ...interface{}) {
-	postMessage(MessageType{Normal}, a...)
+	postMessage(MessageType{Severity: Normal}, a...)
 }
 
 // PostInfo posts an information message for reporting
 func PostInfo(a ...interface{}) {
-	postMessage(MessageType{Info}, a...)
+	postMessage(MessageType{Severity: Info}, a...)
 }
 
 // PostTitle posts a title message for reporting
 func PostTitle(a ...interface{}) {
-	postMessage(MessageType{Title}, a...)
+	postMessage(MessageType{Severity: Title}, a...)
 }
 
 // PostWarning posts a warning message for reporting
 func PostWarning(a ...interface{}) {
-	postMessage(MessageType{Warning}, a...)
+	postMessage(MessageType{Severity: Warning}, a...)
 }
 
 // PostError posts an error message for reporting
 func PostError(a ...interface{}) {
-	postMessage(MessageType{Error}, a...)
+	postMessage(MessageType{Severity: Error}, a...)
 }
 
 // PostNotification posts an event message for reporting
 func PostNotification(a ...interface{}) {
-	postMessage(MessageType{Notification}, a...)
+	postMessage(MessageType{Severity: Notification}, a...)
 }
 
 func postMessage(msgType MessageType, a ...interface{}) {

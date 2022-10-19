@@ -89,7 +89,7 @@ func Test_report_simple_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostText(text)
 	})
-	assertMessageMatch(t, text, MessageType{Normal}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Normal}, result)
 }
 
 func Test_report_info_message(t *testing.T) {
@@ -97,7 +97,7 @@ func Test_report_info_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostInfo(text)
 	})
-	assertMessageMatch(t, text, MessageType{Info}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Info}, result)
 }
 
 func Test_report_title_message(t *testing.T) {
@@ -105,7 +105,7 @@ func Test_report_title_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostTitle(text)
 	})
-	assertMessageMatch(t, text, MessageType{Title}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Title}, result)
 }
 
 func Test_report_warning_message(t *testing.T) {
@@ -113,7 +113,7 @@ func Test_report_warning_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostWarning(text)
 	})
-	assertMessageMatch(t, text, MessageType{Warning}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Warning}, result)
 }
 
 func Test_report_error_message(t *testing.T) {
@@ -121,7 +121,7 @@ func Test_report_error_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostError(text)
 	})
-	assertMessageMatch(t, text, MessageType{Error}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Error}, result)
 }
 
 func Test_report_notification_message(t *testing.T) {
@@ -129,7 +129,7 @@ func Test_report_notification_message(t *testing.T) {
 	result := reportAndReceive(func() {
 		PostNotification(text)
 	})
-	assertMessageMatch(t, text, MessageType{Notification}, result)
+	assertMessageMatch(t, text, MessageType{Severity: Notification}, result)
 }
 
 func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {
