@@ -90,6 +90,22 @@ func Test_tcr_command_end_state(t *testing.T) {
 	}
 }
 
+func Test_tcr_reports_tests_failures(t *testing.T) {
+	status.RecordState(status.Ok)
+
+	sniffer := report.NewSniffer(
+		func(msg report.Message) bool {
+			return msg.Type == report.Warning && msg.Text == "Some tests are failing! That's unfortunate"
+		},
+	)
+
+	tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
+	tcr.test()
+
+	sniffer.Stop()
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
 func Test_tcr_operation_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc           string
