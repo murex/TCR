@@ -92,7 +92,7 @@ func Test_tcr_command_end_state(t *testing.T) {
 
 func Test_tcr_reports_tests_failures(t *testing.T) {
 	status.RecordState(status.Ok)
-
+ 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
 			return msg.Type == report.Warning && msg.Text == "Some tests are failing! That's unfortunate"
