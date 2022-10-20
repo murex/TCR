@@ -10,8 +10,8 @@ require (
 	fyne.io/fyne/v2 v2.2.3
 	github.com/golangci/golangci-lint v1.50.0
 	github.com/goreleaser/goreleaser v1.12.3
-	github.com/murex/tcr/tcr-cli v0.0.0-20221018114447-6cb1f7b13d05
-	github.com/murex/tcr/tcr-engine v0.0.0-20221018114447-6cb1f7b13d05
+	github.com/murex/tcr/tcr-cli v0.0.0-20221020163052-1f2e62b307c3
+	github.com/murex/tcr/tcr-engine v0.0.0-20221020163052-1f2e62b307c3
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/cobra-cli v1.3.0
 	golang.org/x/text v0.4.0

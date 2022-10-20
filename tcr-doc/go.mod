@@ -9,7 +9,7 @@ replace github.com/murex/tcr/tcr-gui => ../tcr-gui
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-20221018114447-6cb1f7b13d05
+	github.com/murex/tcr/tcr-cli v0.0.0-20221020163052-1f2e62b307c3
 	github.com/murex/tcr/tcr-gui v0.0.0-20221018114447-6cb1f7b13d05
 	github.com/spf13/cobra v1.6.0
 )
@@ -53,7 +53,7 @@ require (
 	github.com/mengdaming/go-junit v0.1.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/murex/tcr/tcr-engine v0.0.0-20221018114447-6cb1f7b13d05 // indirect
+	github.com/murex/tcr/tcr-engine v0.0.0-20221020163052-1f2e62b307c3 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
