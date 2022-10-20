@@ -405,8 +405,8 @@ github.com/caarlos0/go-reddit/v3 v3.0.1/go.mod h1:QlwgmG5SAqxMeQvg/A2dD1x9cIZCO5
 github.com/caarlos0/go-rpmutils v0.2.1-0.20211112020245-2cd62ff89b11 h1:IRrDwVlWQr6kS1U8/EtyA1+EHcc4yl8pndcqXWrEamg=
 github.com/caarlos0/go-shellwords v1.0.12 h1:HWrUnu6lGbWfrDcFiHcZiwOLzHWjjrPVehULaTFgPp8=
 github.com/caarlos0/go-shellwords v1.0.12/go.mod h1:bYeeX1GrTLPl5cAMYEzdm272qdsQAZiaHgeF0KTk1Gw=
-github.com/caarlos0/log v0.1.8 h1:/JoN/To2lsUWElP4mUemJETwZz/HrhpH6TPikMQRjYU=
-github.com/caarlos0/log v0.1.8/go.mod h1:feNWSZVVo5bVUvTJqkhIf0mPH3x5A5CA9tPI1Wlg0xc=
+github.com/caarlos0/log v0.1.10 h1:kHKiXTKEeK019o7QQWXRbHVKFrYYljxuQ7vF2taEA3M=
+github.com/caarlos0/log v0.1.10/go.mod h1:BLxpdZKXvWBjB6fshua4c8d7ApdYjypEDok6ibt+pXk=
 github.com/caarlos0/sshmarshal v0.0.0-20220308164159-9ddb9f83c6b3 h1:w2ANoiT4ubmh4Nssa3/QW1M7lj3FZkma8f8V5aBDxXM=
 github.com/caarlos0/testfs v0.4.4 h1:3PHvzHi5Lt+g332CiShwS8ogTgS3HjrmzZxCm6JCDr8=
 github.com/caarlos0/testfs v0.4.4/go.mod h1:bRN55zgG4XCUVVHZCeU+/Tz1Q6AxEJOEJTliBy+1DMk=
@@ -1000,8 +1000,8 @@ github.com/google/go-cmp v0.5.8/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeN
 github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
 github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/go-containerregistry v0.5.1/go.mod h1:Ct15B4yir3PLOP5jsy0GNeYVaIZs/MK/Jz5any1wFW0=
-github.com/google/go-github/v47 v47.1.0 h1:Cacm/WxQBOa9lF0FT0EMjZ2BWMetQ1TQfyurn4yF1z8=
-github.com/google/go-github/v47 v47.1.0/go.mod h1:VPZBXNbFSJGjyjFRUKo9vZGawTajnWzC/YjGw/oFKi0=
+github.com/google/go-github/v48 v48.0.0 h1:9H5fWVXFK6ZsRriyPbjtnFAkJnoj0WKFtTYfpCRrTm8=
+github.com/google/go-github/v48 v48.0.0/go.mod h1:dDlehKBDo850ZPvCTK0sEqTCVWcrGl2LcDiajkYi89Y=
 github.com/google/go-querystring v1.0.0/go.mod h1:odCYkC5MyYFN7vkCjXpyrEuKhc/BUO6wN/zVPAxq5ck=
 github.com/google/go-querystring v1.1.0 h1:AnCroh3fv4ZBgVIf1Iwtovgjaw/GiKJo8M8yD/fhyJ8=
 github.com/google/go-querystring v1.1.0/go.mod h1:Kcdr2DB4koayq7X8pmAG4sNG59So17icRSOU623lUBU=
@@ -1080,8 +1080,8 @@ github.com/goreleaser/chglog v0.2.2 h1:V7nf07baXtGAgGevvqgW2MM4kZ6gOr12vKNSAU3VI
 github.com/goreleaser/chglog v0.2.2/go.mod h1:2s5JwtCOWjZa8AIneL+xdUl9SRuigCjRHNHsX30dupE=
 github.com/goreleaser/fileglob v1.3.0 h1:/X6J7U8lbDpQtBvGcwwPS6OpzkNVlVEsFUVRx9+k+7I=
 github.com/goreleaser/fileglob v1.3.0/go.mod h1:Jx6BoXv3mbYkEzwm9THo7xbr5egkAraxkGorbJb4RxU=
-github.com/goreleaser/goreleaser v1.12.1 h1:qOnz8TeaJm/St+Dt9RLA3zq7PNbVT+TywAoA7pCMAPk=
-github.com/goreleaser/goreleaser v1.12.1/go.mod h1:QwYC3s2nAjFryyvqGsY0h6Fo6ZZ1nk7Q6nrCLYCTVDs=
+github.com/goreleaser/goreleaser v1.12.2 h1:pxnp4mJASRCIK85ol15ffz4UGHbbf4304/Yb6BXc8kk=
+github.com/goreleaser/goreleaser v1.12.2/go.mod h1:eBdKNaOsGUZWcSgXdMQliud+CiQhhO0m4cgSjb+S1ms=
 github.com/goreleaser/nfpm/v2 v2.20.0 h1:Q/CrX54KUMluz6+M/pjTbknFd5Dao8qXi0C6ZuFCtfY=
 github.com/goreleaser/nfpm/v2 v2.20.0/go.mod h1:/Fh6XfwT/T+D4qtNC2iXmHSD/1UT20JkvBXyJ6nFmOY=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
