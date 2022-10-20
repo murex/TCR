@@ -9,8 +9,8 @@ replace github.com/murex/tcr/tcr-gui => ../tcr-gui
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-20221018074106-0750859aa76c
-	github.com/murex/tcr/tcr-gui v0.0.0-20221018074106-0750859aa76c
+	github.com/murex/tcr/tcr-cli v0.0.0-20221018114447-6cb1f7b13d05
+	github.com/murex/tcr/tcr-gui v0.0.0-20221018114447-6cb1f7b13d05
 	github.com/spf13/cobra v1.6.0
 )
 
@@ -53,7 +53,7 @@ require (
 	github.com/mengdaming/go-junit v0.1.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/murex/tcr/tcr-engine v0.0.0-20221018074106-0750859aa76c // indirect
+	github.com/murex/tcr/tcr-engine v0.0.0-20221018114447-6cb1f7b13d05 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
@@ -73,11 +73,11 @@ require (
 	github.com/tevino/abool v1.2.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
 	github.com/yuin/goldmark v1.5.2 // indirect
-	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a // indirect
-	golang.org/x/image v0.0.0-20221017200508-ffcb3fe7d1bf // indirect
-	golang.org/x/mobile v0.0.0-20221012134814-c746ac228303 // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20221017152216-f25eb7ecb193 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/image v0.1.0 // indirect
+	golang.org/x/mobile v0.0.0-20221020085226-b36e6246172e // indirect
+	golang.org/x/mod v0.6.0 // indirect
+	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/tools v0.1.12 // indirect
