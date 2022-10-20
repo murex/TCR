@@ -9,7 +9,7 @@ replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 require (
 	fyne.io/fyne/v2 v2.2.3
 	github.com/golangci/golangci-lint v1.50.0
-	github.com/goreleaser/goreleaser v1.12.1
+	github.com/goreleaser/goreleaser v1.12.2
 	github.com/murex/tcr/tcr-cli v0.0.0-20221018074106-0750859aa76c
 	github.com/murex/tcr/tcr-engine v0.0.0-20221018074106-0750859aa76c
 	github.com/spf13/cobra v1.6.0
@@ -97,7 +97,7 @@ require (
 	github.com/caarlos0/env/v6 v6.10.1 // indirect
 	github.com/caarlos0/go-reddit/v3 v3.0.1 // indirect
 	github.com/caarlos0/go-shellwords v1.0.12 // indirect
-	github.com/caarlos0/log v0.1.8 // indirect
+	github.com/caarlos0/log v0.1.10 // indirect
 	github.com/cavaliergopher/cpio v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -166,7 +166,7 @@ require (
 	github.com/golangci/revgrep v0.0.0-20220804021717-745bb2f7c2e6 // indirect
 	github.com/golangci/unconvert v0.0.0-20180507085042-28b1c447d1f4 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/go-github/v47 v47.1.0 // indirect
+	github.com/google/go-github/v48 v48.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.3.0 // indirect
