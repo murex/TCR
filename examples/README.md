@@ -6,7 +6,7 @@ Here are simple examples for using TCR with various languages & toolchains combi
 
 - With [gradle](java-gradle/README.md)
 - With [gradle wrapper](java-gradle-wrapper/README.md)
-- With [maven]() `TO DO`
+- With [maven](java-maven/README.md)
 - With [maven wrapper](java-maven-wrapper/README.md)
 - With [make]() `TO DO`
 
