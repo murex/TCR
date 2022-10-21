@@ -1,11 +1,11 @@
-# Example - Java with Gradle
+# Using TCR with Java and Gradle
 
 ## Prerequisites
 
 - macOS, Linux or Windows
 - [git](https://git-scm.com/) client
 - [curl](https://curl.se/download.html) command line utility
-- [Java SDK](https://www.oracle.com/java/technologies/downloads/) with `JAVA_HOME` environment variable properly set up
+- [java SDK](https://www.oracle.com/java/technologies/downloads/) with `JAVA_HOME` environment variable properly set up
 - [gradle](https://gradle.org/) (previously installed and available from the command line)
 
 ## Instructions
@@ -45,4 +45,4 @@ Here are the main shortcuts available once TCR utility is running:
 ### Additional Details
 
 Refer to [tcr.md](../../doc/tcr.md) page for additional details and explanations about TCR
-available subcommands and flags
+available subcommands and options
