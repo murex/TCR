@@ -4,7 +4,7 @@ Here are simple examples for using TCR with various languages & toolchains combi
 
 ## Java
 
-- With [gradle]() `TO DO`
+- With [gradle](java-gradle)
 - With [gradle wrapper](java-gradle-wrapper)
 - With [maven]() `TO DO`
 - With [maven wrapper]() `TO DO`
