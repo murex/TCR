@@ -8,7 +8,7 @@ replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
 require (
 	fyne.io/fyne/v2 v2.2.3
-	github.com/golangci/golangci-lint v1.50.0
+	github.com/golangci/golangci-lint v1.50.1
 	github.com/goreleaser/goreleaser v1.12.3
 	github.com/murex/tcr/tcr-cli v0.0.0-20221020163052-1f2e62b307c3
 	github.com/murex/tcr/tcr-engine v0.0.0-20221020163052-1f2e62b307c3
@@ -47,7 +47,7 @@ require (
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v0.7.0 // indirect
-	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
@@ -109,7 +109,7 @@ require (
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/curioswitch/go-reassign v0.2.0 // indirect
-	github.com/daixiang0/gci v0.8.0 // indirect
+	github.com/daixiang0/gci v0.8.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denis-tingaikin/go-header v0.4.3 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20220816163853-8a0df96f1e6d // indirect
@@ -330,7 +330,7 @@ require (
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/term v0.1.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
-	golang.org/x/tools v0.1.12 // indirect
+	golang.org/x/tools v0.2.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.100.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
