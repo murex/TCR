@@ -12,7 +12,7 @@ require (
 	github.com/goreleaser/goreleaser v1.12.3
 	github.com/murex/tcr/tcr-cli v0.0.0-20221020164004-7cb1f406c132
 	github.com/murex/tcr/tcr-engine v0.0.0-20221020164004-7cb1f406c132
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/cobra-cli v1.3.0
 	golang.org/x/text v0.4.0
 	gotest.tools/gotestsum v1.8.2
