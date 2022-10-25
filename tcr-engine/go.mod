@@ -25,7 +25,7 @@ require (
 	github.com/goreleaser/goreleaser v1.12.3
 	github.com/mengdaming/go-junit v0.1.3
 	github.com/spf13/afero v1.9.2
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/cobra-cli v1.3.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
