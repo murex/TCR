@@ -12,7 +12,7 @@ require (
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/murex/tcr/tcr-engine v0.0.0-20221020164004-7cb1f406c132
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/cobra v1.6.0
+	github.com/spf13/cobra v1.6.1
 	github.com/spf13/cobra-cli v1.3.0
 	github.com/stretchr/testify v1.8.1
 	github.com/zenizh/go-capturer v0.0.0-20211219060012-52ea6c8fed04
