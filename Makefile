@@ -21,6 +21,10 @@ tcr-cli: tcr-engine
 tcr-gui: tcr-engine tcr-cli
 tcr-doc: tcr-cli tcr-gui
 
+# Convenience target for automating release preparation
+.PHONY: prepare
+prepare: deps install-tools tidy lint build doc test
+
 .PHONY: deps
 deps: $(MAIN_MODULES)
 	@for module in $^; do \

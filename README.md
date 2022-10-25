@@ -532,13 +532,10 @@ All TCR releases are published on GitHub's `main` branch.
 
 ### Release Preparation
 
-- [ ] Cleanup Go module dependencies: `make tidy`
-- [ ] Run static checks and fix any non-conformity: `make lint`
-- [ ] Verify that the build works: `make build`
-- [ ] Verify that all tests pass: `make test`
+- [ ] Update dependencies and run sanity checks: `make prepare`
 - [ ] Commit all changes on the `main` branch
 - [ ] Push the changes to GitHub and [wait until all GitHub Actions are green](https://github.com/murex/TCR/actions)
-- [ ] Create the release tag: `git tag -a vX.Y.Z`
+- [ ] Create the release tag: `git tag -m "" -a vX.Y.Z`
 - [ ] Verify that everything is ready for GoReleaser: `make snapshot`
 
 ### Releasing
