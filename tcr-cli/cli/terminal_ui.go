@@ -60,21 +60,19 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 // StartReporting tells the terminal to start reporting information
 func (term *TerminalUI) StartReporting() {
 	term.reportingChannel = report.Subscribe(func(msg report.Message) {
-		if msg.Type.Emphasis {
+		switch msg.Type {
+		case report.MessageType{report.Info, true}:
 			term.notification(msg.Text)
-		} else {
-			switch msg.Type.Severity {
-			case report.Normal:
-				term.trace(msg.Text)
-			case report.Title:
-				term.title(msg.Text)
-			case report.Info:
-				term.info(msg.Text)
-			case report.Warning:
-				term.warning(msg.Text)
-			case report.Error:
-				term.error(msg.Text)
-			}
+		case report.MessageType{report.Info, false}:
+			term.info(msg.Text)
+		case report.MessageType{report.Normal, false}:
+			term.trace(msg.Text)
+		case report.MessageType{report.Title, false}:
+			term.title(msg.Text)
+		case report.MessageType{report.Warning, false}:
+			term.warning(msg.Text)
+		case report.MessageType{report.Error, false}:
+			term.error(msg.Text)
 		}
 	})
 }
