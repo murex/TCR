@@ -41,20 +41,16 @@ const (
 	Error
 )
 
+// MessageReport provides the interface for reporting notifications
 type MessageReport interface {
-	Notification(msgText string)
+	Notification(a ...interface{})
 }
 
 // MessageType type used for message characterization
 type MessageType struct {
 	Severity Severity
 	Emphasis bool
-
-	Report func(reporter MessageReport)
-}
-
-func (mt MessageType) compare(x MessageType) bool {
-	return mt.Severity == x.Severity && mt.Emphasis == x.Emphasis
+	Report   func(reporter MessageReport)
 }
 
 // Message is the placeholder for any reported message
@@ -78,7 +74,7 @@ func Reset() {
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
 // onReport() will be called every time a new message is posted. The returned channel
 // shall be kept by the listener as this channel will be used for unsubscription
-func Subscribe(onReport func(msg Message)) chan bool {
+func Subscribe(onReport func(msg Message), reporter MessageReport) chan bool {
 	stream := msgProperty.Observe()
 
 	msg := stream.Value().(Message)
@@ -98,6 +94,9 @@ func Subscribe(onReport func(msg Message)) chan bool {
 				msg = s.Value().(Message)
 				//fmt.Printf("got new value: %v\n", msg)
 				onReport(msg)
+				if msg.Type.Severity == Info && msg.Type.Emphasis {
+					reporter.Notification(msg.Text)
+				}
 			case <-unsubscribe:
 				return
 			}

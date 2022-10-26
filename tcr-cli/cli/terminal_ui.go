@@ -61,8 +61,9 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 func (term *TerminalUI) StartReporting() {
 	term.reportingChannel = report.Subscribe(func(msg report.Message) {
 		switch {
-		case msg.Type.Severity == report.Info && msg.Type.Emphasis:
-			term.Notification(msg.Text)
+		//case msg.Type.Severity == report.Info && msg.Type.Emphasis:
+		//	msg.Type.Report(term)
+		//term.Notification(msg.Text)
 		case msg.Type.Severity == report.Info && !msg.Type.Emphasis:
 			term.info(msg.Text)
 		case msg.Type.Severity == report.Normal:
@@ -74,7 +75,7 @@ func (term *TerminalUI) StartReporting() {
 		case msg.Type.Severity == report.Error:
 			term.error(msg.Text)
 		}
-	})
+	}, term)
 }
 
 // MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
@@ -121,6 +122,7 @@ func (*TerminalUI) error(a ...interface{}) {
 	printInRed(a...)
 }
 
+// Notification prints message notification
 func (term *TerminalUI) Notification(a ...interface{}) {
 	printInGreen(a...)
 	err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))

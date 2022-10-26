@@ -50,7 +50,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 			c[i] = Subscribe(func(msg Message) {
 				result[i] = msg
 				received <- i
-			})
+			}, StubMessageReport{})
 		}(i)
 	}
 
@@ -71,7 +71,7 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 
 	c := Subscribe(func(msg Message) {
 		received <- msg
-	})
+	}, StubMessageReport{})
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
@@ -145,7 +145,7 @@ func reportAndReceive(report func()) Message {
 	c := Subscribe(func(msg Message) {
 		result = msg
 		received <- true
-	})
+	}, StubMessageReport{})
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)

@@ -98,24 +98,22 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 
 // StartReporting tells the GUI to start reporting information
 func (gui *GUI) StartReporting() {
-	var reporter func(reporter report.MessageReport)
-
 	gui.reporting = report.Subscribe(func(msg report.Message) {
-		switch msg.Type {
-		case report.MessageType{report.Info, true, reporter}:
-			gui.Notification(msg.Text)
-		case report.MessageType{report.Info, false, reporter}:
+		switch {
+		//case case msg.Type.Severity == report.Info && msg.Type.Emphasis:
+		//	gui.Notification(msg.Text)
+		case msg.Type.Severity == report.Info && !msg.Type.Emphasis:
 			gui.info(msg.Text)
-		case report.MessageType{report.Normal, false, reporter}:
+		case msg.Type.Severity == report.Normal:
 			gui.trace(msg.Text)
-		case report.MessageType{report.Title, false, reporter}:
+		case msg.Type.Severity == report.Title:
 			gui.title(msg.Text)
-		case report.MessageType{report.Warning, false, reporter}:
+		case msg.Type.Severity == report.Warning:
 			gui.warning(msg.Text)
-		case report.MessageType{report.Error, false, reporter}:
+		case msg.Type.Severity == report.Error:
 			gui.error(msg.Text)
 		}
-	})
+	}, gui)
 }
 
 // StopReporting tells the GUI to stop reporting information

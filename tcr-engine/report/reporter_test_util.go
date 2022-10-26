@@ -68,7 +68,11 @@ func (sniffer *Sniffer) Start() {
 				break
 			}
 		}
-	})
+	}, sniffer)
+}
+
+// Notification prints message notification
+func (sniffer *Sniffer) Notification(a ...interface{}) {
 }
 
 // Stop tells the sniffer to stop
@@ -86,4 +90,9 @@ func (sniffer *Sniffer) GetAllMatches() []Message {
 // GetMatchCount returns the number of matching messages captured by the sniffer
 func (sniffer *Sniffer) GetMatchCount() int {
 	return len(sniffer.captured)
+}
+
+type StubMessageReport struct{}
+
+func (s StubMessageReport) Notification(a ...interface{}) {
 }
