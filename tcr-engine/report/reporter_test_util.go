@@ -55,20 +55,24 @@ func (sniffer *Sniffer) addFilter(filter messageFilter) {
 
 // Start tells the sniffer to start
 func (sniffer *Sniffer) Start() {
-	sniffer.reportingChannel = Subscribe(func(msg Message) {
-		if len(sniffer.filters) == 0 {
-			// If no filter is set, we keep all messages
+	sniffer.reportingChannel = Subscribe(sniffer, func(msg Message) {
+		sniffer.sniff(msg)
+	})
+}
+
+func (sniffer *Sniffer) sniff(msg Message) {
+	if len(sniffer.filters) == 0 {
+		// If no filter is set, we keep all messages
+		sniffer.captured = append(sniffer.captured, msg)
+		return
+	}
+	// Otherwise we keep any message satisfying at least one filter
+	for _, filter := range sniffer.filters {
+		if filter(msg) {
 			sniffer.captured = append(sniffer.captured, msg)
-			return
+			break
 		}
-		// Otherwise we keep any message satisfying at least one filter
-		for _, filter := range sniffer.filters {
-			if filter(msg) {
-				sniffer.captured = append(sniffer.captured, msg)
-				break
-			}
-		}
-	}, sniffer)
+	}
 }
 
 // ReportSimple reports simple messages

@@ -98,7 +98,7 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 
 // StartReporting tells the GUI to start reporting information
 func (gui *GUI) StartReporting() {
-	gui.reporting = report.Subscribe(func(msg report.Message) {}, gui)
+	gui.reporting = report.Subscribe(gui, func(msg report.Message) {})
 }
 
 // StopReporting tells the GUI to stop reporting information

@@ -55,7 +55,7 @@ type MessageReporter interface {
 type MessageType struct {
 	Severity Severity
 	Emphasis bool
-	Report   func(reporter MessageReporter)
+	//Report   func(reporter MessageReporter)
 }
 
 // Message is the placeholder for any reported message
@@ -79,7 +79,7 @@ func Reset() {
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
 // onReport() will be called every time a new message is posted. The returned channel
 // shall be kept by the listener as this channel will be used for unsubscription
-func Subscribe(onReport func(msg Message), reporter MessageReporter) chan bool {
+func Subscribe(reporter MessageReporter, onReport func(msg Message)) chan bool {
 	stream := msgProperty.Observe()
 
 	msg := stream.Value().(Message)

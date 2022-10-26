@@ -47,10 +47,10 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 
 	for i := 0; i < nbListeners; i++ {
 		go func(i int) {
-			c[i] = Subscribe(func(msg Message) {
+			c[i] = Subscribe(MessageReporterStub{}, func(msg Message) {
 				result[i] = msg
 				received <- i
-			}, MessageReporterStub{})
+			})
 		}(i)
 	}
 
@@ -69,9 +69,9 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	const nbMessages = 2
 	received := make(chan Message)
 
-	c := Subscribe(func(msg Message) {
+	c := Subscribe(MessageReporterStub{}, func(msg Message) {
 		received <- msg
-	}, MessageReporterStub{})
+	})
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
@@ -142,10 +142,10 @@ func reportAndReceive(report func()) Message {
 	var result Message
 	received := make(chan bool)
 
-	c := Subscribe(func(msg Message) {
+	c := Subscribe(MessageReporterStub{}, func(msg Message) {
 		result = msg
 		received <- true
-	}, MessageReporterStub{})
+	})
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
