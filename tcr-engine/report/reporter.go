@@ -41,10 +41,20 @@ const (
 	Error
 )
 
+type MessageReport interface {
+	Notification(msgText string)
+}
+
 // MessageType type used for message characterization
 type MessageType struct {
 	Severity Severity
 	Emphasis bool
+
+	Report func(reporter MessageReport)
+}
+
+func (mt MessageType) compare(x MessageType) bool {
+	return mt.Severity == x.Severity && mt.Emphasis == x.Emphasis
 }
 
 // Message is the placeholder for any reported message

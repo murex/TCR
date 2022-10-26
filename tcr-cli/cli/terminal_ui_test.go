@@ -380,9 +380,9 @@ func Test_terminal_reporting(t *testing.T) {
 		{
 			"PostNotification method",
 			func() {
-				report.PostNotification("Some notification report")
+				report.PostNotification("Some Notification report")
 			},
-			asGreenTrace("Some notification report"),
+			asGreenTrace("Some Notification report"),
 		},
 	}
 

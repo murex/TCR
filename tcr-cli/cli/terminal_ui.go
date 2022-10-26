@@ -60,24 +60,24 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 // StartReporting tells the terminal to start reporting information
 func (term *TerminalUI) StartReporting() {
 	term.reportingChannel = report.Subscribe(func(msg report.Message) {
-		switch msg.Type {
-		case report.MessageType{report.Info, true}:
-			term.notification(msg.Text)
-		case report.MessageType{report.Info, false}:
+		switch {
+		case msg.Type.Severity == report.Info && msg.Type.Emphasis:
+			term.Notification(msg.Text)
+		case msg.Type.Severity == report.Info && !msg.Type.Emphasis:
 			term.info(msg.Text)
-		case report.MessageType{report.Normal, false}:
+		case msg.Type.Severity == report.Normal:
 			term.trace(msg.Text)
-		case report.MessageType{report.Title, false}:
+		case msg.Type.Severity == report.Title:
 			term.title(msg.Text)
-		case report.MessageType{report.Warning, false}:
+		case msg.Type.Severity == report.Warning:
 			term.warning(msg.Text)
-		case report.MessageType{report.Error, false}:
+		case msg.Type.Severity == report.Error:
 			term.error(msg.Text)
 		}
 	})
 }
 
-// MuteDesktopNotifications allows preventing desktop notification popups from being displayed.
+// MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
 func (*TerminalUI) MuteDesktopNotifications(muted bool) {
 	if muted {
@@ -121,11 +121,11 @@ func (*TerminalUI) error(a ...interface{}) {
 	printInRed(a...)
 }
 
-func (term *TerminalUI) notification(a ...interface{}) {
+func (term *TerminalUI) Notification(a ...interface{}) {
 	printInGreen(a...)
 	err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
 	if err != nil {
-		term.warning("Failed to show desktop notification: ", err.Error())
+		term.warning("Failed to show desktop Notification: ", err.Error())
 	}
 }
 

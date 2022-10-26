@@ -76,7 +76,7 @@ type GUI struct {
 	muteNotifications bool
 }
 
-// MuteDesktopNotifications allows preventing desktop notification popups from being displayed.
+// MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
 func (gui *GUI) MuteDesktopNotifications(muted bool) {
 	gui.muteNotifications = muted
@@ -98,19 +98,21 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 
 // StartReporting tells the GUI to start reporting information
 func (gui *GUI) StartReporting() {
+	var reporter func(reporter report.MessageReport)
+
 	gui.reporting = report.Subscribe(func(msg report.Message) {
 		switch msg.Type {
-		case report.MessageType{report.Info, true}:
-			gui.notification(msg.Text)
-		case report.MessageType{report.Info, false}:
+		case report.MessageType{report.Info, true, reporter}:
+			gui.Notification(msg.Text)
+		case report.MessageType{report.Info, false, reporter}:
 			gui.info(msg.Text)
-		case report.MessageType{report.Normal, false}:
+		case report.MessageType{report.Normal, false, reporter}:
 			gui.trace(msg.Text)
-		case report.MessageType{report.Title, false}:
+		case report.MessageType{report.Title, false, reporter}:
 			gui.title(msg.Text)
-		case report.MessageType{report.Warning, false}:
+		case report.MessageType{report.Warning, false, reporter}:
 			gui.warning(msg.Text)
-		case report.MessageType{report.Error, false}:
+		case report.MessageType{report.Error, false, reporter}:
 			gui.error(msg.Text)
 		}
 	})
@@ -179,7 +181,7 @@ func (gui *GUI) error(a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
 }
 
-func (gui *GUI) notification(a ...interface{}) {
+func (gui *GUI) Notification(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
 	if !gui.muteNotifications {
 		gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
