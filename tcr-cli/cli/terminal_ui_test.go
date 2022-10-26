@@ -148,35 +148,35 @@ func Test_terminal_tracing_methods(t *testing.T) {
 		{
 			"info method",
 			func() {
-				term.info("Some info message")
+				term.ReportInfo("Some info message")
 			},
 			asCyanTrace("Some info message"),
 		},
 		{
 			"warning method",
 			func() {
-				term.warning("Some warning message")
+				term.ReportWarning("Some warning message")
 			},
 			asYellowTrace("Some warning message"),
 		},
 		{
 			"error method",
 			func() {
-				term.error("Some error message")
+				term.ReportError("Some error message")
 			},
 			asRedTrace("Some error message"),
 		},
 		{
 			"trace method",
 			func() {
-				term.trace("Some trace message")
+				term.ReportSimple("Some trace message")
 			},
 			asNeutralTrace("Some trace message"),
 		},
 		{
 			"title method",
 			func() {
-				term.title("Some title")
+				term.ReportTitle("Some title")
 			},
 			asCyanTraceWithSeparatorLine("Some title"),
 		},
@@ -380,9 +380,9 @@ func Test_terminal_reporting(t *testing.T) {
 		{
 			"PostNotification method",
 			func() {
-				report.PostNotification("Some Notification report")
+				report.PostNotification("Some ReportNotification report")
 			},
-			asGreenTrace("Some Notification report"),
+			asGreenTrace("Some ReportNotification report"),
 		},
 	}
 

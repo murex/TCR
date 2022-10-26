@@ -71,8 +71,28 @@ func (sniffer *Sniffer) Start() {
 	}, sniffer)
 }
 
-// Notification prints message notification
-func (sniffer *Sniffer) Notification(a ...interface{}) {
+// ReportSimple reports simple messages
+func (*Sniffer) ReportSimple(_ ...interface{}) {
+}
+
+// ReportInfo reports info messages
+func (*Sniffer) ReportInfo(_ ...interface{}) {
+}
+
+// ReportTitle reports title messages
+func (*Sniffer) ReportTitle(_ ...interface{}) {
+}
+
+// ReportWarning reports warning messages
+func (*Sniffer) ReportWarning(_ ...interface{}) {
+}
+
+// ReportError reports error messages
+func (*Sniffer) ReportError(_ ...interface{}) {
+}
+
+// ReportNotification reports notification messages
+func (*Sniffer) ReportNotification(_ ...interface{}) {
 }
 
 // Stop tells the sniffer to stop
@@ -92,7 +112,28 @@ func (sniffer *Sniffer) GetMatchCount() int {
 	return len(sniffer.captured)
 }
 
-type StubMessageReport struct{}
+type MessageReporterStub struct{}
 
-func (s StubMessageReport) Notification(a ...interface{}) {
+// ReportSimple reports simple messages
+func (MessageReporterStub) ReportSimple(_ ...interface{}) {
+}
+
+// ReportInfo reports info messages
+func (MessageReporterStub) ReportInfo(_ ...interface{}) {
+}
+
+// ReportTitle reports title messages
+func (MessageReporterStub) ReportTitle(_ ...interface{}) {
+}
+
+// ReportWarning reports warning messages
+func (MessageReporterStub) ReportWarning(_ ...interface{}) {
+}
+
+// ReportError reports error messages
+func (MessageReporterStub) ReportError(_ ...interface{}) {
+}
+
+// ReportNotification reports notification messages
+func (MessageReporterStub) ReportNotification(_ ...interface{}) {
 }

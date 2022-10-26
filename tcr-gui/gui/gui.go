@@ -98,22 +98,7 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 
 // StartReporting tells the GUI to start reporting information
 func (gui *GUI) StartReporting() {
-	gui.reporting = report.Subscribe(func(msg report.Message) {
-		switch {
-		//case case msg.Type.Severity == report.Info && msg.Type.Emphasis:
-		//	gui.Notification(msg.Text)
-		case msg.Type.Severity == report.Info && !msg.Type.Emphasis:
-			gui.info(msg.Text)
-		case msg.Type.Severity == report.Normal:
-			gui.trace(msg.Text)
-		case msg.Type.Severity == report.Title:
-			gui.title(msg.Text)
-		case msg.Type.Severity == report.Warning:
-			gui.warning(msg.Text)
-		case msg.Type.Severity == report.Error:
-			gui.error(msg.Text)
-		}
-	}, gui)
+	gui.reporting = report.Subscribe(func(msg report.Message) {}, gui)
 }
 
 // StopReporting tells the GUI to stop reporting information
@@ -163,31 +148,37 @@ func (gui *GUI) ShowSessionInfo() {
 	gui.sessionPanel.setGitAutoPush(info.AutoPush)
 }
 
-func (gui *GUI) info(a ...interface{}) {
+// ReportSimple reports simple messages
+func (gui *GUI) ReportSimple(a ...interface{}) {
+	gui.traceArea.printText(grayColor, true, a...)
+}
+
+// ReportInfo reports info messages
+func (gui *GUI) ReportInfo(a ...interface{}) {
 	gui.traceArea.printText(cyanColor, false, a...)
 }
 
-func (gui *GUI) title(a ...interface{}) {
+// ReportTitle reports title messages
+func (gui *GUI) ReportTitle(a ...interface{}) {
 	gui.traceArea.printHeader(a...)
 }
 
-func (gui *GUI) warning(a ...interface{}) {
+// ReportWarning reports warning messages
+func (gui *GUI) ReportWarning(a ...interface{}) {
 	gui.traceArea.printText(orangeColor, false, a...)
 }
 
-func (gui *GUI) error(a ...interface{}) {
+// ReportError reports error messages
+func (gui *GUI) ReportError(a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
 }
 
-func (gui *GUI) Notification(a ...interface{}) {
+// ReportNotification reports notification messages
+func (gui *GUI) ReportNotification(a ...interface{}) {
 	gui.traceArea.printText(greenColor, false, a...)
 	if !gui.muteNotifications {
 		gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
 	}
-}
-
-func (gui *GUI) trace(a ...interface{}) {
-	gui.traceArea.printText(grayColor, true, a...)
 }
 
 func (gui *GUI) quit(message string) {
@@ -238,7 +229,7 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 
 // Confirm asks the user for confirmation through a popup confirmation window
 func (gui *GUI) Confirm(message string, def bool) bool {
-	gui.warning(message)
+	gui.ReportWarning(message)
 	// We need to defer showing the confirmation dialog until the window is displayed
 	gui.rbConfirm = NewDeferredConfirmDialog(message, def, gui.quit, gui.win)
 	gui.rbConfirm.showIfNeeded()

@@ -41,16 +41,21 @@ const (
 	Error
 )
 
-// MessageReport provides the interface for reporting notifications
-type MessageReport interface {
-	Notification(a ...interface{})
+// MessageReporter provides the interface that any message reporter needs to implement
+type MessageReporter interface {
+	ReportNotification(a ...interface{})
+	ReportSimple(a ...interface{})
+	ReportInfo(a ...interface{})
+	ReportTitle(a ...interface{})
+	ReportWarning(a ...interface{})
+	ReportError(a ...interface{})
 }
 
 // MessageType type used for message characterization
 type MessageType struct {
 	Severity Severity
 	Emphasis bool
-	Report   func(reporter MessageReport)
+	Report   func(reporter MessageReporter)
 }
 
 // Message is the placeholder for any reported message
@@ -74,7 +79,7 @@ func Reset() {
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
 // onReport() will be called every time a new message is posted. The returned channel
 // shall be kept by the listener as this channel will be used for unsubscription
-func Subscribe(onReport func(msg Message), reporter MessageReport) chan bool {
+func Subscribe(onReport func(msg Message), reporter MessageReporter) chan bool {
 	stream := msgProperty.Observe()
 
 	msg := stream.Value().(Message)
@@ -94,9 +99,7 @@ func Subscribe(onReport func(msg Message), reporter MessageReport) chan bool {
 				msg = s.Value().(Message)
 				//fmt.Printf("got new value: %v\n", msg)
 				onReport(msg)
-				if msg.Type.Severity == Info && msg.Type.Emphasis {
-					reporter.Notification(msg.Text)
-				}
+				reportMessage(reporter, msg)
 			case <-unsubscribe:
 				return
 			}
@@ -104,6 +107,24 @@ func Subscribe(onReport func(msg Message), reporter MessageReport) chan bool {
 	}(stream)
 	wg.Wait()
 	return unsubscribe
+}
+
+// reportMessage tells the reporter to report msg depending on its severity
+func reportMessage(reporter MessageReporter, msg Message) {
+	switch {
+	case msg.Type.Severity == Info && msg.Type.Emphasis:
+		reporter.ReportNotification(msg.Text)
+	case msg.Type.Severity == Info && !msg.Type.Emphasis:
+		reporter.ReportInfo(msg.Text)
+	case msg.Type.Severity == Normal:
+		reporter.ReportSimple(msg.Text)
+	case msg.Type.Severity == Title:
+		reporter.ReportTitle(msg.Text)
+	case msg.Type.Severity == Warning:
+		reporter.ReportWarning(msg.Text)
+	case msg.Type.Severity == Error:
+		reporter.ReportError(msg.Text)
+	}
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified
