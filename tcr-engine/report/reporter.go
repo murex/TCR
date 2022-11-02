@@ -98,7 +98,6 @@ func Subscribe(reporter MessageReporter, onReport func(msg Message)) chan bool {
 				s.Next()
 				msg = s.Value().(Message)
 				//fmt.Printf("got new value: %v\n", msg)
-				onReport(msg)
 				reportMessage(reporter, msg)
 			case <-unsubscribe:
 				return
