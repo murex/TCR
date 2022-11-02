@@ -41,11 +41,11 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
 	text := "Dummy Message"
 	var c [nbListeners]chan bool
-	var stubs [nbListeners]MessageReporterStub2
+	var stubs [nbListeners]MessageReporterStub
 
 	for i := 0; i < nbListeners; i++ {
 		go func(i int) {
-			stubs[i] = NewMessageReporterStub2(i)
+			stubs[i] = NewMessageReporterStub(i)
 			c[i] = Subscribe(&stubs[i])
 		}(i)
 	}
@@ -64,7 +64,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	const nbMessages = 3
 
-	stub := NewMessageReporterStub2(0)
+	stub := NewMessageReporterStub(0)
 	c := Subscribe(&stub)
 
 	// To make sure the observer is ready to receive
@@ -134,7 +134,7 @@ func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Mess
 }
 
 func reportAndReceive(report func()) Message {
-	stub := NewMessageReporterStub2(0)
+	stub := NewMessageReporterStub(0)
 	c := Subscribe(&stub)
 
 	// To make sure the observer is ready to receive
@@ -145,51 +145,51 @@ func reportAndReceive(report func()) Message {
 	return stub.message
 }
 
-type MessageReporterStub2 struct {
+type MessageReporterStub struct {
 	index    int
 	received chan int
 	message  Message
 }
 
-func NewMessageReporterStub2(index int) MessageReporterStub2 {
-	stub := MessageReporterStub2{}
+func NewMessageReporterStub(index int) MessageReporterStub {
+	stub := MessageReporterStub{}
 	stub.index = index
 	stub.received = make(chan int)
 	return stub
 }
 
 // ReportSimple reports simple messages
-func (stub *MessageReporterStub2) ReportSimple(a ...interface{}) {
-	stub.message = Message{MessageType{Normal, false}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportSimple(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Normal, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportInfo reports info messages
-func (stub *MessageReporterStub2) ReportInfo(a ...interface{}) {
-	stub.message = Message{MessageType{Info, false}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportInfo(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Info, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportTitle reports title messages
-func (stub *MessageReporterStub2) ReportTitle(a ...interface{}) {
-	stub.message = Message{MessageType{Title, false}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportTitle(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Title, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportWarning reports warning messages
-func (stub *MessageReporterStub2) ReportWarning(a ...interface{}) {
-	stub.message = Message{MessageType{Warning, false}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportWarning(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Warning, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportError reports error messages
-func (stub *MessageReporterStub2) ReportError(a ...interface{}) {
-	stub.message = Message{MessageType{Error, false}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportError(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Error, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportNotification reports notification messages
-func (stub *MessageReporterStub2) ReportNotification(a ...interface{}) {
-	stub.message = Message{MessageType{Info, true}, fmt.Sprint(a...), time.Now()}
+func (stub *MessageReporterStub) ReportNotification(a ...interface{}) {
+	stub.message = NewMessage(MessageType{Info, true}, a...)
 	stub.received <- stub.index
 }

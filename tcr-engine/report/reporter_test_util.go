@@ -24,11 +24,6 @@ SOFTWARE.
 
 package report
 
-import (
-	"fmt"
-	"time"
-)
-
 type messageFilter func(msg Message) bool
 
 // Sniffer is a test utility allowing to track captured sent through TCR reporter
@@ -80,38 +75,32 @@ func (sniffer *Sniffer) sniff(msg Message) {
 
 // ReportSimple reports simple messages
 func (sniffer *Sniffer) ReportSimple(a ...interface{}) {
-	message := Message{MessageType{Normal, false}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Normal, false}, a...))
 }
 
 // ReportInfo reports info messages
 func (sniffer *Sniffer) ReportInfo(a ...interface{}) {
-	message := Message{MessageType{Info, false}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Info, false}, a...))
 }
 
 // ReportTitle reports title messages
 func (sniffer *Sniffer) ReportTitle(a ...interface{}) {
-	message := Message{MessageType{Title, false}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Title, false}, a...))
 }
 
 // ReportWarning reports warning messages
 func (sniffer *Sniffer) ReportWarning(a ...interface{}) {
-	message := Message{MessageType{Warning, false}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Warning, false}, a...))
 }
 
 // ReportError reports error messages
 func (sniffer *Sniffer) ReportError(a ...interface{}) {
-	message := Message{MessageType{Error, false}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Error, false}, a...))
 }
 
 // ReportNotification reports notification messages
 func (sniffer *Sniffer) ReportNotification(a ...interface{}) {
-	message := Message{MessageType{Info, true}, fmt.Sprint(a...), time.Now()}
-	sniffer.sniff(message)
+	sniffer.sniff(NewMessage(MessageType{Info, true}, a...))
 }
 
 // Stop tells the sniffer to stop

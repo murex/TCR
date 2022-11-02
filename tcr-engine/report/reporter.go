@@ -167,7 +167,10 @@ func PostNotification(a ...interface{}) {
 }
 
 func postMessage(msgType MessageType, a ...interface{}) {
-	message := Message{msgType, fmt.Sprint(a...), time.Now()}
-	//fmt.Println("Reporting message:", message)
-	msgProperty.Update(message)
+	msgProperty.Update(NewMessage(msgType, a...))
+}
+
+// NewMessage returns a message with the specified type
+func NewMessage(messageType MessageType, a ...interface{}) Message {
+	return Message{messageType, fmt.Sprint(a...), time.Now()}
 }
