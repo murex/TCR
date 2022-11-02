@@ -60,9 +60,7 @@ func (sniffer *Sniffer) addFilter(filter messageFilter) {
 
 // Start tells the sniffer to start
 func (sniffer *Sniffer) Start() {
-	sniffer.reportingChannel = Subscribe(sniffer, func(msg Message) {
-		sniffer.sniff(msg)
-	})
+	sniffer.reportingChannel = Subscribe(sniffer)
 }
 
 func (sniffer *Sniffer) sniff(msg Message) {
@@ -131,30 +129,4 @@ func (sniffer *Sniffer) GetAllMatches() []Message {
 // GetMatchCount returns the number of matching messages captured by the sniffer
 func (sniffer *Sniffer) GetMatchCount() int {
 	return len(sniffer.captured)
-}
-
-type MessageReporterStub struct{}
-
-// ReportSimple reports simple messages
-func (MessageReporterStub) ReportSimple(_ ...interface{}) {
-}
-
-// ReportInfo reports info messages
-func (MessageReporterStub) ReportInfo(_ ...interface{}) {
-}
-
-// ReportTitle reports title messages
-func (MessageReporterStub) ReportTitle(_ ...interface{}) {
-}
-
-// ReportWarning reports warning messages
-func (MessageReporterStub) ReportWarning(_ ...interface{}) {
-}
-
-// ReportError reports error messages
-func (MessageReporterStub) ReportError(_ ...interface{}) {
-}
-
-// ReportNotification reports notification messages
-func (MessageReporterStub) ReportNotification(_ ...interface{}) {
 }

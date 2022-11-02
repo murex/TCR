@@ -41,7 +41,7 @@ const (
 	Error
 )
 
-// MessageReporter provides the interface that any message reporter needs to implement
+// MessageReporter provides the interface that any message listener needs to implement
 type MessageReporter interface {
 	ReportNotification(a ...interface{})
 	ReportSimple(a ...interface{})
@@ -55,7 +55,6 @@ type MessageReporter interface {
 type MessageType struct {
 	Severity Severity
 	Emphasis bool
-	//Report   func(reporter MessageReporter)
 }
 
 // Message is the placeholder for any reported message
@@ -77,9 +76,9 @@ func Reset() {
 }
 
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
-// onReport() will be called every time a new message is posted. The returned channel
+// The listener must implement the MessageReporter interface. The returned channel
 // shall be kept by the listener as this channel will be used for unsubscription
-func Subscribe(reporter MessageReporter, onReport func(msg Message)) chan bool {
+func Subscribe(reporter MessageReporter) chan bool {
 	stream := msgProperty.Observe()
 
 	msg := stream.Value().(Message)

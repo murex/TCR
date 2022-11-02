@@ -59,7 +59,7 @@ func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 
 // StartReporting tells the terminal to start reporting information
 func (term *TerminalUI) StartReporting() {
-	term.reportingChannel = report.Subscribe(term, func(msg report.Message) {})
+	term.reportingChannel = report.Subscribe(term)
 }
 
 // MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.

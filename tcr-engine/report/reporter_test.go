@@ -40,17 +40,13 @@ func Test_can_retrieve_reported_message(t *testing.T) {
 func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
 	text := "Dummy Message"
-	var result [nbListeners]Message
 	var c [nbListeners]chan bool
-
-	received := make(chan int, nbListeners)
+	var stubs [nbListeners]MessageReporterStub2
 
 	for i := 0; i < nbListeners; i++ {
 		go func(i int) {
-			c[i] = Subscribe(MessageReporterStub{}, func(msg Message) {
-				result[i] = msg
-				received <- i
-			})
+			stubs[i] = NewMessageReporterStub2(i)
+			c[i] = Subscribe(&stubs[i])
 		}(i)
 	}
 
@@ -59,27 +55,25 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 	Post(text)
 
 	for i := 0; i < nbListeners; i++ {
-		iReceived := <-received
+		iReceived := <-stubs[i].received
 		Unsubscribe(c[iReceived])
-		assert.Equal(t, text, result[iReceived].Text)
+		assert.Equal(t, text, stubs[iReceived].message.Text)
 	}
 }
 
 func Test_multiple_messages_and_one_receiver(t *testing.T) {
-	const nbMessages = 2
-	received := make(chan Message)
+	const nbMessages = 3
 
-	c := Subscribe(MessageReporterStub{}, func(msg Message) {
-		received <- msg
-	})
+	stub := NewMessageReporterStub2(0)
+	c := Subscribe(&stub)
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
 	for i := 0; i < nbMessages; i++ {
 		text := fmt.Sprintf("Dummy Message %v", i)
 		Post(text)
-		result := <-received
-		assert.Equal(t, text, result.Text)
+		<-stub.received
+		assert.Equal(t, text, stub.message.Text)
 	}
 	Unsubscribe(c)
 }
@@ -133,24 +127,69 @@ func Test_report_notification_message(t *testing.T) {
 }
 
 func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {
+	t.Helper()
 	assert.Equal(t, text, msg.Text)
 	assert.Equal(t, msgType, msg.Type)
 	assert.NotZero(t, msg.Timestamp)
 }
 
 func reportAndReceive(report func()) Message {
-	var result Message
-	received := make(chan bool)
-
-	c := Subscribe(MessageReporterStub{}, func(msg Message) {
-		result = msg
-		received <- true
-	})
+	stub := NewMessageReporterStub2(0)
+	c := Subscribe(&stub)
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
 	report()
-	<-received
+	<-stub.received
 	Unsubscribe(c)
-	return result
+	return stub.message
+}
+
+type MessageReporterStub2 struct {
+	index    int
+	received chan int
+	message  Message
+}
+
+func NewMessageReporterStub2(index int) MessageReporterStub2 {
+	stub := MessageReporterStub2{}
+	stub.index = index
+	stub.received = make(chan int)
+	return stub
+}
+
+// ReportSimple reports simple messages
+func (stub *MessageReporterStub2) ReportSimple(a ...interface{}) {
+	stub.message = Message{MessageType{Normal, false}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
+}
+
+// ReportInfo reports info messages
+func (stub *MessageReporterStub2) ReportInfo(a ...interface{}) {
+	stub.message = Message{MessageType{Info, false}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
+}
+
+// ReportTitle reports title messages
+func (stub *MessageReporterStub2) ReportTitle(a ...interface{}) {
+	stub.message = Message{MessageType{Title, false}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
+}
+
+// ReportWarning reports warning messages
+func (stub *MessageReporterStub2) ReportWarning(a ...interface{}) {
+	stub.message = Message{MessageType{Warning, false}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
+}
+
+// ReportError reports error messages
+func (stub *MessageReporterStub2) ReportError(a ...interface{}) {
+	stub.message = Message{MessageType{Error, false}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
+}
+
+// ReportNotification reports notification messages
+func (stub *MessageReporterStub2) ReportNotification(a ...interface{}) {
+	stub.message = Message{MessageType{Info, true}, fmt.Sprint(a...), time.Now()}
+	stub.received <- stub.index
 }
