@@ -430,8 +430,7 @@ func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 	result = tcr.toolchain.RunTests()
 	if result.Failed() {
 		status.RecordState(status.TestFailed)
-		report.PostWarning("Some tests are failing! That's unfortunate")
-		report.PostInfoWithEmphasis("Some tests are failing! That's unfortunate")
+		report.PostWarningWithEmphasis("Some tests are failing! That's unfortunate")
 	}
 	return result
 }
