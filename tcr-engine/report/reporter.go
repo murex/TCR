@@ -43,9 +43,8 @@ const (
 
 // MessageReporter provides the interface that any message listener needs to implement
 type MessageReporter interface {
-	ReportNotification(a ...interface{})
 	ReportSimple(a ...interface{})
-	ReportInfo(a ...interface{})
+	ReportInfo(emphasis bool, a ...interface{})
 	ReportTitle(a ...interface{})
 	ReportWarning(a ...interface{})
 	ReportError(a ...interface{})
@@ -110,10 +109,8 @@ func Subscribe(reporter MessageReporter) chan bool {
 // reportMessage tells the reporter to report msg depending on its severity
 func reportMessage(reporter MessageReporter, msg Message) {
 	switch {
-	case msg.Type.Severity == Info && msg.Type.Emphasis:
-		reporter.ReportNotification(msg.Text)
-	case msg.Type.Severity == Info && !msg.Type.Emphasis:
-		reporter.ReportInfo(msg.Text)
+	case msg.Type.Severity == Info:
+		reporter.ReportInfo(msg.Type.Emphasis, msg.Text)
 	case msg.Type.Severity == Normal:
 		reporter.ReportSimple(msg.Text)
 	case msg.Type.Severity == Title:

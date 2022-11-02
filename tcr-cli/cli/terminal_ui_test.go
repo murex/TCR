@@ -148,7 +148,7 @@ func Test_terminal_tracing_methods(t *testing.T) {
 		{
 			"info method",
 			func() {
-				term.ReportInfo("Some info message")
+				term.ReportInfo(false, "Some info message")
 			},
 			asCyanTrace("Some info message"),
 		},

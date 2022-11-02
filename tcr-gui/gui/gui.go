@@ -154,8 +154,15 @@ func (gui *GUI) ReportSimple(a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (gui *GUI) ReportInfo(a ...interface{}) {
-	gui.traceArea.printText(cyanColor, false, a...)
+func (gui *GUI) ReportInfo(emphasis bool, a ...interface{}) {
+	if emphasis {
+		gui.traceArea.printText(greenColor, false, a...)
+		if !gui.muteNotifications {
+			gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
+		}
+	} else {
+		gui.traceArea.printText(cyanColor, false, a...)
+	}
 }
 
 // ReportTitle reports title messages
@@ -171,14 +178,6 @@ func (gui *GUI) ReportWarning(a ...interface{}) {
 // ReportError reports error messages
 func (gui *GUI) ReportError(a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
-}
-
-// ReportNotification reports notification messages
-func (gui *GUI) ReportNotification(a ...interface{}) {
-	gui.traceArea.printText(greenColor, false, a...)
-	if !gui.muteNotifications {
-		gui.app.SendNotification(fyne.NewNotification(settings.ApplicationName, fmt.Sprint(a...)))
-	}
 }
 
 func (gui *GUI) quit(message string) {

@@ -86,7 +86,7 @@ func (term *TerminalUI) NotifyRoleStarting(r role.Role) {
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
-	term.ReportInfo("Ending ", r.LongName())
+	term.ReportInfo(false, "Ending ", r.LongName())
 }
 
 // ReportSimple reports simple messages
@@ -95,8 +95,16 @@ func (*TerminalUI) ReportSimple(a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (*TerminalUI) ReportInfo(a ...interface{}) {
-	printInCyan(a...)
+func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
+	if emphasis {
+		printInGreen(a...)
+		err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+		if err != nil {
+			term.ReportWarning("Failed to show desktop ReportNotification: ", err.Error())
+		}
+	} else {
+		printInCyan(a...)
+	}
 }
 
 // ReportTitle reports title messages
@@ -113,15 +121,6 @@ func (*TerminalUI) ReportWarning(a ...interface{}) {
 // ReportError reports error messages
 func (*TerminalUI) ReportError(a ...interface{}) {
 	printInRed(a...)
-}
-
-// ReportNotification reports notification messages
-func (term *TerminalUI) ReportNotification(a ...interface{}) {
-	printInGreen(a...)
-	err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
-	if err != nil {
-		term.ReportWarning("Failed to show desktop ReportNotification: ", err.Error())
-	}
 }
 
 func (term *TerminalUI) mainMenu() {
@@ -228,14 +227,14 @@ func (term *TerminalUI) ShowSessionInfo() {
 	info := term.tcr.GetSessionInfo()
 
 	term.ReportTitle("Base Directory: ", info.BaseDir)
-	term.ReportInfo("Work Directory: ", info.WorkDir)
-	term.ReportInfo("Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
+	term.ReportInfo(false, "Work Directory: ", info.WorkDir)
+	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 
 	autoPush := "disabled"
 	if info.AutoPush {
 		autoPush = "enabled"
 	}
-	term.ReportInfo(
+	term.ReportInfo(false,
 		"Running on git branch \"", info.BranchName,
 		"\" with auto-push ", autoPush)
 }
@@ -320,7 +319,7 @@ func (term *TerminalUI) initTcrEngine() {
 }
 
 func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{}) {
-	term.ReportInfo(append([]interface{}{"\t", string(shortcut), " -> "}, description...)...)
+	term.ReportInfo(false, append([]interface{}{"\t", string(shortcut), " -> "}, description...)...)
 }
 
 func (term *TerminalUI) listMainMenuOptions(title string) {

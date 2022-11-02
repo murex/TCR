@@ -79,8 +79,8 @@ func (sniffer *Sniffer) ReportSimple(a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (sniffer *Sniffer) ReportInfo(a ...interface{}) {
-	sniffer.sniff(NewMessage(MessageType{Info, false}, a...))
+func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...interface{}) {
+	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, a...))
 }
 
 // ReportTitle reports title messages
@@ -96,11 +96,6 @@ func (sniffer *Sniffer) ReportWarning(a ...interface{}) {
 // ReportError reports error messages
 func (sniffer *Sniffer) ReportError(a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Error, false}, a...))
-}
-
-// ReportNotification reports notification messages
-func (sniffer *Sniffer) ReportNotification(a ...interface{}) {
-	sniffer.sniff(NewMessage(MessageType{Info, true}, a...))
 }
 
 // Stop tells the sniffer to stop
