@@ -114,8 +114,14 @@ func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 }
 
 // ReportWarning reports warning messages
-func (*TerminalUI) ReportWarning(_ bool, a ...interface{}) {
+func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 	printInYellow(a...)
+	if emphasis {
+		err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+		if err != nil {
+			term.ReportWarning(false, "Failed to show desktop ReportNotification: ", err.Error())
+		}
+	}
 }
 
 // ReportError reports error messages

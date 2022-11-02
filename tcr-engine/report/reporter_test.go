@@ -118,12 +118,20 @@ func Test_report_error_message(t *testing.T) {
 	assertMessageMatch(t, text, MessageType{Severity: Error}, result)
 }
 
-func Test_report_notification_message(t *testing.T) {
-	text := "ReportNotification Message"
+func Test_report_info_with_emphasis_message(t *testing.T) {
+	text := "PostInfoWithEmphasis Message"
 	result := reportAndReceive(func() {
-		PostNotification(text)
+		PostInfoWithEmphasis(text)
 	})
 	assertMessageMatch(t, text, MessageType{Severity: Info, Emphasis: true}, result)
+}
+
+func Test_report_warning_with_emphasis(t *testing.T) {
+	text := "PostWarningWithEmphasis Message"
+	result := reportAndReceive(func() {
+		PostWarningWithEmphasis(text)
+	})
+	assertMessageMatch(t, text, MessageType{Severity: Warning, Emphasis: true}, result)
 }
 
 func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {
@@ -159,8 +167,8 @@ func NewMessageReporterStub(index int) MessageReporterStub {
 }
 
 // ReportSimple reports simple messages
-func (stub *MessageReporterStub) ReportSimple(_ bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Normal, false}, a...)
+func (stub *MessageReporterStub) ReportSimple(emphasis bool, a ...interface{}) {
+	stub.message = NewMessage(MessageType{Normal, emphasis}, a...)
 	stub.received <- stub.index
 }
 
@@ -171,19 +179,19 @@ func (stub *MessageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
 }
 
 // ReportTitle reports title messages
-func (stub *MessageReporterStub) ReportTitle(_ bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Title, false}, a...)
+func (stub *MessageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
+	stub.message = NewMessage(MessageType{Title, emphasis}, a...)
 	stub.received <- stub.index
 }
 
 // ReportWarning reports warning messages
-func (stub *MessageReporterStub) ReportWarning(_ bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Warning, false}, a...)
+func (stub *MessageReporterStub) ReportWarning(emphasis bool, a ...interface{}) {
+	stub.message = NewMessage(MessageType{Warning, emphasis}, a...)
 	stub.received <- stub.index
 }
 
 // ReportError reports error messages
-func (stub *MessageReporterStub) ReportError(_ bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Error, false}, a...)
+func (stub *MessageReporterStub) ReportError(emphasis bool, a ...interface{}) {
+	stub.message = NewMessage(MessageType{Error, emphasis}, a...)
 	stub.received <- stub.index
 }

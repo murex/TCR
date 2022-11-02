@@ -378,11 +378,18 @@ func Test_terminal_reporting(t *testing.T) {
 			asNeutralTrace("Some text report"),
 		},
 		{
-			"PostNotification method",
+			"PostInfoWithEmphasis method",
 			func() {
-				report.PostNotification("Some ReportNotification report")
+				report.PostInfoWithEmphasis("Some info with emphasis report")
 			},
-			asGreenTrace("Some ReportNotification report"),
+			asGreenTrace("Some info with emphasis report"),
+		},
+		{
+			"PostWarningWithEmphasis method",
+			func() {
+				report.PostWarningWithEmphasis("Some warning with emphasis report")
+			},
+			asYellowTrace("Some warning with emphasis report"),
 		},
 	}
 

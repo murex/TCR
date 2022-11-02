@@ -42,15 +42,15 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 			func(ctx ReminderContext) {
 				switch ctx.eventType {
 				case StartEvent:
-					report.PostNotification(messagePrefix, "Starting ", fmtDuration(timeout), " countdown")
+					report.PostInfoWithEmphasis(messagePrefix, "Starting ", fmtDuration(timeout), " countdown")
 				case PeriodicEvent:
 					if ctx.remaining > 0 {
-						report.PostNotification(messagePrefix, "Your turn ends in ", fmtDuration(ctx.remaining))
+						report.PostInfoWithEmphasis(messagePrefix, "Your turn ends in ", fmtDuration(ctx.remaining))
 					}
 				case InterruptEvent:
-					report.PostNotification(messagePrefix, "Stopping countdown after ", fmtDuration(ctx.elapsed))
+					report.PostInfoWithEmphasis(messagePrefix, "Stopping countdown after ", fmtDuration(ctx.elapsed))
 				case TimeoutEvent:
-					report.PostNotification(messagePrefix, "Time's up. Time to rotate!")
+					report.PostInfoWithEmphasis(messagePrefix, "Time's up. Time to rotate!")
 				}
 			},
 		)

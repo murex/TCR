@@ -149,13 +149,18 @@ func PostWarning(a ...interface{}) {
 	postMessage(MessageType{Severity: Warning}, a...)
 }
 
+// PostWarningWithEmphasis posts a warning with emphasis
+func PostWarningWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Warning, Emphasis: true}, a...)
+}
+
 // PostError posts an error message for reporting
 func PostError(a ...interface{}) {
 	postMessage(MessageType{Severity: Error}, a...)
 }
 
-// PostNotification posts an event message for reporting
-func PostNotification(a ...interface{}) {
+// PostInfoWithEmphasis posts an info message with emphasis
+func PostInfoWithEmphasis(a ...interface{}) {
 	postMessage(MessageType{Severity: Info, Emphasis: true}, a...)
 }
 
