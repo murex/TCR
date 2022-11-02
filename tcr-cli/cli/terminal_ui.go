@@ -81,7 +81,7 @@ func (term *TerminalUI) StopReporting() {
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *TerminalUI) NotifyRoleStarting(r role.Role) {
-	term.ReportTitle("Starting with ", r.LongName(), ". Press ? for options")
+	term.ReportTitle(false, "Starting with ", r.LongName(), ". Press ? for options")
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
@@ -90,7 +90,7 @@ func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
 }
 
 // ReportSimple reports simple messages
-func (*TerminalUI) ReportSimple(a ...interface{}) {
+func (*TerminalUI) ReportSimple(_ bool, a ...interface{}) {
 	printUntouched(a...)
 }
 
@@ -100,7 +100,7 @@ func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
 		printInGreen(a...)
 		err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
-			term.ReportWarning("Failed to show desktop ReportNotification: ", err.Error())
+			term.ReportWarning(false, "Failed to show desktop ReportNotification: ", err.Error())
 		}
 	} else {
 		printInCyan(a...)
@@ -108,18 +108,18 @@ func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
 }
 
 // ReportTitle reports title messages
-func (*TerminalUI) ReportTitle(a ...interface{}) {
+func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 	printHorizontalLine()
 	printInCyan(a...)
 }
 
 // ReportWarning reports warning messages
-func (*TerminalUI) ReportWarning(a ...interface{}) {
+func (*TerminalUI) ReportWarning(_ bool, a ...interface{}) {
 	printInYellow(a...)
 }
 
 // ReportError reports error messages
-func (*TerminalUI) ReportError(a ...interface{}) {
+func (*TerminalUI) ReportError(_ bool, a ...interface{}) {
 	printInRed(a...)
 }
 
@@ -130,7 +130,7 @@ func (term *TerminalUI) mainMenu() {
 	for {
 		_, err := os.Stdin.Read(keyboardInput)
 		if err != nil {
-			term.ReportWarning("Something went wrong while reading from stdin: ", err)
+			term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
 		}
 
 		switch keyboardInput[0] {
@@ -158,7 +158,7 @@ func (term *TerminalUI) mainMenu() {
 			// We ignore enter key press
 			continue
 		default:
-			term.ReportWarning("No action is mapped to shortcut '", string(keyboardInput), "'")
+			term.ReportWarning(false, "No action is mapped to shortcut '", string(keyboardInput), "'")
 			term.listMainMenuOptions("Please choose one of the following:")
 		}
 	}
@@ -176,20 +176,20 @@ func (term *TerminalUI) startAs(r role.Role) {
 	case role.Driver{}:
 		term.tcr.RunAsDriver()
 	default:
-		term.ReportWarning("No action defined for ", r.LongName())
+		term.ReportWarning(false, "No action defined for ", r.LongName())
 	}
 
 	// ...Until the user decides to stop
 	keyboardInput := make([]byte, 1)
 	for stopRequest := false; !stopRequest; {
 		if _, err := os.Stdin.Read(keyboardInput); err != nil {
-			term.ReportWarning("Something went wrong while reading from stdin: ", err)
+			term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
 		}
 		switch keyboardInput[0] {
 		case '?':
 			term.listRoleMenuOptions(r, "Available Options:")
 		case 'q', 'Q', escapeKey:
-			term.ReportWarning("OK, I heard you")
+			term.ReportWarning(false, "OK, I heard you")
 			stopRequest = true
 			term.tcr.Stop()
 		case 't', 'T':
@@ -204,7 +204,7 @@ func (term *TerminalUI) startAs(r role.Role) {
 }
 
 func (term *TerminalUI) keyNotRecognizedMessage() {
-	term.ReportWarning("Key not recognized. Press ? for available options")
+	term.ReportWarning(false, "Key not recognized. Press ? for available options")
 }
 
 func (term *TerminalUI) showTimerStatus() {
@@ -219,14 +219,14 @@ func (term *TerminalUI) showTimerStatus() {
 
 // ShowRunningMode shows the current running mode
 func (term *TerminalUI) ShowRunningMode(mode runmode.RunMode) {
-	term.ReportTitle("Running in ", mode.Name(), " mode")
+	term.ReportTitle(false, "Running in ", mode.Name(), " mode")
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (term *TerminalUI) ShowSessionInfo() {
 	info := term.tcr.GetSessionInfo()
 
-	term.ReportTitle("Base Directory: ", info.BaseDir)
+	term.ReportTitle(false, "Base Directory: ", info.BaseDir)
 	term.ReportInfo(false, "Work Directory: ", info.WorkDir)
 	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 
@@ -244,8 +244,8 @@ func (term *TerminalUI) Confirm(message string, defaultAnswer bool) bool {
 	_ = SetRaw()
 	defer Restore()
 
-	term.ReportWarning(message)
-	term.ReportWarning("Do you want to proceed? ", yesOrNoAdvice(defaultAnswer))
+	term.ReportWarning(false, message)
+	term.ReportWarning(false, "Do you want to proceed? ", yesOrNoAdvice(defaultAnswer))
 
 	keyboardInput := make([]byte, 1)
 	for {
@@ -310,7 +310,7 @@ func (term *TerminalUI) Start() {
 		term.tcr.PrintStats(term.params)
 		term.tcr.Quit()
 	default:
-		term.ReportError("Unknown run mode: ", term.params.Mode)
+		term.ReportError(false, "Unknown run mode: ", term.params.Mode)
 	}
 }
 
@@ -323,7 +323,7 @@ func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{
 }
 
 func (term *TerminalUI) listMainMenuOptions(title string) {
-	term.ReportTitle(title)
+	term.ReportTitle(false, title)
 	term.printMenuOption('D', role.Driver{}.LongName())
 	term.printMenuOption('N', role.Navigator{}.LongName())
 	term.printMenuOption('P', "Turn on/off git auto-push")
@@ -332,7 +332,7 @@ func (term *TerminalUI) listMainMenuOptions(title string) {
 }
 
 func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
-	term.ReportTitle(title)
+	term.ReportTitle(false, title)
 	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
 		term.printMenuOption('T', "Timer status")
 	}

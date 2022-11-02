@@ -159,7 +159,7 @@ func NewMessageReporterStub(index int) MessageReporterStub {
 }
 
 // ReportSimple reports simple messages
-func (stub *MessageReporterStub) ReportSimple(a ...interface{}) {
+func (stub *MessageReporterStub) ReportSimple(_ bool, a ...interface{}) {
 	stub.message = NewMessage(MessageType{Normal, false}, a...)
 	stub.received <- stub.index
 }
@@ -171,19 +171,19 @@ func (stub *MessageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
 }
 
 // ReportTitle reports title messages
-func (stub *MessageReporterStub) ReportTitle(a ...interface{}) {
+func (stub *MessageReporterStub) ReportTitle(_ bool, a ...interface{}) {
 	stub.message = NewMessage(MessageType{Title, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportWarning reports warning messages
-func (stub *MessageReporterStub) ReportWarning(a ...interface{}) {
+func (stub *MessageReporterStub) ReportWarning(_ bool, a ...interface{}) {
 	stub.message = NewMessage(MessageType{Warning, false}, a...)
 	stub.received <- stub.index
 }
 
 // ReportError reports error messages
-func (stub *MessageReporterStub) ReportError(a ...interface{}) {
+func (stub *MessageReporterStub) ReportError(_ bool, a ...interface{}) {
 	stub.message = NewMessage(MessageType{Error, false}, a...)
 	stub.received <- stub.index
 }

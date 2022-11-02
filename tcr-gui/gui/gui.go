@@ -149,7 +149,7 @@ func (gui *GUI) ShowSessionInfo() {
 }
 
 // ReportSimple reports simple messages
-func (gui *GUI) ReportSimple(a ...interface{}) {
+func (gui *GUI) ReportSimple(_ bool, a ...interface{}) {
 	gui.traceArea.printText(grayColor, true, a...)
 }
 
@@ -166,17 +166,17 @@ func (gui *GUI) ReportInfo(emphasis bool, a ...interface{}) {
 }
 
 // ReportTitle reports title messages
-func (gui *GUI) ReportTitle(a ...interface{}) {
+func (gui *GUI) ReportTitle(_ bool, a ...interface{}) {
 	gui.traceArea.printHeader(a...)
 }
 
 // ReportWarning reports warning messages
-func (gui *GUI) ReportWarning(a ...interface{}) {
+func (gui *GUI) ReportWarning(_ bool, a ...interface{}) {
 	gui.traceArea.printText(orangeColor, false, a...)
 }
 
 // ReportError reports error messages
-func (gui *GUI) ReportError(a ...interface{}) {
+func (gui *GUI) ReportError(_ bool, a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
 }
 
@@ -228,7 +228,7 @@ func (gui *GUI) setRunMode(mode runmode.RunMode) {
 
 // Confirm asks the user for confirmation through a popup confirmation window
 func (gui *GUI) Confirm(message string, def bool) bool {
-	gui.ReportWarning(message)
+	gui.ReportWarning(false, message)
 	// We need to defer showing the confirmation dialog until the window is displayed
 	gui.rbConfirm = NewDeferredConfirmDialog(message, def, gui.quit, gui.win)
 	gui.rbConfirm.showIfNeeded()

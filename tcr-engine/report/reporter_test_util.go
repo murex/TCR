@@ -74,7 +74,7 @@ func (sniffer *Sniffer) sniff(msg Message) {
 }
 
 // ReportSimple reports simple messages
-func (sniffer *Sniffer) ReportSimple(a ...interface{}) {
+func (sniffer *Sniffer) ReportSimple(_ bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Normal, false}, a...))
 }
 
@@ -84,17 +84,17 @@ func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...interface{}) {
 }
 
 // ReportTitle reports title messages
-func (sniffer *Sniffer) ReportTitle(a ...interface{}) {
+func (sniffer *Sniffer) ReportTitle(_ bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Title, false}, a...))
 }
 
 // ReportWarning reports warning messages
-func (sniffer *Sniffer) ReportWarning(a ...interface{}) {
+func (sniffer *Sniffer) ReportWarning(_ bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Warning, false}, a...))
 }
 
 // ReportError reports error messages
-func (sniffer *Sniffer) ReportError(a ...interface{}) {
+func (sniffer *Sniffer) ReportError(_ bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Error, false}, a...))
 }
 

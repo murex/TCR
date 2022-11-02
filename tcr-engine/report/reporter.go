@@ -43,11 +43,11 @@ const (
 
 // MessageReporter provides the interface that any message listener needs to implement
 type MessageReporter interface {
-	ReportSimple(a ...interface{})
+	ReportSimple(emphasis bool, a ...interface{})
 	ReportInfo(emphasis bool, a ...interface{})
-	ReportTitle(a ...interface{})
-	ReportWarning(a ...interface{})
-	ReportError(a ...interface{})
+	ReportTitle(emphasis bool, a ...interface{})
+	ReportWarning(emphasis bool, a ...interface{})
+	ReportError(emphasis bool, a ...interface{})
 }
 
 // MessageType type used for message characterization
@@ -108,18 +108,14 @@ func Subscribe(reporter MessageReporter) chan bool {
 
 // reportMessage tells the reporter to report msg depending on its severity
 func reportMessage(reporter MessageReporter, msg Message) {
-	switch {
-	case msg.Type.Severity == Info:
-		reporter.ReportInfo(msg.Type.Emphasis, msg.Text)
-	case msg.Type.Severity == Normal:
-		reporter.ReportSimple(msg.Text)
-	case msg.Type.Severity == Title:
-		reporter.ReportTitle(msg.Text)
-	case msg.Type.Severity == Warning:
-		reporter.ReportWarning(msg.Text)
-	case msg.Type.Severity == Error:
-		reporter.ReportError(msg.Text)
+	report := map[Severity]func(r MessageReporter, emphasis bool, a ...interface{}){
+		Info:    MessageReporter.ReportInfo,
+		Normal:  MessageReporter.ReportSimple,
+		Title:   MessageReporter.ReportTitle,
+		Warning: MessageReporter.ReportWarning,
+		Error:   MessageReporter.ReportError,
 	}
+	report[msg.Type.Severity](reporter, msg.Type.Emphasis, msg.Text)
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified

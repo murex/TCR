@@ -155,28 +155,28 @@ func Test_terminal_tracing_methods(t *testing.T) {
 		{
 			"warning method",
 			func() {
-				term.ReportWarning("Some warning message")
+				term.ReportWarning(false, "Some warning message")
 			},
 			asYellowTrace("Some warning message"),
 		},
 		{
 			"error method",
 			func() {
-				term.ReportError("Some error message")
+				term.ReportError(false, "Some error message")
 			},
 			asRedTrace("Some error message"),
 		},
 		{
 			"trace method",
 			func() {
-				term.ReportSimple("Some trace message")
+				term.ReportSimple(false, "Some trace message")
 			},
 			asNeutralTrace("Some trace message"),
 		},
 		{
 			"title method",
 			func() {
-				term.ReportTitle("Some title")
+				term.ReportTitle(false, "Some title")
 			},
 			asCyanTraceWithSeparatorLine("Some title"),
 		},
