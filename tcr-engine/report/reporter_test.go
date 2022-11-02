@@ -30,7 +30,7 @@ import (
 )
 
 func Test_can_retrieve_reported_message(t *testing.T) {
-	text := "Dummy Message"
+	text := "dummy message"
 	result := reportAndReceive(func() {
 		Post(text)
 	})
@@ -39,14 +39,14 @@ func Test_can_retrieve_reported_message(t *testing.T) {
 
 func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
-	text := "Dummy Message"
+	text := "dummy message"
 	var c [nbListeners]chan bool
-	var stubs [nbListeners]MessageReporterStub
+	var stubs [nbListeners]*messageReporterStub
 
 	for i := 0; i < nbListeners; i++ {
 		go func(i int) {
-			stubs[i] = NewMessageReporterStub(i)
-			c[i] = Subscribe(&stubs[i])
+			stubs[i] = newMessageReporterStub(i)
+			c[i] = Subscribe(stubs[i])
 		}(i)
 	}
 
@@ -64,13 +64,13 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	const nbMessages = 3
 
-	stub := NewMessageReporterStub(0)
-	c := Subscribe(&stub)
+	stub := newMessageReporterStub(0)
+	c := Subscribe(stub)
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
 	for i := 0; i < nbMessages; i++ {
-		text := fmt.Sprintf("Dummy Message %v", i)
+		text := fmt.Sprintf("dummy message %v", i)
 		Post(text)
 		<-stub.received
 		assert.Equal(t, text, stub.message.Text)
@@ -78,72 +78,64 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	Unsubscribe(c)
 }
 
-func Test_report_simple_message(t *testing.T) {
-	text := "Normal Message"
-	result := reportAndReceive(func() {
-		PostText(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Normal}, result)
-}
+func Test_post_message_functions(t *testing.T) {
+	testCases := []struct {
+		text         string
+		postFunction func(a ...interface{})
+		expectedType MessageType
+	}{
+		{
+			"normal message",
+			PostText,
+			MessageType{Normal, false},
+		},
+		{
+			"info message",
+			PostInfo,
+			MessageType{Info, false},
+		},
+		{
+			"title message",
+			PostTitle,
+			MessageType{Title, false},
+		},
+		{
+			"warning message",
+			PostWarning,
+			MessageType{Warning, false},
+		},
+		{
+			"error message",
+			PostError,
+			MessageType{Error, false},
+		},
+		{
+			"info message with emphasis",
+			PostInfoWithEmphasis,
+			MessageType{Info, true},
+		},
+		{
+			"warning message with emphasis",
+			PostWarningWithEmphasis,
+			MessageType{Warning, true},
+		},
+	}
 
-func Test_report_info_message(t *testing.T) {
-	text := "info Message"
-	result := reportAndReceive(func() {
-		PostInfo(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Info}, result)
-}
-
-func Test_report_title_message(t *testing.T) {
-	text := "Title Message"
-	result := reportAndReceive(func() {
-		PostTitle(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Title}, result)
-}
-
-func Test_report_warning_message(t *testing.T) {
-	text := "Warning Message"
-	result := reportAndReceive(func() {
-		PostWarning(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Warning}, result)
-}
-
-func Test_report_error_message(t *testing.T) {
-	text := "Error Message"
-	result := reportAndReceive(func() {
-		PostError(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Error}, result)
-}
-
-func Test_report_info_with_emphasis_message(t *testing.T) {
-	text := "PostInfoWithEmphasis Message"
-	result := reportAndReceive(func() {
-		PostInfoWithEmphasis(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Info, Emphasis: true}, result)
-}
-
-func Test_report_warning_with_emphasis(t *testing.T) {
-	text := "PostWarningWithEmphasis Message"
-	result := reportAndReceive(func() {
-		PostWarningWithEmphasis(text)
-	})
-	assertMessageMatch(t, text, MessageType{Severity: Warning, Emphasis: true}, result)
-}
-
-func assertMessageMatch(t *testing.T, text string, msgType MessageType, msg Message) {
-	t.Helper()
-	assert.Equal(t, text, msg.Text)
-	assert.Equal(t, msgType, msg.Type)
-	assert.NotZero(t, msg.Timestamp)
+	for _, tt := range testCases {
+		t.Run(tt.text, func(t *testing.T) {
+			result := reportAndReceive(func() {
+				tt.postFunction(tt.text)
+			})
+			assert.Equal(t, tt.text, result.Text)
+			assert.Equal(t, tt.expectedType, result.Type)
+			assert.NotZero(t, result.Timestamp)
+		})
+	}
 }
 
 func reportAndReceive(report func()) Message {
-	stub := NewMessageReporterStub(0)
-	c := Subscribe(&stub)
+	stub := newMessageReporterStub(0)
+	c := Subscribe(stub)
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
@@ -153,45 +145,45 @@ func reportAndReceive(report func()) Message {
 	return stub.message
 }
 
-type MessageReporterStub struct {
+type messageReporterStub struct {
 	index    int
 	received chan int
 	message  Message
 }
 
-func NewMessageReporterStub(index int) MessageReporterStub {
-	stub := MessageReporterStub{}
-	stub.index = index
-	stub.received = make(chan int)
-	return stub
+func newMessageReporterStub(index int) *messageReporterStub {
+	return &messageReporterStub{
+		index:    index,
+		received: make(chan int),
+	}
+}
+
+func (stub *messageReporterStub) report(severity Severity, emphasis bool, a ...interface{}) {
+	stub.message = NewMessage(MessageType{severity, emphasis}, a...)
+	stub.received <- stub.index
 }
 
 // ReportSimple reports simple messages
-func (stub *MessageReporterStub) ReportSimple(emphasis bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Normal, emphasis}, a...)
-	stub.received <- stub.index
+func (stub *messageReporterStub) ReportSimple(emphasis bool, a ...interface{}) {
+	stub.report(Normal, emphasis, a...)
 }
 
 // ReportInfo reports info messages
-func (stub *MessageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Info, emphasis}, a...)
-	stub.received <- stub.index
+func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
+	stub.report(Info, emphasis, a...)
 }
 
 // ReportTitle reports title messages
-func (stub *MessageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Title, emphasis}, a...)
-	stub.received <- stub.index
+func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
+	stub.report(Title, emphasis, a...)
 }
 
 // ReportWarning reports warning messages
-func (stub *MessageReporterStub) ReportWarning(emphasis bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Warning, emphasis}, a...)
-	stub.received <- stub.index
+func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...interface{}) {
+	stub.report(Warning, emphasis, a...)
 }
 
 // ReportError reports error messages
-func (stub *MessageReporterStub) ReportError(emphasis bool, a ...interface{}) {
-	stub.message = NewMessage(MessageType{Error, emphasis}, a...)
-	stub.received <- stub.index
+func (stub *messageReporterStub) ReportError(emphasis bool, a ...interface{}) {
+	stub.report(Error, emphasis, a...)
 }
