@@ -40,6 +40,7 @@ type TerminalUI struct {
 	reportingChannel chan bool
 	tcr              engine.TcrInterface
 	params           params.Params
+	desktop          *desktop.Desktop
 }
 
 const (
@@ -50,7 +51,7 @@ const (
 // New creates a new instance of terminal
 func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
-	var term = TerminalUI{params: p, tcr: tcr}
+	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	term.MuteDesktopNotifications(false)
 	term.StartReporting()
 	StartInterruptHandler()
@@ -64,11 +65,11 @@ func (term *TerminalUI) StartReporting() {
 
 // MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
-func (*TerminalUI) MuteDesktopNotifications(muted bool) {
+func (term *TerminalUI) MuteDesktopNotifications(muted bool) {
 	if muted {
-		desktop.MuteNotifications()
+		term.desktop.MuteNotifications()
 	} else {
-		desktop.UnmuteNotifications()
+		term.desktop.UnmuteNotifications()
 	}
 }
 
@@ -98,9 +99,9 @@ func (*TerminalUI) ReportSimple(_ bool, a ...interface{}) {
 func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
 	if emphasis {
 		printInGreen(a...)
-		err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+		err := term.desktop.ShowNotification(desktop.NormalLevel, "🟢 "+settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
-			term.ReportWarning(false, "Failed to show desktop ReportNotification: ", err.Error())
+			term.ReportWarning(false, "Failed to show desktop notification: ", err.Error())
 		}
 	} else {
 		printInCyan(a...)
@@ -117,9 +118,9 @@ func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 	printInYellow(a...)
 	if emphasis {
-		err := desktop.ShowNotification(desktop.NormalLevel, settings.ApplicationName, fmt.Sprint(a...))
+		err := term.desktop.ShowNotification(desktop.NormalLevel, "🟥 "+settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
-			term.ReportWarning(false, "Failed to show desktop ReportNotification: ", err.Error())
+			term.ReportWarning(false, "Failed to show desktop notification: ", err.Error())
 		}
 	}
 }

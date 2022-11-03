@@ -47,39 +47,48 @@ const (
 	HighLevel
 )
 
-var (
-	// The notifier used by default is beeep (3rd-party)
-	notifier           = newBeeepNotifier()
-	mutedNotifications = false
-)
+// Desktop represents a user desktop
+type Desktop struct {
+	notifier           notifierInterface
+	mutedNotifications bool
+}
+
+// NewDesktop returns a new desktop instance
+func NewDesktop(notifier notifierInterface) *Desktop {
+	d := Desktop{notifier: notifier}
+	if d.notifier == nil {
+		d.notifier = newBeeepNotifier()
+	}
+	return &d
+}
 
 // ShowNotification shows a notification message on the desktop. Implementation depends on the underlying OS.
-func ShowNotification(level NotificationLevel, title string, message string) (err error) {
-	if IsMuted() {
+func (desktop *Desktop) ShowNotification(level NotificationLevel, title string, message string) (err error) {
+	if desktop.IsMuted() {
 		return nil
 	}
 	switch level {
 	case NormalLevel:
-		err = notifier.normalLevelNotification(title, message)
+		err = desktop.notifier.normalLevelNotification(title, message)
 	case HighLevel:
-		err = notifier.highLevelNotification(title, message)
+		err = desktop.notifier.highLevelNotification(title, message)
 	}
 	return err
 }
 
 // IsMuted indicates if desktop notifications are muted
-func IsMuted() bool {
-	return mutedNotifications
+func (desktop *Desktop) IsMuted() bool {
+	return desktop.mutedNotifications
 }
 
 // MuteNotifications mutes desktop notifications
-func MuteNotifications() {
-	mutedNotifications = true
+func (desktop *Desktop) MuteNotifications() {
+	desktop.mutedNotifications = true
 }
 
 // UnmuteNotifications un-mutes desktop notifications
-func UnmuteNotifications() {
-	mutedNotifications = false
+func (desktop *Desktop) UnmuteNotifications() {
+	desktop.mutedNotifications = false
 }
 
 // newBeeepNotifier creates a beeep notifier instance

@@ -23,6 +23,7 @@ SOFTWARE.
 package cli
 
 import (
+	"github.com/murex/tcr/tcr-cli/desktop"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
@@ -95,10 +96,22 @@ func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
 	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
 }
 
+func terminalSetup2(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine, fakeNotifier *desktop.FakeNotifier) {
+	setLinePrefix("TCR")
+	fakeEngine = engine.NewFakeTcrEngine()
+	fakeNotifier = &desktop.FakeNotifier{}
+	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
+	sttyCmdDisabled = true
+	report.Reset()
+	//term.MuteDesktopNotifications(true)
+	term.StartReporting()
+	return
+}
+
 func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine) {
 	setLinePrefix("TCR")
 	fakeEngine = engine.NewFakeTcrEngine()
-	term = TerminalUI{params: p, tcr: fakeEngine}
+	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(nil)}
 	sttyCmdDisabled = true
 	report.Reset()
 	term.MuteDesktopNotifications(true)
@@ -401,6 +414,35 @@ func Test_terminal_reporting(t *testing.T) {
 				tt.method()
 				terminalTeardown(term)
 			}))
+		})
+	}
+}
+
+func Test_terminal_notification_box_title(t *testing.T) {
+	var testFlags = []struct {
+		desc     string
+		method   func(a ...interface{})
+		expected string
+	}{
+		{
+			"info with emphasis",
+			report.PostInfoWithEmphasis,
+			"🟢 TCR",
+		},
+		{
+			"warning with emphasis",
+			report.PostWarningWithEmphasis,
+			"🟥 TCR",
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			term, _, fakeNotifier := terminalSetup2(*params.AParamSet())
+			tt.method(tt.desc)
+			time.Sleep(1 * time.Millisecond)
+			assert.Equal(t, tt.expected, fakeNotifier.LastTitle)
+			terminalTeardown(term)
+
 		})
 	}
 }

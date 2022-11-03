@@ -28,27 +28,6 @@ import (
 	"testing"
 )
 
-type fakeNotifier struct {
-	lastLevel   NotificationLevel
-	lastTitle   string
-	lastMessage string
-	returnError error
-}
-
-func (n *fakeNotifier) normalLevelNotification(title string, message string) error {
-	n.lastLevel = NormalLevel
-	n.lastTitle = title
-	n.lastMessage = message
-	return n.returnError
-}
-
-func (n *fakeNotifier) highLevelNotification(title string, message string) error {
-	n.lastLevel = HighLevel
-	n.lastTitle = title
-	n.lastMessage = message
-	return n.returnError
-}
-
 func Test_show_notification(t *testing.T) {
 	var testFlags = []struct {
 		desc        string
@@ -93,43 +72,42 @@ func Test_show_notification(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			savedNotifier := notifier
-			savedMute := mutedNotifications
-			fake := fakeNotifier{returnError: tt.returnError}
-			notifier = &fake
+			fake := &FakeNotifier{ReturnError: tt.returnError}
+			desktop := NewDesktop(fake)
+
 			var expectedTitle, expectedMessage string
 			var expectedLevel NotificationLevel
 			var expectedError error
 			if tt.muted {
-				MuteNotifications()
+				desktop.MuteNotifications()
 				expectedLevel = 0
 				expectedTitle = ""
 				expectedMessage = ""
 				expectedError = nil
 			} else {
-				UnmuteNotifications()
+				desktop.UnmuteNotifications()
 				expectedLevel = tt.level
 				expectedTitle = tt.title
 				expectedMessage = tt.message
 				expectedError = tt.returnError
 			}
-			err := ShowNotification(tt.level, tt.title, tt.message)
-			assert.Equal(t, expectedLevel, fake.lastLevel)
-			assert.Equal(t, expectedTitle, fake.lastTitle)
-			assert.Equal(t, expectedMessage, fake.lastMessage)
+			err := desktop.ShowNotification(tt.level, tt.title, tt.message)
+			assert.Equal(t, expectedLevel, fake.LastLevel)
+			assert.Equal(t, expectedTitle, fake.LastTitle)
+			assert.Equal(t, expectedMessage, fake.LastMessage)
 			assert.Equal(t, expectedError, err)
-			notifier = savedNotifier
-			mutedNotifications = savedMute
 		})
 	}
 }
 
 func Test_mute_notifications(t *testing.T) {
-	MuteNotifications()
-	assert.True(t, IsMuted())
+	desktop := NewDesktop(nil)
+	desktop.MuteNotifications()
+	assert.True(t, desktop.IsMuted())
 }
 
 func Test_unmute_notifications(t *testing.T) {
-	UnmuteNotifications()
-	assert.False(t, IsMuted())
+	desktop := NewDesktop(nil)
+	desktop.UnmuteNotifications()
+	assert.False(t, desktop.IsMuted())
 }
