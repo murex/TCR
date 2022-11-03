@@ -96,25 +96,13 @@ func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
 	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
 }
 
-func terminalSetup2(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine, fakeNotifier *desktop.FakeNotifier) {
+func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine, fakeNotifier *desktop.FakeNotifier) {
 	setLinePrefix("TCR")
 	fakeEngine = engine.NewFakeTcrEngine()
 	fakeNotifier = &desktop.FakeNotifier{}
 	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
 	sttyCmdDisabled = true
 	report.Reset()
-	//term.MuteDesktopNotifications(true)
-	term.StartReporting()
-	return
-}
-
-func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine) {
-	setLinePrefix("TCR")
-	fakeEngine = engine.NewFakeTcrEngine()
-	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(nil)}
-	sttyCmdDisabled = true
-	report.Reset()
-	term.MuteDesktopNotifications(true)
 	term.StartReporting()
 	return
 }
@@ -197,7 +185,7 @@ func Test_terminal_tracing_methods(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
 			terminalTeardown(term)
 		})
@@ -221,7 +209,7 @@ func Test_notify_role_starting(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleStarting(tt.currentRole)
 			}))
@@ -247,7 +235,7 @@ func Test_notify_role_ending(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleEnding(tt.currentRole)
 			}))
@@ -279,7 +267,7 @@ func Test_list_role_menu_options(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.listRoleMenuOptions(tt.currentRole, title)
 			}))
@@ -314,7 +302,7 @@ func Test_simple_message_methods(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
 			terminalTeardown(term)
 		})
@@ -350,7 +338,7 @@ func Test_show_running_mode(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.currentMode.Name(), func(t *testing.T) {
-			term, _ := terminalSetup(*params.AParamSet())
+			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.ShowRunningMode(tt.currentMode)
 			}))
@@ -409,7 +397,7 @@ func Test_terminal_reporting(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term, _ := terminalSetup(*params.AParamSet())
+				term, _, _ := terminalSetup(*params.AParamSet())
 				time.Sleep(1 * time.Millisecond)
 				tt.method()
 				terminalTeardown(term)
@@ -437,7 +425,7 @@ func Test_terminal_notification_box_title(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			term, _, fakeNotifier := terminalSetup2(*params.AParamSet())
+			term, _, fakeNotifier := terminalSetup(*params.AParamSet())
 			tt.method(tt.desc)
 			time.Sleep(1 * time.Millisecond)
 			assert.Equal(t, tt.expected, fakeNotifier.LastTitle)
@@ -454,7 +442,7 @@ func Test_show_session_info(t *testing.T) {
 		asCyanTrace("Running on git branch \"fake\" with auto-push disabled")
 
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
-		term, _ := terminalSetup(*params.AParamSet())
+		term, _, _ := terminalSetup(*params.AParamSet())
 		term.ShowSessionInfo()
 		terminalTeardown(term)
 	}))
@@ -517,6 +505,7 @@ func Test_main_menu(t *testing.T) {
 }
 
 func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TcrCall) {
+	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
 	stderr := os.Stderr
@@ -529,7 +518,7 @@ func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TcrCall
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
 
-	term, fakeEngine := terminalSetup(*params.AParamSet())
+	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
 	term.mainMenu()
 	assert.Equal(t, append(expected, engine.TcrCallQuit), fakeEngine.GetCallHistory())
 	terminalTeardown(term)
@@ -632,6 +621,7 @@ func Test_navigator_menu(t *testing.T) {
 }
 
 func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []engine.TcrCall) {
+	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
 	stderr := os.Stderr
@@ -644,7 +634,7 @@ func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []en
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
 
-	term, fakeEngine := terminalSetup(*params.AParamSet())
+	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
 	term.startAs(r)
 	assert.Equal(t, append(expected, engine.TcrCallStop), fakeEngine.GetCallHistory())
 	terminalTeardown(term)
@@ -719,7 +709,7 @@ func assertStartTerminal(t *testing.T, mode runmode.RunMode, input []byte, expec
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
 
-	term, fakeEngine := terminalSetup(*params.AParamSet(params.WithRunMode(mode)))
+	term, fakeEngine, _ := terminalSetup(*params.AParamSet(params.WithRunMode(mode)))
 	term.Start()
 	terminalTeardown(term)
 	assert.Equal(t, expected, fakeEngine.GetCallHistory())
