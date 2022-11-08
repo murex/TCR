@@ -9,8 +9,8 @@ replace github.com/murex/tcr/tcr-gui => ../tcr-gui
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-20221024075948-40da13dae5dc
-	github.com/murex/tcr/tcr-gui v0.0.0-20221024075948-40da13dae5dc
+	github.com/murex/tcr/tcr-cli v0.0.0-20221031065251-183af6f06473
+	github.com/murex/tcr/tcr-gui v0.0.0-20221031065251-183af6f06473
 	github.com/spf13/cobra v1.6.1
 )
 
@@ -18,7 +18,7 @@ require (
 	fyne.io/fyne/v2 v2.2.3 // indirect
 	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20220930113650-c6815a8c17ad // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/cloudflare/circl v1.2.0 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
@@ -53,7 +53,7 @@ require (
 	github.com/mengdaming/go-junit v0.1.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/murex/tcr/tcr-engine v0.0.0-20221024075948-40da13dae5dc // indirect
+	github.com/murex/tcr/tcr-engine v0.0.0-20221031065251-183af6f06473 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
@@ -64,7 +64,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.13.0 // indirect
+	github.com/spf13/viper v1.14.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
@@ -78,7 +78,7 @@ require (
 	golang.org/x/mobile v0.0.0-20221020085226-b36e6246172e // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.2.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
