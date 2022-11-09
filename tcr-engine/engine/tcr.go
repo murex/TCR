@@ -95,6 +95,7 @@ const (
 	commitMessageFail   = "❌ TCR - tests failing"
 	commitMessageRevert = "⏪ TCR - revert changes"
 	testFailureMessage  = "Some tests are failing! That's unfortunate"
+	buildFailureMessage = "There are build errors! I can't go any further"
 )
 
 var (
@@ -421,7 +422,7 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 	result = tcr.toolchain.RunBuild()
 	if result.Failed() {
 		status.RecordState(status.BuildFailed)
-		report.PostWarning("There are build errors! I can't go any further")
+		report.PostWarningWithEmphasis(buildFailureMessage)
 	}
 	return result
 }

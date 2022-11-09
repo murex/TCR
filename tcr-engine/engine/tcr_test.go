@@ -93,18 +93,35 @@ func Test_tcr_command_end_state(t *testing.T) {
 func Test_tcr_reports_and_emphasises(t *testing.T) {
 	testFlags := []struct {
 		desc              string
+		failAt            toolchain.Operation
 		isExpectedMessage func(report.Message) bool
 	}{
 		{
-			desc: "reports tests failures as errors",
+			desc:   "reports tests failures as errors",
+			failAt: toolchain.TestOperation,
 			isExpectedMessage: func(msg report.Message) bool {
 				return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
 			},
 		},
 		{
-			desc: "emphasises tests failures",
+			desc:   "reports build failures as warnings",
+			failAt: toolchain.BuildOperation,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == buildFailureMessage && msg.Type.Severity == report.Warning
+			},
+		},
+		{
+			desc:   "emphasises tests failures",
+			failAt: toolchain.TestOperation,
 			isExpectedMessage: func(msg report.Message) bool {
 				return msg.Text == testFailureMessage && msg.Type.Emphasis
+			},
+		},
+		{
+			desc:   "emphasises build failures",
+			failAt: toolchain.BuildOperation,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == buildFailureMessage && msg.Type.Emphasis
 			},
 		},
 	}
@@ -115,7 +132,8 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 
 			sniffer := report.NewSniffer(tt.isExpectedMessage)
 
-			tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
+			tcr := initTcrEngineWithFakes(nil, toolchain.Operations{tt.failAt}, nil, nil)
+			tcr.build()
 			tcr.test()
 
 			time.Sleep(1 * time.Millisecond)
