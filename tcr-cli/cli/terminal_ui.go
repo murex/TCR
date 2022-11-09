@@ -103,7 +103,7 @@ func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
 		printInCyan(a...)
 	}
 
-	term.notifyOnEmphasis(emphasis, "🟢", a)
+	term.notifyOnEmphasis(emphasis, "🟢", a...)
 }
 
 // ReportTitle reports title messages
@@ -115,13 +115,13 @@ func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 // ReportWarning reports warning messages
 func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 	printInYellow(a...)
-	term.notifyOnEmphasis(emphasis, "🔶", a)
+	term.notifyOnEmphasis(emphasis, "🔶", a...)
 }
 
 // ReportError reports error messages
 func (term *TerminalUI) ReportError(emphasis bool, a ...interface{}) {
 	printInRed(a...)
-	term.notifyOnEmphasis(emphasis, "🟥", a)
+	term.notifyOnEmphasis(emphasis, "🟥", a...)
 }
 
 func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...interface{}) {
