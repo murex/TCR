@@ -159,6 +159,11 @@ func PostError(a ...interface{}) {
 	postMessage(MessageType{Severity: Error}, a...)
 }
 
+// PostErrorWithEmphasis posts an error message for reporting
+func PostErrorWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Error, Emphasis: true}, a...)
+}
+
 // PostInfoWithEmphasis posts an info message with emphasis
 func PostInfoWithEmphasis(a ...interface{}) {
 	postMessage(MessageType{Severity: Info, Emphasis: true}, a...)

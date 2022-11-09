@@ -118,7 +118,7 @@ func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 	printInYellow(a...)
 	if emphasis {
-		err := term.desktop.ShowNotification(desktop.NormalLevel, "🟥 "+settings.ApplicationName, fmt.Sprint(a...))
+		err := term.desktop.ShowNotification(desktop.NormalLevel, "🔶 "+settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
 			term.ReportWarning(false, "Failed to show desktop notification: ", err.Error())
 		}
@@ -126,8 +126,14 @@ func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 }
 
 // ReportError reports error messages
-func (*TerminalUI) ReportError(_ bool, a ...interface{}) {
+func (term *TerminalUI) ReportError(emphasis bool, a ...interface{}) {
 	printInRed(a...)
+	if emphasis {
+		err := term.desktop.ShowNotification(desktop.NormalLevel, "🟥 "+settings.ApplicationName, fmt.Sprint(a...))
+		if err != nil {
+			term.ReportWarning(false, "Failed to show desktop notification: ", err.Error())
+		}
+	}
 }
 
 func (term *TerminalUI) mainMenu() {

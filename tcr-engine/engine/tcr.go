@@ -94,6 +94,7 @@ const (
 	commitMessageOk     = "✅ TCR - tests passing"
 	commitMessageFail   = "❌ TCR - tests failing"
 	commitMessageRevert = "⏪ TCR - revert changes"
+	testFailureMessage  = "Some tests are failing! That's unfortunate"
 )
 
 var (
@@ -430,7 +431,7 @@ func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 	result = tcr.toolchain.RunTests()
 	if result.Failed() {
 		status.RecordState(status.TestFailed)
-		report.PostWarningWithEmphasis("Some tests are failing! That's unfortunate")
+		report.PostErrorWithEmphasis(testFailureMessage)
 	}
 	return result
 }

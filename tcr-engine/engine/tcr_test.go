@@ -95,7 +95,7 @@ func Test_tcr_reports_tests_failures(t *testing.T) {
 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Warning && msg.Text == "Some tests are failing! That's unfortunate"
+			return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
 		},
 	)
 
@@ -113,9 +113,7 @@ func Test_tcr_displays_notifications_on_tests_failures(t *testing.T) {
 
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Warning &&
-				msg.Type.Emphasis &&
-				msg.Text == "Some tests are failing! That's unfortunate"
+			return msg.Text == testFailureMessage && msg.Type.Emphasis
 		},
 	)
 

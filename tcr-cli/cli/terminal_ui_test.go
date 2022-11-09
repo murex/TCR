@@ -420,6 +420,11 @@ func Test_terminal_notification_box_title(t *testing.T) {
 		{
 			"warning with emphasis",
 			report.PostWarningWithEmphasis,
+			"🔶 TCR",
+		},
+		{
+			"error with emphasis",
+			report.PostErrorWithEmphasis,
 			"🟥 TCR",
 		},
 	}
