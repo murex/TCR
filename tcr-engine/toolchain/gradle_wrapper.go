@@ -31,13 +31,13 @@ func init() {
 					Os:        []OsName{OsDarwin, OsLinux},
 					Arch:      GetAllArchNames(),
 					Path:      "./gradlew",
-					Arguments: []string{"build", "-x", "test"},
+					Arguments: []string{"build", "testClasses", "-x", "test"},
 				},
 				{
 					Os:        []OsName{OsWindows},
 					Arch:      GetAllArchNames(),
 					Path:      ".\\gradlew.bat",
-					Arguments: []string{"build", "-x", "test"},
+					Arguments: []string{"build", "testClasses", "-x", "test"},
 				},
 			},
 			testCommands: []Command{
