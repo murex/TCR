@@ -37,6 +37,7 @@ const (
 	Normal Severity = iota
 	Info
 	Title
+	Timer
 	Success
 	Warning
 	Error
@@ -47,6 +48,7 @@ type MessageReporter interface {
 	ReportSimple(emphasis bool, a ...interface{})
 	ReportInfo(emphasis bool, a ...interface{})
 	ReportTitle(emphasis bool, a ...interface{})
+	ReportTimer(emphasis bool, a ...interface{})
 	ReportSuccess(emphasis bool, a ...interface{})
 	ReportWarning(emphasis bool, a ...interface{})
 	ReportError(emphasis bool, a ...interface{})
@@ -114,6 +116,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		Info:    MessageReporter.ReportInfo,
 		Normal:  MessageReporter.ReportSimple,
 		Title:   MessageReporter.ReportTitle,
+		Timer:   MessageReporter.ReportTimer,
 		Success: MessageReporter.ReportSuccess,
 		Warning: MessageReporter.ReportWarning,
 		Error:   MessageReporter.ReportError,
@@ -160,6 +163,11 @@ func PostError(a ...interface{}) {
 // PostInfoWithEmphasis posts an info message with emphasis
 func PostInfoWithEmphasis(a ...interface{}) {
 	postMessage(MessageType{Severity: Info, Emphasis: true}, a...)
+}
+
+// PostTimerWithEmphasis posts a timer message with emphasis
+func PostTimerWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Timer, Emphasis: true}, a...)
 }
 
 // PostSuccessWithEmphasis posts a success message for reporting

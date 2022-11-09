@@ -115,6 +115,11 @@ func Test_post_message_functions(t *testing.T) {
 			MessageType{Info, true},
 		},
 		{
+			"timer message with emphasis",
+			PostTimerWithEmphasis,
+			MessageType{Timer, true},
+		},
+		{
 			"success message with emphasis",
 			PostSuccessWithEmphasis,
 			MessageType{Success, true},
@@ -186,6 +191,11 @@ func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
 // ReportTitle reports title messages
 func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
 	stub.report(Title, emphasis, a...)
+}
+
+// ReportTimer reports timer messages
+func (stub *messageReporterStub) ReportTimer(emphasis bool, a ...interface{}) {
+	stub.report(Timer, emphasis, a...)
 }
 
 // ReportSuccess reports success messages

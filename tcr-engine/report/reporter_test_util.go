@@ -88,6 +88,11 @@ func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, a...))
 }
 
+// ReportTimer reports timer messages
+func (sniffer *Sniffer) ReportTimer(emphasis bool, a ...interface{}) {
+	sniffer.sniff(NewMessage(MessageType{Timer, emphasis}, a...))
+}
+
 // ReportSuccess reports warning messages
 func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...interface{}) {
 	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, a...))

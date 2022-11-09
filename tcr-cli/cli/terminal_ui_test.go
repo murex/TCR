@@ -386,6 +386,13 @@ func Test_terminal_reporting(t *testing.T) {
 			asGreenTrace("Some info with emphasis report"),
 		},
 		{
+			"PostTimerWithEmphasis method",
+			func() {
+				report.PostTimerWithEmphasis("Some timer with emphasis report")
+			},
+			asGreenTrace("Some timer with emphasis report"),
+		},
+		{
 			"PostSuccessWithEmphasis method",
 			func() {
 				report.PostSuccessWithEmphasis("Some success with emphasis report")
@@ -430,6 +437,11 @@ func Test_terminal_notification_box_title(t *testing.T) {
 			"info with emphasis",
 			report.PostInfoWithEmphasis,
 			"🟢 TCR",
+		},
+		{
+			"timer with emphasis",
+			report.PostTimerWithEmphasis,
+			"⏳ TCR",
 		},
 		{
 			"success with emphasis",

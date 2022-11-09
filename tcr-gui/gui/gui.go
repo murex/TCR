@@ -170,6 +170,12 @@ func (gui *GUI) ReportTitle(_ bool, a ...interface{}) {
 	gui.traceArea.printHeader(a...)
 }
 
+// ReportTimer reports timer messages
+func (gui *GUI) ReportTimer(emphasis bool, a ...interface{}) {
+	//TODO implement me
+	panic("implement me")
+}
+
 // ReportSuccess reports success messages
 func (gui *GUI) ReportSuccess(emphasis bool, a ...interface{}) {
 	//TODO implement me
