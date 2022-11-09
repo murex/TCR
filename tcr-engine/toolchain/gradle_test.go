@@ -59,7 +59,7 @@ func Test_gradle_toolchain_build_command_path(t *testing.T) {
 }
 
 func Test_gradle_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build", "-x", "test"}, gradleToolchainName)
+	assertBuildCommandArgs(t, []string{"build", "testClasses", "-x", "test"}, gradleToolchainName)
 }
 
 func Test_gradle_toolchain_test_command_path(t *testing.T) {

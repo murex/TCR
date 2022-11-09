@@ -30,7 +30,7 @@ func init() {
 				Os:        GetAllOsNames(),
 				Arch:      GetAllArchNames(),
 				Path:      "gradle",
-				Arguments: []string{"build", "-x", "test"},
+				Arguments: []string{"build", "testClasses", "-x", "test"},
 			}},
 			testCommands: []Command{{
 				Os:        GetAllOsNames(),

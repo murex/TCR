@@ -55,7 +55,7 @@ func Test_gradle_wrapper_toolchain_name(t *testing.T) {
 }
 
 func Test_gradle_wrapper_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build", "-x", "test"}, gradleWrapperToolchainName)
+	assertBuildCommandArgs(t, []string{"build", "testClasses", "-x", "test"}, gradleWrapperToolchainName)
 }
 
 func Test_gradle_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
