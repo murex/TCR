@@ -35,6 +35,7 @@ type (
 const (
 	BuildOperation Operation = "build"
 	TestOperation  Operation = "test"
+	Never          Operation = ""
 )
 
 func (operations Operations) contains(operation Operation) bool {

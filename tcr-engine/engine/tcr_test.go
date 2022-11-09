@@ -97,13 +97,6 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 		isExpectedMessage func(report.Message) bool
 	}{
 		{
-			desc:   "reports tests failures as errors",
-			failAt: toolchain.TestOperation,
-			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
-			},
-		},
-		{
 			desc:   "reports build failures as warnings",
 			failAt: toolchain.BuildOperation,
 			isExpectedMessage: func(msg report.Message) bool {
@@ -111,17 +104,38 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			},
 		},
 		{
-			desc:   "emphasises tests failures",
-			failAt: toolchain.TestOperation,
-			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testFailureMessage && msg.Type.Emphasis
-			},
-		},
-		{
 			desc:   "emphasises build failures",
 			failAt: toolchain.BuildOperation,
 			isExpectedMessage: func(msg report.Message) bool {
 				return msg.Text == buildFailureMessage && msg.Type.Emphasis
+			},
+		},
+		{
+			desc:   "reports test successes as info",
+			failAt: toolchain.Never,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testSuccessMessage && msg.Type.Severity == report.Info
+			},
+		},
+		{
+			desc:   "emphasises test successes",
+			failAt: toolchain.Never,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testSuccessMessage && msg.Type.Emphasis
+			},
+		},
+		{
+			desc:   "reports test failures as errors",
+			failAt: toolchain.TestOperation,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
+			},
+		},
+		{
+			desc:   "emphasises test failures",
+			failAt: toolchain.TestOperation,
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testFailureMessage && msg.Type.Emphasis
 			},
 		},
 	}
