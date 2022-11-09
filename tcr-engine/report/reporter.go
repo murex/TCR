@@ -37,6 +37,7 @@ const (
 	Normal Severity = iota
 	Info
 	Title
+	Success
 	Warning
 	Error
 )
@@ -46,6 +47,7 @@ type MessageReporter interface {
 	ReportSimple(emphasis bool, a ...interface{})
 	ReportInfo(emphasis bool, a ...interface{})
 	ReportTitle(emphasis bool, a ...interface{})
+	ReportSuccess(emphasis bool, a ...interface{})
 	ReportWarning(emphasis bool, a ...interface{})
 	ReportError(emphasis bool, a ...interface{})
 }
@@ -112,6 +114,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		Info:    MessageReporter.ReportInfo,
 		Normal:  MessageReporter.ReportSimple,
 		Title:   MessageReporter.ReportTitle,
+		Success: MessageReporter.ReportSuccess,
 		Warning: MessageReporter.ReportWarning,
 		Error:   MessageReporter.ReportError,
 	}
@@ -149,24 +152,29 @@ func PostWarning(a ...interface{}) {
 	postMessage(MessageType{Severity: Warning}, a...)
 }
 
-// PostWarningWithEmphasis posts a warning with emphasis
-func PostWarningWithEmphasis(a ...interface{}) {
-	postMessage(MessageType{Severity: Warning, Emphasis: true}, a...)
-}
-
 // PostError posts an error message for reporting
 func PostError(a ...interface{}) {
 	postMessage(MessageType{Severity: Error}, a...)
 }
 
-// PostErrorWithEmphasis posts an error message for reporting
-func PostErrorWithEmphasis(a ...interface{}) {
-	postMessage(MessageType{Severity: Error, Emphasis: true}, a...)
-}
-
 // PostInfoWithEmphasis posts an info message with emphasis
 func PostInfoWithEmphasis(a ...interface{}) {
 	postMessage(MessageType{Severity: Info, Emphasis: true}, a...)
+}
+
+// PostSuccessWithEmphasis posts a success message for reporting
+func PostSuccessWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Success, Emphasis: true}, a...)
+}
+
+// PostWarningWithEmphasis posts a warning with emphasis
+func PostWarningWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Warning, Emphasis: true}, a...)
+}
+
+// PostErrorWithEmphasis posts an error message for reporting
+func PostErrorWithEmphasis(a ...interface{}) {
+	postMessage(MessageType{Severity: Error, Emphasis: true}, a...)
 }
 
 func postMessage(msgType MessageType, a ...interface{}) {

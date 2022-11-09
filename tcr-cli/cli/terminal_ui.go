@@ -112,6 +112,12 @@ func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
 	printInCyan(a...)
 }
 
+// ReportSuccess reports success messages
+func (term *TerminalUI) ReportSuccess(emphasis bool, a ...interface{}) {
+	printInGreen(a...)
+	term.notifyOnEmphasis(emphasis, "🟢", a...)
+}
+
 // ReportWarning reports warning messages
 func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
 	printInYellow(a...)

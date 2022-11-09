@@ -111,10 +111,10 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			},
 		},
 		{
-			desc:   "reports test successes as info",
+			desc:   "reports test successes as success",
 			failAt: toolchain.Never,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testSuccessMessage && msg.Type.Severity == report.Info
+				return msg.Text == testSuccessMessage && msg.Type.Severity == report.Success
 			},
 		},
 		{

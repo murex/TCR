@@ -435,7 +435,7 @@ func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 		status.RecordState(status.TestFailed)
 		report.PostErrorWithEmphasis(testFailureMessage)
 	} else {
-		report.PostInfoWithEmphasis(testSuccessMessage)
+		report.PostSuccessWithEmphasis(testSuccessMessage)
 	}
 	return result
 }

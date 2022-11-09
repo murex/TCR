@@ -115,9 +115,19 @@ func Test_post_message_functions(t *testing.T) {
 			MessageType{Info, true},
 		},
 		{
+			"success message with emphasis",
+			PostSuccessWithEmphasis,
+			MessageType{Success, true},
+		},
+		{
 			"warning message with emphasis",
 			PostWarningWithEmphasis,
 			MessageType{Warning, true},
+		},
+		{
+			"error message with emphasis",
+			PostErrorWithEmphasis,
+			MessageType{Error, true},
 		},
 	}
 
@@ -176,6 +186,11 @@ func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
 // ReportTitle reports title messages
 func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
 	stub.report(Title, emphasis, a...)
+}
+
+// ReportSuccess reports success messages
+func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...interface{}) {
+	stub.report(Success, emphasis, a...)
 }
 
 // ReportWarning reports warning messages
