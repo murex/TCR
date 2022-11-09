@@ -379,13 +379,6 @@ func Test_terminal_reporting(t *testing.T) {
 			asNeutralTrace("Some text report"),
 		},
 		{
-			"PostInfoWithEmphasis method",
-			func() {
-				report.PostInfoWithEmphasis("Some info with emphasis report")
-			},
-			asGreenTrace("Some info with emphasis report"),
-		},
-		{
 			"PostTimerWithEmphasis method",
 			func() {
 				report.PostTimerWithEmphasis("Some timer with emphasis report")
@@ -433,11 +426,6 @@ func Test_terminal_notification_box_title(t *testing.T) {
 		method   func(a ...interface{})
 		expected string
 	}{
-		{
-			"info with emphasis",
-			report.PostInfoWithEmphasis,
-			"🟢 TCR",
-		},
 		{
 			"timer with emphasis",
 			report.PostTimerWithEmphasis,

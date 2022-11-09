@@ -160,11 +160,6 @@ func PostError(a ...interface{}) {
 	postMessage(MessageType{Severity: Error}, a...)
 }
 
-// PostInfoWithEmphasis posts an info message with emphasis
-func PostInfoWithEmphasis(a ...interface{}) {
-	postMessage(MessageType{Severity: Info, Emphasis: true}, a...)
-}
-
 // PostTimerWithEmphasis posts a timer message with emphasis
 func PostTimerWithEmphasis(a ...interface{}) {
 	postMessage(MessageType{Severity: Timer, Emphasis: true}, a...)

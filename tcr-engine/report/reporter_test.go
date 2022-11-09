@@ -110,11 +110,6 @@ func Test_post_message_functions(t *testing.T) {
 			MessageType{Error, false},
 		},
 		{
-			"info message with emphasis",
-			PostInfoWithEmphasis,
-			MessageType{Info, true},
-		},
-		{
 			"timer message with emphasis",
 			PostTimerWithEmphasis,
 			MessageType{Timer, true},

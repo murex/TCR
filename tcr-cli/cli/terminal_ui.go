@@ -96,14 +96,8 @@ func (*TerminalUI) ReportSimple(_ bool, a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (term *TerminalUI) ReportInfo(emphasis bool, a ...interface{}) {
-	if emphasis {
-		printInGreen(a...)
-	} else {
-		printInCyan(a...)
-	}
-
-	term.notifyOnEmphasis(emphasis, "🟢", a...)
+func (term *TerminalUI) ReportInfo(_ bool, a ...interface{}) {
+	printInCyan(a...)
 }
 
 // ReportTitle reports title messages
