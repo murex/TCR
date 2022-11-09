@@ -2,7 +2,7 @@
 default: build doc ;
 
 # Modules that can be build into an executable
-BUILD_MODULES = tcr-cli tcr-gui
+BUILD_MODULES = tcr-cli
 # Library modules
 LIB_MODULES = tcr-engine
 # Documentation modules
@@ -19,7 +19,7 @@ ALL_MODULES = $(BUILD_MODULES) $(LIB_MODULES) $(DOC_MODULES)
 # Module dependencies
 tcr-cli: tcr-engine
 tcr-gui: tcr-engine tcr-cli
-tcr-doc: tcr-cli tcr-gui
+tcr-doc: tcr-cli
 
 # Convenience target for automating release preparation
 .PHONY: prepare

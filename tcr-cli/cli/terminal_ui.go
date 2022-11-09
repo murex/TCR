@@ -96,7 +96,7 @@ func (*TerminalUI) ReportSimple(_ bool, a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (term *TerminalUI) ReportInfo(_ bool, a ...interface{}) {
+func (*TerminalUI) ReportInfo(_ bool, a ...interface{}) {
 	printInCyan(a...)
 }
 

@@ -24,7 +24,6 @@ package main
 
 import (
 	cli "github.com/murex/tcr/tcr-cli/cmd"
-	gui "github.com/murex/tcr/tcr-gui/cmd"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -36,9 +35,6 @@ const docDirectory = "../doc"
 func main() {
 	if genDocFor(cli.GetRootCmd()) != nil {
 		log.Fatal("generation of markdown documentation for CLI command")
-	}
-	if genDocFor(gui.GetRootCmd()) != nil {
-		log.Fatal("generation of markdown documentation for GUI command")
 	}
 }
 
