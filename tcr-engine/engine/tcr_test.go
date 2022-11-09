@@ -90,40 +90,41 @@ func Test_tcr_command_end_state(t *testing.T) {
 	}
 }
 
-func Test_tcr_reports_tests_failures(t *testing.T) {
-	status.RecordState(status.Ok)
-
-	sniffer := report.NewSniffer(
-		func(msg report.Message) bool {
-			return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
+func Test_tcr_reports_and_emphasises(t *testing.T) {
+	testFlags := []struct {
+		desc              string
+		isExpectedMessage func(report.Message) bool
+	}{
+		{
+			desc: "reports tests failures as errors",
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
+			},
 		},
-	)
-
-	tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
-	tcr.test()
-
-	time.Sleep(1 * time.Millisecond)
-	sniffer.Stop()
-
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-}
-
-func Test_tcr_displays_notifications_on_tests_failures(t *testing.T) {
-	status.RecordState(status.Ok)
-
-	sniffer := report.NewSniffer(
-		func(msg report.Message) bool {
-			return msg.Text == testFailureMessage && msg.Type.Emphasis
+		{
+			desc: "emphasises tests failures",
+			isExpectedMessage: func(msg report.Message) bool {
+				return msg.Text == testFailureMessage && msg.Type.Emphasis
+			},
 		},
-	)
+	}
 
-	tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
-	tcr.test()
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			status.RecordState(status.Ok)
 
-	time.Sleep(1 * time.Millisecond)
-	sniffer.Stop()
+			sniffer := report.NewSniffer(tt.isExpectedMessage)
 
-	assert.Equal(t, 1, sniffer.GetMatchCount())
+			tcr := initTcrEngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
+			tcr.test()
+
+			time.Sleep(1 * time.Millisecond)
+			sniffer.Stop()
+
+			assert.Equal(t, 1, sniffer.GetMatchCount())
+		})
+	}
+
 }
 
 func Test_tcr_operation_end_state(t *testing.T) {
