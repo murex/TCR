@@ -7,7 +7,7 @@ replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 
 require (
-	fyne.io/fyne/v2 v2.2.3
+	fyne.io/fyne/v2 v2.2.4
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/goreleaser/goreleaser v1.12.3
 	github.com/murex/tcr/tcr-cli v0.0.0-20221108084800-be8a61d711d6
