@@ -154,15 +154,8 @@ func (gui *GUI) ReportSimple(_ bool, a ...interface{}) {
 }
 
 // ReportInfo reports info messages
-func (gui *GUI) ReportInfo(emphasis bool, a ...interface{}) {
-	if emphasis {
-		gui.traceArea.printText(greenColor, false, a...)
-		if !gui.muteNotifications {
-			gui.app.SendNotification(fyne.NewNotification("🟢 "+settings.ApplicationName, fmt.Sprint(a...)))
-		}
-	} else {
-		gui.traceArea.printText(cyanColor, false, a...)
-	}
+func (gui *GUI) ReportInfo(_ bool, a ...interface{}) {
+	gui.traceArea.printText(cyanColor, false, a...)
 }
 
 // ReportTitle reports title messages
@@ -172,27 +165,35 @@ func (gui *GUI) ReportTitle(_ bool, a ...interface{}) {
 
 // ReportTimer reports timer messages
 func (gui *GUI) ReportTimer(emphasis bool, a ...interface{}) {
-	//TODO implement me
-	panic("implement me")
+	gui.traceArea.printText(greenColor, false, a...)
+	gui.notifyOnEmphasis(emphasis, "⏳", a...)
 }
 
 // ReportSuccess reports success messages
 func (gui *GUI) ReportSuccess(emphasis bool, a ...interface{}) {
-	//TODO implement me
-	panic("implement me")
+	gui.traceArea.printText(greenColor, false, a...)
+	gui.notifyOnEmphasis(emphasis, "🟢", a...)
 }
 
 // ReportWarning reports warning messages
 func (gui *GUI) ReportWarning(emphasis bool, a ...interface{}) {
 	gui.traceArea.printText(orangeColor, false, a...)
-	if emphasis && !gui.muteNotifications {
-		gui.app.SendNotification(fyne.NewNotification("🟥 "+settings.ApplicationName, fmt.Sprint(a...)))
-	}
+	gui.notifyOnEmphasis(emphasis, "🔶", a...)
 }
 
 // ReportError reports error messages
-func (gui *GUI) ReportError(_ bool, a ...interface{}) {
+func (gui *GUI) ReportError(emphasis bool, a ...interface{}) {
 	gui.traceArea.printText(redColor, false, a...)
+	gui.notifyOnEmphasis(emphasis, "🟥", a...)
+}
+
+func (gui *GUI) notifyOnEmphasis(emphasis bool, emoji string, a ...interface{}) {
+	if emphasis && !gui.muteNotifications {
+		gui.app.SendNotification(fyne.NewNotification(
+			emoji+" "+settings.ApplicationName,
+			fmt.Sprint(a...)),
+		)
+	}
 }
 
 func (gui *GUI) quit(message string) {
