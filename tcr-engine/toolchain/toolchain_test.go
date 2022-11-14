@@ -112,8 +112,10 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 		t.Error(err)
 		return
 	}
+	defer func() {
+		_ = os.Chdir(initialDir)
+	}()
 	testFunction(t)
-	_ = os.Chdir(initialDir)
 }
 
 func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {

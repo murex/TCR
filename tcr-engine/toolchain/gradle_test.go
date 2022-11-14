@@ -33,7 +33,7 @@ const (
 
 const gradleCommandPath = "gradle"
 
-func Test_gradle_and_gradle_wrapper_are_a_built_in_toolchains(t *testing.T) {
+func Test_gradle_and_gradle_wrapper_are_built_in_toolchains(t *testing.T) {
 	assertIsABuiltInToolchain(t, gradleToolchainName)
 	assertIsABuiltInToolchain(t, gradleWrapperToolchainName)
 }

@@ -1,7 +1,7 @@
 //go:build !windows
 
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2022 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,4 @@ SOFTWARE.
 
 package toolchain
 
-import (
-	"testing"
-)
-
-func Test_maven_wrapper_toolchain_build_command_path_on_unix(t *testing.T) {
-	assertBuildCommandPath(t, "./mvnw", mavenWrapperToolchainName)
-}
-
-func Test_maven_wrapper_toolchain_test_command_path_on_windows(t *testing.T) {
-	assertTestCommandPath(t, "./mvnw", mavenWrapperToolchainName)
-}
+const mavenWrapperCommandPath = "./mvnw"
