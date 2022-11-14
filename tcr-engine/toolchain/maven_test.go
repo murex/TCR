@@ -27,53 +27,87 @@ import (
 )
 
 const (
-	mavenToolchainName = "maven"
+	mavenToolchainName        = "maven"
+	mavenWrapperToolchainName = "maven-wrapper"
 )
 
-func Test_maven_is_a_built_in_toolchain(t *testing.T) {
+const mavenCommandPath = "mvn"
+
+func Test_maven_and_maven_wrapper_are_built_in_toolchains(t *testing.T) {
 	assertIsABuiltInToolchain(t, mavenToolchainName)
+	assertIsABuiltInToolchain(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_is_supported(t *testing.T) {
+func Test_maven_toolchains_are_supported(t *testing.T) {
 	assertIsSupported(t, mavenToolchainName)
+	assertIsSupported(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_is_registered(t *testing.T) {
+func Test_maven_toolchains_are_registered(t *testing.T) {
 	assertIsRegistered(t, mavenToolchainName)
+	assertIsRegistered(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_name_is_case_insensitive(t *testing.T) {
+func Test_maven_toolchain_names_are_case_insensitive(t *testing.T) {
 	assertNameIsNotCaseSensitive(t, mavenToolchainName)
+	assertNameIsNotCaseSensitive(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_initialization(t *testing.T) {
+func Test_maven_toolchains_initialization(t *testing.T) {
 	assertToolchainInitialization(t, mavenToolchainName)
+	assertToolchainInitialization(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_name(t *testing.T) {
+func Test_maven_toolchains_name(t *testing.T) {
 	assertToolchainName(t, mavenToolchainName)
+	assertToolchainName(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "mvn", mavenToolchainName)
+func Test_maven_toolchains_build_command_path(t *testing.T) {
+	assertBuildCommandPath(t, mavenCommandPath, mavenToolchainName)
+	assertBuildCommandPath(t, mavenWrapperCommandPath, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"test-compile"}, mavenToolchainName)
+func Test_maven_toolchains_build_command_args(t *testing.T) {
+	buildCommandArgs := []string{"test-compile"}
+	assertBuildCommandArgs(t, buildCommandArgs, mavenToolchainName)
+	assertBuildCommandArgs(t, buildCommandArgs, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "mvn", mavenToolchainName)
+func Test_maven_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
+	assertErrorWhenBuildFails(t, mavenWrapperToolchainName, testDataRootDir)
 }
 
-func Test_maven_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test"}, mavenToolchainName)
+func Test_maven_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	assertNoErrorWhenBuildPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }
 
-func Test_maven_toolchain_supported_platforms(t *testing.T) {
+func Test_maven_toolchains_test_command_path(t *testing.T) {
+	assertTestCommandPath(t, mavenCommandPath, mavenToolchainName)
+	assertTestCommandPath(t, mavenWrapperCommandPath, mavenWrapperToolchainName)
+}
+
+func Test_maven_toolchains_test_command_args(t *testing.T) {
+	testCommandArgs := []string{"test"}
+	assertTestCommandArgs(t, testCommandArgs, mavenToolchainName)
+	assertTestCommandArgs(t, testCommandArgs, mavenWrapperToolchainName)
+}
+
+func Test_maven_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	assertErrorWhenTestFails(t, mavenWrapperToolchainName, testDataRootDir)
+}
+
+func Test_maven_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	assertNoErrorWhenTestPasses(t, mavenWrapperToolchainName, testDataDirJava)
+}
+
+func Test_maven_toolchains_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, mavenToolchainName)
+	assertRunsOnAllOsWithAmd64(t, mavenWrapperToolchainName)
 }
 
-func Test_maven_toolchain_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "target/surefire-reports", mavenToolchainName)
+func Test_maven_toolchains_test_result_dir(t *testing.T) {
+	const testResultDir = "target/surefire-reports"
+	assertTestResultDir(t, testResultDir, mavenToolchainName)
+	assertTestResultDir(t, testResultDir, mavenWrapperToolchainName)
 }
