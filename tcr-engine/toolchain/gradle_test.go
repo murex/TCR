@@ -27,53 +27,87 @@ import (
 )
 
 const (
-	gradleToolchainName = "gradle"
+	gradleToolchainName        = "gradle"
+	gradleWrapperToolchainName = "gradle-wrapper"
 )
 
-func Test_gradle_is_a_built_in_toolchain(t *testing.T) {
+const gradleCommandPath = "gradle"
+
+func Test_gradle_and_gradle_wrapper_are_a_built_in_toolchains(t *testing.T) {
 	assertIsABuiltInToolchain(t, gradleToolchainName)
+	assertIsABuiltInToolchain(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_is_supported(t *testing.T) {
+func Test_gradle_toolchains_are_supported(t *testing.T) {
 	assertIsSupported(t, gradleToolchainName)
+	assertIsSupported(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_is_registered(t *testing.T) {
+func Test_gradle_toolchains_are_registered(t *testing.T) {
 	assertIsRegistered(t, gradleToolchainName)
+	assertIsRegistered(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_name_is_case_insensitive(t *testing.T) {
+func Test_gradle_toolchain_names_are_case_insensitive(t *testing.T) {
 	assertNameIsNotCaseSensitive(t, gradleToolchainName)
+	assertNameIsNotCaseSensitive(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_initialization(t *testing.T) {
+func Test_gradle_toolchains_initialization(t *testing.T) {
 	assertToolchainInitialization(t, gradleToolchainName)
+	assertToolchainInitialization(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_name(t *testing.T) {
+func Test_gradle_toolchains_name(t *testing.T) {
 	assertToolchainName(t, gradleToolchainName)
+	assertToolchainName(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "gradle", gradleToolchainName)
+func Test_gradle_toolchains_build_command_path(t *testing.T) {
+	assertBuildCommandPath(t, gradleCommandPath, gradleToolchainName)
+	assertBuildCommandPath(t, gradleWrapperCommandPath, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build", "testClasses", "-x", "test"}, gradleToolchainName)
+func Test_gradle_toolchains_build_command_args(t *testing.T) {
+	buildCommandArgs := []string{"build", "testClasses", "-x", "test"}
+	assertBuildCommandArgs(t, buildCommandArgs, gradleToolchainName)
+	assertBuildCommandArgs(t, buildCommandArgs, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "gradle", gradleToolchainName)
+func Test_gradle_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
+	assertErrorWhenBuildFails(t, gradleWrapperToolchainName, testDataRootDir)
 }
 
-func Test_gradle_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test"}, gradleToolchainName)
+func Test_gradle_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	assertNoErrorWhenBuildPasses(t, gradleWrapperToolchainName, testDataDirJava)
 }
 
-func Test_gradle_toolchain_supported_platforms(t *testing.T) {
+func Test_gradle_toolchains_test_command_path(t *testing.T) {
+	assertTestCommandPath(t, gradleCommandPath, gradleToolchainName)
+	assertTestCommandPath(t, gradleWrapperCommandPath, gradleWrapperToolchainName)
+}
+
+func Test_gradle_toolchains_test_command_args(t *testing.T) {
+	testCommandArgs := []string{"test"}
+	assertTestCommandArgs(t, testCommandArgs, gradleToolchainName)
+	assertTestCommandArgs(t, testCommandArgs, gradleWrapperToolchainName)
+}
+
+func Test_gradle_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	assertErrorWhenTestFails(t, gradleWrapperToolchainName, testDataRootDir)
+}
+
+func Test_gradle_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	assertNoErrorWhenTestPasses(t, gradleWrapperToolchainName, testDataDirJava)
+}
+
+func Test_gradle_toolchains_supported_platforms(t *testing.T) {
 	assertRunsOnAllOsWithAmd64(t, gradleToolchainName)
+	assertRunsOnAllOsWithAmd64(t, gradleWrapperToolchainName)
 }
 
-func Test_gradle_toolchain_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "build/test-results/test", gradleToolchainName)
+func Test_gradle_toolchains_test_result_dir(t *testing.T) {
+	const testResultDir = "build/test-results/test"
+	assertTestResultDir(t, testResultDir, gradleToolchainName)
+	assertTestResultDir(t, testResultDir, gradleWrapperToolchainName)
 }
