@@ -18,7 +18,7 @@
 # ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
-# Example Makefile for Java language
+# Example Makefile for Kotlin language
 # ----------------------------------------------------------------------------
 
 junit.ver = 1.8.2
@@ -30,17 +30,17 @@ src.dir = src
 build.dir = build
 build.lib.dir = $(build.dir)/lib
 
-src.main.dir = $(src.dir)/main/java
-src.test.dir = $(src.dir)/test/java
+src.main.dir = $(src.dir)/main/kotlin
+src.test.dir = $(src.dir)/test/kotlin
 
 build.main.dir = $(build.dir)/classes
 build.test.dir = $(build.dir)/test-classes
 
-src.main.files := $(shell find $(src.main.dir) -type f -name '*.java')
-src.test.files := $(shell find $(src.test.dir) -type f -name '*.java')
+src.main.files := $(shell find $(src.main.dir) -type f -name '*.kt')
+src.test.files := $(shell find $(src.test.dir) -type f -name '*.kt')
 
-build.main.files = $(src.main.files:$(src.main.dir)/%.java=$(build.main.dir)/%.class)
-build.test.files = $(src.test.files:$(src.test.dir)/%.java=$(build.test.dir)/%.class)
+build.main.files = $(src.main.files:$(src.main.dir)/%.kt=$(build.main.dir)/%.class)
+build.test.files = $(src.test.files:$(src.test.dir)/%.kt=$(build.test.dir)/%.class)
 
 # Classpath separator is platform-dependant
 os.kernel := $(shell uname -s)
@@ -73,18 +73,18 @@ build-main: $(build.main.files)
 
 $(build.main.files): | $(build.main.dir)
 
-$(build.main.dir)/%.class: $(src.main.dir)/%.java
+$(build.main.dir)/%.class: $(src.main.dir)/%.kt
 	-@echo "Compiling $(<F)"
-	-@javac -d $(build.main.dir) $<
+	-@kotlinc -d $(build.main.dir) $<
 
 .PHONY: build-test
 build-test: build-main download-junit $(build.test.files)
 
 $(build.test.files): | $(build.test.dir)
 
-$(build.test.dir)/%.class: $(src.test.dir)/%.java
+$(build.test.dir)/%.class: $(src.test.dir)/%.kt
 	-@echo "Compiling $(<F)"
-	-@javac -classpath $(build.lib.dir)/$(junit.jar)$(classpath.sep)$(build.main.dir) -d $(build.test.dir) $<
+	-@kotlinc -classpath $(build.lib.dir)/$(junit.jar)$(classpath.sep)$(build.main.dir) -d $(build.test.dir) $<
 
 .PHONY: download-junit
 download-junit: $(build.lib.dir)/$(junit.jar)
