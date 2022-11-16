@@ -33,6 +33,30 @@ import (
 	"testing"
 )
 
+var languageFileExtensions []string
+
+func allLanguageFileExtensionsBut(ext ...string) (out []string) {
+	for _, e := range languageFileExtensions {
+		if !contains(ext, e) {
+			out = append(out, e)
+		}
+	}
+	return out
+}
+
+func contains(items []string, searched string) bool {
+	for _, item := range items {
+		if searched == item {
+			return true
+		}
+	}
+	return false
+}
+
+func registerLanguageFileExtensionsForTests(ext ...string) {
+	languageFileExtensions = append(languageFileExtensions, ext...)
+}
+
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
 	lang := ALanguage(

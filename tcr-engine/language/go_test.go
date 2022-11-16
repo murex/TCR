@@ -28,6 +28,14 @@ const (
 	goLanguageName = "go"
 )
 
+var (
+	goLanguageExtensions = []string{".go"}
+)
+
+func init() {
+	registerLanguageFileExtensionsForTests(goLanguageExtensions...)
+}
+
 func Test_go_is_a_built_in_language(t *testing.T) {
 	assertIsABuiltInLanguage(t, goLanguageName)
 }
@@ -78,7 +86,7 @@ func Test_go_incompatible_toolchains(t *testing.T) {
 
 func Test_go_valid_file_paths(t *testing.T) {
 	languageName := goLanguageName
-	for _, ext := range []string{".go"} {
+	for _, ext := range goLanguageExtensions {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, ".", "some_src_file", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, ".", "some_src_file_test", ext), languageName)
 	}
@@ -86,7 +94,7 @@ func Test_go_valid_file_paths(t *testing.T) {
 
 func Test_go_invalid_file_paths(t *testing.T) {
 	languageName := goLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".java", ".cs", ".csx", ".sh"} {
+	for _, ext := range allLanguageFileExtensionsBut(goLanguageExtensions...) {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, ".", "some_src_file_test", ext), languageName)
 	}

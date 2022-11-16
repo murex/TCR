@@ -28,6 +28,14 @@ const (
 	csharpLanguageName = "csharp"
 )
 
+var (
+	csharpLanguageExtensions = []string{".cs", ".csx"}
+)
+
+func init() {
+	registerLanguageFileExtensionsForTests(csharpLanguageExtensions...)
+}
+
 func Test_csharp_is_a_built_in_language(t *testing.T) {
 	assertIsABuiltInLanguage(t, csharpLanguageName)
 }
@@ -77,7 +85,7 @@ func Test_csharp_incompatible_toolchains(t *testing.T) {
 
 func Test_csharp_valid_file_paths(t *testing.T) {
 	languageName := csharpLanguageName
-	for _, ext := range []string{".cs", ".csx"} {
+	for _, ext := range csharpLanguageExtensions {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "tests", "SomeTestFile", ext), languageName)
 	}
@@ -85,7 +93,7 @@ func Test_csharp_valid_file_paths(t *testing.T) {
 
 func Test_csharp_invalid_file_paths(t *testing.T) {
 	languageName := csharpLanguageName
-	for _, ext := range []string{".java", ".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".go", ".sh"} {
+	for _, ext := range allLanguageFileExtensionsBut(csharpLanguageExtensions...) {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "tests", "SomeTestFile", ext), languageName)
 	}

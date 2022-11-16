@@ -74,10 +74,11 @@ provided as built-in.
 
 | Language | Toolchains                                         | Default        |
 |----------|----------------------------------------------------|----------------|
-| java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 | cpp      | cmake, make                                        | cmake          |
-| go       | go-tools, gotestsum, make                          | go-tools       |
 | csharp   | dotnet, make                                       | dotnet         |
+| go       | go-tools, gotestsum, make                          | go-tools       |
+| java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
+| kotlin   | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 
 ### Base directory
 

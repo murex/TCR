@@ -28,6 +28,14 @@ const (
 	javaLanguageName = "java"
 )
 
+var (
+	javaLanguageExtensions = []string{".java"}
+)
+
+func init() {
+	registerLanguageFileExtensionsForTests(javaLanguageExtensions...)
+}
+
 func Test_java_is_a_built_in_language(t *testing.T) {
 	assertIsABuiltInLanguage(t, javaLanguageName)
 }
@@ -77,7 +85,7 @@ func Test_java_incompatible_toolchains(t *testing.T) {
 
 func Test_java_valid_file_paths(t *testing.T) {
 	languageName := javaLanguageName
-	for _, ext := range []string{".java"} {
+	for _, ext := range javaLanguageExtensions {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src/main", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "src/test", "SomeTestFile", ext), languageName)
 	}
@@ -85,7 +93,7 @@ func Test_java_valid_file_paths(t *testing.T) {
 
 func Test_java_invalid_file_paths(t *testing.T) {
 	languageName := javaLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".go", ".cs", ".csx", ".sh"} {
+	for _, ext := range allLanguageFileExtensionsBut(javaLanguageExtensions...) {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/main", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/test", "SomeTestFile", ext), languageName)
 	}
