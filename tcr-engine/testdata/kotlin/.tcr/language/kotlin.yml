@@ -1,6 +1,6 @@
 toolchains:
   default: gradle-wrapper
-  compatible-with: [gradle, gradle-wrapper, maven, maven-wrapper]
+  compatible-with: [gradle, gradle-wrapper, maven, maven-wrapper, make]
 source-files:
   directories: [src/main]
   patterns: ['(?i)^.*\.kt$']
