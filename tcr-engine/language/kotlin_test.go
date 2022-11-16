@@ -28,6 +28,14 @@ const (
 	kotlinLanguageName = "kotlin"
 )
 
+var (
+	kotlinLanguageExtensions = []string{".kt"}
+)
+
+func init() {
+	registerLanguageFileExtensionsForTests(kotlinLanguageExtensions...)
+}
+
 func Test_kotlin_is_a_built_in_language(t *testing.T) {
 	assertIsABuiltInLanguage(t, kotlinLanguageName)
 }
@@ -77,7 +85,7 @@ func Test_kotlin_incompatible_toolchains(t *testing.T) {
 
 func Test_kotlin_valid_file_paths(t *testing.T) {
 	languageName := kotlinLanguageName
-	for _, ext := range []string{".kt"} {
+	for _, ext := range kotlinLanguageExtensions {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src/main", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "src/test", "SomeTestFile", ext), languageName)
 	}
@@ -85,7 +93,7 @@ func Test_kotlin_valid_file_paths(t *testing.T) {
 
 func Test_kotlin_invalid_file_paths(t *testing.T) {
 	languageName := kotlinLanguageName
-	for _, ext := range []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx", ".go", ".cs", ".csx", ".sh", ".java"} {
+	for _, ext := range allLanguageFileExtensionsBut(kotlinLanguageExtensions...) {
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/main", "SomeSrcFile", ext), languageName)
 		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src/test", "SomeTestFile", ext), languageName)
 	}
