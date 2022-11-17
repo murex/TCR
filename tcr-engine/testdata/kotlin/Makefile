@@ -84,7 +84,7 @@ $(build.test.files): | $(build.test.dir)
 
 $(build.test.dir)/%.class: $(src.test.dir)/%.kt
 	-@echo "Compiling $(<F)"
-	-@kotlinc -classpath $(build.lib.dir)/$(junit.jar)$(classpath.sep)$(src.main.dir) -d $(build.test.dir) $<
+	-@kotlinc -classpath $(build.lib.dir)/$(junit.jar)$(classpath.sep)$(build.main.dir)$(classpath.sep)$(src.main.dir) -d $(build.test.dir) $<
 
 .PHONY: download-junit
 download-junit: $(build.lib.dir)/$(junit.jar)
