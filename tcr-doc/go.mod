@@ -7,7 +7,7 @@ replace github.com/murex/tcr/tcr-cli => ../tcr-cli
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-20221114135846-00de52182c5f
+	github.com/murex/tcr/tcr-cli v0.0.0-20221118092613-7d3cfdf86b31
 	github.com/spf13/cobra v1.6.1
 )
 
@@ -38,10 +38,10 @@ require (
 	github.com/mengdaming/go-junit v0.1.3 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/murex/tcr/tcr-engine v0.0.0-20221114135846-00de52182c5f // indirect
+	github.com/murex/tcr/tcr-engine v0.0.0-20221118092613-7d3cfdf86b31 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
@@ -52,7 +52,7 @@ require (
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/tadvi/systray v0.0.0-20190226123456-11a2b8fa57af // indirect
 	github.com/xanzy/ssh-agent v0.3.2 // indirect
-	golang.org/x/crypto v0.2.0 // indirect
+	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.2.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
