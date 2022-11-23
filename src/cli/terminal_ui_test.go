@@ -253,15 +253,15 @@ func Test_list_role_menu_options(t *testing.T) {
 		{
 			currentRole: role.Driver{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tT -> Timer status") +
-				asCyanTrace("\tQ -> Quit Driver role") +
-				asCyanTrace("\t? -> List available options"),
+				asCyanTrace("\tT -> "+timerStatusMenuHelper) +
+				asCyanTrace("\tQ -> "+quitDriverRoleMenuHelper) +
+				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 		{
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tQ -> Quit Navigator role") +
-				asCyanTrace("\t? -> List available options"),
+				asCyanTrace("\tQ -> "+quitNavigatorRoleMenuHelper) +
+				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 	}
 
@@ -292,11 +292,12 @@ func Test_simple_message_methods(t *testing.T) {
 			desc:   "whatShallWeDo",
 			method: term.whatShallWeDo,
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
-				asCyanTrace("\tD -> Driver role") +
-				asCyanTrace("\tN -> Navigator role") +
-				asCyanTrace("\tP -> Turn on/off git auto-push") +
-				asCyanTrace("\tQ -> Quit") +
-				asCyanTrace("\t? -> List available options"),
+				asCyanTrace("\tD -> "+driverRoleMenuHelper) +
+				asCyanTrace("\tN -> "+navigatorRoleMenuHelper) +
+				asCyanTrace("\tP -> "+autoPushMenuHelper) +
+				asCyanTrace("\tL -> "+pullMenuHelper) +
+				asCyanTrace("\tQ -> "+quitMenuHelper) +
+				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 	}
 
@@ -503,6 +504,13 @@ func Test_main_menu(t *testing.T) {
 			},
 		},
 		{
+			"L key", []byte{'l'}, []byte{'L'},
+			[]engine.TcrCall{
+				engine.TcrCallGitPull,
+				engine.TcrCallGetSessionInfo,
+			},
+		},
+		{
 			"D+Q keys", []byte{'d', 'q'}, []byte{'D', 'Q'},
 			[]engine.TcrCall{
 				engine.TcrCallRunAsDriver,
@@ -581,6 +589,10 @@ func Test_driver_menu(t *testing.T) {
 		},
 		{
 			"N key", []byte{'n'}, []byte{'N'},
+			[]engine.TcrCall{},
+		},
+		{
+			"L key", []byte{'l'}, []byte{'L'},
 			[]engine.TcrCall{},
 		},
 	}

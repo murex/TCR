@@ -48,6 +48,18 @@ const (
 	escapeKey = 0x1b
 )
 
+const (
+	pullMenuHelper              = "Pull from remote"
+	driverRoleMenuHelper        = "Driver role"
+	navigatorRoleMenuHelper     = "Navigator role"
+	autoPushMenuHelper          = "Turn on/off git auto-push"
+	quitMenuHelper              = "Quit"
+	optionsMenuHelper           = "List available options"
+	timerStatusMenuHelper       = "Timer status"
+	quitDriverRoleMenuHelper    = "Quit Driver role"
+	quitNavigatorRoleMenuHelper = "Quit Navigator role"
+)
+
 // New creates a new instance of terminal
 func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
@@ -162,6 +174,10 @@ func (term *TerminalUI) mainMenu() {
 			term.tcr.ToggleAutoPush()
 			term.ShowSessionInfo()
 			term.whatShallWeDo()
+		case 'l', 'L':
+			term.gitPull()
+			term.ShowSessionInfo()
+			term.whatShallWeDo()
 		case 'q', 'Q':
 			Restore()
 			term.tcr.Quit()
@@ -178,6 +194,10 @@ func (term *TerminalUI) mainMenu() {
 			term.listMainMenuOptions("Please choose one of the following:")
 		}
 	}
+}
+
+func (term *TerminalUI) gitPull() {
+	term.tcr.GitPull()
 }
 
 func (term *TerminalUI) whatShallWeDo() {
@@ -340,18 +360,19 @@ func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{
 
 func (term *TerminalUI) listMainMenuOptions(title string) {
 	term.ReportTitle(false, title)
-	term.printMenuOption('D', role.Driver{}.LongName())
-	term.printMenuOption('N', role.Navigator{}.LongName())
-	term.printMenuOption('P', "Turn on/off git auto-push")
-	term.printMenuOption('Q', "Quit")
-	term.printMenuOption('?', "List available options")
+	term.printMenuOption('D', driverRoleMenuHelper)
+	term.printMenuOption('N', navigatorRoleMenuHelper)
+	term.printMenuOption('P', autoPushMenuHelper)
+	term.printMenuOption('L', pullMenuHelper)
+	term.printMenuOption('Q', quitMenuHelper)
+	term.printMenuOption('?', optionsMenuHelper)
 }
 
 func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
 	term.ReportTitle(false, title)
 	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
-		term.printMenuOption('T', "Timer status")
+		term.printMenuOption('T', timerStatusMenuHelper)
 	}
 	term.printMenuOption('Q', "Quit ", r.LongName())
-	term.printMenuOption('?', "List available options")
+	term.printMenuOption('?', optionsMenuHelper)
 }

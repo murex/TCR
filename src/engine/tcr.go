@@ -67,6 +67,7 @@ type (
 		RunCheck(p params.Params)
 		PrintLog(p params.Params)
 		PrintStats(p params.Params)
+		GitPull()
 		Quit()
 	}
 
@@ -595,5 +596,12 @@ func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
 		report.PostWarning(err)
 	} else {
 		status.RecordState(status.Ok)
+	}
+}
+
+// GitPull runs a git pull command on demand
+func (tcr *TcrEngine) GitPull() {
+	if tcr.vcs.Pull() != nil {
+		report.PostError("git pull command failed!")
 	}
 }
