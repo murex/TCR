@@ -507,7 +507,6 @@ func Test_main_menu(t *testing.T) {
 			"L key", []byte{'l'}, []byte{'L'},
 			[]engine.TcrCall{
 				engine.TcrCallGitPull,
-				engine.TcrCallGetSessionInfo,
 			},
 		},
 		{

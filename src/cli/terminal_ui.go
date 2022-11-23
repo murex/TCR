@@ -176,7 +176,6 @@ func (term *TerminalUI) mainMenu() {
 			term.whatShallWeDo()
 		case 'l', 'L':
 			term.gitPull()
-			term.ShowSessionInfo()
 			term.whatShallWeDo()
 		case 'q', 'Q':
 			Restore()
