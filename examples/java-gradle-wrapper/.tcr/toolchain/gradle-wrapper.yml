@@ -2,11 +2,11 @@ build:
   - os: [ darwin, linux ]
     arch: [ "386", amd64, arm64 ]
     command: ./gradlew
-    arguments: [ build, -x, test ]
+    arguments: [ build, testClasses, -x, test ]
   - os: [ windows ]
     arch: [ "386", amd64, arm64 ]
     command: .\gradlew.bat
-    arguments: [ build, -x, test ]
+    arguments: [ build, testClasses, -x, test ]
 test:
   - os: [ darwin, linux ]
     arch: [ "386", amd64, arm64 ]
