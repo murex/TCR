@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - '**'
+    paths:
+      - "tcr-*/**"
+      - "!examples/**"
+      - "!**/*.md"
   pull_request:
     branches: [ main ]
 
