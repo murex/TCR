@@ -28,7 +28,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 ## Kotlin
 
 - With [gradle]() `TO DO`
-- With [gradle wrapper]() `TO DO`
+- With [gradle wrapper](kotlin-gradle-wrapper/README.md)
 - With [maven]() `TO DO`
 - With [maven wrapper]() `TO DO`
 - With [make]() `TO DO`
