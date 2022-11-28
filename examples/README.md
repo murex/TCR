@@ -1,6 +1,6 @@
 # Examples
 
-Here are simple examples for using TCR with various languages & toolchains combinations.
+Here are some simple examples for using TCR with various languages & toolchains combinations.
 
 ## C++
 
@@ -15,7 +15,7 @@ Here are simple examples for using TCR with various languages & toolchains combi
 
 - With [go tools](go-go-tools/README.md)
 - With [gotestsum](go-gotestsum/README.md)
-- With [make]() `TO DO`
+- With [make](go-make/README.md)
 
 ## Java
 
