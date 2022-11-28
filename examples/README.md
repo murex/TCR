@@ -13,7 +13,7 @@ Here are simple examples for using TCR with various languages & toolchains combi
 
 ## Go
 
-- With [go tools]() `TO DO`
+- With [go tools](go-go-tools/README.md)
 - With [gotestsum]() `TO DO`
 - With [make]() `TO DO`
 
