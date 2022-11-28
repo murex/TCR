@@ -1,0 +1,9 @@
+toolchains:
+  default: maven-wrapper
+  compatible-with: [ maven-wrapper ]
+source-files:
+  directories: [ src/main ]
+  patterns: [ '(?i)^.*\.kt$' ]
+test-files:
+  directories: [ src/test ]
+  patterns: [ '(?i)^.*\.kt$' ]
