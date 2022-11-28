@@ -9,7 +9,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 
 ## C#
 
-- With [dotnet]() `TO DO`
+- With [dotnet](csharp-dotnet/README.md)
 
 ## Go
 
