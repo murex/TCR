@@ -18,7 +18,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
 
-group = 'com.murex.xpcoaching'
+group = 'com.murex.tcr.testdata'
 version = '1.0-SNAPSHOT'
 
 tasks.withType(JavaCompile) {

@@ -1,9 +1,0 @@
-toolchains:
-  default: go-tools
-  compatible-with: [ go-tools, gotestsum ]
-source-files:
-  directories: [ . ]
-  patterns: [ '(?i)^.*\.go$' ]
-test-files:
-  directories: [ . ]
-  patterns: [ '(?i)^.*_test\.go$' ]
