@@ -126,6 +126,11 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 
 </details>
 
+### Examples
+
+Refer to the [examples](examples/README.md) directory on how to set up and run
+TCR for various language/toolchain combinations.
+
 ### Running TCR
 
 <details>
