@@ -20,7 +20,7 @@
 cd examples/cpp-cmake
 ```
 
-### 2 - Setup CMake build environment
+### 2 - Prepare local cmake build environment
 
 This commands creates a local `build` directory containing cmake and GoogleTest library.
 

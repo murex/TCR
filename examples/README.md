@@ -5,7 +5,6 @@ Here are some simple examples for using TCR with various languages & toolchains 
 ## C++
 
 - With [cmake](cpp-cmake/README.md)
-- With [make]() `TO DO`
 
 ## C#
 
