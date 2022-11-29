@@ -1,5 +1,3 @@
 class HelloWorld {
-    fun sayHello(name: String) : String {
-        return "Hello $name!"
-    }
+    fun sayHello(name: String) = "Hello $name!"
 }
