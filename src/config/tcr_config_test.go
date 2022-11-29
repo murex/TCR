@@ -42,7 +42,6 @@ const (
 
 var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
-	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
 )
 
 func assertConfigTrace(t *testing.T, expected []string, operation func()) {

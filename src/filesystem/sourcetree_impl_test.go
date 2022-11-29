@@ -71,7 +71,7 @@ func Test_init_source_tree(t *testing.T) {
 		},
 		{
 			"with existing file",
-			filepath.Join(testDataDirJava, "Makefile"),
+			filepath.Join(testDataDirJava, "pom.xml"),
 			true,
 			nil,
 		},

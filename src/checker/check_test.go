@@ -39,8 +39,6 @@ const (
 
 var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
-	//testDataDirGo = filepath.Join(testDataRootDir, "go")
-	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
 )
 
 // Assert utility functions

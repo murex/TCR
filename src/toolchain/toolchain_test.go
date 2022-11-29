@@ -35,7 +35,6 @@ const (
 
 var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
-	//testDataDirCpp  = filepath.Join(testDataRootDir, "cpp")
 )
 
 func assertToolchainName(t *testing.T, name string) {
@@ -157,7 +156,7 @@ func Test_set_work_dir(t *testing.T) {
 		},
 		{
 			"with existing file",
-			filepath.Join(testDataDirJava, "Makefile"),
+			filepath.Join(testDataDirJava, "pom.xml"),
 			true,
 			func() string { return "" },
 		},
