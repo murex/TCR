@@ -6,6 +6,7 @@
 version: 2
 updates:
   # Maintain dependencies for GitHub Actions
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -23,33 +24,88 @@ updates:
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr-doc
   - package-ecosystem: "gomod"
     directory: "/tcr-doc"
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for maven in testsdata/java
+  # Maintain dependencies for testdata/java
+
   - package-ecosystem: "maven"
     directory: "/src/testdata/java"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
-  # Maintain dependencies for gradle in testsdata/java
   - package-ecosystem: "gradle"
     directory: "/src/testdata/java"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
-  # Maintain dependencies for go modules in testsdata/go
+  # Maintain dependencies for Java examples
+
+  - package-ecosystem: "maven"
+    directory: "/examples/java-maven"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "maven"
+    directory: "/examples/java-maven-wrapper"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/java-gradle"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/java-gradle-wrapper"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Go examples
+
   - package-ecosystem: "gomod"
-    directory: "/src/testdata/go"
+    directory: "/examples/go-go-tools"
     schedule:
-      interval: "daily"
+      interval: "weekly"
 
-  # Maintain dependencies for Nuget in testsdata/csharp
-  - package-ecosystem: "nuget"
-    directory: "/src/testdata/csharp"
+  - package-ecosystem: "gomod"
+    directory: "/examples/go-gotestsum"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+
+  - package-ecosystem: "gomod"
+    directory: "/examples/go-make"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for C# examples
+
+  - package-ecosystem: "nuget"
+    directory: "/examples/csharp"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Kotlin examples
+
+  - package-ecosystem: "maven"
+    directory: "/examples/kotlin-maven"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "maven"
+    directory: "/examples/kotlin-maven-wrapper"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/kotlin-gradle"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/kotlin-gradle-wrapper"
+    schedule:
+      interval: "weekly"
       
