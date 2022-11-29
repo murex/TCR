@@ -6,6 +6,7 @@
 - [git](https://git-scm.com/) client
 - [curl](https://curl.se/download.html) command line utility
 - [kotlin](https://kotlinlang.org/docs/home.html)
+- [kotlin command-line compiler](https://kotlinlang.org/docs/command-line.html)
 - [java SDK](https://www.oracle.com/java/technologies/downloads/) with `JAVA_HOME` environment variable properly set up
 - [make](https://www.gnu.org/distros/distros.html) (previously installed and available from the command line)
 
