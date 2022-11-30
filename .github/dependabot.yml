@@ -23,12 +23,6 @@ updates:
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr-gui
-  - package-ecosystem: "gomod"
-    directory: "/tcr-gui"
-    schedule:
-      interval: "daily"
-
   # Maintain dependencies for Go Module tcr-doc
   - package-ecosystem: "gomod"
     directory: "/tcr-doc"

@@ -34,13 +34,6 @@ jobs:
           java-version: '11'
           check-latest: true
 
-      # Not needed as long as tcr-gui build and test is turned off
-      #      - name: Install CGO Libraries
-      #        if: ${{ matrix.os == 'ubuntu-latest' }}
-      #        run: |
-      #          sudo apt-get update
-      #          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
-
       - name: Install gotestsum
         run: |
           go install gotest.tools/gotestsum@latest
@@ -79,27 +72,6 @@ jobs:
         run: |
           cd tcr-cli
           go build -v ./...
-
-      # Turn off tcr-gui build and test for now (time consuming and not included in the releases)
-      #      - name: Test tcr-gui module
-      #        run: |
-      #          cd tcr-gui
-      #          make tidy
-      #          make test
-      #
-      #        - name: Send tcr-gui coverage
-      #          if: ${{ github.actor != 'dependabot[bot]' }}
-      #          uses: shogo82148/actions-goveralls@v1
-      #          with:
-      #            working-directory: tcr-gui
-      #            path-to-profile: _test_results/coverage.out
-      #            flag-name: tcr-gui-${{ matrix.os }}
-      #            parallel: true
-      #
-      #      - name: Build tcr-gui application
-      #        run: |
-      #          cd tcr-gui
-      #          go build -v ./...
 
       # This step must be executed after the test steps so that coverage data is sent to SonarCloud
       - name: SonarCloud Scan

@@ -8,13 +8,11 @@
 
 # Local builds (MacOS & Linux)
 /tcr-cli/tcr-cli
-/tcr-gui/tcr-gui
 
 # Cross-platform builds
 /**/build/
 /**/dist/
 /**/target/
-/**/fyne-cross/
 /**/.gradle/
 /**/.mvn/wrapper/maven-wrapper.jar
 

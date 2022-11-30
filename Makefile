@@ -18,7 +18,6 @@ ALL_MODULES = $(BUILD_MODULES) $(LIB_MODULES) $(DOC_MODULES)
 
 # Module dependencies
 tcr-cli: tcr-engine
-tcr-gui: tcr-engine tcr-cli
 tcr-doc: tcr-cli
 
 # Convenience target for automating release preparation

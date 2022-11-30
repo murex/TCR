@@ -28,7 +28,7 @@ if ! type goda >/dev/null 2>/dev/null; then
   go install github.com/loov/goda@v0.5.1
 fi
 
-#for module in "tcr-cli" "tcr-gui" "tcr-engine" "tcr-doc"; do
+#for module in "tcr-cli" "tcr-engine" "tcr-doc"; do
 for module in "tcr-cli"; do
   echo "- Generating dependency graph for module ${module}"
   cd "${base_dir}/${module}"

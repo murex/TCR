@@ -444,23 +444,7 @@ Once gotestsum is installed, you can run make's test target from the root direct
   ```shell
   make test-short
   ```
-
-#### Fyne toolkit - `Optional`
-
-The GUI version of TCR-Go is built on top of [Fyne toolkit](https://fyne.io/) for all GUI-related stuff.
-
-Refer to [Fyne Develop](https://developer.fyne.io/) for installation and usage instructions.
-
-You will not need it as long as you're working on the TCR Command Line implementation only.
-
-> ***Note about TCR GUI version***
->
-> So far we are only releasing the command line version of TCR.
-> We have not reached yet the stage where we could fully automate through a goreleaser GitHub Action
-> the cross-compilation and link of TCR with Fyne and its dependencies.
-> In the meantime if you wish to give TCR GUI a try, you still can build and run it locally on your machine
-> (refer to `Build TCR executable` section below)
-
+  
 ### Build TCR executable
 
 To build TCR locally on your machine, simply type the following from the root directory:
@@ -469,8 +453,7 @@ To build TCR locally on your machine, simply type the following from the root di
 make
 ```
 
-This command generates by default both TCR CLI (in [tcr-cli](./tcr-cli) directory)
-and TCR GUI (in [tcr-gui](./tcr-gui) directory) executables, as well as the command help pages (in [doc](./doc)
+This command generates the TCR CLI (in [tcr-cli](./tcr-cli) directory) executable, as well as the command help pages (in [doc](./doc)
 directory).
 
 <details><summary>To build TCR CLI only</summary>
@@ -485,23 +468,6 @@ Or run make from [tcr-cli](./tcr-cli) directory:
 
 ```shell
 cd tcr-cli
-make
-```
-
-</details>
-
-<details><summary>To build TCR GUI only</summary>
-
-Either run the following command from the root directory:
-
-```shell
-make -C ./tcr-gui
-```
-
-Or run make from [tcr-gui](./tcr-gui) directory:
-
-```shell
-cd tcr-gui
 make
 ```
 
