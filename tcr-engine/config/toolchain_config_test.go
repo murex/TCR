@@ -24,7 +24,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/murex/tcr/toolchain"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

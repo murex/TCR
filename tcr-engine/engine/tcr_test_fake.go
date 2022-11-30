@@ -25,10 +25,10 @@ SOFTWARE.
 package engine
 
 import (
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/role"
-	"github.com/murex/tcr/tcr-engine/status"
-	"github.com/murex/tcr/tcr-engine/ui"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/role"
+	"github.com/murex/tcr/status"
+	"github.com/murex/tcr/ui"
 )
 
 // TcrCall is used to track calls to TCR operations

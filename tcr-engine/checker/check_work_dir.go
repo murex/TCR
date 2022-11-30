@@ -23,7 +23,7 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/params"
 )
 
 func checkWorkDirectory(p params.Params) (cr *CheckResults) {

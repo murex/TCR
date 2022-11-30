@@ -24,8 +24,8 @@ package stats
 
 import (
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/events"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/events"
+	"github.com/murex/tcr/report"
 	"time"
 )
 

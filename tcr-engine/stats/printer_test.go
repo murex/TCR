@@ -23,8 +23,8 @@ SOFTWARE.
 package stats
 
 import (
-	"github.com/murex/tcr/tcr-engine/events"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/events"
+	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

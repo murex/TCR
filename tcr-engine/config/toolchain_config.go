@@ -23,7 +23,7 @@ SOFTWARE.
 package config
 
 import (
-	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/murex/tcr/toolchain"
 	"path/filepath"
 )
 

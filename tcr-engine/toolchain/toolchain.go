@@ -24,8 +24,8 @@ package toolchain
 
 import (
 	"errors"
-	"github.com/murex/tcr/tcr-engine/report"
-	"github.com/murex/tcr/tcr-engine/xunit"
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/xunit"
 	"os"
 	"path/filepath"
 )

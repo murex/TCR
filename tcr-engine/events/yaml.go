@@ -24,7 +24,7 @@ package events
 
 import (
 	"bytes"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"gopkg.in/yaml.v3"
 	"time"
 )

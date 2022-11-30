@@ -23,8 +23,8 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/config"
-	"github.com/murex/tcr/tcr-engine/params"
+	"github.com/murex/tcr/config"
+	"github.com/murex/tcr/params"
 	"path/filepath"
 )
 

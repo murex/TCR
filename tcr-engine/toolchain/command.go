@@ -25,7 +25,7 @@ package toolchain
 import (
 	"errors"
 	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"os"
 	"os/exec"
 	"path/filepath"

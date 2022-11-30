@@ -26,7 +26,7 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"strings"
 )
 

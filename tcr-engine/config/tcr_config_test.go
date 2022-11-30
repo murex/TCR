@@ -25,9 +25,9 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/language"
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/murex/tcr/language"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/toolchain"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"os"

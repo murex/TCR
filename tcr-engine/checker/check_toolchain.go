@@ -23,8 +23,8 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/toolchain"
 	"runtime"
 )
 

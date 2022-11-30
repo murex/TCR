@@ -24,7 +24,7 @@ package language
 
 import (
 	"errors"
-	"github.com/murex/tcr/tcr-engine/toolchain"
+	"github.com/murex/tcr/toolchain"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"

@@ -25,8 +25,8 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/murex/tcr/tcr-engine/role"
-	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/role"
+	"github.com/murex/tcr/runmode"
 )
 
 // FakeUI provides a fake UI for running tests. It basically does nothing

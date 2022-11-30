@@ -25,7 +25,7 @@ package filesystem
 import (
 	"errors"
 	"github.com/fsnotify/fsnotify"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"os"
 	"path/filepath"
 )

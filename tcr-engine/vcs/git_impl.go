@@ -33,7 +33,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"path/filepath"
 	"strconv"
 	"strings"

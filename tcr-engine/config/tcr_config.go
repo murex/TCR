@@ -24,8 +24,8 @@ package config
 
 import (
 	"fmt"
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/settings"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"io"

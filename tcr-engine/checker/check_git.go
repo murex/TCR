@@ -23,8 +23,8 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/vcs"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs"
 )
 
 func checkGitEnvironment(_ params.Params) (cr *CheckResults) {

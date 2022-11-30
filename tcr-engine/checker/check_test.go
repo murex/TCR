@@ -23,9 +23,9 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/status"
-	"github.com/murex/tcr/tcr-engine/vcs"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/status"
+	"github.com/murex/tcr/vcs"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"

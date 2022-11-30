@@ -25,7 +25,7 @@ SOFTWARE.
 package params
 
 import (
-	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/runmode"
 	"time"
 )
 
