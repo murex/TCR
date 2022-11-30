@@ -1,15 +1,14 @@
-# This is goreleaser configuration for releasing tcr-cli application.
+# This is goreleaser configuration for releasing tcr application.
 # Make sure to check the documentation at http://goreleaser.com
 project_name: tcr
 before:
   hooks:
     - make tidy
 builds:
-  - id: "tcr-cli"
-    dir: tcr-cli
+  - id: "tcr"
+    dir: src
     binary: tcr
     env:
-      - CGO_ENABLED=0
       - CONFIG_PKG=github.com/murex/tcr/tcr-engine/settings
     ldflags:
       - -s -w

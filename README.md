@@ -453,21 +453,21 @@ To build TCR locally on your machine, simply type the following from the root di
 make
 ```
 
-This command generates the TCR CLI (in [tcr-cli](./tcr-cli) directory) executable, as well as the command help pages (in [doc](./doc)
+This command generates the TCR (in [src](./src) directory) executable, as well as the command help pages (in [doc](./doc)
 directory).
 
-<details><summary>To build TCR CLI only</summary>
+<details><summary>To build TCR only</summary>
 
 Either run the following command from the root directory:
 
 ```shell
-make -C ./tcr-cli
+make -C ./src
 ```
 
-Or run make from [tcr-cli](./tcr-cli) directory:
+Or run make from [src](./src) directory:
 
 ```shell
-cd tcr-cli
+cd src
 make
 ```
 

@@ -53,24 +53,24 @@ jobs:
           flag-name: tcr-engine-${{ matrix.os }}
           parallel: true
 
-      - name: Test tcr-cli module
+      - name: Test tcr module
         run: |
-          cd tcr-cli
+          cd src
           make tidy
           make test
 
-      - name: Send tcr-cli coverage to coveralls.io
+      - name: Send tcr coverage to coveralls.io
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: shogo82148/actions-goveralls@v1
         with:
-          working-directory: tcr-cli
+          working-directory: src
           path-to-profile: _test_results/coverage.out
-          flag-name: tcr-cli-${{ matrix.os }}
+          flag-name: tcr-${{ matrix.os }}
           parallel: true
 
-      - name: Build tcr-cli application
+      - name: Build tcr application
         run: |
-          cd tcr-cli
+          cd src
           go build -v ./...
 
       # This step must be executed after the test steps so that coverage data is sent to SonarCloud

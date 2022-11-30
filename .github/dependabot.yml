@@ -17,9 +17,9 @@ updates:
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr-cli
+  # Maintain dependencies for Go Module tcr
   - package-ecosystem: "gomod"
-    directory: "/tcr-cli"
+    directory: "/src"
     schedule:
       interval: "daily"
 
