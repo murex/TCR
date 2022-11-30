@@ -23,7 +23,7 @@ SOFTWARE.
 package main
 
 import (
-	cli "github.com/murex/tcr/tcr-cli/cmd"
+	cli "github.com/murex/tcr/cmd"
 	"log"
 
 	"github.com/spf13/cobra"

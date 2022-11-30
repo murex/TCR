@@ -2,12 +2,12 @@ module github.com/murex/tcr/tcr-doc
 
 go 1.18
 
-replace github.com/murex/tcr/tcr-cli => ../tcr-cli
+replace github.com/murex/tcr => ../src
 
 replace github.com/murex/tcr/tcr-engine => ../tcr-engine
 
 require (
-	github.com/murex/tcr/tcr-cli v0.0.0-20221129112801-8b0b9cb7e9c4
+	github.com/murex/tcr v0.0.0-20221121085735-6050e4fca277
 	github.com/spf13/cobra v1.6.1
 )
 
