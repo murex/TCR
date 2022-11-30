@@ -23,7 +23,7 @@ SOFTWARE.
 package cmd
 
 import (
-	"github.com/murex/tcr/tcr-cli/cli"
+	"github.com/murex/tcr/cli"
 	"github.com/murex/tcr/tcr-engine/config"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/params"

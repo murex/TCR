@@ -1,4 +1,4 @@
-module github.com/murex/tcr/tcr-cli
+module github.com/murex/tcr
 
 go 1.18
 

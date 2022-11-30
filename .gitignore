@@ -7,7 +7,7 @@
 **/bin/
 
 # Local builds (MacOS & Linux)
-/tcr-cli/tcr-cli
+/src/tcr
 
 # Cross-platform builds
 /**/build/

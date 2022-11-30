@@ -23,7 +23,7 @@ SOFTWARE.
 package cli
 
 import (
-	"github.com/murex/tcr/tcr-cli/desktop"
+	"github.com/murex/tcr/desktop"
 	"github.com/murex/tcr/tcr-engine/engine"
 	"github.com/murex/tcr/tcr-engine/params"
 	"github.com/murex/tcr/tcr-engine/report"
