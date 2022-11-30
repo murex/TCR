@@ -35,7 +35,7 @@ cov:
 tidy:
 	@go mod tidy
 
-CONFIG_PKG="github.com/murex/tcr/tcr-engine/settings"
+CONFIG_PKG="github.com/murex/tcr/settings"
 .PHONY: build
 build:
 	@go build -ldflags "-s -w \

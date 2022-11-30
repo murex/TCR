@@ -24,11 +24,11 @@ package cmd
 
 import (
 	"github.com/murex/tcr/cli"
-	"github.com/murex/tcr/tcr-engine/config"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/murex/tcr/tcr-engine/settings"
+	"github.com/murex/tcr/config"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/settings"
 	"github.com/spf13/cobra"
 )
 

@@ -24,8 +24,8 @@ package cmd
 
 import (
 	"github.com/murex/tcr/cli"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/runmode"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/runmode"
 	"github.com/spf13/cobra"
 )
 

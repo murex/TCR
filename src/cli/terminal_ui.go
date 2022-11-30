@@ -25,13 +25,13 @@ package cli
 import (
 	"fmt"
 	"github.com/murex/tcr/desktop"
-	"github.com/murex/tcr/tcr-engine/engine"
-	"github.com/murex/tcr/tcr-engine/params"
-	"github.com/murex/tcr/tcr-engine/report"
-	"github.com/murex/tcr/tcr-engine/role"
-	"github.com/murex/tcr/tcr-engine/runmode"
-	"github.com/murex/tcr/tcr-engine/settings"
-	"github.com/murex/tcr/tcr-engine/ui"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/role"
+	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/settings"
+	"github.com/murex/tcr/ui"
 	"os"
 )
 

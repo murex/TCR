@@ -1,23 +1,20 @@
 .PHONY: default
 default: build doc ;
 
-# Modules that can be build into an executable
+# Modules that can be built into an executable
 BUILD_MODULES = src
-# Library modules
-LIB_MODULES = tcr-engine
+.PHONY: $(BUILD_MODULES)
+
 # Documentation modules
 DOC_MODULES = tcr-doc
+.PHONY: $(DOC_MODULES)
 
 # Modules with a main package
 MAIN_MODULES = $(BUILD_MODULES) $(DOC_MODULES)
 # Production modules
-PROD_MODULES = $(BUILD_MODULES) $(LIB_MODULES)
-
-ALL_MODULES = $(BUILD_MODULES) $(LIB_MODULES) $(DOC_MODULES)
-.PHONY: $(ALL_MODULES)
+PROD_MODULES = $(BUILD_MODULES)
 
 # Module dependencies
-src: tcr-engine
 tcr-doc: src
 
 # Convenience target for automating release preparation
@@ -32,7 +29,7 @@ deps: $(MAIN_MODULES)
 	done
 
 .PHONY: tidy vet lint
-tidy vet lint: $(ALL_MODULES)
+tidy vet lint: $(MAIN_MODULES)
 	@for module in $^; do \
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \

@@ -25,7 +25,7 @@ package cli
 import (
 	"bytes"
 	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/tcr-engine/report"
+	"github.com/murex/tcr/report"
 	"os"
 	"os/exec"
 	"os/signal"

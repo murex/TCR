@@ -23,7 +23,7 @@ SOFTWARE.
 package cmd
 
 import (
-	"github.com/murex/tcr/tcr-engine/config"
+	"github.com/murex/tcr/config"
 	"github.com/spf13/cobra"
 )
 
