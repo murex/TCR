@@ -38,21 +38,6 @@ jobs:
         run: |
           go install gotest.tools/gotestsum@latest
 
-      - name: Test tcr-engine module
-        run: |
-          cd tcr-engine
-          make tidy
-          make test
-
-      - name: Send tcr-engine coverage to coveralls.io
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          working-directory: tcr-engine
-          path-to-profile: _test_results/coverage.out
-          flag-name: tcr-engine-${{ matrix.os }}
-          parallel: true
-
       - name: Test tcr module
         run: |
           cd src

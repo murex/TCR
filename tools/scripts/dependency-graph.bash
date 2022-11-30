@@ -28,13 +28,13 @@ if ! type goda >/dev/null 2>/dev/null; then
   go install github.com/loov/goda@v0.5.1
 fi
 
-#for module in "tcr-cli" "tcr-engine" "tcr-doc"; do
-for module in "tcr-cli"; do
-  echo "- Generating dependency graph for module ${module}"
-  cd "${base_dir}/${module}"
+#for modules in "src" "tcr-doc"; do
+for module_dir in "src"; do
+  echo "- Generating dependency graph for module ${module_dir}"
+  cd "${base_dir}/${module_dir}"
 
-  #rm -f ${module}-graph.gv
-  #goda graph -cluster -short "github.com/murex/tcr/${module}/...:all" >${module}-graph.gv
-  #cat ${module}-graph.gv  | dot -Tsvg -o ${module}-graph.svg
-  cat ${module}-graph.gv  | dot -Tpng -o ${module}-graph.png
+  #rm -f ${module_dir}-graph.gv
+  #goda graph -cluster -short "github.com/murex/tcr/${module_dir}/...:all" >${module_dir}-graph.gv
+  #cat ${module_dir}-graph.gv  | dot -Tsvg -o ${module_dir}-graph.svg
+  cat ${module_dir}-graph.gv  | dot -Tpng -o ${module_dir}-graph.png
 done

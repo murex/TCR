@@ -9,7 +9,7 @@ builds:
     dir: src
     binary: tcr
     env:
-      - CONFIG_PKG=github.com/murex/tcr/tcr-engine/settings
+      - CONFIG_PKG=github.com/murex/tcr/settings
     ldflags:
       - -s -w
       - -X {{.Env.CONFIG_PKG}}.BuildVersion={{.Version}}
