@@ -33,8 +33,9 @@ for module_dir in "src"; do
   echo "- Generating dependency graph for module ${module_dir}"
   cd "${base_dir}/${module_dir}"
 
-  #rm -f ${module_dir}-graph.gv
-  #goda graph -cluster -short "github.com/murex/tcr/${module_dir}/...:all" >${module_dir}-graph.gv
+  rm -f ${module_dir}-graph.gv
+  goda graph -cluster -short "github.com/murex/tcr/...:all" >${module_dir}-graph.gv
+  # TODO - filter out external dependencies to have tcr module dependency graph only
   #cat ${module_dir}-graph.gv  | dot -Tsvg -o ${module_dir}-graph.svg
-  cat ${module_dir}-graph.gv  | dot -Tpng -o ${module_dir}-graph.png
+  #cat ${module_dir}-graph.gv  | dot -Tpng -o ${module_dir}-graph.png
 done

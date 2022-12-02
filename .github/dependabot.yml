@@ -6,7 +6,6 @@
 version: 2
 updates:
   # Maintain dependencies for GitHub Actions
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -18,28 +17,11 @@ updates:
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr
-  - package-ecosystem: "gomod"
-    directory: "/src"
-    schedule:
-      interval: "daily"
-
+  # Maintain dependencies for Go Module tcr-doc
   - package-ecosystem: "gomod"
     directory: "/tcr-doc"
     schedule:
       interval: "daily"
-
-  # Maintain dependencies for testdata/java
-
-  - package-ecosystem: "maven"
-    directory: "/src/testdata/java"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gradle"
-    directory: "/src/testdata/java"
-    schedule:
-      interval: "weekly"
 
   # Maintain dependencies for Java examples
 
