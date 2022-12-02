@@ -8,7 +8,6 @@ Run TCR in solo mode
 When used in "solo" mode, TCR only commits changes locally.
 It never pushes or pulls to a remote repository.
 
-This subcommand runs directly in the terminal (no GUI).
 
 ```
 tcr solo [flags]

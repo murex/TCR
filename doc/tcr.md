@@ -8,7 +8,6 @@ TCR (Test && Commit || Revert)
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 
-This application runs within a terminal.
 
 ```
 tcr [flags]

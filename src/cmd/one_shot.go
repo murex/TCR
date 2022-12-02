@@ -47,8 +47,7 @@ The return code of TCR "one-shot" is one of the following:
 | 3   | Error in configuration or parameter values                                     |
 | 4   | Error while interacting with git                                               |
 | 5   | Any other error                                                                |
-
-This subcommand runs directly in the terminal (no GUI).`,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.OneShot{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()

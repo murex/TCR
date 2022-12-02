@@ -58,8 +58,7 @@ The return code of TCR "check" is one of the following:
 | 0   | All checks passed without any warning or error                             |
 | 1   | One or more warnings were raised. This should not prevent TCR from running |
 | 2   | One or more errors were raised. TCR will not be able to run properly       |
-
-This subcommand runs directly in the terminal (no GUI).`,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Check{}
 		u := cli.New(parameters, engine.NewTcrEngine())
