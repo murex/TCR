@@ -35,8 +35,7 @@ var soloCmd = &cobra.Command{
 	Long: `
 When used in "solo" mode, TCR only commits changes locally.
 It never pushes or pulls to a remote repository.
-
-This subcommand runs directly in the terminal (no GUI).`,
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Solo{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()

@@ -19,7 +19,6 @@ The return code of TCR "one-shot" is one of the following:
 | 4   | Error while interacting with git                                               |
 | 5   | Any other error                                                                |
 
-This subcommand runs directly in the terminal (no GUI).
 
 ```
 tcr one-shot [flags]

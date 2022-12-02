@@ -30,7 +30,6 @@ The return code of TCR "check" is one of the following:
 | 1   | One or more warnings were raised. This should not prevent TCR from running |
 | 2   | One or more errors were raised. TCR will not be able to run properly       |
 
-This subcommand runs directly in the terminal (no GUI).
 
 ```
 tcr check [flags]
