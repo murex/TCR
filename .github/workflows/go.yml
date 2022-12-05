@@ -5,7 +5,8 @@ on:
     branches:
       - '**'
     paths:
-      - "tcr-*/**"
+      - "src/**"
+      - "tcr-doc/**"
       - "!examples/**"
       - "!**/*.md"
   pull_request:
