@@ -482,15 +482,15 @@ func Test_main_menu(t *testing.T) {
 		expected []engine.TcrCall
 	}{
 		{
-			"Enter key", []byte{enterKey}, nil,
+			"Enter key has no action", []byte{enterKey}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"? key", []byte{'?'}, nil,
+			"? key has no action on TCR", []byte{'?'}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"Q key", []byte{'q'}, []byte{'Q'},
+			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
 			[]engine.TcrCall{},
 		},
 		{
@@ -570,15 +570,15 @@ func Test_driver_menu(t *testing.T) {
 		expected []engine.TcrCall
 	}{
 		{
-			"Enter key", []byte{enterKey}, nil,
+			"Enter key has no action", []byte{enterKey}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"? key", []byte{'?'}, nil,
+			"? key has no action on TCR", []byte{'?'}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"Q key", []byte{'q'}, []byte{'Q'},
+			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
 			[]engine.TcrCall{},
 		},
 		{
@@ -586,19 +586,23 @@ func Test_driver_menu(t *testing.T) {
 			[]engine.TcrCall{engine.TcrCallReportMobTimerStatus},
 		},
 		{
-			"P key", []byte{'p'}, []byte{'P'},
+			"P key has no action", []byte{'p'}, []byte{'P'},
 			[]engine.TcrCall{},
 		},
 		{
-			"D key", []byte{'d'}, []byte{'D'},
+			"D key has no action", []byte{'d'}, []byte{'D'},
 			[]engine.TcrCall{},
 		},
 		{
-			"N key", []byte{'n'}, []byte{'N'},
+			"N key has no action", []byte{'n'}, []byte{'N'},
 			[]engine.TcrCall{},
 		},
 		{
-			"L key", []byte{'l'}, []byte{'L'},
+			"L key has no action", []byte{'l'}, []byte{'L'},
+			[]engine.TcrCall{},
+		},
+		{
+			"S key has no action", []byte{'s'}, []byte{'S'},
 			[]engine.TcrCall{},
 		},
 	}
@@ -622,31 +626,39 @@ func Test_navigator_menu(t *testing.T) {
 		expected []engine.TcrCall
 	}{
 		{
-			"Enter key", []byte{enterKey}, nil,
+			"Enter key has no action", []byte{enterKey}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"? key", []byte{'?'}, nil,
+			"? key has no action on TCR", []byte{'?'}, nil,
 			[]engine.TcrCall{},
 		},
 		{
-			"Q key", []byte{'q'}, []byte{'Q'},
+			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
 			[]engine.TcrCall{},
 		},
 		{
-			"T key", []byte{'t'}, []byte{'T'},
+			"T key has no action", []byte{'t'}, []byte{'T'},
 			[]engine.TcrCall{},
 		},
 		{
-			"P key", []byte{'p'}, []byte{'P'},
+			"P key has no action", []byte{'p'}, []byte{'P'},
 			[]engine.TcrCall{},
 		},
 		{
-			"D key", []byte{'d'}, []byte{'D'},
+			"L key has no action", []byte{'l'}, []byte{'L'},
 			[]engine.TcrCall{},
 		},
 		{
-			"N key", []byte{'n'}, []byte{'N'},
+			"S key has no action", []byte{'s'}, []byte{'S'},
+			[]engine.TcrCall{},
+		},
+		{
+			"D key has no action", []byte{'d'}, []byte{'D'},
+			[]engine.TcrCall{},
+		},
+		{
+			"N key has no action", []byte{'n'}, []byte{'N'},
 			[]engine.TcrCall{},
 		},
 	}
