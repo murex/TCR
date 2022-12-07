@@ -37,6 +37,7 @@ tidy:
 	@go mod tidy
 
 CONFIG_PKG="github.com/murex/tcr/settings"
+export CGO_ENABLED=0
 .PHONY: build
 build:
 	@go build -ldflags "-s -w \
