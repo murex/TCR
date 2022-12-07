@@ -34,12 +34,14 @@ Here are the main shortcuts available once TCR utility is running:
 
 | Shortcut  | Description                                   |
 |-----------|-----------------------------------------------|
-| `?`       | List available options                        |
 | `d` / `D` | Enter driver role (from main menu)            |
 | `n` / `N` | Enter navigator role (from main menu)         |
+| `p` / `P` | Toggle on/off git auto-push (from main menu)  |
+| `l` / `L` | Pull from remote (from main menu)             |
+| `s` / `S` | Push to remote (from main menu)               |
 | `q` / `Q` | Quit current role - Quit TCR (from main menu) |
 | `t` / `T` | Query timer status (from driver role only)    |
-| `p` / `P` | Toggle on/off git auto-push (from main menu)  |
+| `?`       | List available options                        |
 
 ### Additional Details
 
