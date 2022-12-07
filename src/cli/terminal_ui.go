@@ -50,6 +50,7 @@ const (
 
 const (
 	pullMenuHelper              = "Pull from remote"
+	pushMenuHelper              = "Push to remote"
 	driverRoleMenuHelper        = "Driver role"
 	navigatorRoleMenuHelper     = "Navigator role"
 	autoPushMenuHelper          = "Turn on/off git auto-push"
@@ -177,6 +178,9 @@ func (term *TerminalUI) mainMenu() {
 		case 'l', 'L':
 			term.gitPull()
 			term.whatShallWeDo()
+		case 's', 'S':
+			term.gitPush()
+			term.whatShallWeDo()
 		case 'q', 'Q':
 			Restore()
 			term.tcr.Quit()
@@ -197,6 +201,10 @@ func (term *TerminalUI) mainMenu() {
 
 func (term *TerminalUI) gitPull() {
 	term.tcr.GitPull()
+}
+
+func (term *TerminalUI) gitPush() {
+	term.tcr.GitPush()
 }
 
 func (term *TerminalUI) whatShallWeDo() {
@@ -363,6 +371,7 @@ func (term *TerminalUI) listMainMenuOptions(title string) {
 	term.printMenuOption('N', navigatorRoleMenuHelper)
 	term.printMenuOption('P', autoPushMenuHelper)
 	term.printMenuOption('L', pullMenuHelper)
+	term.printMenuOption('S', pushMenuHelper)
 	term.printMenuOption('Q', quitMenuHelper)
 	term.printMenuOption('?', optionsMenuHelper)
 }

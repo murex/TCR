@@ -469,6 +469,19 @@ func Test_git_pull_highlights_errors(t *testing.T) {
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
 
+func Test_git_push_highlights_errors(t *testing.T) {
+	sniffer := report.NewSniffer(
+		func(msg report.Message) bool {
+			return msg.Type.Severity == report.Error && msg.Text == "git push command failed!"
+		},
+	)
+	tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand}, nil)
+	tcr.GitPush()
+	time.Sleep(1 * time.Millisecond)
+	sniffer.Stop()
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
 func Test_toggle_auto_push(t *testing.T) {
 	tcr, _ := initTcrEngineWithFakes(nil, nil, nil, nil)
 	tcr.SetAutoPush(false)

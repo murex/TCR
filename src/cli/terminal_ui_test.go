@@ -296,6 +296,7 @@ func Test_simple_message_methods(t *testing.T) {
 				asCyanTrace("\tN -> "+navigatorRoleMenuHelper) +
 				asCyanTrace("\tP -> "+autoPushMenuHelper) +
 				asCyanTrace("\tL -> "+pullMenuHelper) +
+				asCyanTrace("\tS -> "+pushMenuHelper) +
 				asCyanTrace("\tQ -> "+quitMenuHelper) +
 				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
@@ -507,6 +508,12 @@ func Test_main_menu(t *testing.T) {
 			"L key", []byte{'l'}, []byte{'L'},
 			[]engine.TcrCall{
 				engine.TcrCallGitPull,
+			},
+		},
+		{
+			"S key", []byte{'s'}, []byte{'S'},
+			[]engine.TcrCall{
+				engine.TcrCallGitPush,
 			},
 		},
 		{
