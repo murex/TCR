@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build github.com/murex/tcr" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <module name="TCR" />
+    <working_directory value="$PROJECT_DIR$/src" />
+    <parameters value="-b ./testdata/java -w ./testdata/java -c ./testdata/java" />
+    <kind value="PACKAGE" />
+    <package value="github.com/murex/tcr" />
+    <directory value="$PROJECT_DIR$" />
+    <method v="2" />
+  </configuration>
+</component>
