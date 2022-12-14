@@ -486,6 +486,18 @@ make doc
 
 </details>
 
+### Testing local tcr manually
+
+The `tools/tcr/tcr-local.sh` script runs the latest TCR built from local sources on the `src/testdata/java` sample. The `src/tcr-local` script is just a convenience wrapper for this.
+
+#### Debugging
+
+If you are using IntelliJ or GoLand, there is run configuration in `.run` directory to launch or debug tcr from the IDE on the `src/testdata/java` sample.
+
+If you are using another IDE, use the following config:
+- Working Directory: `src/`
+- Command: `go run . -b ./testdata/java -w ./testdata/java -c ./testdata/java` 
+
 </details>
 
 ## Releasing a new TCR version
