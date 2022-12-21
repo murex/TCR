@@ -32,12 +32,12 @@ import (
 
 // IsGitCommandAvailable indicates if git command is available on local machine
 func IsGitCommandAvailable() bool {
-	return isCommandAvailable("git")
+	return IsCommandAvailable("git")
 }
 
 // GetGitCommandPath returns the path to git command on this machine
 func GetGitCommandPath() string {
-	return getCommandPath("git")
+	return GetCommandPath("git")
 }
 
 // GetGitCommandVersion returns the version of git command on this machine

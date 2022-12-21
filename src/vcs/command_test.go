@@ -30,18 +30,18 @@ import (
 )
 
 func Test_check_command_is_available_for_a_valid_command(t *testing.T) {
-	assert.True(t, isCommandAvailable("ls"))
+	assert.True(t, IsCommandAvailable("ls"))
 }
 
 func Test_check_command_is_available_for_an_invalid_command(t *testing.T) {
-	assert.False(t, isCommandAvailable("unknown-command"))
+	assert.False(t, IsCommandAvailable("unknown-command"))
 }
 
 func Test_check_command_path_for_a_valid_command(t *testing.T) {
-	base := filepath.Base(getCommandPath("ls"))
+	base := filepath.Base(GetCommandPath("ls"))
 	assert.Equal(t, strings.TrimSuffix(base, ".exe"), "ls")
 }
 
 func Test_check_command_path_for_an_invalid_command(t *testing.T) {
-	assert.Zero(t, getCommandPath("unknown-command"))
+	assert.Zero(t, GetCommandPath("unknown-command"))
 }

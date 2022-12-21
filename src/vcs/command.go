@@ -24,12 +24,14 @@ package vcs
 
 import "os/exec"
 
-func isCommandAvailable(command string) bool {
+// IsCommandAvailable indicates if the provided command is available in the path
+func IsCommandAvailable(command string) bool {
 	_, err := exec.LookPath(command)
 	return err == nil
 }
 
-func getCommandPath(command string) string {
+// GetCommandPath returns the full path to the provided command
+func GetCommandPath(command string) string {
 	path, _ := exec.LookPath(command)
 	return path
 }
