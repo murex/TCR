@@ -26,8 +26,8 @@ type (
 	// FileDiff is a structure containing diff information for a file
 	FileDiff struct {
 		Path         string
-		addedLines   int
-		removedLines int
+		AddedLines   int
+		RemovedLines int
 	}
 
 	// FileDiffs contains a set of FileDiff data in a slice
@@ -36,12 +36,12 @@ type (
 
 // NewFileDiff creates a new instance of FileDiff
 func NewFileDiff(filename string, added int, removed int) FileDiff {
-	return FileDiff{Path: filename, addedLines: added, removedLines: removed}
+	return FileDiff{Path: filename, AddedLines: added, RemovedLines: removed}
 }
 
 // ChangedLines returns the number of changed lines for this file
 func (fd FileDiff) ChangedLines() int {
-	return fd.addedLines + fd.removedLines
+	return fd.AddedLines + fd.RemovedLines
 }
 
 // ChangedLines returns the total number of changed lines for this set of files

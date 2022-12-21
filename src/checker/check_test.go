@@ -25,7 +25,7 @@ package checker
 import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/status"
-	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/git"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -46,7 +46,7 @@ var (
 func initTestCheckEnv(params params.Params) {
 	initCheckEnv(params)
 	// We replace git implementation with a fake so that we bypass real git access
-	checkEnv.git, checkEnv.gitErr = vcs.NewGitFake(vcs.GitFakeSettings{})
+	checkEnv.git, checkEnv.gitErr = git.NewGitFake(git.GitFakeSettings{})
 }
 
 func assertStatus(t *testing.T, expected CheckStatus, checker func(params params.Params) (cr *CheckResults), params params.Params) {

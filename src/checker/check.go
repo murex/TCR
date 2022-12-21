@@ -32,6 +32,7 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/git"
 	"os"
 )
 
@@ -130,7 +131,7 @@ func initCheckEnv(p params.Params) {
 	checkEnv.workDir = toolchain.GetWorkDir()
 
 	if checkEnv.sourceTreeErr == nil {
-		checkEnv.git, checkEnv.gitErr = vcs.New(checkEnv.sourceTree.GetBaseDir())
+		checkEnv.git, checkEnv.gitErr = git.New(checkEnv.sourceTree.GetBaseDir())
 	}
 }
 

@@ -38,6 +38,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/git"
 	"gopkg.in/tomb.v2"
 	"os"
 	"strings"
@@ -245,7 +246,7 @@ func parseCommitMessage(message string) (event events.TcrEvent) {
 func (tcr *TcrEngine) initVcs() {
 	if tcr.vcs == nil {
 		var err error
-		tcr.vcs, err = vcs.New(tcr.sourceTree.GetBaseDir())
+		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
 		tcr.handleError(err, true, status.GitError)
 	}
 }

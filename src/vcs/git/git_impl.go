@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package git
 
 import (
 	"bufio"
@@ -34,6 +34,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/storer"
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/vcs"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -55,15 +56,14 @@ type gitImpl struct {
 }
 
 // New initializes the git implementation based on the provided directory from local clone
-func New(dir string) (GitInterface, error) {
+func New(dir string) (vcs.GitInterface, error) {
 	return newGitImpl(plainOpen, dir)
 }
 
-// newGitImpl initializes a gitImpl instance
 func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error), dir string) (*gitImpl, error) {
 	var g = gitImpl{
 		baseDir:          dir,
-		pushEnabled:      DefaultPushEnabled,
+		pushEnabled:      vcs.DefaultPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
 	}
@@ -81,9 +81,9 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 		return nil, err
 	}
 
-	if isRemoteDefined(DefaultRemoteName, g.repository) {
+	if isRemoteDefined(vcs.DefaultRemoteName, g.repository) {
 		g.remoteEnabled = true
-		g.remoteName = DefaultRemoteName
+		g.remoteName = vcs.DefaultRemoteName
 		g.workingBranchExistsOnRemote, err = g.isWorkingBranchOnRemote()
 	}
 
@@ -286,7 +286,7 @@ func (g *gitImpl) UnStash(keep bool) error {
 
 // Diff returns the list of files modified since last commit with diff info for each file
 // Current implementation uses a direct call to git
-func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
+func (g *gitImpl) Diff() (diffs vcs.FileDiffs, err error) {
 	var gitOutput []byte
 	gitOutput, err = g.runGit("diff", "--numstat", "--ignore-cr-at-eol",
 		"--ignore-all-space", "--ignore-blank-lines", "HEAD")
@@ -301,7 +301,7 @@ func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 			added, _ := strconv.Atoi(fields[0])
 			removed, _ := strconv.Atoi(fields[1])
 			filename := filepath.Join(g.rootDir, fields[2])
-			diffs = append(diffs, NewFileDiff(filename, added, removed))
+			diffs = append(diffs, vcs.NewFileDiff(filename, added, removed))
 		}
 	}
 	return diffs, nil
@@ -310,7 +310,7 @@ func (g *gitImpl) Diff() (diffs FileDiffs, err error) {
 // Log returns the list of git log items compliant with the provided msgFilter.
 // When no msgFilter is provided, returns all git log items unfiltered.
 // Current implementation uses go-git's Log() function
-func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
+func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, err error) {
 	plainOpenOptions := git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: false,
@@ -333,7 +333,7 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 	}
 	_ = cIter.ForEach(func(c *object.Commit) error {
 		if msgFilter == nil || msgFilter(c.Message) {
-			logs.Add(NewGitLogItem(c.Hash.String(), c.Committer.When.UTC(), c.Message))
+			logs.Add(vcs.NewGitLogItem(c.Hash.String(), c.Committer.When.UTC(), c.Message))
 		}
 		return nil
 	})

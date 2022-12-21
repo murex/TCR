@@ -25,6 +25,7 @@ package checker
 import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/git"
 )
 
 func checkGitEnvironment(_ params.Params) (cr *CheckResults) {
@@ -37,18 +38,18 @@ func checkGitEnvironment(_ params.Params) (cr *CheckResults) {
 }
 
 func checkGitCommand() (cp []CheckPoint) {
-	if !vcs.IsGitCommandAvailable() {
+	if !git.IsGitCommandAvailable() {
 		cp = append(cp, errorCheckPoint("git command was not found on path"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("git command path is ", vcs.GetGitCommandPath()))
-	cp = append(cp, okCheckPoint("git version is ", vcs.GetGitCommandVersion()))
+	cp = append(cp, okCheckPoint("git command path is ", git.GetGitCommandPath()))
+	cp = append(cp, okCheckPoint("git version is ", git.GetGitCommandVersion()))
 	// We could add here a check on git minimum version. No specific need for now.
 	return cp
 }
 
 func checkGitConfig() (cp []CheckPoint) {
-	cp = append(cp, okCheckPoint("git username is ", vcs.GetGitUserName()))
+	cp = append(cp, okCheckPoint("git username is ", git.GetGitUserName()))
 	return cp
 }
 

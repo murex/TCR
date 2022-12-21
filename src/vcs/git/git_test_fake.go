@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package git
 
 import (
 	"errors"
@@ -30,6 +30,7 @@ import (
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/storage/memory"
+	"github.com/murex/tcr/vcs"
 )
 
 type (
@@ -67,13 +68,13 @@ type (
 	// GitFakeSettings provide a few ways to tune GitFake behaviour
 	GitFakeSettings struct {
 		FailingCommands GitCommands
-		ChangedFiles    FileDiffs
-		Logs            GitLogItems
+		ChangedFiles    vcs.FileDiffs
+		Logs            vcs.GitLogItems
 	}
 
 	// GitFake provides a fake implementation of the git interface
 	GitFake struct {
-		impl        GitInterface
+		impl        vcs.GitInterface
 		settings    GitFakeSettings
 		lastCommand GitCommand
 	}
@@ -132,12 +133,12 @@ func (g *GitFake) Pull() error {
 }
 
 // Diff returns the list of files modified configured at fake initialization
-func (g *GitFake) Diff() (_ FileDiffs, err error) {
+func (g *GitFake) Diff() (_ vcs.FileDiffs, err error) {
 	return g.settings.ChangedFiles, g.fakeGitCommand(DiffCommand)
 }
 
 // Log returns the list of git logs configured at fake initialization
-func (g *GitFake) Log(msgFilter func(msg string) bool) (logs GitLogItems, err error) {
+func (g *GitFake) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, err error) {
 	err = g.fakeGitCommand(LogCommand)
 
 	if msgFilter == nil {

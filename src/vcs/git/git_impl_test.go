@@ -20,12 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package git
 
 import (
 	"errors"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/murex/tcr/vcs"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -88,7 +89,7 @@ func Test_git_diff_command(t *testing.T) {
 		gitDiffError  error
 		expectError   bool
 		expectedArgs  []string
-		expectedDiff  FileDiffs
+		expectedDiff  vcs.FileDiffs
 	}{
 		{"git command arguments",
 			"",
@@ -117,7 +118,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
@@ -126,7 +127,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "file1.txt"), 1, 1},
 				{filepath.Join("/", "file2.txt"), 1, 1},
 			},
@@ -136,7 +137,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "some-dir", "some-file.txt"), 1, 1},
 			},
 		},
@@ -145,7 +146,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 15, 0},
 			},
 		},
@@ -154,7 +155,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 0, 7},
 			},
 		},
@@ -165,7 +166,7 @@ func Test_git_diff_command(t *testing.T) {
 			nil,
 			false,
 			nil,
-			FileDiffs{
+			vcs.FileDiffs{
 				{filepath.Join("/", "some-file.txt"), 1, 1},
 			},
 		},
@@ -237,7 +238,7 @@ func Test_git_push_command(t *testing.T) {
 			}
 			g.pushEnabled = tt.pushEnabled
 			g.remoteEnabled = true
-			g.remoteName = DefaultRemoteName
+			g.remoteName = vcs.DefaultRemoteName
 
 			err := g.Push()
 			if tt.expectError {
@@ -289,7 +290,7 @@ func Test_git_pull_command(t *testing.T) {
 				return tt.gitError
 			}
 			g.remoteEnabled = true
-			g.remoteName = DefaultRemoteName
+			g.remoteName = vcs.DefaultRemoteName
 			g.workingBranchExistsOnRemote = tt.branchOnRemote
 
 			err := g.Pull()
@@ -599,7 +600,7 @@ func Test_git_unstash_command(t *testing.T) {
 
 func Test_git_log_command(t *testing.T) {
 	// Note: this test may break if for any reason the TCR repository initial commit is altered
-	tcrInitialCommit := GitLogItem{
+	tcrInitialCommit := vcs.GitLogItem{
 		Hash:      "a823c098187455bade90ee44874d2b41c7ef96d9",
 		Timestamp: time.Date(2021, time.June, 16, 15, 29, 41, 0, time.UTC),
 		Message:   "Initial commit",
@@ -608,27 +609,27 @@ func Test_git_log_command(t *testing.T) {
 	testFlags := []struct {
 		desc     string
 		filter   func(msg string) bool
-		asserter func(t *testing.T, items GitLogItems)
+		asserter func(t *testing.T, items vcs.GitLogItems)
 	}{
 		{
 			"filter matching no item",
 			func(_ string) bool { return false },
-			func(t *testing.T, items GitLogItems) {
-				assert.Equal(t, 0, items.len())
+			func(t *testing.T, items vcs.GitLogItems) {
+				assert.Equal(t, 0, items.Len())
 			},
 		},
 		{
 			"filter matching all items",
 			nil,
-			func(t *testing.T, items GitLogItems) {
-				assert.Greater(t, items.len(), 100)
+			func(t *testing.T, items vcs.GitLogItems) {
+				assert.Greater(t, items.Len(), 100)
 			},
 		},
 		{
 			"filter matching one single item",
 			func(msg string) bool { return tcrInitialCommit.Message == msg },
-			func(t *testing.T, items GitLogItems) {
-				assert.Equal(t, 1, items.len())
+			func(t *testing.T, items vcs.GitLogItems) {
+				assert.Equal(t, 1, items.Len())
 				assert.Equal(t, tcrInitialCommit, items[0])
 			},
 		},

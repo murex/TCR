@@ -35,6 +35,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/git"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
@@ -180,7 +181,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"commit with git commit failure",
 			func() {
-				tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.CommitCommand}, nil)
+				tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.CommitCommand}, nil)
 				tcr.commit(events.TcrEvent{})
 			},
 			status.GitError,
@@ -188,7 +189,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"commit with git push failure",
 			func() {
-				tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand}, nil)
+				tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.PushCommand}, nil)
 				tcr.commit(events.TcrEvent{})
 			},
 			status.GitError,
@@ -204,7 +205,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"revert with git diff failure",
 			func() {
-				tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.DiffCommand}, nil)
+				tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.DiffCommand}, nil)
 				tcr.revert(events.TcrEvent{})
 			},
 			status.GitError,
@@ -212,7 +213,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"revert with git restore failure",
 			func() {
-				tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.RestoreCommand}, nil)
+				tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.RestoreCommand}, nil)
 				tcr.revert(events.TcrEvent{})
 			},
 			status.GitError,
@@ -231,7 +232,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 	testFlags := []struct {
 		desc           string
-		gitFailures    vcs.GitCommands
+		gitFailures    git.GitCommands
 		expectedStatus status.Status
 	}{
 		{
@@ -241,27 +242,27 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 		},
 		{
 			"git stash failure",
-			vcs.GitCommands{vcs.StashCommand},
+			git.GitCommands{git.StashCommand},
 			status.GitError,
 		},
 		{
 			"git un-stash failure",
-			vcs.GitCommands{vcs.UnStashCommand},
+			git.GitCommands{git.UnStashCommand},
 			status.GitError,
 		},
 		{
 			"git add failure",
-			vcs.GitCommands{vcs.AddCommand},
+			git.GitCommands{git.AddCommand},
 			status.GitError,
 		},
 		{
 			"git commit failure",
-			vcs.GitCommands{vcs.CommitCommand},
+			git.GitCommands{git.CommitCommand},
 			status.GitError,
 		},
 		{
 			"git revert failure",
-			vcs.GitCommands{vcs.RevertCommand},
+			git.GitCommands{git.RevertCommand},
 			status.GitError,
 		},
 	}
@@ -281,7 +282,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
 		toolchainFailures toolchain.Operations
-		gitFailures       vcs.GitCommands
+		gitFailures       git.GitCommands
 		expectedStatus    status.Status
 	}{
 		{
@@ -301,27 +302,27 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 		},
 		{
 			"with git add failure",
-			nil, vcs.GitCommands{vcs.AddCommand},
+			nil, git.GitCommands{git.AddCommand},
 			status.GitError,
 		},
 		{
 			"with git commit failure",
-			nil, vcs.GitCommands{vcs.CommitCommand},
+			nil, git.GitCommands{git.CommitCommand},
 			status.GitError,
 		},
 		{
 			"with git push failure",
-			nil, vcs.GitCommands{vcs.PushCommand},
+			nil, git.GitCommands{git.PushCommand},
 			status.GitError,
 		},
 		{
 			"with test and git diff failure",
-			toolchain.Operations{toolchain.TestOperation}, vcs.GitCommands{vcs.DiffCommand},
+			toolchain.Operations{toolchain.TestOperation}, git.GitCommands{git.DiffCommand},
 			status.GitError,
 		},
 		{
 			"with test and git restore failure",
-			toolchain.Operations{toolchain.TestOperation}, vcs.GitCommands{vcs.RestoreCommand},
+			toolchain.Operations{toolchain.TestOperation}, git.GitCommands{git.RestoreCommand},
 			status.GitError,
 		},
 	}
@@ -336,7 +337,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	}
 }
 
-func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures vcs.GitCommands, gitLogItems vcs.GitLogItems) (TcrInterface, *vcs.GitFake) {
+func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures git.GitCommands, gitLogItems vcs.GitLogItems) (TcrInterface, *git.GitFake) {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
 
@@ -384,13 +385,13 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(tcr TcrInterface, failures vcs.GitCommands, gitLogItems vcs.GitLogItems) *vcs.GitFake {
-	fakeSettings := vcs.GitFakeSettings{
+func replaceGitImplWithFake(tcr TcrInterface, failures git.GitCommands, gitLogItems vcs.GitLogItems) *git.GitFake {
+	fakeSettings := git.GitFakeSettings{
 		FailingCommands: failures,
 		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
 		Logs:            gitLogItems,
 	}
-	fake, _ := vcs.NewGitFake(fakeSettings)
+	fake, _ := git.NewGitFake(fakeSettings)
 	tcr.setVcs(fake)
 	return fake
 }
@@ -453,7 +454,7 @@ func Test_set_commit_on_fail(t *testing.T) {
 func Test_git_pull_calls_git_command(t *testing.T) {
 	tcr, gitFake := initTcrEngineWithFakes(nil, nil, nil, nil)
 	tcr.GitPull()
-	assert.Equal(t, vcs.PullCommand, gitFake.GetLastCommand())
+	assert.Equal(t, git.PullCommand, gitFake.GetLastCommand())
 }
 
 func Test_git_pull_highlights_errors(t *testing.T) {
@@ -462,7 +463,7 @@ func Test_git_pull_highlights_errors(t *testing.T) {
 			return msg.Type.Severity == report.Error && msg.Text == "git pull command failed!"
 		},
 	)
-	tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PullCommand}, nil)
+	tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.PullCommand}, nil)
 	tcr.GitPull()
 	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
@@ -475,7 +476,7 @@ func Test_git_push_highlights_errors(t *testing.T) {
 			return msg.Type.Severity == report.Error && msg.Text == "git push command failed!"
 		},
 	)
-	tcr, _ := initTcrEngineWithFakes(nil, nil, vcs.GitCommands{vcs.PushCommand}, nil)
+	tcr, _ := initTcrEngineWithFakes(nil, nil, git.GitCommands{git.PushCommand}, nil)
 	tcr.GitPush()
 	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()

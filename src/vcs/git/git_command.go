@@ -20,24 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package git
 
 import (
 	"bufio"
 	"bytes"
 	"github.com/codeskyblue/go-sh"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/vcs"
 	"strings"
 )
 
 // IsGitCommandAvailable indicates if git command is available on local machine
 func IsGitCommandAvailable() bool {
-	return IsCommandAvailable("git")
+	return vcs.IsCommandAvailable("git")
 }
 
 // GetGitCommandPath returns the path to git command on this machine
 func GetGitCommandPath() string {
-	return GetCommandPath("git")
+	return vcs.GetCommandPath("git")
 }
 
 // GetGitCommandVersion returns the version of git command on this machine

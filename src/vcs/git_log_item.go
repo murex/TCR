@@ -55,6 +55,7 @@ func (items *GitLogItems) Add(d GitLogItem) {
 	*items = append(*items, d)
 }
 
-func (items *GitLogItems) len() int {
+// Len returns the length of the items array
+func (items *GitLogItems) Len() int {
 	return len(*items)
 }
