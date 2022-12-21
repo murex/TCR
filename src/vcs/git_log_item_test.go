@@ -31,7 +31,7 @@ import (
 func Test_add_regular_git_log_item(t *testing.T) {
 	var items GitLogItems
 	item := NewGitLogItem("xxx", time.Now(), "some message")
-	items.add(item)
+	items.Add(item)
 	assert.Len(t, items, 1)
 	assert.Contains(t, items, item)
 }
@@ -39,7 +39,7 @@ func Test_add_regular_git_log_item(t *testing.T) {
 func Test_add_empty_git_log_item(t *testing.T) {
 	var items GitLogItems
 	item := NewGitLogItem("", time.Time{}, "")
-	items.add(item)
+	items.Add(item)
 	assert.Len(t, items, 1)
 }
 

@@ -147,7 +147,7 @@ func (g *GitFake) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 
 	for _, log := range g.settings.Logs {
 		if msgFilter(log.Message) {
-			logs.add(log)
+			logs.Add(log)
 		}
 	}
 	return

@@ -50,7 +50,8 @@ func (items *GitLogItems) sortByDate() {
 	})
 }
 
-func (items *GitLogItems) add(d GitLogItem) {
+// Add adds a GitLogItem to the GitLogItems collection
+func (items *GitLogItems) Add(d GitLogItem) {
 	*items = append(*items, d)
 }
 

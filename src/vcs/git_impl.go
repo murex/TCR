@@ -59,6 +59,7 @@ func New(dir string) (GitInterface, error) {
 	return newGitImpl(plainOpen, dir)
 }
 
+// newGitImpl initializes a gitImpl instance
 func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error), dir string) (*gitImpl, error) {
 	var g = gitImpl{
 		baseDir:          dir,
@@ -332,7 +333,7 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs GitLogItems, err er
 	}
 	_ = cIter.ForEach(func(c *object.Commit) error {
 		if msgFilter == nil || msgFilter(c.Message) {
-			logs.add(NewGitLogItem(c.Hash.String(), c.Committer.When.UTC(), c.Message))
+			logs.Add(NewGitLogItem(c.Hash.String(), c.Committer.When.UTC(), c.Message))
 		}
 		return nil
 	})
