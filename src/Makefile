@@ -49,6 +49,10 @@ build:
             -X ${CONFIG_PKG}.BuildAuthor="`id -un`" \
             "
 
+.PHONY: run
+run:
+	@tcr-local
+
 .PHONY: download
 download:
 	@go mod download
