@@ -40,6 +40,9 @@ import (
 	"strings"
 )
 
+// DefaultRemoteName is the alias used by default for the git remote repository
+const DefaultRemoteName = "origin"
+
 // gitImpl provides the implementation of the git interface
 type gitImpl struct {
 	baseDir                     string
@@ -56,7 +59,7 @@ type gitImpl struct {
 }
 
 // New initializes the git implementation based on the provided directory from local clone
-func New(dir string) (vcs.GitInterface, error) {
+func New(dir string) (vcs.Interface, error) {
 	return newGitImpl(plainOpen, dir)
 }
 
@@ -81,9 +84,9 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 		return nil, err
 	}
 
-	if isRemoteDefined(vcs.DefaultRemoteName, g.repository) {
+	if isRemoteDefined(DefaultRemoteName, g.repository) {
 		g.remoteEnabled = true
-		g.remoteName = vcs.DefaultRemoteName
+		g.remoteName = DefaultRemoteName
 		g.workingBranchExistsOnRemote, err = g.isWorkingBranchOnRemote()
 	}
 
@@ -182,6 +185,17 @@ func (g *gitImpl) IsRemoteEnabled() bool {
 // GetWorkingBranch returns the current git working branch
 func (g *gitImpl) GetWorkingBranch() string {
 	return g.workingBranch
+}
+
+// IsOnRootBranch indicates if git is currently on its root branch or not.
+// Current implementation is a trivial one, that returns true if the branch is called "main" or "master"
+func (g *gitImpl) IsOnRootBranch() bool {
+	for _, b := range []string{"main", "master"} {
+		if b == g.GetWorkingBranch() {
+			return true
+		}
+	}
+	return false
 }
 
 // Add adds the listed paths to git index.

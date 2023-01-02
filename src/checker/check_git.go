@@ -24,7 +24,6 @@ package checker
 
 import (
 	"github.com/murex/tcr/params"
-	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/git"
 )
 
@@ -65,9 +64,8 @@ func checkGitRepository() (cp []CheckPoint) {
 
 	cp = append(cp, okCheckPoint("git repository root is ", checkEnv.git.GetRootDir()))
 
-	branch := checkEnv.git.GetWorkingBranch()
-	cp = append(cp, okCheckPoint("git working branch is ", branch))
-	if vcs.IsRootBranch(branch) {
+	cp = append(cp, okCheckPoint("git working branch is ", checkEnv.git.GetWorkingBranch()))
+	if checkEnv.git.IsOnRootBranch() {
 		cp = append(cp, warningCheckPoint("running TCR from a root branch is not recommended"))
 	}
 	return cp

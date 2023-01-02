@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,25 +22,30 @@ SOFTWARE.
 
 package vcs
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+const (
+	// DefaultPushEnabled indicates the default state for VCS auto-push option
+	DefaultPushEnabled = false
 )
 
-func Test_is_git_root_branch(t *testing.T) {
-	testFlags := []struct {
-		desc     string
-		name     string
-		expected bool
-	}{
-		{"master branch", "master", true},
-		{"main branch", "main", true},
-		{"other branch", "xxx", false},
-		{"empty branch", "", false},
-	}
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expected, IsRootBranch(tt.name))
-		})
-	}
+// Interface provides the interface that a VCS implementation must satisfy for TCR engine to be
+// able to interact with it
+type Interface interface {
+	GetRootDir() string
+	GetRemoteName() string
+	GetWorkingBranch() string
+	IsOnRootBranch() bool
+	Add(paths ...string) error
+	Commit(amend bool, messages ...string) error
+	Restore(dir string) error
+	Revert() error
+	Push() error
+	Pull() error
+	Stash(message string) error
+	UnStash(keep bool) error
+	Diff() (diffs FileDiffs, err error)
+	Log(msgFilter func(msg string) bool) (logs LogItems, err error)
+	EnablePush(flag bool)
+	IsPushEnabled() bool
+	IsRemoteEnabled() bool
+	CheckRemoteAccess() bool
 }

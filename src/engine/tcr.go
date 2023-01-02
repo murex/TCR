@@ -49,7 +49,7 @@ type (
 	// TcrInterface provides the API for interacting with TCR engine
 	TcrInterface interface {
 		Init(u ui.UserInterface, p params.Params)
-		setVcs(gitInterface vcs.GitInterface)
+		setVcs(gitInterface vcs.Interface)
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
@@ -77,7 +77,7 @@ type (
 	TcrEngine struct {
 		mode            runmode.RunMode
 		ui              ui.UserInterface
-		vcs             vcs.GitInterface
+		vcs             vcs.Interface
 		language        language.LangInterface
 		toolchain       toolchain.TchnInterface
 		sourceTree      filesystem.SourceTree
@@ -151,7 +151,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, p params.Params) {
 
 	tcr.ui.ShowRunningMode(tcr.mode)
 	tcr.ui.ShowSessionInfo()
-	tcr.warnIfOnRootBranch(tcr.vcs.GetWorkingBranch(), tcr.mode.IsInteractive())
+	tcr.warnIfOnRootBranch(tcr.mode.IsInteractive())
 }
 
 // SetCommitOnFail sets git commit-on-fail option to the provided value
@@ -258,13 +258,14 @@ func (tcr *TcrEngine) initSourceTree(p params.Params) {
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 }
 
-func (tcr *TcrEngine) setVcs(gitInterface vcs.GitInterface) {
+func (tcr *TcrEngine) setVcs(gitInterface vcs.Interface) {
 	tcr.vcs = gitInterface
 }
 
-func (tcr *TcrEngine) warnIfOnRootBranch(branch string, interactive bool) {
-	if vcs.IsRootBranch(branch) {
-		message := "Running " + settings.ApplicationName + " on branch \"" + branch + "\" is not recommended"
+func (tcr *TcrEngine) warnIfOnRootBranch(interactive bool) {
+	if tcr.vcs.IsOnRootBranch() {
+		message := "Running " + settings.ApplicationName +
+			" on branch \"" + tcr.vcs.GetWorkingBranch() + "\" is not recommended"
 		if interactive {
 			if !tcr.ui.Confirm(message, false) {
 				tcr.Quit()

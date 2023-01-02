@@ -74,7 +74,7 @@ type (
 
 	// Fake provides a fake implementation of the git interface
 	Fake struct {
-		impl        vcs.GitInterface
+		impl        vcs.Interface
 		settings    FakeSettings
 		lastCommand Command
 	}
@@ -182,6 +182,11 @@ func (gf *Fake) GetRemoteName() string {
 // GetWorkingBranch returns the current git working branch
 func (gf *Fake) GetWorkingBranch() string {
 	return gf.impl.GetWorkingBranch()
+}
+
+// IsOnRootBranch indicates if git is currently on its root branch or not
+func (gf *Fake) IsOnRootBranch() bool {
+	return gf.impl.IsOnRootBranch()
 }
 
 // EnablePush sets a flag allowing to turn on/off git push operations

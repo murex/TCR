@@ -238,7 +238,7 @@ func Test_git_push_command(t *testing.T) {
 			}
 			g.pushEnabled = tt.pushEnabled
 			g.remoteEnabled = true
-			g.remoteName = vcs.DefaultRemoteName
+			g.remoteName = DefaultRemoteName
 
 			err := g.Push()
 			if tt.expectError {
@@ -290,7 +290,7 @@ func Test_git_pull_command(t *testing.T) {
 				return tt.gitError
 			}
 			g.remoteEnabled = true
-			g.remoteName = vcs.DefaultRemoteName
+			g.remoteName = DefaultRemoteName
 			g.workingBranchExistsOnRemote = tt.branchOnRemote
 
 			err := g.Pull()
@@ -727,6 +727,26 @@ func Test_nothing_to_commit(t *testing.T) {
 			g := tt.gitInitializer()
 			assert.Equal(t, tt.expected, g.nothingToCommit())
 
+		})
+	}
+}
+
+func Test_is_on_root_branch(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		name     string
+		expected bool
+	}{
+		{"master branch", "master", true},
+		{"main branch", "main", true},
+		{"other branch", "xxx", false},
+		{"empty branch", "", false},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.workingBranch = tt.name
+			assert.Equal(t, tt.expected, g.IsOnRootBranch())
 		})
 	}
 }

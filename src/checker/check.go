@@ -69,7 +69,7 @@ var checkEnv struct {
 	langErr       error
 	tchn          toolchain.TchnInterface
 	tchnErr       error
-	git           vcs.GitInterface
+	git           vcs.Interface
 	gitErr        error
 }
 
