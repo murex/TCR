@@ -16,3 +16,4 @@ test:
     arch: [ "386", amd64, arm64 ]
     command: .\gradlew.bat
     arguments: [ test ]
+test-result-dir: build/test-results/test
