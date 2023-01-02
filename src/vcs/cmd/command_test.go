@@ -20,28 +20,57 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package vcs
+package cmd
 
 import (
+	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"strings"
 	"testing"
 )
 
-func Test_check_command_is_available_for_a_valid_command(t *testing.T) {
-	assert.True(t, IsCommandAvailable("ls"))
+func Test_is_in_path_for_a_valid_command(t *testing.T) {
+	assert.True(t, New("ls").IsInPath())
 }
 
-func Test_check_command_is_available_for_an_invalid_command(t *testing.T) {
-	assert.False(t, IsCommandAvailable("unknown-command"))
+func Test_is_in_path_for_an_invalid_command(t *testing.T) {
+	assert.False(t, New("unknown-command").IsInPath())
 }
 
-func Test_check_command_path_for_a_valid_command(t *testing.T) {
-	base := filepath.Base(GetCommandPath("ls"))
+func Test_get_full_path_for_a_valid_command(t *testing.T) {
+	base := filepath.Base(New("ls").GetFullPath())
 	assert.Equal(t, strings.TrimSuffix(base, ".exe"), "ls")
 }
 
-func Test_check_command_path_for_an_invalid_command(t *testing.T) {
-	assert.Zero(t, GetCommandPath("unknown-command"))
+func Test_get_full_path_for_an_invalid_command(t *testing.T) {
+	assert.Zero(t, New("unknown-command").GetFullPath())
+}
+
+func Test_run_valid_command(t *testing.T) {
+	output, err := New("pwd").Run()
+	assert.NoError(t, err)
+	assert.NotZero(t, output)
+}
+
+func Test_run_invalid_command(t *testing.T) {
+	output, err := New("unknown-command").Run()
+	assert.Error(t, err)
+	assert.Zero(t, output)
+}
+
+func Test_trace_valid_command(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("pwd").Trace()
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
+func Test_trace_invalid_command(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("unknown-command").Trace()
+	sniffer.Stop()
+	assert.Error(t, err)
+	assert.Equal(t, 0, sniffer.GetMatchCount())
 }
