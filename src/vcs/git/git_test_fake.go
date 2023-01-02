@@ -34,14 +34,14 @@ import (
 )
 
 type (
-	// GitCommand is the name of a Git command
-	GitCommand string
+	// Command is the name of a Git command
+	Command string
 
-	// GitCommands is a slice of GitCommand
-	GitCommands []GitCommand
+	// Commands is a slice of Command
+	Commands []Command
 )
 
-func (gc GitCommands) contains(command GitCommand) bool {
+func (gc Commands) contains(command Command) bool {
 	for _, value := range gc {
 		if value == command {
 			return true
@@ -52,31 +52,31 @@ func (gc GitCommands) contains(command GitCommand) bool {
 
 // List of supported git commands
 const (
-	AddCommand     GitCommand = "add"
-	CommitCommand  GitCommand = "commit"
-	DiffCommand    GitCommand = "diff"
-	LogCommand     GitCommand = "log"
-	PullCommand    GitCommand = "pull"
-	PushCommand    GitCommand = "push"
-	RestoreCommand GitCommand = "restore"
-	RevertCommand  GitCommand = "revert"
-	StashCommand   GitCommand = "stash"
-	UnStashCommand GitCommand = "unStash"
+	AddCommand     Command = "add"
+	CommitCommand  Command = "commit"
+	DiffCommand    Command = "diff"
+	LogCommand     Command = "log"
+	PullCommand    Command = "pull"
+	PushCommand    Command = "push"
+	RestoreCommand Command = "restore"
+	RevertCommand  Command = "revert"
+	StashCommand   Command = "stash"
+	UnStashCommand Command = "unStash"
 )
 
 type (
-	// GitFakeSettings provide a few ways to tune GitFake behaviour
-	GitFakeSettings struct {
-		FailingCommands GitCommands
+	// FakeSettings provide a few ways to tune Fake behaviour
+	FakeSettings struct {
+		FailingCommands Commands
 		ChangedFiles    vcs.FileDiffs
 		Logs            vcs.GitLogItems
 	}
 
-	// GitFake provides a fake implementation of the git interface
-	GitFake struct {
+	// Fake provides a fake implementation of the git interface
+	Fake struct {
 		impl        vcs.GitInterface
-		settings    GitFakeSettings
-		lastCommand GitCommand
+		settings    FakeSettings
+		lastCommand Command
 	}
 )
 
@@ -87,66 +87,66 @@ func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err 
 	return
 }
 
-func (g *GitFake) fakeGitCommand(cmd GitCommand) (err error) {
-	g.lastCommand = cmd
-	if g.settings.FailingCommands.contains(cmd) {
+func (gf *Fake) fakeCommand(cmd Command) (err error) {
+	gf.lastCommand = cmd
+	if gf.settings.FailingCommands.contains(cmd) {
 		err = errors.New("git " + string(cmd) + " fake error")
 	}
 	return
 }
 
-// NewGitFake initializes a fake git implementation which does nothing
+// NewFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
-func NewGitFake(settings GitFakeSettings) (*GitFake, error) {
+func NewFake(settings FakeSettings) (*Fake, error) {
 	impl, err := newGitImpl(inMemoryRepoInit, "")
-	return &GitFake{impl: impl, settings: settings}, err
+	return &Fake{impl: impl, settings: settings}, err
 }
 
 // GetLastCommand returns the last command called
-func (g *GitFake) GetLastCommand() GitCommand {
-	return g.lastCommand
+func (gf *Fake) GetLastCommand() Command {
+	return gf.lastCommand
 }
 
 // Add does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Add(_ ...string) error {
-	return g.fakeGitCommand(AddCommand)
+func (gf *Fake) Add(_ ...string) error {
+	return gf.fakeCommand(AddCommand)
 }
 
 // Commit does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Commit(_ bool, _ ...string) error {
-	return g.fakeGitCommand(CommitCommand)
+func (gf *Fake) Commit(_ bool, _ ...string) error {
+	return gf.fakeCommand(CommitCommand)
 }
 
 // Restore does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Restore(_ string) error {
-	return g.fakeGitCommand(RestoreCommand)
+func (gf *Fake) Restore(_ string) error {
+	return gf.fakeCommand(RestoreCommand)
 }
 
 // Push does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Push() error {
-	return g.fakeGitCommand(PushCommand)
+func (gf *Fake) Push() error {
+	return gf.fakeCommand(PushCommand)
 }
 
 // Pull does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Pull() error {
-	return g.fakeGitCommand(PullCommand)
+func (gf *Fake) Pull() error {
+	return gf.fakeCommand(PullCommand)
 }
 
 // Diff returns the list of files modified configured at fake initialization
-func (g *GitFake) Diff() (_ vcs.FileDiffs, err error) {
-	return g.settings.ChangedFiles, g.fakeGitCommand(DiffCommand)
+func (gf *Fake) Diff() (_ vcs.FileDiffs, err error) {
+	return gf.settings.ChangedFiles, gf.fakeCommand(DiffCommand)
 }
 
 // Log returns the list of git logs configured at fake initialization
-func (g *GitFake) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, err error) {
-	err = g.fakeGitCommand(LogCommand)
+func (gf *Fake) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, err error) {
+	err = gf.fakeCommand(LogCommand)
 
 	if msgFilter == nil {
-		logs = g.settings.Logs
+		logs = gf.settings.Logs
 		return
 	}
 
-	for _, log := range g.settings.Logs {
+	for _, log := range gf.settings.Logs {
 		if msgFilter(log.Message) {
 			logs.Add(log)
 		}
@@ -155,51 +155,51 @@ func (g *GitFake) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, er
 }
 
 // Stash does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Stash(_ string) error {
-	return g.fakeGitCommand(StashCommand)
+func (gf *Fake) Stash(_ string) error {
+	return gf.fakeCommand(StashCommand)
 }
 
 // UnStash does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) UnStash(_ bool) error {
-	return g.fakeGitCommand(UnStashCommand)
+func (gf *Fake) UnStash(_ bool) error {
+	return gf.fakeCommand(UnStashCommand)
 }
 
 // Revert does nothing. Returns an error if in the list of failing commands
-func (g *GitFake) Revert() error {
-	return g.fakeGitCommand(RevertCommand)
+func (gf *Fake) Revert() error {
+	return gf.fakeCommand(RevertCommand)
 }
 
 // GetRootDir returns the root directory path
-func (g *GitFake) GetRootDir() string {
-	return g.impl.GetRootDir()
+func (gf *Fake) GetRootDir() string {
+	return gf.impl.GetRootDir()
 }
 
 // GetRemoteName returns the current git remote name
-func (g *GitFake) GetRemoteName() string {
-	return g.impl.GetRemoteName()
+func (gf *Fake) GetRemoteName() string {
+	return gf.impl.GetRemoteName()
 }
 
 // GetWorkingBranch returns the current git working branch
-func (g *GitFake) GetWorkingBranch() string {
-	return g.impl.GetWorkingBranch()
+func (gf *Fake) GetWorkingBranch() string {
+	return gf.impl.GetWorkingBranch()
 }
 
 // EnablePush sets a flag allowing to turn on/off git push operations
-func (g *GitFake) EnablePush(flag bool) {
-	g.impl.EnablePush(flag)
+func (gf *Fake) EnablePush(flag bool) {
+	gf.impl.EnablePush(flag)
 }
 
 // IsPushEnabled indicates if git push operations are turned on
-func (g *GitFake) IsPushEnabled() bool {
-	return g.impl.IsPushEnabled()
+func (gf *Fake) IsPushEnabled() bool {
+	return gf.impl.IsPushEnabled()
 }
 
 // IsRemoteEnabled indicates if git remote operations are enabled
-func (g *GitFake) IsRemoteEnabled() bool {
-	return g.impl.IsRemoteEnabled()
+func (gf *Fake) IsRemoteEnabled() bool {
+	return gf.impl.IsRemoteEnabled()
 }
 
 // CheckRemoteAccess returns true if git remote can be accessed
-func (g *GitFake) CheckRemoteAccess() bool {
-	return g.impl.CheckRemoteAccess()
+func (gf *Fake) CheckRemoteAccess() bool {
+	return gf.impl.CheckRemoteAccess()
 }

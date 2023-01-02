@@ -51,8 +51,8 @@ type gitImpl struct {
 	workingBranch               string
 	workingBranchExistsOnRemote bool
 	pushEnabled                 bool
-	runGitFunction              func(params []string) (output []byte, err error)
-	traceGitFunction            func(params []string) (err error)
+	runGitFunction              func(params ...string) (output []byte, err error)
+	traceGitFunction            func(params ...string) (err error)
 }
 
 // New initializes the git implementation based on the provided directory from local clone
@@ -372,11 +372,11 @@ func (g *gitImpl) CheckRemoteAccess() bool {
 // traceGit runs a git command and traces its output.
 // The command is launched from the git root directory
 func (g *gitImpl) traceGit(args ...string) error {
-	return g.traceGitFunction(append([]string{"-C", g.GetRootDir()}, args...))
+	return g.traceGitFunction(append([]string{"-C", g.GetRootDir()}, args...)...)
 }
 
 // runGit calls git command in a separate process and returns its output traces
 // The command is launched from the git root directory
 func (g *gitImpl) runGit(args ...string) (output []byte, err error) {
-	return g.runGitFunction(append([]string{"-C", g.GetRootDir()}, args...))
+	return g.runGitFunction(append([]string{"-C", g.GetRootDir()}, args...)...)
 }

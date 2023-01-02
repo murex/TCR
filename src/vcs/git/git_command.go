@@ -25,25 +25,27 @@ package git
 import (
 	"bufio"
 	"bytes"
-	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/cmd"
 	"strings"
 )
 
+func newGitCommand() *cmd.ShellCommand {
+	return cmd.New("git")
+}
+
 // IsGitCommandAvailable indicates if git command is available on local machine
 func IsGitCommandAvailable() bool {
-	return vcs.IsCommandAvailable("git")
+	return newGitCommand().IsInPath()
 }
 
 // GetGitCommandPath returns the path to git command on this machine
 func GetGitCommandPath() string {
-	return vcs.GetCommandPath("git")
+	return newGitCommand().GetFullPath()
 }
 
 // GetGitCommandVersion returns the version of git command on this machine
 func GetGitCommandVersion() string {
-	gitOutput, err := runGitCommand([]string{"version"})
+	gitOutput, err := runGitCommand("version")
 	if err != nil {
 		return "unknown"
 	}
@@ -58,7 +60,7 @@ func GetGitUserName() string {
 }
 
 func getGitConfigValue(variable string) string {
-	gitOutput, err := runGitCommand([]string{"config", variable})
+	gitOutput, err := runGitCommand("config", variable)
 	if err != nil || gitOutput == nil || len(gitOutput) == 0 {
 		return "not set"
 	}
@@ -68,15 +70,11 @@ func getGitConfigValue(variable string) string {
 }
 
 // traceGitCommand calls git command and reports its output traces
-func traceGitCommand(params []string) error {
-	output, err := runGitCommand(params)
-	if len(output) > 0 {
-		report.PostText(string(output))
-	}
-	return err
+func traceGitCommand(params ...string) error {
+	return newGitCommand().Trace(params...)
 }
 
 // runGitCommand calls git command in a separate process and returns its output traces
-func runGitCommand(params []string) (output []byte, err error) {
-	return sh.Command("git", params).CombinedOutput()
+func runGitCommand(params ...string) (output []byte, err error) {
+	return newGitCommand().Run(params...)
 }

@@ -119,7 +119,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "some-file.txt"), 1, 1},
+				{Path: filepath.Join("/", "some-file.txt"), AddedLines: 1, RemovedLines: 1},
 			},
 		},
 		{"2 files changed",
@@ -128,8 +128,8 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "file1.txt"), 1, 1},
-				{filepath.Join("/", "file2.txt"), 1, 1},
+				{Path: filepath.Join("/", "file1.txt"), AddedLines: 1, RemovedLines: 1},
+				{Path: filepath.Join("/", "file2.txt"), AddedLines: 1, RemovedLines: 1},
 			},
 		},
 		{"file changed in sub-directory",
@@ -138,7 +138,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "some-dir", "some-file.txt"), 1, 1},
+				{Path: filepath.Join("/", "some-dir", "some-file.txt"), AddedLines: 1, RemovedLines: 1},
 			},
 		},
 		{"1 file changed with added lines only",
@@ -147,7 +147,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "some-file.txt"), 15, 0},
+				{Path: filepath.Join("/", "some-file.txt"), AddedLines: 15, RemovedLines: 0},
 			},
 		},
 		{"1 file changed with removed lines only",
@@ -156,7 +156,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "some-file.txt"), 0, 7},
+				{Path: filepath.Join("/", "some-file.txt"), AddedLines: 0, RemovedLines: 7},
 			},
 		},
 		{"noise in output trace",
@@ -167,7 +167,7 @@ func Test_git_diff_command(t *testing.T) {
 			false,
 			nil,
 			vcs.FileDiffs{
-				{filepath.Join("/", "some-file.txt"), 1, 1},
+				{Path: filepath.Join("/", "some-file.txt"), AddedLines: 1, RemovedLines: 1},
 			},
 		},
 	}
@@ -175,7 +175,7 @@ func Test_git_diff_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.runGitFunction = func(args []string) (output []byte, err error) {
+			g.runGitFunction = func(args ...string) (output []byte, err error) {
 				actualArgs = args[2:]
 				return []byte(tt.gitDiffOutput), tt.gitDiffError
 			}
@@ -233,7 +233,7 @@ func Test_git_push_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(_ []string) (err error) {
+			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
 			g.pushEnabled = tt.pushEnabled
@@ -286,7 +286,7 @@ func Test_git_pull_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(_ []string) (err error) {
+			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
 			g.remoteEnabled = true
@@ -344,7 +344,7 @@ func Test_git_add_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(args []string) (err error) {
+			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
 			}
@@ -409,7 +409,7 @@ func Test_git_commit_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(args []string) error {
+			g.traceGitFunction = func(args ...string) error {
 				actualArgs = args[2:]
 				return tt.gitError
 			}
@@ -444,7 +444,7 @@ func Test_git_restore_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(_ []string) (err error) {
+			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
 
@@ -482,7 +482,7 @@ func Test_git_revert_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(args []string) (err error) {
+			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
 			}
@@ -525,7 +525,7 @@ func Test_git_stash_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(args []string) (err error) {
+			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
 			}
@@ -582,7 +582,7 @@ func Test_git_unstash_command(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
 			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.traceGitFunction = func(args []string) (err error) {
+			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
 			}

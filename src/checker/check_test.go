@@ -46,7 +46,7 @@ var (
 func initTestCheckEnv(params params.Params) {
 	initCheckEnv(params)
 	// We replace git implementation with a fake so that we bypass real git access
-	checkEnv.git, checkEnv.gitErr = git.NewGitFake(git.GitFakeSettings{})
+	checkEnv.git, checkEnv.gitErr = git.NewFake(git.FakeSettings{})
 }
 
 func assertStatus(t *testing.T, expected CheckStatus, checker func(params params.Params) (cr *CheckResults), params params.Params) {
