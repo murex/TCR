@@ -28,41 +28,41 @@ import (
 	"time"
 )
 
-func Test_add_regular_git_log_item(t *testing.T) {
-	var items GitLogItems
-	item := NewGitLogItem("xxx", time.Now(), "some message")
+func Test_add_regular_log_item(t *testing.T) {
+	var items LogItems
+	item := NewLogItem("xxx", time.Now(), "some message")
 	items.Add(item)
 	assert.Len(t, items, 1)
 	assert.Contains(t, items, item)
 }
 
-func Test_add_empty_git_log_item(t *testing.T) {
-	var items GitLogItems
-	item := NewGitLogItem("", time.Time{}, "")
+func Test_add_empty_log_item(t *testing.T) {
+	var items LogItems
+	item := NewLogItem("", time.Time{}, "")
 	items.Add(item)
 	assert.Len(t, items, 1)
 }
 
-func Test_sort_empty_git_log_items_does_not_panic(t *testing.T) {
-	var items GitLogItems
+func Test_sort_empty_log_items_does_not_panic(t *testing.T) {
+	var items LogItems
 	assert.NotPanics(t, func() {
 		items.sortByDate()
 	})
 	assert.Len(t, items, 0)
 }
 
-func Test_sort_already_sorted_git_log_items(t *testing.T) {
-	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
-	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
-	items := GitLogItems{item1, item2}
+func Test_sort_already_sorted_log_items(t *testing.T) {
+	item1 := NewLogItem("xxx1", time.Now(), "first commit")
+	item2 := NewLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
+	items := LogItems{item1, item2}
 	items.sortByDate()
-	assert.Equal(t, GitLogItems{item1, item2}, items)
+	assert.Equal(t, LogItems{item1, item2}, items)
 }
 
-func Test_sort_unsorted_git_log_items(t *testing.T) {
-	item1 := NewGitLogItem("xxx1", time.Now(), "first commit")
-	item2 := NewGitLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
-	items := GitLogItems{item2, item1}
+func Test_sort_unsorted_log_items(t *testing.T) {
+	item1 := NewLogItem("xxx1", time.Now(), "first commit")
+	item2 := NewLogItem("xxx2", time.Now().Add(1*time.Second), "second commit")
+	items := LogItems{item2, item1}
 	items.sortByDate()
-	assert.Equal(t, GitLogItems{item1, item2}, items)
+	assert.Equal(t, LogItems{item1, item2}, items)
 }

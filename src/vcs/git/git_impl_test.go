@@ -600,7 +600,7 @@ func Test_git_unstash_command(t *testing.T) {
 
 func Test_git_log_command(t *testing.T) {
 	// Note: this test may break if for any reason the TCR repository initial commit is altered
-	tcrInitialCommit := vcs.GitLogItem{
+	tcrInitialCommit := vcs.LogItem{
 		Hash:      "a823c098187455bade90ee44874d2b41c7ef96d9",
 		Timestamp: time.Date(2021, time.June, 16, 15, 29, 41, 0, time.UTC),
 		Message:   "Initial commit",
@@ -609,26 +609,26 @@ func Test_git_log_command(t *testing.T) {
 	testFlags := []struct {
 		desc     string
 		filter   func(msg string) bool
-		asserter func(t *testing.T, items vcs.GitLogItems)
+		asserter func(t *testing.T, items vcs.LogItems)
 	}{
 		{
 			"filter matching no item",
 			func(_ string) bool { return false },
-			func(t *testing.T, items vcs.GitLogItems) {
+			func(t *testing.T, items vcs.LogItems) {
 				assert.Equal(t, 0, items.Len())
 			},
 		},
 		{
 			"filter matching all items",
 			nil,
-			func(t *testing.T, items vcs.GitLogItems) {
+			func(t *testing.T, items vcs.LogItems) {
 				assert.Greater(t, items.Len(), 100)
 			},
 		},
 		{
 			"filter matching one single item",
 			func(msg string) bool { return tcrInitialCommit.Message == msg },
-			func(t *testing.T, items vcs.GitLogItems) {
+			func(t *testing.T, items vcs.LogItems) {
 				assert.Equal(t, 1, items.Len())
 				assert.Equal(t, tcrInitialCommit, items[0])
 			},

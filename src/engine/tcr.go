@@ -195,7 +195,7 @@ func (tcr *TcrEngine) PrintStats(p params.Params) {
 	stats.Print(tcr.vcs.GetWorkingBranch(), tcrLogsToEvents(tcrLogs))
 }
 
-func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
+func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
 	tcrEvents = *events.NewTcrEvents()
 	for _, log := range tcrLogs {
 		tcrEvents.Add(log.Timestamp, parseCommitMessage(log.Message))
@@ -203,7 +203,7 @@ func tcrLogsToEvents(tcrLogs vcs.GitLogItems) (tcrEvents events.TcrEvents) {
 	return tcrEvents
 }
 
-func (tcr *TcrEngine) queryGitLogs(p params.Params) vcs.GitLogItems {
+func (tcr *TcrEngine) queryGitLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
 	tcr.initVcs()
 

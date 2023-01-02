@@ -337,7 +337,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	}
 }
 
-func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures git.Commands, gitLogItems vcs.GitLogItems) (TcrInterface, *git.Fake) {
+func initTcrEngineWithFakes(p *params.Params, toolchainFailures toolchain.Operations, gitFailures git.Commands, gitLogItems vcs.LogItems) (TcrInterface, *git.Fake) {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
 
@@ -385,7 +385,7 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceGitImplWithFake(tcr TcrInterface, failures git.Commands, gitLogItems vcs.GitLogItems) *git.Fake {
+func replaceGitImplWithFake(tcr TcrInterface, failures git.Commands, gitLogItems vcs.LogItems) *git.Fake {
 	fakeSettings := git.FakeSettings{
 		FailingCommands: failures,
 		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
@@ -560,16 +560,16 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 
 func Test_tcr_print_log(t *testing.T) {
 	now := time.Now()
-	sampleItems := vcs.GitLogItems{
-		vcs.NewGitLogItem("1111", now, "✅ TCR - tests passing"),
-		vcs.NewGitLogItem("2222", now, "❌ TCR - tests failing"),
-		vcs.NewGitLogItem("3333", now, "⏪ TCR - revert changes"),
-		vcs.NewGitLogItem("4444", now, "other commit message"),
+	sampleItems := vcs.LogItems{
+		vcs.NewLogItem("1111", now, "✅ TCR - tests passing"),
+		vcs.NewLogItem("2222", now, "❌ TCR - tests failing"),
+		vcs.NewLogItem("3333", now, "⏪ TCR - revert changes"),
+		vcs.NewLogItem("4444", now, "other commit message"),
 	}
 	testFlags := []struct {
 		desc            string
 		filter          func(msg report.Message) bool
-		gitLogItems     vcs.GitLogItems
+		gitLogItems     vcs.LogItems
 		expectedMatches int
 	}{
 		{

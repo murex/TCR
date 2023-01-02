@@ -44,7 +44,7 @@ type GitInterface interface {
 	Stash(message string) error
 	UnStash(keep bool) error
 	Diff() (diffs FileDiffs, err error)
-	Log(msgFilter func(msg string) bool) (logs GitLogItems, err error)
+	Log(msgFilter func(msg string) bool) (logs LogItems, err error)
 	EnablePush(flag bool)
 	IsPushEnabled() bool
 	IsRemoteEnabled() bool

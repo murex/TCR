@@ -28,34 +28,34 @@ import (
 )
 
 type (
-	// GitLogItem contains git log information for a commit
-	GitLogItem struct {
+	// LogItem contains VCS log information for a commit
+	LogItem struct {
 		Hash      string
 		Timestamp time.Time
 		Message   string
 	}
 
-	// GitLogItems contains a set of git log items in a slice
-	GitLogItems []GitLogItem
+	// LogItems contains a set of VCS log items in a slice
+	LogItems []LogItem
 )
 
-// NewGitLogItem creates a new git log item instance
-func NewGitLogItem(hash string, timestamp time.Time, message string) GitLogItem {
-	return GitLogItem{hash, timestamp, message}
+// NewLogItem creates a new git log item instance
+func NewLogItem(hash string, timestamp time.Time, message string) LogItem {
+	return LogItem{hash, timestamp, message}
 }
 
-func (items *GitLogItems) sortByDate() {
+func (items *LogItems) sortByDate() {
 	sort.Slice(*items, func(i, j int) bool {
 		return (*items)[i].Timestamp.Before((*items)[j].Timestamp)
 	})
 }
 
-// Add adds a GitLogItem to the GitLogItems collection
-func (items *GitLogItems) Add(d GitLogItem) {
+// Add adds a LogItem to the LogItems collection
+func (items *LogItems) Add(d LogItem) {
 	*items = append(*items, d)
 }
 
 // Len returns the length of the items array
-func (items *GitLogItems) Len() int {
+func (items *LogItems) Len() int {
 	return len(*items)
 }

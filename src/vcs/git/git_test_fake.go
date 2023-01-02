@@ -69,7 +69,7 @@ type (
 	FakeSettings struct {
 		FailingCommands Commands
 		ChangedFiles    vcs.FileDiffs
-		Logs            vcs.GitLogItems
+		Logs            vcs.LogItems
 	}
 
 	// Fake provides a fake implementation of the git interface
@@ -138,7 +138,7 @@ func (gf *Fake) Diff() (_ vcs.FileDiffs, err error) {
 }
 
 // Log returns the list of git logs configured at fake initialization
-func (gf *Fake) Log(msgFilter func(msg string) bool) (logs vcs.GitLogItems, err error) {
+func (gf *Fake) Log(msgFilter func(msg string) bool) (logs vcs.LogItems, err error) {
 	err = gf.fakeCommand(LogCommand)
 
 	if msgFilter == nil {
