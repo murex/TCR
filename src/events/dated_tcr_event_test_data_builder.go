@@ -43,8 +43,8 @@ func WithTimestamp(t time.Time) func(filter *DatedTcrEvent) {
 	}
 }
 
-// WithTcrEvent sets the TcrEvent to DatedTcrEvent test data builder
-func WithTcrEvent(event TcrEvent) func(filter *DatedTcrEvent) {
+// WithTcrEvent sets the TCREvent to DatedTcrEvent test data builder
+func WithTcrEvent(event TCREvent) func(filter *DatedTcrEvent) {
 	return func(datedEvent *DatedTcrEvent) {
 		datedEvent.Event = event
 	}

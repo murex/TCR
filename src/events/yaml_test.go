@@ -32,46 +32,46 @@ func Test_convert_a_yaml_string_to_a_tcr_event(t *testing.T) {
 	testFlags := []struct {
 		desc       string
 		yamlString string
-		expected   TcrEvent
+		expected   TCREvent
 	}{
 		{
 			"modified source lines",
-			buildYamlString("2", "0", "0", "0", "0", "0", "0", "0s"),
+			buildYAMLString("2", "0", "0", "0", "0", "0", "0", "0s"),
 			*ATcrEvent(WithModifiedSrcLines(2)),
 		},
 		{
 			"modified test lines",
-			buildYamlString("0", "3", "0", "0", "0", "0", "0", "0s"),
+			buildYAMLString("0", "3", "0", "0", "0", "0", "0", "0s"),
 			*ATcrEvent(WithModifiedTestLines(3)),
 		},
 		{
 			"total test cases run",
-			buildYamlString("0", "0", "4", "0", "0", "0", "0", "0s"),
+			buildYAMLString("0", "0", "4", "0", "0", "0", "0", "0s"),
 			*ATcrEvent(WithTotalTestsRun(4)),
 		},
 		{
 			"passed test cases",
-			buildYamlString("0", "0", "0", "3", "0", "0", "0", "0s"),
+			buildYAMLString("0", "0", "0", "3", "0", "0", "0", "0s"),
 			*ATcrEvent(WithTestsPassed(3)),
 		},
 		{
 			"failed test cases",
-			buildYamlString("0", "0", "0", "0", "2", "0", "0", "0s"),
+			buildYAMLString("0", "0", "0", "0", "2", "0", "0", "0s"),
 			*ATcrEvent(WithTestsFailed(2)),
 		},
 		{
 			"skipped test cases",
-			buildYamlString("0", "0", "0", "0", "0", "5", "0", "0s"),
+			buildYAMLString("0", "0", "0", "0", "0", "5", "0", "0s"),
 			*ATcrEvent(WithTestsSkipped(5)),
 		},
 		{
 			"test cases with errors",
-			buildYamlString("0", "0", "0", "0", "0", "0", "4", "0s"),
+			buildYAMLString("0", "0", "0", "0", "0", "0", "4", "0s"),
 			*ATcrEvent(WithTestsWithErrors(4)),
 		},
 		{
 			"test duration",
-			buildYamlString("0", "0", "0", "0", "0", "0", "0", "20s"),
+			buildYAMLString("0", "0", "0", "0", "0", "0", "0", "20s"),
 			*ATcrEvent(WithTestsDuration(20 * time.Second)),
 		},
 		{
@@ -81,24 +81,24 @@ func Test_convert_a_yaml_string_to_a_tcr_event(t *testing.T) {
 		},
 		{
 			"yaml with empty values",
-			buildYamlString("", "", "", "", "", "", "", ""),
+			buildYAMLString("", "", "", "", "", "", "", ""),
 			*ATcrEvent(),
 		},
 		{
 			"yaml with invalid timestamp value",
-			buildYamlString("", "", "", "", "", "", "", ""),
+			buildYAMLString("", "", "", "", "", "", "", ""),
 			*ATcrEvent(),
 		},
 		{
 			"yaml with invalid int value",
-			buildYamlString("wrong", "", "", "", "", "", "", ""),
+			buildYAMLString("wrong", "", "", "", "", "", "", ""),
 			*ATcrEvent(),
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			yamlRecord := yamlToTcrEvent(tt.yamlString)
+			yamlRecord := yamlToTCREvent(tt.yamlString)
 			assert.Equal(t, tt.expected, yamlRecord)
 		})
 	}
@@ -107,81 +107,81 @@ func Test_convert_a_yaml_string_to_a_tcr_event(t *testing.T) {
 func Test_convert_a_tcr_event_to_a_yaml_string(t *testing.T) {
 	testFlags := []struct {
 		desc     string
-		event    TcrEvent
+		event    TCREvent
 		expected string
 	}{
 		{
 			"modified source lines",
 			*ATcrEvent(WithModifiedSrcLines(2)),
-			buildYamlString("2", "0", "0", "0", "0", "0", "0", "0s"),
+			buildYAMLString("2", "0", "0", "0", "0", "0", "0", "0s"),
 		},
 		{
 			"modified test lines",
 			*ATcrEvent(WithModifiedTestLines(3)),
-			buildYamlString("0", "3", "0", "0", "0", "0", "0", "0s"),
+			buildYAMLString("0", "3", "0", "0", "0", "0", "0", "0s"),
 		},
 		{
 			"total test cases run",
 			*ATcrEvent(WithTotalTestsRun(4)),
-			buildYamlString("0", "0", "4", "0", "0", "0", "0", "0s"),
+			buildYAMLString("0", "0", "4", "0", "0", "0", "0", "0s"),
 		},
 		{
 			"passed test cases",
 			*ATcrEvent(WithTestsPassed(3)),
-			buildYamlString("0", "0", "0", "3", "0", "0", "0", "0s"),
+			buildYAMLString("0", "0", "0", "3", "0", "0", "0", "0s"),
 		},
 		{
 			"failed test cases",
 			*ATcrEvent(WithTestsFailed(2)),
-			buildYamlString("0", "0", "0", "0", "2", "0", "0", "0s"),
+			buildYAMLString("0", "0", "0", "0", "2", "0", "0", "0s"),
 		},
 		{
 			"skipped test cases",
 			*ATcrEvent(WithTestsSkipped(5)),
-			buildYamlString("0", "0", "0", "0", "0", "5", "0", "0s"),
+			buildYAMLString("0", "0", "0", "0", "0", "5", "0", "0s"),
 		},
 		{
 			"test cases with errors",
 			*ATcrEvent(WithTestsWithErrors(4)),
-			buildYamlString("0", "0", "0", "0", "0", "0", "4", "0s"),
+			buildYAMLString("0", "0", "0", "0", "0", "0", "4", "0s"),
 		},
 		{
 			"test duration",
 			*ATcrEvent(WithTestsDuration(20 * time.Second)),
-			buildYamlString("0", "0", "0", "0", "0", "0", "0", "20s"),
+			buildYAMLString("0", "0", "0", "0", "0", "0", "0", "20s"),
 		},
 		{
 			"empty TCR event",
 			*ATcrEvent(),
-			buildYamlString("0", "0", "0", "0", "0", "0", "0", "0s"),
+			buildYAMLString("0", "0", "0", "0", "0", "0", "0", "0s"),
 		},
 	}
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			yaml := tcrEventToYaml(tt.event)
+			yaml := tcrEventToYAML(tt.event)
 			assert.Equal(t, tt.expected, yaml)
 		})
 	}
 }
 
-func buildYamlString(srcLines, testLines, totalTests, testsPassed, testsFailed, testsSkipped, testsWithErrors, testDuration string) string {
-	return buildYamlSectionLine("changed-lines") +
-		buildYamlKeyValueLine("src", srcLines) +
-		buildYamlKeyValueLine("test", testLines) +
-		buildYamlSectionLine("test-stats") +
-		buildYamlKeyValueLine("run", totalTests) +
-		buildYamlKeyValueLine("passed", testsPassed) +
-		buildYamlKeyValueLine("failed", testsFailed) +
-		buildYamlKeyValueLine("skipped", testsSkipped) +
-		buildYamlKeyValueLine("error", testsWithErrors) +
-		buildYamlKeyValueLine("duration", testDuration)
+func buildYAMLString(srcLines, testLines, totalTests, testsPassed, testsFailed, testsSkipped, testsWithErrors, testDuration string) string {
+	return buildYAMLSectionLine("changed-lines") +
+		buildYAMLKeyValueLine("src", srcLines) +
+		buildYAMLKeyValueLine("test", testLines) +
+		buildYAMLSectionLine("test-stats") +
+		buildYAMLKeyValueLine("run", totalTests) +
+		buildYAMLKeyValueLine("passed", testsPassed) +
+		buildYAMLKeyValueLine("failed", testsFailed) +
+		buildYAMLKeyValueLine("skipped", testsSkipped) +
+		buildYAMLKeyValueLine("error", testsWithErrors) +
+		buildYAMLKeyValueLine("duration", testDuration)
 }
 
-func buildYamlSectionLine(section string) string {
+func buildYAMLSectionLine(section string) string {
 	return section + ":" + "\n"
 }
 
-func buildYamlKeyValueLine(key, value string) string {
+func buildYAMLKeyValueLine(key, value string) string {
 	return "    " + key + ": " + value + "\n"
 }

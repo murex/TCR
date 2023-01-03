@@ -46,8 +46,8 @@ type (
 		Duration time.Duration
 	}
 
-	// TcrEvent is the structure containing information related to a TCR event
-	TcrEvent struct {
+	// TCREvent is the structure containing information related to a TCR event
+	TCREvent struct {
 		Status  CommandStatus
 		Changes ChangedLines
 		Tests   TestStats
@@ -61,9 +61,9 @@ const (
 	StatusUnknown CommandStatus = "unknown"
 )
 
-// NewTcrEvent creates a new TcrEvent instance
-func NewTcrEvent(status CommandStatus, changes ChangedLines, stats TestStats) TcrEvent {
-	return TcrEvent{
+// NewTCREvent creates a new TCREvent instance
+func NewTCREvent(status CommandStatus, changes ChangedLines, stats TestStats) TCREvent {
+	return TCREvent{
 		Status:  status,
 		Changes: changes,
 		Tests:   stats,
@@ -90,12 +90,12 @@ func NewChangedLines(srcLines, testLines int) ChangedLines {
 	}
 }
 
-// ToYaml converts a TcrEvent to a yaml string
-func (event TcrEvent) ToYaml() string {
-	return tcrEventToYaml(event)
+// ToYAML converts a TCREvent to a YAML string
+func (event TCREvent) ToYAML() string {
+	return tcrEventToYAML(event)
 }
 
-// FromYaml converts a yaml string to a TcrEvent
-func FromYaml(yaml string) TcrEvent {
-	return yamlToTcrEvent(yaml)
+// FromYAML converts a YAML string to a TCREvent
+func FromYAML(yaml string) TCREvent {
+	return yamlToTCREvent(yaml)
 }

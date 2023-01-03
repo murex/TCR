@@ -35,8 +35,8 @@ const (
 	yamlExtension = "yml"
 )
 
-// loadFromYaml loads a structure configuration from a YAML file
-func loadFromYaml(filename string, out interface{}) {
+// loadFromYAML loads a structure configuration from a YAML file
+func loadFromYAML(filename string, out interface{}) {
 	// In case we need to use variables in yaml configuration files:
 	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
 	// Cf. https://pkg.go.dev/os#Expand
@@ -50,8 +50,8 @@ func loadFromYaml(filename string, out interface{}) {
 	}
 }
 
-// saveToYaml saves a structure configuration into a YAML file
-func saveToYaml(in interface{}, filename string) {
+// saveToYAML saves a structure configuration into a YAML file
+func saveToYAML(in interface{}, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
@@ -78,19 +78,19 @@ func createConfigSubDir(dirPath string, description string) {
 	}
 }
 
-func buildYamlFilePath(dirPath string, name string) string {
-	return filepath.Join(dirPath, buildYamlFilename(name))
+func buildYAMLFilePath(dirPath string, name string) string {
+	return filepath.Join(dirPath, buildYAMLFilename(name))
 }
 
-func buildYamlFilename(name string) string {
+func buildYAMLFilename(name string) string {
 	return strings.ToLower(name + "." + yamlExtension)
 }
 
-func extractNameFromYamlFilename(filename string) string {
+func extractNameFromYAMLFilename(filename string) string {
 	return strings.TrimSuffix(strings.ToLower(filename), "."+yamlExtension)
 }
 
-func listYamlFilesIn(dirPath string) (list []string) {
+func listYAMLFilesIn(dirPath string) (list []string) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil || len(entries) == 0 {
 		// If we cannot open the directory or if it's empty, we don't go any further

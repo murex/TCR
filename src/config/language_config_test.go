@@ -31,7 +31,7 @@ import (
 
 func Test_can_save_language_configuration(t *testing.T) {
 	// TODO bypass filesystem
-	//saveToYaml(lang, "")
+	//saveToYAML(lang, "")
 }
 
 func Test_convert_language_name_to_config(t *testing.T) {

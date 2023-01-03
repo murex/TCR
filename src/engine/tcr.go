@@ -60,8 +60,8 @@ type (
 		RunTCRCycle()
 		build() (result toolchain.CommandResult)
 		test() (result toolchain.TestCommandResult)
-		commit(event events.TcrEvent)
-		revert(events.TcrEvent)
+		commit(event events.TCREvent)
+		revert(event events.TCREvent)
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
@@ -221,16 +221,16 @@ func isTcrCommitMessage(msg string) bool {
 	return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
 }
 
-func parseCommitMessage(message string) (event events.TcrEvent) {
+func parseCommitMessage(message string) (event events.TCREvent) {
 	var header string
 	// First line is the main commit message
 	// Second line is a blank line
-	// The yaml-structured data starts on the third line
+	// The YAML-structured data starts on the third line
 	const nbParts = 3
 	parts := strings.SplitN(message, "\n", nbParts)
 	if len(parts) == nbParts {
 		header = parts[0]
-		event = events.FromYaml(parts[nbParts-1])
+		event = events.FromYAML(parts[nbParts-1])
 	}
 	switch header {
 	case commitMessageOk:
@@ -388,7 +388,7 @@ func (tcr *TCREngine) RunTCRCycle() {
 		return
 	}
 	result := tcr.test()
-	event := tcr.createTcrEvent(result)
+	event := tcr.createTCREvent(result)
 	if result.Passed() {
 		tcr.commit(event)
 	} else {
@@ -396,7 +396,7 @@ func (tcr *TCREngine) RunTCRCycle() {
 	}
 }
 
-func (tcr *TCREngine) createTcrEvent(testResult toolchain.TestCommandResult) (event events.TcrEvent) {
+func (tcr *TCREngine) createTCREvent(testResult toolchain.TestCommandResult) (event events.TCREvent) {
 	diffs, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -405,7 +405,7 @@ func (tcr *TCREngine) createTcrEvent(testResult toolchain.TestCommandResult) (ev
 	if testResult.Passed() {
 		commandStatus = events.StatusPass
 	}
-	return events.NewTcrEvent(
+	return events.NewTCREvent(
 		commandStatus,
 		events.NewChangedLines(
 			diffs.ChangedLines(tcr.language.IsSrcFile),
@@ -444,7 +444,7 @@ func (tcr *TCREngine) test() (result toolchain.TestCommandResult) {
 	return result
 }
 
-func (tcr *TCREngine) commit(event events.TcrEvent) {
+func (tcr *TCREngine) commit(event events.TCREvent) {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
 	var err error
 	err = tcr.vcs.Add()
@@ -452,7 +452,7 @@ func (tcr *TCREngine) commit(event events.TcrEvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYaml())
+	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYAML())
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -460,7 +460,7 @@ func (tcr *TCREngine) commit(event events.TcrEvent) {
 	tcr.handleError(tcr.vcs.Push(), false, status.VCSError)
 }
 
-func (tcr *TCREngine) revert(event events.TcrEvent) {
+func (tcr *TCREngine) revert(event events.TCREvent) {
 	if tcr.commitOnFail {
 		err := tcr.commitTestBreakingChanges(event)
 		tcr.handleError(err, false, status.VCSError)
@@ -472,7 +472,7 @@ func (tcr *TCREngine) revert(event events.TcrEvent) {
 	tcr.revertSrcFiles()
 }
 
-func (tcr *TCREngine) commitTestBreakingChanges(event events.TcrEvent) (err error) {
+func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err error) {
 	// Create stash with the changes
 	err = tcr.vcs.Stash(commitMessageFail)
 	if err != nil {
@@ -488,7 +488,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TcrEvent) (err erro
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYaml())
+	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYAML())
 	if err != nil {
 		return err
 	}

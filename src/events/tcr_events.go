@@ -37,7 +37,7 @@ func NewTcrEvents() *TcrEvents {
 }
 
 // Add adds a new event to the TcrEvents instance
-func (events *TcrEvents) Add(t time.Time, e TcrEvent) {
+func (events *TcrEvents) Add(t time.Time, e TCREvent) {
 	*events = append(*events, NewDatedTcrEvent(t, e))
 }
 

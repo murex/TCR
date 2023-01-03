@@ -70,12 +70,12 @@ func saveToolchainConfigs() {
 
 func saveToolchainConfig(name string) {
 	tchn, _ := toolchain.GetToolchain(name)
-	saveToYaml(asToolchainConfig(tchn), buildYamlFilePath(toolchainDirPath, name))
+	saveToYAML(asToolchainConfig(tchn), buildYAMLFilePath(toolchainDirPath, name))
 }
 
 // GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
 func GetToolchainConfigFileList() (list []string) {
-	return listYamlFilesIn(toolchainDirPath)
+	return listYAMLFilesIn(toolchainDirPath)
 }
 
 func loadToolchainConfigs() {
@@ -91,8 +91,8 @@ func loadToolchainConfigs() {
 
 func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
 	var toolchainCfg ToolchainConfig
-	loadFromYaml(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
-	toolchainCfg.Name = extractNameFromYamlFilename(yamlFilename)
+	loadFromYAML(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
+	toolchainCfg.Name = extractNameFromYAMLFilename(yamlFilename)
 	return &toolchainCfg
 }
 

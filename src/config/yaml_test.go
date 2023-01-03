@@ -34,19 +34,19 @@ const (
 )
 
 func Test_can_retrieve_name_from_yaml_filename(t *testing.T) {
-	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToLower(baseName)+strings.ToLower(extension)))
+	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToLower(extension)))
 }
 
 func Test_name_from_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToUpper(baseName)+strings.ToLower(extension)))
-	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToLower(baseName)+strings.ToUpper(extension)))
-	assert.Equal(t, baseName, extractNameFromYamlFilename(strings.ToUpper(baseName)+strings.ToUpper(extension)))
+	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToLower(extension)))
+	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToUpper(extension)))
+	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToUpper(extension)))
 }
 
 func Test_can_retrieve_yaml_filename_from_name(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYamlFilename(baseName))
+	assert.Equal(t, baseName+extension, buildYAMLFilename(baseName))
 }
 
 func Test_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYamlFilename(strings.ToUpper(baseName)))
+	assert.Equal(t, baseName+extension, buildYAMLFilename(strings.ToUpper(baseName)))
 }

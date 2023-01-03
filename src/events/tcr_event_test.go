@@ -30,11 +30,11 @@ import (
 
 func Test_yaml_conversion_on_empty_tcr_event(t *testing.T) {
 	event := *ATcrEvent()
-	expected := buildYamlString("0", "0", "0", "0", "0", "0", "0", "0s")
+	expected := buildYAMLString("0", "0", "0", "0", "0", "0", "0", "0s")
 
-	yaml := event.ToYaml()
+	yaml := event.ToYAML()
 	assert.Equal(t, expected, yaml)
-	assert.Equal(t, event, FromYaml(yaml))
+	assert.Equal(t, event, FromYAML(yaml))
 }
 
 func Test_yaml_conversion_on_sample_tcr_event(t *testing.T) {
@@ -48,9 +48,9 @@ func Test_yaml_conversion_on_sample_tcr_event(t *testing.T) {
 		WithTestsWithErrors(6),
 		WithTestsDuration(10*time.Second),
 	)
-	expected := buildYamlString("1", "2", "12", "3", "4", "5", "6", "10s")
+	expected := buildYAMLString("1", "2", "12", "3", "4", "5", "6", "10s")
 
-	yaml := event.ToYaml()
+	yaml := event.ToYAML()
 	assert.Equal(t, expected, yaml)
-	assert.Equal(t, *event, FromYaml(yaml))
+	assert.Equal(t, *event, FromYAML(yaml))
 }

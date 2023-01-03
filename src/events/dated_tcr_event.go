@@ -24,14 +24,14 @@ package events
 
 import "time"
 
-// DatedTcrEvent is a TcrEvent with a timestamp
+// DatedTcrEvent is a TCREvent with a timestamp
 type DatedTcrEvent struct {
 	Timestamp time.Time
-	Event     TcrEvent
+	Event     TCREvent
 }
 
 // NewDatedTcrEvent creates a new DatedTcrEvent instance
-func NewDatedTcrEvent(t time.Time, e TcrEvent) DatedTcrEvent {
+func NewDatedTcrEvent(t time.Time, e TCREvent) DatedTcrEvent {
 	return DatedTcrEvent{Timestamp: t, Event: e}
 }
 

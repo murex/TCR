@@ -174,7 +174,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with no failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
-				tcr.commit(events.TcrEvent{})
+				tcr.commit(events.TCREvent{})
 			},
 			status.Ok,
 		},
@@ -182,7 +182,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with VCS commit failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.CommitCommand}, nil)
-				tcr.commit(events.TcrEvent{})
+				tcr.commit(events.TCREvent{})
 			},
 			status.VCSError,
 		},
@@ -190,7 +190,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with VCS push failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.PushCommand}, nil)
-				tcr.commit(events.TcrEvent{})
+				tcr.commit(events.TCREvent{})
 			},
 			status.VCSError,
 		},
@@ -198,7 +198,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with no failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
-				tcr.revert(events.TcrEvent{})
+				tcr.revert(events.TCREvent{})
 			},
 			status.Ok,
 		},
@@ -206,7 +206,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with VCS diff failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.DiffCommand}, nil)
-				tcr.revert(events.TcrEvent{})
+				tcr.revert(events.TCREvent{})
 			},
 			status.VCSError,
 		},
@@ -214,7 +214,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with VCS restore failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.RestoreCommand}, nil)
-				tcr.revert(events.TcrEvent{})
+				tcr.revert(events.TCREvent{})
 			},
 			status.VCSError,
 		},
@@ -272,7 +272,7 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 			status.RecordState(status.Ok)
 			tcr, _ := initTCREngineWithFakes(nil, nil, tt.vcsFailures, nil)
 			tcr.SetCommitOnFail(true)
-			tcr.revert(events.TcrEvent{})
+			tcr.revert(events.TCREvent{})
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
 		})
 	}
@@ -653,12 +653,12 @@ func Test_parse_commit_message(t *testing.T) {
 	testFlags := []struct {
 		desc          string
 		commitMessage string
-		expected      events.TcrEvent
+		expected      events.TCREvent
 	}{
 		{
 			desc:          "empty commit message",
 			commitMessage: "",
-			expected:      events.TcrEvent{Status: events.StatusUnknown},
+			expected:      events.TCREvent{Status: events.StatusUnknown},
 		},
 		{
 			desc: "test-passing commit",
@@ -675,7 +675,7 @@ func Test_parse_commit_message(t *testing.T) {
 				"    error: 0\n" +
 				"    duration: 2ms\n" +
 				"\n",
-			expected: events.NewTcrEvent(
+			expected: events.NewTCREvent(
 				events.StatusPass,
 				events.NewChangedLines(2, 7),
 				events.NewTestStats(1, 1, 0, 1, 0, 2*time.Millisecond),
@@ -696,7 +696,7 @@ func Test_parse_commit_message(t *testing.T) {
 				"    error: 0\n" +
 				"    duration: 40ms\n" +
 				"\n",
-			expected: events.NewTcrEvent(
+			expected: events.NewTCREvent(
 				events.StatusFail,
 				events.NewChangedLines(1, 3),
 				events.NewTestStats(10, 8, 2, 1, 0, 40*time.Millisecond),

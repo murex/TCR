@@ -74,12 +74,12 @@ func saveLanguageConfigs() {
 
 func saveLanguageConfig(name string) {
 	lang, _ := language.Get(name)
-	saveToYaml(asLanguageConfig(lang), buildYamlFilePath(languageDirPath, name))
+	saveToYAML(asLanguageConfig(lang), buildYAMLFilePath(languageDirPath, name))
 }
 
 // GetLanguageConfigFileList returns the list of language configuration files found in language directory
 func GetLanguageConfigFileList() (list []string) {
-	return listYamlFilesIn(languageDirPath)
+	return listYAMLFilesIn(languageDirPath)
 }
 
 func loadLanguageConfigs() {
@@ -95,8 +95,8 @@ func loadLanguageConfigs() {
 
 func loadLanguageConfig(yamlFilename string) *LanguageConfig {
 	var languageCfg LanguageConfig
-	loadFromYaml(filepath.Join(languageDirPath, yamlFilename), &languageCfg)
-	languageCfg.Name = extractNameFromYamlFilename(yamlFilename)
+	loadFromYAML(filepath.Join(languageDirPath, yamlFilename), &languageCfg)
+	languageCfg.Name = extractNameFromYAMLFilename(yamlFilename)
 	return &languageCfg
 }
 

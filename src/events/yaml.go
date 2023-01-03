@@ -30,14 +30,14 @@ import (
 )
 
 type (
-	// ChangedLinesYaml provides the YAML structure containing info related to the lines changes in src and test
-	ChangedLinesYaml struct {
+	// ChangedLinesYAML provides the YAML structure containing info related to the lines changes in src and test
+	ChangedLinesYAML struct {
 		Src  int `yaml:"src"`
 		Test int `yaml:"test"`
 	}
 
-	// TestStatsYaml provides the YAML structure containing info related to the tests execution
-	TestStatsYaml struct {
+	// TestStatsYAML provides the YAML structure containing info related to the tests execution
+	TestStatsYAML struct {
 		Run      int           `yaml:"run"`
 		Passed   int           `yaml:"passed"`
 		Failed   int           `yaml:"failed"`
@@ -46,33 +46,33 @@ type (
 		Duration time.Duration `yaml:"duration"`
 	}
 
-	// TcrEventYaml provides the YAML structure containing information related to a TCR event
-	TcrEventYaml struct {
-		Changes ChangedLinesYaml `yaml:"changed-lines"`
-		Tests   TestStatsYaml    `yaml:"test-stats"`
+	// TCREventYAML provides the YAML structure containing information related to a TCR event
+	TCREventYAML struct {
+		Changes ChangedLinesYAML `yaml:"changed-lines"`
+		Tests   TestStatsYAML    `yaml:"test-stats"`
 	}
 )
 
-func tcrEventToYaml(event TcrEvent) string {
-	return newTcrEventYaml(event).marshal()
+func tcrEventToYAML(event TCREvent) string {
+	return newTCREventYAML(event).marshal()
 }
 
-func yamlToTcrEvent(yaml string) TcrEvent {
-	return unmarshal(yaml).toTcrEvent()
+func yamlToTCREvent(yaml string) TCREvent {
+	return unmarshal(yaml).toTCREvent()
 }
 
-func newTcrEventYaml(event TcrEvent) TcrEventYaml {
-	return TcrEventYaml{
-		Changes: ChangedLinesYaml(event.Changes),
-		Tests:   TestStatsYaml(event.Tests),
+func newTCREventYAML(event TCREvent) TCREventYAML {
+	return TCREventYAML{
+		Changes: ChangedLinesYAML(event.Changes),
+		Tests:   TestStatsYAML(event.Tests),
 	}
 }
 
-func (event TcrEventYaml) toTcrEvent() TcrEvent {
-	return NewTcrEvent(StatusUnknown, ChangedLines(event.Changes), TestStats(event.Tests))
+func (event TCREventYAML) toTCREvent() TCREvent {
+	return NewTCREvent(StatusUnknown, ChangedLines(event.Changes), TestStats(event.Tests))
 }
 
-func (event TcrEventYaml) marshal() string {
+func (event TCREventYAML) marshal() string {
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
 	yamlEncoder.SetIndent(0)
@@ -83,8 +83,8 @@ func (event TcrEventYaml) marshal() string {
 	return b.String()
 }
 
-// unmarshal un-marshals a yaml string into a TcrEventYaml struct
-func unmarshal(yamlString string) (out TcrEventYaml) {
+// unmarshal un-marshals a yaml string into a TCREventYAML struct
+func unmarshal(yamlString string) (out TCREventYAML) {
 	if err := yaml.Unmarshal([]byte(yamlString), &out); err != nil {
 		report.PostWarning(err)
 	}
