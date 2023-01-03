@@ -47,8 +47,8 @@ func TestMain(m *testing.M) {
 		testTickPeriod = 1200 * time.Millisecond
 	} else {
 		fmt.Println("Running tests with fast timers")
-		testTimeout = 100 * time.Millisecond
-		testTickPeriod = 40 * time.Millisecond
+		testTimeout = 200 * time.Millisecond
+		testTickPeriod = 80 * time.Millisecond
 	}
 	// Run tests
 	exitVal := m.Run()
