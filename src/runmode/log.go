@@ -31,7 +31,7 @@ func (Log) Name() string {
 	return "log"
 }
 
-// AutoPushDefault returns the default value of git auto-push option with this run mode
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
 func (Log) AutoPushDefault() bool {
 	return false
 }

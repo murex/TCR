@@ -31,7 +31,7 @@ func (Stats) Name() string {
 	return "stats"
 }
 
-// AutoPushDefault returns the default value of git auto-push option with this run mode
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
 func (Stats) AutoPushDefault() bool {
 	return false
 }

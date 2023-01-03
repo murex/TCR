@@ -47,8 +47,8 @@ func Test_return_code_on_config_error(t *testing.T) {
 	assert.Equal(t, 3, GetReturnCode())
 }
 
-func Test_return_code_on_git_error(t *testing.T) {
-	RecordState(GitError)
+func Test_return_code_on_vcs_error(t *testing.T) {
+	RecordState(VCSError)
 	assert.Equal(t, 4, GetReturnCode())
 }
 

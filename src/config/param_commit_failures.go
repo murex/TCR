@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AddCommitFailuresParam adds git commit failure parameter to the provided command
+// AddCommitFailuresParam adds VCS commit failure parameter to the provided command
 func AddCommitFailuresParam(cmd *cobra.Command) *BoolParam {
 	param := BoolParam{
 		s: paramSettings{

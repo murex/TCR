@@ -84,7 +84,7 @@ func WithToolchain(name string) func(params *Params) {
 	}
 }
 
-// WithPollingPeriod sets the provided value as the git polling period
+// WithPollingPeriod sets the provided value as the VCS polling period
 func WithPollingPeriod(period time.Duration) func(params *Params) {
 	return func(params *Params) {
 		params.PollingPeriod = period

@@ -47,7 +47,7 @@ Only TCR commits are printed. All other commits are filtered out.
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Log{}
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

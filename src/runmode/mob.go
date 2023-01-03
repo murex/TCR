@@ -31,7 +31,7 @@ func (Mob) Name() string {
 	return "mob"
 }
 
-// AutoPushDefault returns the default value of git auto-push option with this run mode
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
 func (Mob) AutoPushDefault() bool {
 	return true
 }

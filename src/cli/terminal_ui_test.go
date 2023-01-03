@@ -69,7 +69,7 @@ func assertConfirmBehaviour(t *testing.T, input []byte, defaultValue bool, expec
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
 
-	term := New(params.Params{}, engine.NewTcrEngine())
+	term := New(params.Params{}, engine.NewTCREngine())
 	sttyCmdDisabled = true
 	assert.Equal(t, expected, term.Confirm("", defaultValue))
 	sttyCmdDisabled = false
@@ -96,9 +96,9 @@ func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
 	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
 }
 
-func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTcrEngine, fakeNotifier *desktop.FakeNotifier) {
+func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTCREngine, fakeNotifier *desktop.FakeNotifier) {
 	setLinePrefix("TCR")
-	fakeEngine = engine.NewFakeTcrEngine()
+	fakeEngine = engine.NewFakeTCREngine()
 	fakeNotifier = &desktop.FakeNotifier{}
 	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
 	sttyCmdDisabled = true
@@ -465,7 +465,7 @@ func Test_show_session_info(t *testing.T) {
 	expected := asCyanTraceWithSeparatorLine("Base Directory: fake") +
 		asCyanTrace("Work Directory: fake") +
 		asCyanTrace("Language=fake, Toolchain=fake") +
-		asCyanTrace("Running on git branch \"fake\" with auto-push disabled")
+		asCyanTrace("Running on branch \"fake\" with auto-push disabled")
 
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
 		term, _, _ := terminalSetup(*params.AParamSet())
@@ -479,55 +479,55 @@ func Test_main_menu(t *testing.T) {
 		desc     string
 		input1   []byte
 		input2   []byte
-		expected []engine.TcrCall
+		expected []engine.TCRCall
 	}{
 		{
 			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"T key", []byte{'t'}, []byte{'T'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"P key", []byte{'p'}, []byte{'P'},
-			[]engine.TcrCall{
-				engine.TcrCallToggleAutoPush,
-				engine.TcrCallGetSessionInfo,
+			[]engine.TCRCall{
+				engine.TCRCallToggleAutoPush,
+				engine.TCRCallGetSessionInfo,
 			},
 		},
 		{
 			"L key", []byte{'l'}, []byte{'L'},
-			[]engine.TcrCall{
-				engine.TcrCallGitPull,
+			[]engine.TCRCall{
+				engine.TCRCallVCSPull,
 			},
 		},
 		{
 			"S key", []byte{'s'}, []byte{'S'},
-			[]engine.TcrCall{
-				engine.TcrCallGitPush,
+			[]engine.TCRCall{
+				engine.TCRCallVCSPush,
 			},
 		},
 		{
 			"D+Q keys", []byte{'d', 'q'}, []byte{'D', 'Q'},
-			[]engine.TcrCall{
-				engine.TcrCallRunAsDriver,
-				engine.TcrCallStop,
+			[]engine.TCRCall{
+				engine.TCRCallRunAsDriver,
+				engine.TCRCallStop,
 			},
 		},
 		{
 			"N+Q keys", []byte{'n', 'q'}, []byte{'N', 'Q'},
-			[]engine.TcrCall{
-				engine.TcrCallRunAsNavigator,
-				engine.TcrCallStop,
+			[]engine.TCRCall{
+				engine.TCRCallRunAsNavigator,
+				engine.TCRCallStop,
 			},
 		},
 	}
@@ -542,7 +542,7 @@ func Test_main_menu(t *testing.T) {
 	}
 }
 
-func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TcrCall) {
+func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TCRCall) {
 	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
@@ -558,7 +558,7 @@ func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TcrCall
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
 	term.mainMenu()
-	assert.Equal(t, append(expected, engine.TcrCallQuit), fakeEngine.GetCallHistory())
+	assert.Equal(t, append(expected, engine.TCRCallQuit), fakeEngine.GetCallHistory())
 	terminalTeardown(term)
 }
 
@@ -567,43 +567,43 @@ func Test_driver_menu(t *testing.T) {
 		desc     string
 		input1   []byte
 		input2   []byte
-		expected []engine.TcrCall
+		expected []engine.TCRCall
 	}{
 		{
 			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"T key", []byte{'t'}, []byte{'T'},
-			[]engine.TcrCall{engine.TcrCallReportMobTimerStatus},
+			[]engine.TCRCall{engine.TCRCallReportMobTimerStatus},
 		},
 		{
 			"P key has no action", []byte{'p'}, []byte{'P'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"D key has no action", []byte{'d'}, []byte{'D'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"N key has no action", []byte{'n'}, []byte{'N'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"L key has no action", []byte{'l'}, []byte{'L'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"S key has no action", []byte{'s'}, []byte{'S'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 	}
 	for _, tt := range testFlags {
@@ -611,7 +611,7 @@ func Test_driver_menu(t *testing.T) {
 			for _, input := range [][]byte{tt.input1, tt.input2} {
 				if input != nil {
 					assertStartAsActions(t, role.Driver{}, input,
-						append([]engine.TcrCall{engine.TcrCallRunAsDriver}, tt.expected...))
+						append([]engine.TCRCall{engine.TCRCallRunAsDriver}, tt.expected...))
 				}
 			}
 		})
@@ -623,43 +623,43 @@ func Test_navigator_menu(t *testing.T) {
 		desc     string
 		input1   []byte
 		input2   []byte
-		expected []engine.TcrCall
+		expected []engine.TCRCall
 	}{
 		{
 			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"T key has no action", []byte{'t'}, []byte{'T'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"P key has no action", []byte{'p'}, []byte{'P'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"L key has no action", []byte{'l'}, []byte{'L'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"S key has no action", []byte{'s'}, []byte{'S'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"D key has no action", []byte{'d'}, []byte{'D'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 		{
 			"N key has no action", []byte{'n'}, []byte{'N'},
-			[]engine.TcrCall{},
+			[]engine.TCRCall{},
 		},
 	}
 	for _, tt := range testFlags {
@@ -667,14 +667,14 @@ func Test_navigator_menu(t *testing.T) {
 			for _, input := range [][]byte{tt.input1, tt.input2} {
 				if input != nil {
 					assertStartAsActions(t, role.Navigator{}, input,
-						append([]engine.TcrCall{engine.TcrCallRunAsNavigator}, tt.expected...))
+						append([]engine.TCRCall{engine.TCRCallRunAsNavigator}, tt.expected...))
 				}
 			}
 		})
 	}
 }
 
-func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []engine.TcrCall) {
+func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []engine.TCRCall) {
 	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
@@ -690,7 +690,7 @@ func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []en
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
 	term.startAs(r)
-	assert.Equal(t, append(expected, engine.TcrCallStop), fakeEngine.GetCallHistory())
+	assert.Equal(t, append(expected, engine.TCRCallStop), fakeEngine.GetCallHistory())
 	terminalTeardown(term)
 }
 
@@ -699,48 +699,48 @@ func Test_start_terminal(t *testing.T) {
 		desc     string
 		mode     runmode.RunMode
 		input    []byte
-		expected []engine.TcrCall
+		expected []engine.TCRCall
 	}{
 		{
 			"solo mode", runmode.Solo{}, []byte{'q'},
-			[]engine.TcrCall{
-				engine.TcrCallRunAsDriver,
-				engine.TcrCallStop,
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallRunAsDriver,
+				engine.TCRCallStop,
+				engine.TCRCallQuit,
 			},
 		},
 		{
 			"mob mode", runmode.Mob{}, []byte{'q'},
-			[]engine.TcrCall{
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallQuit,
 			},
 		},
 		{
 			"one-shot mode", runmode.OneShot{}, []byte{},
-			[]engine.TcrCall{
-				engine.TcrCallRunTcrCycle,
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallRunTcrCycle,
+				engine.TCRCallQuit,
 			},
 		},
 		{
 			"check mode", runmode.Check{}, []byte{},
-			[]engine.TcrCall{
-				engine.TcrCallRunCheck,
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallRunCheck,
+				engine.TCRCallQuit,
 			},
 		},
 		{
 			"log mode", runmode.Log{}, []byte{},
-			[]engine.TcrCall{
-				engine.TcrCallPrintLog,
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallPrintLog,
+				engine.TCRCallQuit,
 			},
 		},
 		{
 			"stats mode", runmode.Stats{}, []byte{},
-			[]engine.TcrCall{
-				engine.TcrCallPrintStats,
-				engine.TcrCallQuit,
+			[]engine.TCRCall{
+				engine.TCRCallPrintStats,
+				engine.TCRCallQuit,
 			},
 		},
 	}
@@ -751,7 +751,7 @@ func Test_start_terminal(t *testing.T) {
 	}
 }
 
-func assertStartTerminal(t *testing.T, mode runmode.RunMode, input []byte, expected []engine.TcrCall) {
+func assertStartTerminal(t *testing.T, mode runmode.RunMode, input []byte, expected []engine.TCRCall) {
 	stdin := os.Stdin
 	stdout := os.Stdout
 	stderr := os.Stderr

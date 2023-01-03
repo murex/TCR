@@ -46,7 +46,7 @@ The main checkpoints are organized in sections as follows:
 - Work Directory
 - Language settings
 - Toolchain settings
-- Git environment
+- VCS environment
 - Auto-push settings
 - Mob timer settings (for driver role)
 - Polling period settings (for navigator role)
@@ -61,7 +61,7 @@ The return code of TCR "check" is one of the following:
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Check{}
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

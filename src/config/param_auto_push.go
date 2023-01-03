@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AddAutoPushParam adds git auto-push parameter to the provided command
+// AddAutoPushParam adds VCS auto-push parameter to the provided command
 func AddAutoPushParam(cmd *cobra.Command) *BoolParam {
 	param := BoolParam{
 		s: paramSettings{
@@ -38,7 +38,7 @@ func AddAutoPushParam(cmd *cobra.Command) *BoolParam {
 			cobraSettings: cobraSettings{
 				name:       "auto-push",
 				shorthand:  "p",
-				usage:      "enable git push after every commit",
+				usage:      "enable VCS push after every commit",
 				persistent: true,
 			},
 		},

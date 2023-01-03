@@ -35,12 +35,12 @@ var mobCmd = &cobra.Command{
 	Short: "Run TCR in mob mode",
 	Long: `
 When used in "mob" mode, TCR ensures that any commit
-is shared with other participants through calling git push-pull.
+is shared with other participants through calling VCS push-pull.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Mob{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

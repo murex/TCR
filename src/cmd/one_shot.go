@@ -45,13 +45,13 @@ The return code of TCR "one-shot" is one of the following:
 | 1   | Build failed                                                                   |
 | 2   | Build passed, one or more tests failed, and changes were successfully reverted |
 | 3   | Error in configuration or parameter values                                     |
-| 4   | Error while interacting with git                                               |
+| 4   | Error while interacting with the Version Control System                        |
 | 5   | Any other error                                                                |
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.OneShot{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

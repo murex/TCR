@@ -38,7 +38,7 @@ import (
 // TerminalUI is the user interface implementation when using the Command Line Interface
 type TerminalUI struct {
 	reportingChannel chan bool
-	tcr              engine.TcrInterface
+	tcr              engine.TCRInterface
 	params           params.Params
 	desktop          *desktop.Desktop
 }
@@ -53,7 +53,7 @@ const (
 	pushMenuHelper              = "Push to remote"
 	driverRoleMenuHelper        = "Driver role"
 	navigatorRoleMenuHelper     = "Navigator role"
-	autoPushMenuHelper          = "Turn on/off git auto-push"
+	autoPushMenuHelper          = "Turn on/off VCS auto-push"
 	quitMenuHelper              = "Quit"
 	optionsMenuHelper           = "List available options"
 	timerStatusMenuHelper       = "Timer status"
@@ -62,7 +62,7 @@ const (
 )
 
 // New creates a new instance of terminal
-func New(p params.Params, tcr engine.TcrInterface) ui.UserInterface {
+func New(p params.Params, tcr engine.TCRInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	term.MuteDesktopNotifications(false)
@@ -176,10 +176,10 @@ func (term *TerminalUI) mainMenu() {
 			term.ShowSessionInfo()
 			term.whatShallWeDo()
 		case 'l', 'L':
-			term.gitPull()
+			term.vcsPull()
 			term.whatShallWeDo()
 		case 's', 'S':
-			term.gitPush()
+			term.vcsPush()
 			term.whatShallWeDo()
 		case 'q', 'Q':
 			Restore()
@@ -199,12 +199,12 @@ func (term *TerminalUI) mainMenu() {
 	}
 }
 
-func (term *TerminalUI) gitPull() {
-	term.tcr.GitPull()
+func (term *TerminalUI) vcsPull() {
+	term.tcr.VCSPull()
 }
 
-func (term *TerminalUI) gitPush() {
-	term.tcr.GitPush()
+func (term *TerminalUI) vcsPush() {
+	term.tcr.VCSPush()
 }
 
 func (term *TerminalUI) whatShallWeDo() {
@@ -278,7 +278,7 @@ func (term *TerminalUI) ShowSessionInfo() {
 		autoPush = "enabled"
 	}
 	term.ReportInfo(false,
-		"Running on git branch \"", info.BranchName,
+		"Running on branch \"", info.BranchName,
 		"\" with auto-push ", autoPush)
 }
 
@@ -313,7 +313,7 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 
 // Start runs the terminal session
 func (term *TerminalUI) Start() {
-	term.initTcrEngine()
+	term.initTCREngine()
 
 	if term.params.Mode.IsInteractive() {
 		_ = SetRaw()
@@ -357,7 +357,7 @@ func (term *TerminalUI) Start() {
 	}
 }
 
-func (term *TerminalUI) initTcrEngine() {
+func (term *TerminalUI) initTCREngine() {
 	term.tcr.Init(term, term.params)
 }
 

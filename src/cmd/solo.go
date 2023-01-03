@@ -39,7 +39,7 @@ It never pushes or pulls to a remote repository.
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Solo{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

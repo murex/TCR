@@ -33,16 +33,16 @@ const (
 )
 
 func checkPollingPeriod(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("git polling period")
-	cr.ok("git polling period is ", p.PollingPeriod.String())
+	cr = NewCheckResults("VCS polling period")
+	cr.ok("VCS polling period is ", p.PollingPeriod.String())
 	if p.PollingPeriod == 0 {
-		cr.warning("git code refresh for navigator is turned off")
+		cr.warning("VCS code refresh for navigator is turned off")
 	} else if p.PollingPeriod > pollingPeriodHighThreshold {
-		cr.warning("git polling period is very slow (above ", pollingPeriodHighThreshold, ")")
+		cr.warning("VCS polling period is very slow (above ", pollingPeriodHighThreshold, ")")
 	} else if p.PollingPeriod < pollingPeriodLowThreshold {
-		cr.warning("git polling period is very fast (below ", pollingPeriodLowThreshold, ")")
+		cr.warning("VCS polling period is very fast (below ", pollingPeriodLowThreshold, ")")
 	} else {
-		cr.ok("git polling period is in the recommended range")
+		cr.ok("VCS polling period is in the recommended range")
 	}
 	return cr
 }

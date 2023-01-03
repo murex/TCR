@@ -31,7 +31,7 @@ func (Solo) Name() string {
 	return "solo"
 }
 
-// AutoPushDefault returns the default value of git auto-push option with this run mode
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
 func (Solo) AutoPushDefault() bool {
 	return false
 }

@@ -31,38 +31,38 @@ import (
 	"github.com/murex/tcr/ui"
 )
 
-// TcrCall is used to track calls to TCR operations
-type TcrCall string
+// TCRCall is used to track calls to TCR operations
+type TCRCall string
 
-// Possible values for TcrCall
+// Possible values for TCRCall
 const (
-	TcrCallQuit                 TcrCall = "quit"
-	TcrCallToggleAutoPush       TcrCall = "toggle-auto-push"
-	TcrCallGetSessionInfo       TcrCall = "get-session-info"
-	TcrCallRunAsDriver          TcrCall = "run-as-driver"
-	TcrCallRunAsNavigator       TcrCall = "run-as-navigator"
-	TcrCallStop                 TcrCall = "stop"
-	TcrCallReportMobTimerStatus TcrCall = "report-mob-timer-status"
-	TcrCallRunTcrCycle          TcrCall = "run-tcr-cycle"
-	TcrCallRunCheck             TcrCall = "run-check"
-	TcrCallPrintLog             TcrCall = "print-log"
-	TcrCallPrintStats           TcrCall = "print-stats"
-	TcrCallGitPull              TcrCall = "git-pull"
-	TcrCallGitPush              TcrCall = "git-push"
+	TCRCallQuit                 TCRCall = "quit"
+	TCRCallToggleAutoPush       TCRCall = "toggle-auto-push"
+	TCRCallGetSessionInfo       TCRCall = "get-session-info"
+	TCRCallRunAsDriver          TCRCall = "run-as-driver"
+	TCRCallRunAsNavigator       TCRCall = "run-as-navigator"
+	TCRCallStop                 TCRCall = "stop"
+	TCRCallReportMobTimerStatus TCRCall = "report-mob-timer-status"
+	TCRCallRunTcrCycle          TCRCall = "run-tcr-cycle"
+	TCRCallRunCheck             TCRCall = "run-check"
+	TCRCallPrintLog             TCRCall = "print-log"
+	TCRCallPrintStats           TCRCall = "print-stats"
+	TCRCallVCSPull              TCRCall = "vcs-pull"
+	TCRCallVCSPush              TCRCall = "vcs-push"
 )
 
-// FakeTcrEngine is a TCR engine fake. Used mainly for testing peripheral packages
+// FakeTCREngine is a TCR engine fake. Used mainly for testing peripheral packages
 // such as cli.
-type FakeTcrEngine struct {
-	TcrEngine
-	callRecord []TcrCall
+type FakeTCREngine struct {
+	TCREngine
+	callRecord []TCRCall
 	returnCode int
 	info       *SessionInfo
 }
 
-// NewFakeTcrEngine creates a FakeToolchain instance
-func NewFakeTcrEngine() *FakeTcrEngine {
-	return &FakeTcrEngine{
+// NewFakeTCREngine creates a FakeToolchain instance
+func NewFakeTCREngine() *FakeTCREngine {
+	return &FakeTCREngine{
 		returnCode: 0,
 		info: &SessionInfo{
 			BaseDir:       "fake",
@@ -76,85 +76,85 @@ func NewFakeTcrEngine() *FakeTcrEngine {
 	}
 }
 
-func (fake *FakeTcrEngine) recordCall(call TcrCall) {
+func (fake *FakeTCREngine) recordCall(call TCRCall) {
 	fake.callRecord = append(fake.callRecord, call)
 }
 
-// GetCallHistory returns the list of TcrCall events tracked by FakeTcrEngine
-func (fake *FakeTcrEngine) GetCallHistory() []TcrCall {
+// GetCallHistory returns the list of TCRCall events tracked by FakeTCREngine
+func (fake *FakeTCREngine) GetCallHistory() []TCRCall {
 	return fake.callRecord
 }
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
-func (fake *FakeTcrEngine) Init(_ ui.UserInterface, _ params.Params) {}
+func (fake *FakeTCREngine) Init(_ ui.UserInterface, _ params.Params) {}
 
 // GetSessionInfo returns a SessionInfo struct filled with "fake" values
-func (fake *FakeTcrEngine) GetSessionInfo() SessionInfo {
-	fake.recordCall(TcrCallGetSessionInfo)
+func (fake *FakeTCREngine) GetSessionInfo() SessionInfo {
+	fake.recordCall(TCRCallGetSessionInfo)
 	return *fake.info
 }
 
-// Quit is the exit point for TCR application. The FakeTcrEngine implementation
+// Quit is the exit point for TCR application. The FakeTCREngine implementation
 // overrides the default behaviour in order to bypass the call to os.Exit().
 // Instead, the return code is stored in returnCode attribute
-func (fake *FakeTcrEngine) Quit() {
-	fake.recordCall(TcrCallQuit)
+func (fake *FakeTCREngine) Quit() {
+	fake.recordCall(TCRCallQuit)
 	fake.returnCode = status.GetReturnCode()
 }
 
-// ToggleAutoPush toggles git auto-push state
-func (fake *FakeTcrEngine) ToggleAutoPush() {
-	fake.recordCall(TcrCallToggleAutoPush)
+// ToggleAutoPush toggles VCS auto-push state
+func (fake *FakeTCREngine) ToggleAutoPush() {
+	fake.recordCall(TCRCallToggleAutoPush)
 }
 
 // RunAsDriver tells TCR engine to start running with driver role
-func (fake *FakeTcrEngine) RunAsDriver() {
+func (fake *FakeTCREngine) RunAsDriver() {
 	fake.currentRole = role.Driver{}
-	fake.recordCall(TcrCallRunAsDriver)
+	fake.recordCall(TCRCallRunAsDriver)
 }
 
 // RunAsNavigator tells TCR engine to start running with navigator role
-func (fake *FakeTcrEngine) RunAsNavigator() {
+func (fake *FakeTCREngine) RunAsNavigator() {
 	fake.currentRole = role.Navigator{}
-	fake.recordCall(TcrCallRunAsNavigator)
+	fake.recordCall(TCRCallRunAsNavigator)
 }
 
 // Stop is the entry point for telling TCR engine to stop its current operations
-func (fake *FakeTcrEngine) Stop() {
-	fake.recordCall(TcrCallStop)
+func (fake *FakeTCREngine) Stop() {
+	fake.recordCall(TCRCallStop)
 }
 
 // ReportMobTimerStatus reports the status of the mob timer
-func (fake *FakeTcrEngine) ReportMobTimerStatus() {
-	fake.recordCall(TcrCallReportMobTimerStatus)
+func (fake *FakeTCREngine) ReportMobTimerStatus() {
+	fake.recordCall(TCRCallReportMobTimerStatus)
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
-func (fake *FakeTcrEngine) RunTCRCycle() {
-	fake.recordCall(TcrCallRunTcrCycle)
+func (fake *FakeTCREngine) RunTCRCycle() {
+	fake.recordCall(TCRCallRunTcrCycle)
 }
 
 // RunCheck checks the provided parameters and prints out corresponding report
-func (fake *FakeTcrEngine) RunCheck(_ params.Params) {
-	fake.recordCall(TcrCallRunCheck)
+func (fake *FakeTCREngine) RunCheck(_ params.Params) {
+	fake.recordCall(TCRCallRunCheck)
 }
 
-// PrintLog prints the TCR git commit history
-func (fake *FakeTcrEngine) PrintLog(_ params.Params) {
-	fake.recordCall(TcrCallPrintLog)
+// PrintLog prints the TCR VCS commit history
+func (fake *FakeTCREngine) PrintLog(_ params.Params) {
+	fake.recordCall(TCRCallPrintLog)
 }
 
 // PrintStats prints the TCR execution stats
-func (fake *FakeTcrEngine) PrintStats(_ params.Params) {
-	fake.recordCall(TcrCallPrintStats)
+func (fake *FakeTCREngine) PrintStats(_ params.Params) {
+	fake.recordCall(TCRCallPrintStats)
 }
 
-// GitPull runs a fake git pull command
-func (fake *FakeTcrEngine) GitPull() {
-	fake.recordCall(TcrCallGitPull)
+// VCSPull runs a fake VCS pull command
+func (fake *FakeTCREngine) VCSPull() {
+	fake.recordCall(TCRCallVCSPull)
 }
 
-// GitPush runs a fake git push command
-func (fake *FakeTcrEngine) GitPush() {
-	fake.recordCall(TcrCallGitPush)
+// VCSPush runs a fake VCS push command
+func (fake *FakeTCREngine) VCSPush() {
+	fake.recordCall(TCRCallVCSPush)
 }

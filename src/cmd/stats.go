@@ -67,7 +67,7 @@ The following stats are reported:
 This subcommand does not start TCR engine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		parameters.Mode = runmode.Stats{}
-		u := cli.New(parameters, engine.NewTcrEngine())
+		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
 	},
 }

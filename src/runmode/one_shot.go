@@ -31,7 +31,7 @@ func (OneShot) Name() string {
 	return "one-shot"
 }
 
-// AutoPushDefault returns the default value of git auto-push option with this run mode
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
 func (OneShot) AutoPushDefault() bool {
 	return false
 }

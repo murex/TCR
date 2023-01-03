@@ -49,7 +49,7 @@ It can be used either in solo, or as a group within a mob or pair session.
 		Run: func(cmd *cobra.Command, args []string) {
 			parameters.Mode = runmode.Mob{}
 			parameters.AutoPush = parameters.Mode.AutoPushDefault()
-			u := cli.New(parameters, engine.NewTcrEngine())
+			u := cli.New(parameters, engine.NewTCREngine())
 			u.Start()
 		},
 	}

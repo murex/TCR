@@ -27,11 +27,11 @@ import (
 )
 
 func checkAutoPush(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("git auto-push")
+	cr = NewCheckResults("VCS auto-push")
 	if p.AutoPush {
-		cr.ok("git auto-push is turned on: every commit will be pushed to origin")
+		cr.ok("VCS auto-push is turned on: every commit will be pushed to origin")
 	} else {
-		cr.ok("git auto-push is turned off: commits will only be applied locally")
+		cr.ok("VCS auto-push is turned off: commits will only be applied locally")
 	}
 	return cr
 }

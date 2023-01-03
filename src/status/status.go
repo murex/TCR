@@ -33,7 +33,7 @@ var (
 	BuildFailed = NewStatus(1) // Build failed
 	TestFailed  = NewStatus(2) // Build passed, one or more test failed, and changes were reverted
 	ConfigError = NewStatus(3) // Error in configuration or parameters
-	GitError    = NewStatus(4) // Git error
+	VCSError    = NewStatus(4) // VCS error
 	OtherError  = NewStatus(5) // Any other error
 )
 

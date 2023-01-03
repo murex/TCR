@@ -39,7 +39,7 @@ type (
 	LogItems []LogItem
 )
 
-// NewLogItem creates a new git log item instance
+// NewLogItem creates a new VCS log item instance
 func NewLogItem(hash string, timestamp time.Time, message string) LogItem {
 	return LogItem{hash, timestamp, message}
 }

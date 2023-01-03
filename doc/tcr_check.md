@@ -17,7 +17,7 @@ The main checkpoints are organized in sections as follows:
 - Work Directory
 - Language settings
 - Toolchain settings
-- Git environment
+- VCS environment
 - Auto-push settings
 - Mob timer settings (for driver role)
 - Polling period settings (for navigator role)
@@ -44,13 +44,13 @@ tcr check [flags]
 ### Options inherited from parent commands
 
 ```
-  -p, --auto-push           enable git push after every commit
+  -p, --auto-push           enable VCS push after every commit
   -b, --base-dir string     indicate the directory from which TCR is looking for files (default: current directory)
   -f, --commit-failures     enable committing reverts on tests failure
   -c, --config-dir string   indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration   set the duration for role rotation countdown timer
   -l, --language string     indicate the programming language to be used by TCR
-  -o, --polling duration    set git polling period when running as navigator
+  -o, --polling duration    set VCS polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
   -w, --work-dir string     indicate the directory from which TCR is running (default: current directory)
 ```

@@ -22,7 +22,7 @@ SOFTWARE.
 
 package role
 
-// Navigator is a role where the user does not apply any change, but regularly retrieves updates from git
+// Navigator is a role where the user does not apply any change, but regularly retrieves updates from the VCS
 type Navigator struct {
 }
 

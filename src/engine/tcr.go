@@ -46,10 +46,10 @@ import (
 )
 
 type (
-	// TcrInterface provides the API for interacting with TCR engine
-	TcrInterface interface {
+	// TCRInterface provides the API for interacting with TCR engine
+	TCRInterface interface {
 		Init(u ui.UserInterface, p params.Params)
-		setVcs(gitInterface vcs.Interface)
+		setVCS(vcsInterface vcs.Interface)
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
@@ -68,13 +68,13 @@ type (
 		RunCheck(p params.Params)
 		PrintLog(p params.Params)
 		PrintStats(p params.Params)
-		GitPull()
-		GitPush()
+		VCSPull()
+		VCSPush()
 		Quit()
 	}
 
-	// TcrEngine is the engine running all TCR operations
-	TcrEngine struct {
+	// TCREngine is the engine running all TCR operations
+	TCREngine struct {
 		mode            runmode.RunMode
 		ui              ui.UserInterface
 		vcs             vcs.Interface
@@ -104,18 +104,18 @@ const (
 
 var (
 	// Tcr is TCR Engine singleton instance
-	Tcr TcrInterface
+	Tcr TCRInterface
 )
 
-// NewTcrEngine instantiates TCR engine instance
-func NewTcrEngine() TcrInterface {
-	Tcr = &TcrEngine{}
+// NewTCREngine instantiates TCR engine instance
+func NewTCREngine() TCRInterface {
+	Tcr = &TCREngine{}
 	return Tcr
 }
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
-func (tcr *TcrEngine) Init(u ui.UserInterface, p params.Params) {
+func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	var err error
 	status.RecordState(status.Ok)
 	tcr.ui = u
@@ -142,7 +142,7 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	tcr.initVcs()
+	tcr.initVCS()
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
@@ -154,8 +154,8 @@ func (tcr *TcrEngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.warnIfOnRootBranch(tcr.mode.IsInteractive())
 }
 
-// SetCommitOnFail sets git commit-on-fail option to the provided value
-func (tcr *TcrEngine) SetCommitOnFail(flag bool) {
+// SetCommitOnFail sets VCS commit-on-fail option to the provided value
+func (tcr *TCREngine) SetCommitOnFail(flag bool) {
 	tcr.commitOnFail = flag
 	if tcr.commitOnFail {
 		report.PostInfo("Test-breaking changes will be committed")
@@ -164,7 +164,7 @@ func (tcr *TcrEngine) SetCommitOnFail(flag bool) {
 	}
 }
 
-func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
+func (tcr *TCREngine) setMobTimerDuration(duration time.Duration) {
 	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
 		tcr.mobTurnDuration = duration
 		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
@@ -172,13 +172,13 @@ func (tcr *TcrEngine) setMobTimerDuration(duration time.Duration) {
 }
 
 // RunCheck checks the provided parameters and prints out corresponding report
-func (*TcrEngine) RunCheck(p params.Params) {
+func (*TCREngine) RunCheck(p params.Params) {
 	checker.Run(p)
 }
 
-// PrintLog prints the TCR git commit history
-func (tcr *TcrEngine) PrintLog(p params.Params) {
-	tcrLogs := tcr.queryGitLogs(p)
+// PrintLog prints the TCR VCS commit history
+func (tcr *TCREngine) PrintLog(p params.Params) {
+	tcrLogs := tcr.queryVCSLogs(p)
 	report.PostInfo("Printing TCR log for branch ", tcr.vcs.GetWorkingBranch())
 	for _, log := range tcrLogs {
 		report.PostTitle("commit:    ", log.Hash)
@@ -190,8 +190,8 @@ func (tcr *TcrEngine) PrintLog(p params.Params) {
 }
 
 // PrintStats prints the TCR execution stats
-func (tcr *TcrEngine) PrintStats(p params.Params) {
-	tcrLogs := tcr.queryGitLogs(p)
+func (tcr *TCREngine) PrintStats(p params.Params) {
+	tcrLogs := tcr.queryVCSLogs(p)
 	stats.Print(tcr.vcs.GetWorkingBranch(), tcrLogsToEvents(tcrLogs))
 }
 
@@ -203,9 +203,9 @@ func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
 	return tcrEvents
 }
 
-func (tcr *TcrEngine) queryGitLogs(p params.Params) vcs.LogItems {
+func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
-	tcr.initVcs()
+	tcr.initVCS()
 
 	logs, err := tcr.vcs.Log(isTcrCommitMessage)
 	if err != nil {
@@ -243,26 +243,26 @@ func parseCommitMessage(message string) (event events.TcrEvent) {
 	return event
 }
 
-func (tcr *TcrEngine) initVcs() {
+func (tcr *TCREngine) initVCS() {
 	if tcr.vcs == nil {
 		var err error
 		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
-		tcr.handleError(err, true, status.GitError)
+		tcr.handleError(err, true, status.VCSError)
 	}
 }
 
-func (tcr *TcrEngine) initSourceTree(p params.Params) {
+func (tcr *TCREngine) initSourceTree(p params.Params) {
 	var err error
 	tcr.sourceTree, err = filesystem.New(p.BaseDir)
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Base directory is ", tcr.sourceTree.GetBaseDir())
 }
 
-func (tcr *TcrEngine) setVcs(gitInterface vcs.Interface) {
-	tcr.vcs = gitInterface
+func (tcr *TCREngine) setVCS(vcsInterface vcs.Interface) {
+	tcr.vcs = vcsInterface
 }
 
-func (tcr *TcrEngine) warnIfOnRootBranch(interactive bool) {
+func (tcr *TCREngine) warnIfOnRootBranch(interactive bool) {
 	if tcr.vcs.IsOnRootBranch() {
 		message := "Running " + settings.ApplicationName +
 			" on branch \"" + tcr.vcs.GetWorkingBranch() + "\" is not recommended"
@@ -276,31 +276,31 @@ func (tcr *TcrEngine) warnIfOnRootBranch(interactive bool) {
 	}
 }
 
-// ToggleAutoPush toggles git auto-push state
-func (tcr *TcrEngine) ToggleAutoPush() {
+// ToggleAutoPush toggles VCS auto-push state
+func (tcr *TCREngine) ToggleAutoPush() {
 	tcr.vcs.EnablePush(!tcr.vcs.IsPushEnabled())
 }
 
-// SetAutoPush sets git auto-push to the provided value
-func (tcr *TcrEngine) SetAutoPush(ap bool) {
+// SetAutoPush sets VCS auto-push to the provided value
+func (tcr *TCREngine) SetAutoPush(ap bool) {
 	tcr.vcs.EnablePush(ap)
 }
 
 // GetCurrentRole returns the role currently used for running TCR.
 // Returns nil when TCR engine is in standby
-func (tcr *TcrEngine) GetCurrentRole() role.Role {
+func (tcr *TCREngine) GetCurrentRole() role.Role {
 	return tcr.currentRole
 }
 
 // RunAsDriver tells TCR engine to start running with driver role
-func (tcr *TcrEngine) RunAsDriver() {
+func (tcr *TCREngine) RunAsDriver() {
 	tcr.initTimer()
 
 	go tcr.fromBirthTillDeath(
 		func() {
 			tcr.currentRole = role.Driver{}
 			tcr.ui.NotifyRoleStarting(tcr.currentRole)
-			tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
+			tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
 			tcr.startTimer()
 		},
 		func(interrupt <-chan bool) bool {
@@ -322,7 +322,7 @@ func (tcr *TcrEngine) RunAsDriver() {
 }
 
 // RunAsNavigator tells TCR engine to start running with navigator role
-func (tcr *TcrEngine) RunAsNavigator() {
+func (tcr *TCREngine) RunAsNavigator() {
 	go tcr.fromBirthTillDeath(
 		func() {
 			tcr.currentRole = role.Navigator{}
@@ -333,7 +333,7 @@ func (tcr *TcrEngine) RunAsNavigator() {
 			case <-interrupt:
 				return false
 			default:
-				tcr.handleError(tcr.vcs.Pull(), false, status.GitError)
+				tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
 				time.Sleep(tcr.pollingPeriod)
 				return true
 			}
@@ -346,11 +346,11 @@ func (tcr *TcrEngine) RunAsNavigator() {
 }
 
 // Stop is the entry point for telling TCR engine to stop its current operations
-func (tcr *TcrEngine) Stop() {
+func (tcr *TCREngine) Stop() {
 	tcr.shoot <- true
 }
 
-func (tcr *TcrEngine) fromBirthTillDeath(
+func (tcr *TCREngine) fromBirthTillDeath(
 	birth func(),
 	dailyLife func(interrupt <-chan bool) bool,
 	death func(),
@@ -370,7 +370,7 @@ func (tcr *TcrEngine) fromBirthTillDeath(
 	tcr.handleError(tmb.Wait(), true, status.OtherError)
 }
 
-func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
+func (tcr *TCREngine) waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
 	// We need to wait a bit to make sure the file watcher
 	// does not get triggered again following a revert operation
@@ -382,7 +382,7 @@ func (tcr *TcrEngine) waitForChange(interrupt <-chan bool) bool {
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
-func (tcr *TcrEngine) RunTCRCycle() {
+func (tcr *TCREngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
 	if tcr.build().Failed() {
 		return
@@ -396,7 +396,7 @@ func (tcr *TcrEngine) RunTCRCycle() {
 	}
 }
 
-func (tcr *TcrEngine) createTcrEvent(testResult toolchain.TestCommandResult) (event events.TcrEvent) {
+func (tcr *TCREngine) createTcrEvent(testResult toolchain.TestCommandResult) (event events.TcrEvent) {
 	diffs, err := tcr.vcs.Diff()
 	if err != nil {
 		report.PostWarning(err)
@@ -422,7 +422,7 @@ func (tcr *TcrEngine) createTcrEvent(testResult toolchain.TestCommandResult) (ev
 	)
 }
 
-func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
+func (tcr *TCREngine) build() (result toolchain.CommandResult) {
 	report.PostInfo("Launching Build")
 	result = tcr.toolchain.RunBuild()
 	if result.Failed() {
@@ -432,7 +432,7 @@ func (tcr *TcrEngine) build() (result toolchain.CommandResult) {
 	return result
 }
 
-func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
+func (tcr *TCREngine) test() (result toolchain.TestCommandResult) {
 	report.PostInfo("Running Tests")
 	result = tcr.toolchain.RunTests()
 	if result.Failed() {
@@ -444,35 +444,35 @@ func (tcr *TcrEngine) test() (result toolchain.TestCommandResult) {
 	return result
 }
 
-func (tcr *TcrEngine) commit(event events.TcrEvent) {
+func (tcr *TCREngine) commit(event events.TcrEvent) {
 	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
 	var err error
 	err = tcr.vcs.Add()
-	tcr.handleError(err, false, status.GitError)
+	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
 	}
 	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYaml())
-	tcr.handleError(err, false, status.GitError)
+	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
 	}
-	tcr.handleError(tcr.vcs.Push(), false, status.GitError)
+	tcr.handleError(tcr.vcs.Push(), false, status.VCSError)
 }
 
-func (tcr *TcrEngine) revert(event events.TcrEvent) {
+func (tcr *TCREngine) revert(event events.TcrEvent) {
 	if tcr.commitOnFail {
 		err := tcr.commitTestBreakingChanges(event)
-		tcr.handleError(err, false, status.GitError)
+		tcr.handleError(err, false, status.VCSError)
 		if err != nil {
 			return
 		}
-		tcr.handleError(tcr.vcs.Push(), false, status.GitError)
+		tcr.handleError(tcr.vcs.Push(), false, status.VCSError)
 	}
 	tcr.revertSrcFiles()
 }
 
-func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err error) {
+func (tcr *TCREngine) commitTestBreakingChanges(event events.TcrEvent) (err error) {
 	// Create stash with the changes
 	err = tcr.vcs.Stash(commitMessageFail)
 	if err != nil {
@@ -483,7 +483,7 @@ func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err erro
 	if err != nil {
 		return err
 	}
-	// Commit changes with failure message into git index
+	// Commit changes with failure message into VCS index
 	err = tcr.vcs.Add()
 	if err != nil {
 		return err
@@ -492,12 +492,12 @@ func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err erro
 	if err != nil {
 		return err
 	}
-	// Revert changes (both in git index and working tree)
+	// Revert changes (both in VCS index and working tree)
 	err = tcr.vcs.Revert()
 	if err != nil {
 		return err
 	}
-	// Amend commit message on revert operation in git index
+	// Amend commit message on revert operation in VCS index
 	err = tcr.vcs.Commit(true, commitMessageRevert)
 	if err != nil {
 		return err
@@ -507,9 +507,9 @@ func (tcr *TcrEngine) commitTestBreakingChanges(event events.TcrEvent) (err erro
 	return err
 }
 
-func (tcr *TcrEngine) revertSrcFiles() {
+func (tcr *TCREngine) revertSrcFiles() {
 	diffs, err := tcr.vcs.Diff()
-	tcr.handleError(err, false, status.GitError)
+	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
 	}
@@ -517,7 +517,7 @@ func (tcr *TcrEngine) revertSrcFiles() {
 	for _, diff := range diffs {
 		if tcr.language.IsSrcFile(diff.Path) {
 			err := tcr.revertFile(diff.Path)
-			tcr.handleError(err, false, status.GitError)
+			tcr.handleError(err, false, status.VCSError)
 			if err == nil {
 				reverted++
 			}
@@ -530,13 +530,13 @@ func (tcr *TcrEngine) revertSrcFiles() {
 	}
 }
 
-func (tcr *TcrEngine) revertFile(file string) error {
+func (tcr *TCREngine) revertFile(file string) error {
 	return tcr.vcs.Restore(file)
 }
 
 // GetSessionInfo provides the information related to the current TCR session.
 // Used mainly by the user interface packages to retrieve and display this information
-func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
+func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 	return SessionInfo{
 		BaseDir:       tcr.sourceTree.GetBaseDir(),
 		WorkDir:       toolchain.GetWorkDir(),
@@ -548,19 +548,19 @@ func (tcr *TcrEngine) GetSessionInfo() SessionInfo {
 	}
 }
 
-func (tcr *TcrEngine) initTimer() {
+func (tcr *TCREngine) initTimer() {
 	if settings.EnableMobTimer {
 		tcr.mobTimer = timer.NewMobTurnCountdown(tcr.mode, tcr.mobTurnDuration)
 	}
 }
 
-func (tcr *TcrEngine) startTimer() {
+func (tcr *TCREngine) startTimer() {
 	if settings.EnableMobTimer && tcr.mobTimer != nil {
 		tcr.mobTimer.Start()
 	}
 }
 
-func (tcr *TcrEngine) stopTimer() {
+func (tcr *TCREngine) stopTimer() {
 	if settings.EnableMobTimer && tcr.mobTimer != nil {
 		tcr.mobTimer.Stop()
 		tcr.mobTimer = nil
@@ -568,19 +568,19 @@ func (tcr *TcrEngine) stopTimer() {
 }
 
 // ReportMobTimerStatus reports the status of the mob timer
-func (tcr *TcrEngine) ReportMobTimerStatus() {
+func (tcr *TCREngine) ReportMobTimerStatus() {
 	if settings.EnableMobTimer {
 		timer.ReportCountDownStatus(tcr.mobTimer)
 	}
 }
 
 // SetRunMode sets the run mode for TCR engine
-func (tcr *TcrEngine) SetRunMode(m runmode.RunMode) {
+func (tcr *TCREngine) SetRunMode(m runmode.RunMode) {
 	tcr.mode = m
 }
 
 // Quit is the exit point for TCR application
-func (*TcrEngine) Quit() {
+func (*TCREngine) Quit() {
 	report.PostInfo("That's All Folks!")
 	// Give trace reporter some time to flush whatever has not been posted yet
 	time.Sleep(traceReporterWaitingTime)
@@ -588,7 +588,7 @@ func (*TcrEngine) Quit() {
 	os.Exit(rc) //nolint:revive
 }
 
-func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
+func (*TCREngine) handleError(err error, fatal bool, s status.Status) {
 	if err != nil {
 		status.RecordState(s)
 		if fatal {
@@ -602,16 +602,16 @@ func (*TcrEngine) handleError(err error, fatal bool, s status.Status) {
 	}
 }
 
-// GitPull runs a git pull command on demand
-func (tcr *TcrEngine) GitPull() {
+// VCSPull runs a VCS pull command on demand
+func (tcr *TCREngine) VCSPull() {
 	if tcr.vcs.Pull() != nil {
-		report.PostError("git pull command failed!")
+		report.PostError("VCS pull command failed!")
 	}
 }
 
-// GitPush runs a git push command on demand
-func (tcr *TcrEngine) GitPush() {
+// VCSPush runs a VCS push command on demand
+func (tcr *TCREngine) VCSPush() {
 	if tcr.vcs.Push() != nil {
-		report.PostError("git push command failed!")
+		report.PostError("VCS push command failed!")
 	}
 }

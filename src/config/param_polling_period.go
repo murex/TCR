@@ -27,7 +27,7 @@ import (
 	"time"
 )
 
-// AddPollingPeriodParam adds git polling period parameter to the provided command
+// AddPollingPeriodParam adds VCS polling period parameter to the provided command
 func AddPollingPeriodParam(cmd *cobra.Command) *DurationParam {
 	param := DurationParam{
 		s: paramSettings{
@@ -39,7 +39,7 @@ func AddPollingPeriodParam(cmd *cobra.Command) *DurationParam {
 			cobraSettings: cobraSettings{
 				name:       "polling",
 				shorthand:  "o",
-				usage:      "set git polling period when running as navigator",
+				usage:      "set VCS polling period when running as navigator",
 				persistent: true,
 			},
 		},
