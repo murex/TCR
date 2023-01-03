@@ -10,7 +10,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.4.0
 	github.com/go-git/go-git/v5 v5.5.1
 	github.com/golangci/golangci-lint v1.50.1
-	github.com/goreleaser/goreleaser v1.14.0
+	github.com/goreleaser/goreleaser v1.14.1
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mengdaming/go-junit v0.1.3
@@ -73,7 +73,7 @@ require (
 	github.com/ashanbrown/forbidigo v1.3.0 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.7.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.169 // indirect
+	github.com/aws/aws-sdk-go v1.44.171 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.17.3 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.18.7 // indirect
@@ -176,7 +176,7 @@ require (
 	github.com/gordonklaus/ineffassign v0.0.0-20220928193011-d2c82e48359b // indirect
 	github.com/goreleaser/chglog v0.2.2 // indirect
 	github.com/goreleaser/fileglob v1.3.0 // indirect
-	github.com/goreleaser/nfpm/v2 v2.22.2 // indirect
+	github.com/goreleaser/nfpm/v2 v2.23.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/gostaticanalysis/comment v1.4.2 // indirect
@@ -239,7 +239,7 @@ require (
 	github.com/muesli/termenv v0.13.0 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
-	github.com/nishanths/exhaustive v0.9.3 // indirect
+	github.com/nishanths/exhaustive v0.9.5 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
@@ -309,8 +309,8 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	gocloud.dev v0.27.0 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
-	golang.org/x/exp v0.0.0-20221227203929-1b447090c38c // indirect
-	golang.org/x/exp/typeparams v0.0.0-20221227203929-1b447090c38c // indirect
+	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
+	golang.org/x/exp/typeparams v0.0.0-20221230185412-738e83a70c30 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/oauth2 v0.3.0 // indirect
