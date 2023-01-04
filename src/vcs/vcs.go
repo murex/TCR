@@ -36,7 +36,7 @@ type Interface interface {
 	IsOnRootBranch() bool
 	Add(paths ...string) error
 	Commit(amend bool, messages ...string) error
-	Restore(dir string) error
+	Restore(path string) error
 	Revert() error
 	Push() error
 	Pull() error
