@@ -45,6 +45,7 @@ type TcrConfig struct {
 	MobTimerDuration *DurationParam
 	AutoPush         *BoolParam
 	CommitFailures   *BoolParam
+	VCS              *StringParam
 }
 
 func (c TcrConfig) reset() {
@@ -54,6 +55,7 @@ func (c TcrConfig) reset() {
 	c.MobTimerDuration.reset()
 	c.AutoPush.reset()
 	c.CommitFailures.reset()
+	c.VCS.reset()
 }
 
 // Config is the placeholder for all TCR configuration parameters
@@ -84,12 +86,12 @@ func initConfig(writer io.Writer) {
 	// Make sure configuration directory exists
 	createConfigDir()
 
-	initTcrConfig()
+	initTCRConfig()
 	initToolchainConfig()
 	initLanguageConfig()
 }
 
-func initTcrConfig() {
+func initTCRConfig() {
 	// Viper setup
 	configFilePath := filepath.Join(configDirPath, configFileName)
 	viper.AddConfigPath(configDirPath)
@@ -141,12 +143,12 @@ func createConfigDir() {
 // Save saves TCR configuration
 func Save() {
 	createConfigDir()
-	saveTcrConfig()
+	saveTCRConfig()
 	saveToolchainConfigs()
 	saveLanguageConfigs()
 }
 
-func saveTcrConfig() {
+func saveTCRConfig() {
 	trace("Saving configuration: ", viper.ConfigFileUsed())
 	if err := viper.WriteConfig(); err != nil {
 		if os.IsNotExist(err) {
@@ -160,25 +162,25 @@ func saveTcrConfig() {
 // Reset resets TCR configuration to default value
 func Reset() {
 	trace("Resetting configuration to default values")
-	resetTcrConfig()
+	resetTCRConfig()
 	resetToolchainConfigs()
 	resetLanguageConfigs()
 	Save()
 }
 
-func resetTcrConfig() {
+func resetTCRConfig() {
 	Config.reset()
 }
 
 // Show displays current TCR configuration
 func Show() {
 	trace()
-	showTrcConfig()
+	showTCRConfig()
 	showToolchainConfigs()
 	showLanguageConfigs()
 }
 
-func showTrcConfig() {
+func showTCRConfig() {
 	keys := viper.AllKeys()
 	sort.Strings(keys)
 	trace("TCR configuration:")
@@ -187,11 +189,11 @@ func showTrcConfig() {
 	}
 }
 
-func showConfigValue(key string, value interface{}) {
+func showConfigValue(key string, value any) {
 	trace("- ", key, ": ", value)
 }
 
-func trace(a ...interface{}) {
+func trace(a ...any) {
 	if configTraceWriter != nil {
 		_, _ = fmt.Fprintln(configTraceWriter, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
 	}
@@ -208,6 +210,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
 	Config.CommitFailures = AddCommitFailuresParam(cmd)
+	Config.VCS = AddVCSParam(cmd)
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
@@ -221,4 +224,5 @@ func UpdateEngineParams(p *params.Params) {
 	p.PollingPeriod = Config.PollingPeriod.GetValue()
 	p.AutoPush = Config.AutoPush.GetValue()
 	p.CommitFailures = Config.CommitFailures.GetValue()
+	p.VCS = Config.VCS.GetValue()
 }

@@ -23,104 +23,100 @@ SOFTWARE.
 package p4
 
 import (
-	"github.com/go-git/go-billy/v5"
+	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
+	"github.com/spf13/afero"
 )
 
 // p4Impl provides the implementation of the Perforce interface
 type p4Impl struct {
-	baseDir                     string
-	rootDir                     string
-	filesystem                  billy.Filesystem // TODO - Needed?
-	remoteName                  string           // TODO - Needed?
-	remoteEnabled               bool             // TODO - Needed?
-	workingBranch               string
-	workingBranchExistsOnRemote bool // TODO - Needed?
-	pushEnabled                 bool // TODO - Needed?
-	runP4Function               func(params ...string) (output []byte, err error)
-	traceP4Function             func(params ...string) (err error)
+	baseDir         string
+	rootDir         string
+	filesystem      afero.Fs
+	runP4Function   func(params ...string) (output []byte, err error)
+	traceP4Function func(params ...string) (err error)
 }
 
 // New initializes the p4 implementation based on the provided directory from local clone
 func New(dir string) (vcs.Interface, error) {
-	return newP4Impl(dir)
+	return newP4Impl(plainOpen, dir)
 }
 
-func newP4Impl(dir string) (*p4Impl, error) {
+func newP4Impl(initDepotFs func() afero.Fs, dir string) (*p4Impl, error) {
 	var p = p4Impl{
 		baseDir:         dir,
-		pushEnabled:     vcs.DefaultPushEnabled,
+		filesystem:      initDepotFs(),
 		runP4Function:   runP4Command,
 		traceP4Function: traceP4Command,
 	}
-
-	// TODO p4 -F %clientRoot% -ztag info -> gives workspace root path
-	var err error
-
-	// TODO initialization
-	//p.repository, p.filesystem, err = initRepo(dir)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//p.rootDir = retrieveRootDir(p.filesystem)
-	//
-	//p.workingBranch, err = retrieveWorkingBranch(p.repository)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if isRemoteDefined(DefaultRemoteName, p.repository) {
-	//	p.remoteEnabled = true
-	//	p.remoteName = DefaultRemoteName
-	//	p.workingBranchExistsOnRemote, err = p.isWorkingBranchOnRemote()
-	//}
-
+	err := p.retrieveRootDir()
 	return &p, err
+}
+
+// plainOpen is the regular function used to open a p4 depot
+func plainOpen() afero.Fs {
+	return afero.NewOsFs()
+}
+
+// retrieveRootDir retrieves the local root directory for the depot's workspace
+func (p *p4Impl) retrieveRootDir() error {
+	root, err := runP4Command("-F", "%clientRoot%", "-ztag", "info")
+	if err != nil {
+		p.rootDir = ""
+		return err
+	}
+	p.rootDir = string(root)
+	return nil
 }
 
 // GetRootDir returns the root directory path
 func (p *p4Impl) GetRootDir() string {
-	//TODO implement me
-	panic("implement me")
+	return p.rootDir
 }
 
 // GetRemoteName returns the current p4 "remote name"
-func (p *p4Impl) GetRemoteName() string {
-	//TODO implement me
-	panic("implement me")
+// TODO: clarify if there is some info that could be used as remote name (server Id maybe?)
+func (*p4Impl) GetRemoteName() string {
+	// For now, always return an empty string
+	return ""
 }
 
 // IsRemoteEnabled indicates if p4 remote operations are enabled
-func (p *p4Impl) IsRemoteEnabled() bool {
-	//TODO implement me
-	panic("implement me")
+// remote is always enabled with p4 due its architecture (all changes occur directly on the server)
+func (*p4Impl) IsRemoteEnabled() bool {
+	return true
 }
 
 // GetWorkingBranch returns the current p4 working branch
-func (p *p4Impl) GetWorkingBranch() string {
-	//TODO implement me
-	panic("implement me")
+// TODO clarify if we need to handle p4 branches
+func (*p4Impl) GetWorkingBranch() string {
+	// For now, always return an empty string
+	return ""
 }
 
 // IsOnRootBranch indicates if p4 is currently on its root branch or not.
-// Very likely meaningless in the case of p4
-func (p *p4Impl) IsOnRootBranch() bool {
-	//TODO implement me
-	panic("implement me")
+// TODO clarify if we need to handle p4 branches
+func (*p4Impl) IsOnRootBranch() bool {
+	// For now, always return false
+	return false
 }
 
-// Add adds the listed paths to p4 index.
-// TODO: p4 add or p4 edit
+// Add adds the listed paths to p4 changelist.
 func (p *p4Impl) Add(paths ...string) error {
-	//TODO implement me
-	panic("implement me")
+	p4Args := []string{"reconcile", "-A"}
+	if len(paths) == 0 {
+		p4Args = append(p4Args, ".")
+	} else {
+		p4Args = append(p4Args, paths...)
+	}
+	return p.traceP4(p4Args...)
 }
 
 // Commit commits changes to p4 index.
 // TODO: p4 submit
 func (p *p4Impl) Commit(amend bool, messages ...string) error {
-	//TODO implement me
+	// p4 --field "Description=My pending change" --field "Files=" change -o | p4 change -i
+	// TODO - REQUIRED for simple TCR workflow
 	panic("implement me")
 }
 
@@ -138,18 +134,15 @@ func (p *p4Impl) Revert() error {
 	panic("implement me")
 }
 
-// Push runs a p4 push operation.
-// TODO: p4 submit?
-func (p *p4Impl) Push() error {
-	//TODO implement me
-	panic("implement me")
+// Push runs a push operation.
+// TODO: confirm that it does nothing as already submitted to the server through commit?
+func (*p4Impl) Push() error {
+	return nil
 }
 
-// Pull runs a p4 pull operation.
-// TODO: p4 sync
+// Pull runs a pull operation ("p4 sync")
 func (p *p4Impl) Pull() error {
-	//TODO implement me
-	panic("implement me")
+	return p.traceP4("sync")
 }
 
 // Stash creates a p4 stash.
@@ -170,7 +163,7 @@ func (p *p4Impl) UnStash(keep bool) error {
 // Diff returns the list of files modified since last commit with diff info for each file
 // TODO: p4 diff
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
-	//TODO implement me
+	// TODO - REQUIRED for simple TCR workflow
 	panic("implement me")
 }
 
@@ -182,25 +175,22 @@ func (p *p4Impl) Log(msgFilter func(msg string) bool) (logs vcs.LogItems, err er
 	panic("implement me")
 }
 
-// EnablePush sets a flag allowing to turn on/off p4 push operations
-// TODO: ???
-func (p *p4Impl) EnablePush(flag bool) {
-	//TODO implement me
-	panic("implement me")
+// EnablePush sets a flag allowing to turn on/off p4 push operations.
+// Auto-push is always on with p4 due its architecture (all changes occur directly on the server)
+func (*p4Impl) EnablePush(_ bool) {
+	report.PostInfo("Perforce auto-push is always on")
 }
 
-// IsPushEnabled indicates if git push operations are turned on
-// TODO: ???
-func (p *p4Impl) IsPushEnabled() bool {
-	//TODO implement me
-	panic("implement me")
+// IsPushEnabled indicates if p4 push operations are turned on.
+// Auto-push is always on with p4 due its architecture (all changes occur directly on the server)
+func (*p4Impl) IsPushEnabled() bool {
+	return true
 }
 
 // CheckRemoteAccess returns true if p4 remote can be accessed.
-// TODO: ???
 func (p *p4Impl) CheckRemoteAccess() bool {
-	//TODO implement me
-	panic("implement me")
+	// TODO check if anything should be done here. Returning true for now
+	return true
 }
 
 // traceP4 runs a p4 command and traces its output.

@@ -84,11 +84,11 @@ func Run(p params.Params) {
 		checkWorkDirectory,
 		checkLanguage,
 		checkToolchain,
-		checkGitEnvironment,
+		checkVCSEnvironment,
 		checkAutoPush,
 		checkCommitFailures,
-		checkMobTimer,
 		checkPollingPeriod,
+		checkMobTimer,
 	}
 
 	for _, checker := range checkers {
@@ -201,6 +201,9 @@ func (cr *CheckResults) warning(a ...interface{}) {
 
 func (cr *CheckResults) getStatus() (s CheckStatus) {
 	s = CheckStatusOk
+	if cr == nil {
+		return CheckStatusOk
+	}
 	for _, check := range cr.checkPoints {
 		if check.rc > s {
 			s = check.rc
@@ -210,6 +213,9 @@ func (cr *CheckResults) getStatus() (s CheckStatus) {
 }
 
 func (cr *CheckResults) print() {
+	if cr == nil {
+		return
+	}
 	report.PostInfo()
 	const messagePrefix = "➤ checking "
 	switch cr.getStatus() {

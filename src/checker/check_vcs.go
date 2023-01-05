@@ -20,24 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package checker
 
 import (
-	"github.com/murex/tcr/runmode"
-	"time"
+	"github.com/murex/tcr/params"
+	"strings"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
-	VCS             string
+func checkVCSEnvironment(p params.Params) (cr *CheckResults) {
+	switch strings.ToLower(p.VCS) {
+	case "git":
+		return checkGitEnvironment(p)
+	case "p4":
+		return checkP4Environment(p)
+	default:
+		return nil
+	}
 }

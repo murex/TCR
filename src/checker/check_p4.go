@@ -20,24 +20,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package checker
 
-import (
-	"github.com/murex/tcr/runmode"
-	"time"
-)
+import "github.com/murex/tcr/params"
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
-	VCS             string
+func checkP4Environment(_ params.Params) (cr *CheckResults) {
+	cr = NewCheckResults("perforce environment")
+	// TODO Add p4-specific checks
+	//cr.add(checkP4Command())
+	//cr.add(checkP4Config())
+	//cr.add(checkP4Depot())
+	return cr
 }
