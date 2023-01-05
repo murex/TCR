@@ -114,7 +114,7 @@ func (p *p4Impl) Add(paths ...string) error {
 
 // Commit commits changes to p4 index.
 // TODO: p4 submit
-func (p *p4Impl) Commit(amend bool, messages ...string) error {
+func (p *p4Impl) Commit(_ bool, messages ...string) error {
 	// p4 --field "Description=My pending change" --field "Files=" change -o | p4 change -i
 	// TODO - REQUIRED for simple TCR workflow
 	panic("implement me")
