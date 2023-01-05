@@ -30,6 +30,7 @@ tcr config show [flags]
   -l, --language string     indicate the programming language to be used by TCR
   -o, --polling duration    set VCS polling period when running as navigator
   -t, --toolchain string    indicate the toolchain to be used by TCR
+  -V, --vcs string          indicate the VCS (version control system) to be used by TCR: git (default) or p4
   -w, --work-dir string     indicate the directory from which TCR is running (default: current directory)
 ```
 

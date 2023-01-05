@@ -105,14 +105,14 @@ const (
 )
 
 var (
-	// Tcr is TCR Engine singleton instance
-	Tcr TCRInterface
+	// TCR is TCR Engine singleton instance
+	TCR TCRInterface
 )
 
 // NewTCREngine instantiates TCR engine instance
 func NewTCREngine() TCRInterface {
-	Tcr = &TCREngine{}
-	return Tcr
+	TCR = &TCREngine{}
+	return TCR
 }
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -209,7 +209,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
 	tcr.initVCS(p.VCS)
 
-	logs, err := tcr.vcs.Log(isTcrCommitMessage)
+	logs, err := tcr.vcs.Log(isTCRCommitMessage)
 	if err != nil {
 		report.PostError(err)
 	}
@@ -219,7 +219,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	return logs
 }
 
-func isTcrCommitMessage(msg string) bool {
+func isTCRCommitMessage(msg string) bool {
 	return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
 }
 
