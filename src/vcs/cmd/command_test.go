@@ -23,6 +23,7 @@ SOFTWARE.
 package cmd
 
 import (
+	"bytes"
 	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
@@ -50,13 +51,15 @@ func Test_get_full_path_for_an_invalid_command(t *testing.T) {
 func Test_run_valid_command_with_initial_parameters(t *testing.T) {
 	output, err := New("echo", "hello world!").Run()
 	assert.NoError(t, err)
-	assert.Equal(t, "hello world!\n", string(output))
+	trimmed := string(bytes.TrimRight(output, "\r\n"))
+	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_run_valid_command_with_additional_parameters(t *testing.T) {
 	output, err := New("echo").Run("hello world!")
 	assert.NoError(t, err)
-	assert.Equal(t, "hello world!\n", string(output))
+	trimmed := string(bytes.TrimRight(output, "\r\n"))
+	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_run_invalid_command(t *testing.T) {
@@ -71,7 +74,8 @@ func Test_trace_valid_command_with_initial_parameters(t *testing.T) {
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "hello world!\n", sniffer.GetAllMatches()[0].Text)
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
@@ -80,7 +84,8 @@ func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "hello world!\n", sniffer.GetAllMatches()[0].Text)
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_trace_invalid_command(t *testing.T) {
@@ -95,7 +100,8 @@ func Test_run_pipe_valid_commands_with_initial_parameters(t *testing.T) {
 	output, err := New("echo", "hello\tworld!").RunAndPipe(
 		New("cut", "-f", "1"))
 	assert.NoError(t, err)
-	assert.Equal(t, "hello\n", string(output))
+	trimmed := string(bytes.TrimRight(output, "\r\n"))
+	assert.Equal(t, "hello", trimmed)
 }
 
 func Test_run_pipe_valid_commands_with_additional_parameters(t *testing.T) {
@@ -103,7 +109,8 @@ func Test_run_pipe_valid_commands_with_additional_parameters(t *testing.T) {
 		New("cut", "-f", "1"),
 		"hello\tworld!")
 	assert.NoError(t, err)
-	assert.Equal(t, "hello\n", string(output))
+	trimmed := string(bytes.TrimRight(output, "\r\n"))
+	assert.Equal(t, "hello", trimmed)
 }
 
 func Test_run_pipe_with_first_command_invalid(t *testing.T) {
@@ -127,7 +134,8 @@ func Test_trace_pipe_valid_commands_with_initial_parameters(t *testing.T) {
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "hello\n", sniffer.GetAllMatches()[0].Text)
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "hello", trimmed)
 }
 
 func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
@@ -138,7 +146,8 @@ func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "hello\n", sniffer.GetAllMatches()[0].Text)
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "hello", trimmed)
 }
 
 func Test_trace_pipe_with_first_command_invalid(t *testing.T) {
