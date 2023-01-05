@@ -194,7 +194,7 @@ func Test_init_tcr_config_with_no_config_file(t *testing.T) {
 	expected := []string{"No configuration file found"}
 	assertConfigTrace(t, expected,
 		func() {
-			initTcrConfig()
+			initTCRConfig()
 		},
 	)
 }
@@ -270,10 +270,11 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.mob-timer.duration: %v", prefix, 5*time.Minute),
 		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.toolchain: %v", prefix, ""),
+		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
 	assertConfigTrace(t, expected,
 		func() {
-			showTrcConfig()
+			showTCRConfig()
 		},
 	)
 }

@@ -41,6 +41,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		AutoPush:        false,
 		PollingPeriod:   0,
 		Mode:            runmode.Check{},
+		VCS:             "git",
 	}
 
 	for _, build := range builders {
@@ -116,5 +117,12 @@ func WithCommitFailures(value bool) func(params *Params) {
 func WithRunMode(mode runmode.RunMode) func(params *Params) {
 	return func(params *Params) {
 		params.Mode = mode
+	}
+}
+
+// WithVCS sets the provided VCS as the VCS to be used
+func WithVCS(vcs string) func(params *Params) {
+	return func(params *Params) {
+		params.VCS = vcs
 	}
 }

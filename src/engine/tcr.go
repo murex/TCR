@@ -23,6 +23,7 @@ SOFTWARE.
 package engine
 
 import (
+	"fmt"
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -39,6 +40,7 @@ import (
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/p4"
 	"gopkg.in/tomb.v2"
 	"os"
 	"strings"
@@ -142,7 +144,7 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	tcr.initVCS()
+	tcr.initVCS(p.VCS)
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
@@ -205,7 +207,7 @@ func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
 
 func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
-	tcr.initVCS()
+	tcr.initVCS(p.VCS)
 
 	logs, err := tcr.vcs.Log(isTcrCommitMessage)
 	if err != nil {
@@ -243,12 +245,22 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 	return event
 }
 
-func (tcr *TCREngine) initVCS() {
-	if tcr.vcs == nil {
-		var err error
-		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
-		tcr.handleError(err, true, status.VCSError)
+func (tcr *TCREngine) initVCS(vcsName string) {
+	if tcr.vcs != nil {
+		return // VCS should be initialized only once
 	}
+
+	var err error
+	switch strings.ToLower(vcsName) {
+	case "git":
+		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
+	case "p4", "perforce":
+		tcr.vcs, err = p4.New(tcr.sourceTree.GetBaseDir())
+	default:
+		tcr.handleError(fmt.Errorf("VCS not supported: %s", vcsName), true, status.ConfigError)
+		return
+	}
+	tcr.handleError(err, true, status.VCSError)
 }
 
 func (tcr *TCREngine) initSourceTree(p params.Params) {
