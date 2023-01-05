@@ -25,25 +25,36 @@ package p4
 import (
 	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"strings"
 	"testing"
 )
 
+func skipOnGitHubActions(t *testing.T) {
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		t.Skip("skipped when on GitHub Actions (no p4 environment)")
+	}
+}
+
 func Test_is_p4_command_available(t *testing.T) {
+	skipOnGitHubActions(t)
 	assert.True(t, IsP4CommandAvailable())
 }
 
 func Test_get_p4_command_path(t *testing.T) {
+	skipOnGitHubActions(t)
 	assert.NotZero(t, GetP4CommandPath())
 }
 
 func Test_run_p4_command(t *testing.T) {
+	skipOnGitHubActions(t)
 	output, err := runP4Command("info")
 	assert.NoError(t, err)
 	assert.NotZero(t, output)
 }
 
 func Test_trace_p4_command(t *testing.T) {
+	skipOnGitHubActions(t)
 	sniffer := report.NewSniffer()
 	err := traceP4Command("info")
 	sniffer.Stop()
@@ -52,13 +63,16 @@ func Test_trace_p4_command(t *testing.T) {
 }
 
 func Test_get_p4_username(t *testing.T) {
+	skipOnGitHubActions(t)
 	assert.NotZero(t, GetP4UserName())
 }
 
 func Test_get_p4_config_value_with_undefined_key(t *testing.T) {
+	skipOnGitHubActions(t)
 	assert.Equal(t, "not set", getP4ConfigValue("undefined-config-value"))
 }
 
 func Test_get_p4_command_version(t *testing.T) {
+	skipOnGitHubActions(t)
 	assert.True(t, strings.HasPrefix(GetP4CommandVersion(), "P4/"))
 }
