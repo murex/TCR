@@ -30,12 +30,13 @@ import (
 
 // ShellCommand is a command that can be launched from a shell
 type ShellCommand struct {
-	name string
+	name   string
+	params []string
 }
 
 // New creates a new shell command instance
-func New(name string) *ShellCommand {
-	return &ShellCommand{name: name}
+func New(name string, params ...string) *ShellCommand {
+	return &ShellCommand{name: name, params: params}
 }
 
 // IsInPath indicates if the command can be found in the path
@@ -52,12 +53,31 @@ func (sc *ShellCommand) GetFullPath() string {
 
 // Run calls the command with the provided parameters in a separate process and returns its output traces combined
 func (sc *ShellCommand) Run(params ...string) (output []byte, err error) {
-	return sh.Command(sc.name, params).CombinedOutput()
+	return sh.Command(sc.name, append(sc.params, params...)).CombinedOutput()
 }
 
 // Trace calls the command with the provided parameters and reports its output traces
 func (sc *ShellCommand) Trace(params ...string) error {
 	output, err := sc.Run(params...)
+	if len(output) > 0 {
+		report.PostText(string(output))
+	}
+	return err
+}
+
+// RunAndPipe calls the command with the provided parameters in a separate process
+// and pipes its output to cmd. Returns cmd's output traces combined
+func (sc *ShellCommand) RunAndPipe(cmd *ShellCommand, params ...string) (output []byte, err error) {
+	return sh.NewSession().
+		Command(sc.name, append(sc.params, params...)).
+		Command(cmd.name, cmd.params).
+		CombinedOutput()
+}
+
+// TraceAndPipe calls the command with the provided parameters in a separate process
+// and pipes its output to cmd. Reports cmd's output traces
+func (sc *ShellCommand) TraceAndPipe(cmd *ShellCommand, params ...string) error {
+	output, err := sc.RunAndPipe(cmd, params...)
 	if len(output) > 0 {
 		report.PostText(string(output))
 	}

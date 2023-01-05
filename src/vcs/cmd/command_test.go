@@ -47,10 +47,16 @@ func Test_get_full_path_for_an_invalid_command(t *testing.T) {
 	assert.Zero(t, New("unknown-command").GetFullPath())
 }
 
-func Test_run_valid_command(t *testing.T) {
-	output, err := New("pwd").Run()
+func Test_run_valid_command_with_initial_parameters(t *testing.T) {
+	output, err := New("echo", "hello world!").Run()
 	assert.NoError(t, err)
-	assert.NotZero(t, output)
+	assert.Equal(t, "hello world!\n", string(output))
+}
+
+func Test_run_valid_command_with_additional_parameters(t *testing.T) {
+	output, err := New("echo").Run("hello world!")
+	assert.NoError(t, err)
+	assert.Equal(t, "hello world!\n", string(output))
 }
 
 func Test_run_invalid_command(t *testing.T) {
@@ -59,17 +65,95 @@ func Test_run_invalid_command(t *testing.T) {
 	assert.Zero(t, output)
 }
 
-func Test_trace_valid_command(t *testing.T) {
+func Test_trace_valid_command_with_initial_parameters(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := New("pwd").Trace()
+	err := New("echo", "hello world!").Trace()
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "hello world!\n", sniffer.GetAllMatches()[0].Text)
+}
+
+func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("echo").Trace("hello world!")
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "hello world!\n", sniffer.GetAllMatches()[0].Text)
 }
 
 func Test_trace_invalid_command(t *testing.T) {
 	sniffer := report.NewSniffer()
 	err := New("unknown-command").Trace()
+	sniffer.Stop()
+	assert.Error(t, err)
+	assert.Equal(t, 0, sniffer.GetMatchCount())
+}
+
+func Test_run_pipe_valid_commands_with_initial_parameters(t *testing.T) {
+	output, err := New("echo", "hello\tworld!").RunAndPipe(
+		New("cut", "-f", "1"))
+	assert.NoError(t, err)
+	assert.Equal(t, "hello\n", string(output))
+}
+
+func Test_run_pipe_valid_commands_with_additional_parameters(t *testing.T) {
+	output, err := New("echo").RunAndPipe(
+		New("cut", "-f", "1"),
+		"hello\tworld!")
+	assert.NoError(t, err)
+	assert.Equal(t, "hello\n", string(output))
+}
+
+func Test_run_pipe_with_first_command_invalid(t *testing.T) {
+	output, err := New("unknown-command").RunAndPipe(
+		New("cut", "-f", "1"))
+	assert.Error(t, err)
+	assert.Zero(t, output)
+}
+
+func Test_run_pipe_with_second_command_invalid(t *testing.T) {
+	output, err := New("echo").RunAndPipe(
+		New("unknown-command"))
+	assert.Error(t, err)
+	assert.Zero(t, output)
+}
+
+func Test_trace_pipe_valid_commands_with_initial_parameters(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("echo", "hello\tworld!").TraceAndPipe(
+		New("cut", "-f", "1"))
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "hello\n", sniffer.GetAllMatches()[0].Text)
+}
+
+func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("echo").TraceAndPipe(
+		New("cut", "-f", "1"),
+		"hello\tworld!")
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "hello\n", sniffer.GetAllMatches()[0].Text)
+}
+
+func Test_trace_pipe_with_first_command_invalid(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("unknown-command").TraceAndPipe(
+		New("cut", "-f", "1"))
+	sniffer.Stop()
+	assert.Error(t, err)
+	assert.Equal(t, 0, sniffer.GetMatchCount())
+}
+
+func Test_trace_pipe_with_second_command_invalid(t *testing.T) {
+	sniffer := report.NewSniffer()
+	err := New("echo").TraceAndPipe(
+		New("unknown-command"))
 	sniffer.Stop()
 	assert.Error(t, err)
 	assert.Equal(t, 0, sniffer.GetMatchCount())
