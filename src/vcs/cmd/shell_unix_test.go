@@ -32,7 +32,7 @@ import (
 func Test_unix_shell_encoding(t *testing.T) {
 	// nil means that we use Go's default string encoding (UTF-8)
 	// e.g. no conversion is required
-	assert.Equal(t, nil, GetShellAttributes().Encoding)
+	assert.Zero(t, GetShellAttributes().Encoding)
 }
 
 func Test_unix_shell_end_of_line(t *testing.T) {
