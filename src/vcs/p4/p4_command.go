@@ -29,8 +29,8 @@ import (
 	"strings"
 )
 
-func newP4Command() *cmd.ShellCommand {
-	return cmd.New("p4")
+func newP4Command(params ...string) *cmd.ShellCommand {
+	return cmd.New("p4", params...)
 }
 
 // IsP4CommandAvailable indicates if p4 command is available on local machine
@@ -81,4 +81,14 @@ func traceP4Command(params ...string) error {
 // runP4Command calls p4 command in a separate process and returns its output traces
 func runP4Command(params ...string) (output []byte, err error) {
 	return newP4Command().Run(params...)
+}
+
+// tracePipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
+func tracePipedP4Command(pipedTo *cmd.ShellCommand, params ...string) error {
+	return newP4Command().TraceAndPipe(pipedTo, params...)
+}
+
+// runPipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
+func runPipedP4Command(pipedTo *cmd.ShellCommand, params ...string) (output []byte, err error) {
+	return newP4Command().RunAndPipe(pipedTo, params...)
 }

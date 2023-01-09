@@ -53,6 +53,7 @@ func (sc *ShellCommand) GetFullPath() string {
 
 // Run calls the command with the provided parameters in a separate process and returns its output traces combined
 func (sc *ShellCommand) Run(params ...string) (output []byte, err error) {
+	//report.PostWarning("Command: ", sc.name, " ", append(sc.params, params...))
 	return sh.Command(sc.name, append(sc.params, params...)).CombinedOutput()
 }
 
@@ -68,6 +69,7 @@ func (sc *ShellCommand) Trace(params ...string) error {
 // RunAndPipe calls the command with the provided parameters in a separate process
 // and pipes its output to cmd. Returns cmd's output traces combined
 func (sc *ShellCommand) RunAndPipe(cmd *ShellCommand, params ...string) (output []byte, err error) {
+	//report.PostWarning("Command: ", sc.name, " ", append(sc.params, params...), " | ", cmd.name, " ", cmd.params)
 	return sh.NewSession().
 		Command(sc.name, append(sc.params, params...)).
 		Command(cmd.name, cmd.params).

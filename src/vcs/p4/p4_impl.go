@@ -23,18 +23,26 @@ SOFTWARE.
 package p4
 
 import (
+	"bytes"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/cmd"
 	"github.com/spf13/afero"
+	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
+	"path/filepath"
+	"strings"
 )
 
 // p4Impl provides the implementation of the Perforce interface
 type p4Impl struct {
-	baseDir         string
-	rootDir         string
-	filesystem      afero.Fs
-	runP4Function   func(params ...string) (output []byte, err error)
-	traceP4Function func(params ...string) (err error)
+	baseDir              string
+	rootDir              string
+	filesystem           afero.Fs
+	runP4Function        func(params ...string) (output []byte, err error)
+	traceP4Function      func(params ...string) (err error)
+	runPipedP4Function   func(cmd *cmd.ShellCommand, params ...string) (output []byte, err error)
+	tracePipedP4Function func(cmd *cmd.ShellCommand, params ...string) (err error)
 }
 
 // New initializes the p4 implementation based on the provided directory from local clone
@@ -44,10 +52,12 @@ func New(dir string) (vcs.Interface, error) {
 
 func newP4Impl(initDepotFs func() afero.Fs, dir string) (*p4Impl, error) {
 	var p = p4Impl{
-		baseDir:         dir,
-		filesystem:      initDepotFs(),
-		runP4Function:   runP4Command,
-		traceP4Function: traceP4Command,
+		baseDir:              dir,
+		filesystem:           initDepotFs(),
+		runP4Function:        runP4Command,
+		traceP4Function:      traceP4Command,
+		runPipedP4Function:   runPipedP4Command,
+		tracePipedP4Function: tracePipedP4Command,
 	}
 	err := p.retrieveRootDir()
 	return &p, err
@@ -65,7 +75,7 @@ func (p *p4Impl) retrieveRootDir() error {
 		p.rootDir = ""
 		return err
 	}
-	p.rootDir = string(root)
+	p.rootDir = strings.TrimSuffix(string(root), "\r\n")
 	return nil
 }
 
@@ -103,33 +113,40 @@ func (*p4Impl) IsOnRootBranch() bool {
 
 // Add adds the listed paths to p4 changelist.
 func (p *p4Impl) Add(paths ...string) error {
-	p4Args := []string{"reconcile", "-A"}
+	p4Args := []string{"reconcile", "-a", "-e", "-d"}
 	if len(paths) == 0 {
-		p4Args = append(p4Args, ".")
+		p4Args = append(p4Args, filepath.Join(p.baseDir, "/..."))
 	} else {
 		p4Args = append(p4Args, paths...)
 	}
 	return p.traceP4(p4Args...)
 }
 
+type changeList struct {
+	number string
+}
+
 // Commit commits changes to p4 index.
 // TODO: p4 submit
 func (p *p4Impl) Commit(_ bool, messages ...string) error {
-	// p4 --field "Description=My pending change" --field "Files=" change -o | p4 change -i
-	// TODO - REQUIRED for simple TCR workflow
-	panic("implement me")
+	cl, err := p.createChangeList(messages...)
+	if err != nil {
+		report.PostError(err)
+		return err
+	}
+	return p.submitChangeList(cl)
 }
 
 // Restore restores to last commit for the provided path.
 // TODO: p4 revert -c
-func (p *p4Impl) Restore(path string) error {
+func (*p4Impl) Restore(_ string) error {
 	//TODO implement me
 	panic("implement me")
 }
 
 // Revert runs a p4 revert operation.
 // TODO: p4 revert
-func (p *p4Impl) Revert() error {
+func (*p4Impl) Revert() error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -147,7 +164,7 @@ func (p *p4Impl) Pull() error {
 
 // Stash creates a p4 stash.
 // TODO: ???
-func (p *p4Impl) Stash(message string) error {
+func (*p4Impl) Stash(_ string) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -155,7 +172,7 @@ func (p *p4Impl) Stash(message string) error {
 // UnStash applies a p4 stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
 // command is executed under the hood.
 // TODO: ???
-func (p *p4Impl) UnStash(keep bool) error {
+func (*p4Impl) UnStash(_ bool) error {
 	//TODO implement me
 	panic("implement me")
 }
@@ -164,13 +181,15 @@ func (p *p4Impl) UnStash(keep bool) error {
 // TODO: p4 diff
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
 	// TODO - REQUIRED for simple TCR workflow
-	panic("implement me")
+	// Temporary dummy value
+	diffs = append(diffs, vcs.NewFileDiff(filepath.Join(p.rootDir, "Toto.java"), 1, 0))
+	return diffs, nil
 }
 
 // Log returns the list of p4 log items compliant with the provided msgFilter.
 // When no msgFilter is provided, returns all p4 log items unfiltered.
 // TODO:  p4 changes ./...
-func (p *p4Impl) Log(msgFilter func(msg string) bool) (logs vcs.LogItems, err error) {
+func (*p4Impl) Log(_ func(msg string) bool) (logs vcs.LogItems, err error) {
 	//TODO implement me
 	panic("implement me")
 }
@@ -188,7 +207,7 @@ func (*p4Impl) IsPushEnabled() bool {
 }
 
 // CheckRemoteAccess returns true if p4 remote can be accessed.
-func (p *p4Impl) CheckRemoteAccess() bool {
+func (*p4Impl) CheckRemoteAccess() bool {
 	// TODO check if anything should be done here. Returning true for now
 	return true
 }
@@ -203,4 +222,50 @@ func (p *p4Impl) traceP4(args ...string) error {
 // The command is launched from the p4 root directory
 func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
 	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
+}
+
+func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
+	// Command: p4 --field "Description=<message>" change -o | p4 change -i
+
+	out, err := p.runPipedP4Function(
+		newP4Command("change", "-i"),
+		"-Q", "utf8",
+		"--field", buildDescriptionField(cmd.GetShellAttributes(), messages...),
+		"change", "-o")
+	if err != nil {
+		return nil, err
+	}
+	// Output: "Change <change list number> created ..."
+	clNumber := strings.Split(string(out), " ")[1]
+	return &changeList{clNumber}, err
+}
+
+func buildDescriptionField(attr cmd.ShellAttributes, messages ...string) string {
+	var builder strings.Builder
+	_, _ = builder.WriteString("Description=")
+	for _, message := range messages {
+		_, _ = builder.WriteString(convertLine(attr.Encoding, message))
+		_, _ = builder.WriteString(attr.EOL)
+	}
+	return builder.String()
+}
+
+func convertLine(charMap *charmap.Charmap, message string) string {
+	if charMap == nil {
+		// By default, we use UTF-8, which is the default with Go strings
+		return message
+	}
+	var b bytes.Buffer
+	converter := transform.NewWriter(&b, charMap.NewDecoder())
+	_, _ = converter.Write([]byte(message))
+	_ = converter.Close()
+	return b.String()
+}
+
+func (p *p4Impl) submitChangeList(cl *changeList) error {
+	if cl == nil {
+		report.PostWarning("Empty changelist!")
+		return nil
+	}
+	return p.traceP4Function("submit", "-c", cl.number)
 }
