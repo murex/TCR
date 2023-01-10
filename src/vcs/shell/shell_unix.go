@@ -1,3 +1,5 @@
+//go:build !windows
+
 /*
 Copyright (c) 2023 Murex
 
@@ -20,20 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package shell
 
-import (
-	"github.com/stretchr/testify/assert"
-	"golang.org/x/text/encoding/charmap"
-	"testing"
-)
-
-func Test_windows_shell_encoding(t *testing.T) {
-	// Windows1252 works for Western character set. We may need a more sophisticated
-	// approach if we want to cover users with other character sets.
-	assert.Equal(t, charmap.Windows1252, GetShellAttributes().Encoding)
-}
-
-func Test_windows_shell_end_of_line(t *testing.T) {
-	assert.Equal(t, "\r\n", GetShellAttributes().EOL)
+// osShellAttributes returns shell attributes associated to the underlying operating system
+func osShellAttributes() Attributes {
+	return Attributes{
+		Encoding: nil,
+		EOL:      "\n",
+	}
 }

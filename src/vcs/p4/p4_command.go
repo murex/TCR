@@ -25,12 +25,12 @@ package p4
 import (
 	"bufio"
 	"bytes"
-	"github.com/murex/tcr/vcs/cmd"
+	"github.com/murex/tcr/vcs/shell"
 	"strings"
 )
 
-func newP4Command(params ...string) *cmd.ShellCommand {
-	return cmd.New("p4", params...)
+func newP4Command(params ...string) *shell.Command {
+	return shell.NewCommand("p4", params...)
 }
 
 // IsP4CommandAvailable indicates if p4 command is available on local machine
@@ -84,11 +84,11 @@ func runP4Command(params ...string) (output []byte, err error) {
 }
 
 // tracePipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
-func tracePipedP4Command(pipedTo *cmd.ShellCommand, params ...string) error {
+func tracePipedP4Command(pipedTo *shell.Command, params ...string) error {
 	return newP4Command().TraceAndPipe(pipedTo, params...)
 }
 
 // runPipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
-func runPipedP4Command(pipedTo *cmd.ShellCommand, params ...string) (output []byte, err error) {
+func runPipedP4Command(pipedTo *shell.Command, params ...string) (output []byte, err error) {
 	return newP4Command().RunAndPipe(pipedTo, params...)
 }

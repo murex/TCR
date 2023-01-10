@@ -25,12 +25,12 @@ package git
 import (
 	"bufio"
 	"bytes"
-	"github.com/murex/tcr/vcs/cmd"
+	"github.com/murex/tcr/vcs/shell"
 	"strings"
 )
 
-func newGitCommand() *cmd.ShellCommand {
-	return cmd.New("git")
+func newGitCommand() *shell.Command {
+	return shell.NewCommand("git")
 }
 
 // IsGitCommandAvailable indicates if git command is available on local machine
