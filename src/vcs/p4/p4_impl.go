@@ -26,7 +26,7 @@ import (
 	"bytes"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
-	"github.com/murex/tcr/vcs/cmd"
+	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
@@ -41,8 +41,8 @@ type p4Impl struct {
 	filesystem           afero.Fs
 	runP4Function        func(params ...string) (output []byte, err error)
 	traceP4Function      func(params ...string) (err error)
-	runPipedP4Function   func(cmd *cmd.ShellCommand, params ...string) (output []byte, err error)
-	tracePipedP4Function func(cmd *cmd.ShellCommand, params ...string) (err error)
+	runPipedP4Function   func(toCmd *shell.Command, params ...string) (output []byte, err error)
+	tracePipedP4Function func(toCmd *shell.Command, params ...string) (err error)
 }
 
 // New initializes the p4 implementation based on the provided directory from local clone
@@ -127,7 +127,6 @@ type changeList struct {
 }
 
 // Commit commits changes to p4 index.
-// TODO: p4 submit
 func (p *p4Impl) Commit(_ bool, messages ...string) error {
 	cl, err := p.createChangeList(messages...)
 	if err != nil {
@@ -152,8 +151,9 @@ func (*p4Impl) Revert() error {
 }
 
 // Push runs a push operation.
-// TODO: confirm that it does nothing as already submitted to the server through commit?
 func (*p4Impl) Push() error {
+	// Nothing to do in case of p4, as the "p4 submit" done in Commit()
+	// already "pushed" the changes to the server.
 	return nil
 }
 
@@ -220,17 +220,16 @@ func (p *p4Impl) traceP4(args ...string) error {
 
 // runP4 calls p4 command in a separate process and returns its output traces
 // The command is launched from the p4 root directory
-func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
-	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
-}
+//func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
+//	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
+//}
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	// Command: p4 --field "Description=<message>" change -o | p4 change -i
-
 	out, err := p.runPipedP4Function(
 		newP4Command("change", "-i"),
 		"-Q", "utf8",
-		"--field", buildDescriptionField(cmd.GetShellAttributes(), messages...),
+		"--field", buildDescriptionField(shell.GetAttributes(), messages...),
 		"change", "-o")
 	if err != nil {
 		return nil, err
@@ -240,7 +239,7 @@ func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	return &changeList{clNumber}, err
 }
 
-func buildDescriptionField(attr cmd.ShellAttributes, messages ...string) string {
+func buildDescriptionField(attr shell.Attributes, messages ...string) string {
 	var builder strings.Builder
 	_, _ = builder.WriteString("Description=")
 	for _, message := range messages {

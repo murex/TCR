@@ -20,18 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package shell
 
 import "golang.org/x/text/encoding/charmap"
 
-// ShellAttributes contain shell-specific attributes allowing to tune behavior
-// when interacting with a shell command
-type ShellAttributes struct {
-	Encoding *charmap.Charmap
-	EOL      string
-}
-
-// GetShellAttributes Returns shell-specific attributes
-func GetShellAttributes() ShellAttributes {
-	return osShellAttributes()
+// osShellAttributes returns shell attributes associated to the underlying operating system
+func osShellAttributes() Attributes {
+	return Attributes{
+		Encoding: charmap.Windows1252,
+		EOL:      "\r\n",
+	}
 }

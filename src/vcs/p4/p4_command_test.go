@@ -24,7 +24,7 @@ package p4
 
 import (
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/vcs/cmd"
+	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
@@ -67,7 +67,7 @@ func Test_trace_p4_command(t *testing.T) {
 func Test_run_piped_p4_command(t *testing.T) {
 	skipWhenInGitHubActions(t)
 	output, err := runPipedP4Command(
-		cmd.New("grep", "Client name"),
+		shell.NewCommand("grep", "Client name"),
 		"info")
 	assert.NoError(t, err)
 	assert.Contains(t, string(output), "Client name:")
@@ -77,7 +77,7 @@ func Test_trace_piped_p4_command(t *testing.T) {
 	skipWhenInGitHubActions(t)
 	sniffer := report.NewSniffer()
 	err := tracePipedP4Command(
-		cmd.New("grep", "Client name"),
+		shell.NewCommand("grep", "Client name"),
 		"info")
 	sniffer.Stop()
 	assert.NoError(t, err)

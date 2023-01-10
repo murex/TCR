@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package shell
 
 import (
 	"github.com/codeskyblue/go-sh"
@@ -28,38 +28,38 @@ import (
 	"os/exec"
 )
 
-// ShellCommand is a command that can be launched from a shell
-type ShellCommand struct {
+// Command is a command that can be launched from a shell
+type Command struct {
 	name   string
 	params []string
 }
 
-// New creates a new shell command instance
-func New(name string, params ...string) *ShellCommand {
-	return &ShellCommand{name: name, params: params}
+// NewCommand creates a new shell command instance
+func NewCommand(name string, params ...string) *Command {
+	return &Command{name: name, params: params}
 }
 
 // IsInPath indicates if the command can be found in the path
-func (sc *ShellCommand) IsInPath() bool {
-	_, err := exec.LookPath(sc.name)
+func (c *Command) IsInPath() bool {
+	_, err := exec.LookPath(c.name)
 	return err == nil
 }
 
 // GetFullPath returns the full path for this command
-func (sc *ShellCommand) GetFullPath() string {
-	path, _ := exec.LookPath(sc.name)
+func (c *Command) GetFullPath() string {
+	path, _ := exec.LookPath(c.name)
 	return path
 }
 
 // Run calls the command with the provided parameters in a separate process and returns its output traces combined
-func (sc *ShellCommand) Run(params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", sc.name, " ", append(sc.params, params...))
-	return sh.Command(sc.name, append(sc.params, params...)).CombinedOutput()
+func (c *Command) Run(params ...string) (output []byte, err error) {
+	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...))
+	return sh.Command(c.name, append(c.params, params...)).CombinedOutput()
 }
 
 // Trace calls the command with the provided parameters and reports its output traces
-func (sc *ShellCommand) Trace(params ...string) error {
-	output, err := sc.Run(params...)
+func (c *Command) Trace(params ...string) error {
+	output, err := c.Run(params...)
 	if len(output) > 0 {
 		report.PostText(string(output))
 	}
@@ -67,19 +67,19 @@ func (sc *ShellCommand) Trace(params ...string) error {
 }
 
 // RunAndPipe calls the command with the provided parameters in a separate process
-// and pipes its output to cmd. Returns cmd's output traces combined
-func (sc *ShellCommand) RunAndPipe(cmd *ShellCommand, params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", sc.name, " ", append(sc.params, params...), " | ", cmd.name, " ", cmd.params)
+// and pipes its output to cmd. Returns toCmd's output traces combined
+func (c *Command) RunAndPipe(toCmd *Command, params ...string) (output []byte, err error) {
+	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...), " | ", shell.name, " ", shell.params)
 	return sh.NewSession().
-		Command(sc.name, append(sc.params, params...)).
-		Command(cmd.name, cmd.params).
+		Command(c.name, append(c.params, params...)).
+		Command(toCmd.name, toCmd.params).
 		CombinedOutput()
 }
 
 // TraceAndPipe calls the command with the provided parameters in a separate process
-// and pipes its output to cmd. Reports cmd's output traces
-func (sc *ShellCommand) TraceAndPipe(cmd *ShellCommand, params ...string) error {
-	output, err := sc.RunAndPipe(cmd, params...)
+// and pipes its output to cmd. Reports toCmd's output traces
+func (c *Command) TraceAndPipe(toCmd *Command, params ...string) error {
+	output, err := c.RunAndPipe(toCmd, params...)
 	if len(output) > 0 {
 		report.PostText(string(output))
 	}

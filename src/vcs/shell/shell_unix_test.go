@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package shell
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -32,9 +32,9 @@ import (
 func Test_unix_shell_encoding(t *testing.T) {
 	// nil means that we use Go's default string encoding (UTF-8)
 	// e.g. no conversion is required
-	assert.Zero(t, GetShellAttributes().Encoding)
+	assert.Zero(t, GetAttributes().Encoding)
 }
 
 func Test_unix_shell_end_of_line(t *testing.T) {
-	assert.Equal(t, "\n", GetShellAttributes().EOL)
+	assert.Equal(t, "\n", GetAttributes().EOL)
 }
