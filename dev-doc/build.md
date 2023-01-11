@@ -14,7 +14,7 @@ cd TCR
 
 TCR is written in Go. This implies having Go compiler and tools installed on your machine.
 
-Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.18** or higher.
+Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.19** or higher.
 
 ## Install additional Go tools and utility packages
 
@@ -44,14 +44,14 @@ If you do, you can refer to [GoReleaser Installation Instructions](https://gorel
 for installing it locally on your machine.
 
 In most cases you will not even have to install it locally as TCR-Go new releases are built through
-a [GoReleaser GitHub action](../.github/workflows/goreleaser.yml).
+a [GoReleaser GitHub action](../.github/workflows/go_releaser.yml).
 
 ### golangci-lint package - `Optional`
 
 We use the Go Linter aggregator [golangci-lint](https://golangci-lint.run/) to perform various static checks on TCR Go
 code.
 
-A [dedicated GitHub action](../.github/workflows/goreleaser.yml) triggers execution of golangci-lint every time a new
+A [dedicated GitHub action](../.github/workflows/go_releaser.yml) triggers execution of golangci-lint every time a new
 TCR-Go version is being released.
 
 Although not mandatory, we advise you to install it locally on your machine to check that your changes comply with
