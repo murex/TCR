@@ -23,7 +23,9 @@ SOFTWARE.
 package p4
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
@@ -31,6 +33,7 @@ import (
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -178,11 +181,37 @@ func (*p4Impl) UnStash(_ bool) error {
 }
 
 // Diff returns the list of files modified since last commit with diff info for each file
-// TODO: p4 diff
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
-	// TODO - REQUIRED for simple TCR workflow
-	// Temporary dummy value
-	diffs = append(diffs, vcs.NewFileDiff(filepath.Join(p.rootDir, "Toto.java"), 1, 0))
+	var p4Output []byte
+	p4Output, err = p.runP4("diff", "-f", "-Od", "-dw", "-ds")
+	if err != nil {
+		return nil, err
+	}
+
+	scanner := bufio.NewScanner(bytes.NewReader(p4Output))
+	var filename string
+	var added, removed int
+	for scanner.Scan() {
+		fields := strings.Split(scanner.Text(), " ")
+		switch fields[0] {
+		case "====":
+			// ==== <depot_path>>#<revision_number> - <local_path> ====
+			filename = filepath.Clean(fields[3])
+		case "add":
+			// add <x> chunks <y> lines
+			added, _ = strconv.Atoi(fields[3])
+		case "deleted":
+			// deleted <x> chunks <y> lines
+			removed, _ = strconv.Atoi(fields[3])
+		case "changed":
+			// changed <x> chunks <y_before> / <y_after> lines
+			changedBefore, _ := strconv.Atoi(fields[3])
+			changedAfter, _ := strconv.Atoi(fields[5])
+			diffs = append(diffs, vcs.NewFileDiff(filename, added+changedAfter, removed+changedBefore))
+		default:
+			return nil, fmt.Errorf("unrecognized p4 diff output: %s", scanner.Text())
+		}
+	}
 	return diffs, nil
 }
 
@@ -220,9 +249,9 @@ func (p *p4Impl) traceP4(args ...string) error {
 
 // runP4 calls p4 command in a separate process and returns its output traces
 // The command is launched from the p4 root directory
-//func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
-//	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
-//}
+func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
+	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
+}
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	// Command: p4 --field "Description=<message>" change -o | p4 change -i
