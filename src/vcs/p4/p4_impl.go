@@ -88,9 +88,8 @@ func (p *p4Impl) GetRootDir() string {
 }
 
 // GetRemoteName returns the current p4 "remote name"
-// TODO: clarify if there is some info that could be used as remote name (server Id maybe?)
 func (*p4Impl) GetRemoteName() string {
-	// For now, always return an empty string
+	// Always return an empty string
 	return ""
 }
 
