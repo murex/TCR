@@ -3,7 +3,8 @@ on:
   #  push:
   #    branches: [ main ]
   schedule:
-    - cron: '20 20 * * *'
+    # once a week (Saturday 5:30)
+    - cron: '30 5 * * 6'
 
 jobs:
   add-contributors:
