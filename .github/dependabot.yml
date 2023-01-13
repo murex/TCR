@@ -65,7 +65,7 @@ updates:
   # Maintain dependencies for C# examples
 
   - package-ecosystem: "nuget"
-    directory: "/examples/csharp"
+    directory: "/examples/csharp-dotnet"
     schedule:
       interval: "weekly"
 
