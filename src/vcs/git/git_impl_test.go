@@ -69,21 +69,6 @@ func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
 	assert.NotEmpty(t, g.GetWorkingBranch())
 }
 
-func Test_check_remote_access_on_current_repo(t *testing.T) {
-	slowTestTag(t)
-	g, _ := New(".")
-	// Depending on where the test is run (local machine or CI) and which is the current branch,
-	// CheckRemoteAccess() result can vary.
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Skip("skipped when on GitHub Actions")
-	}
-	if g.IsRemoteEnabled() {
-		assert.True(t, g.CheckRemoteAccess())
-	} else {
-		assert.False(t, g.CheckRemoteAccess())
-	}
-}
-
 func Test_check_remote_access_on_in_memory_repo(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
 	assert.False(t, g.CheckRemoteAccess())

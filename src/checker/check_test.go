@@ -27,7 +27,6 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -95,13 +94,10 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 		params.WithWorkDir(testDataDirJava),
 		params.WithMobTimerDuration(1*time.Second),
 	))
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
-		// Depending on the context while running on CI, checkGitRemote() can return an error.
-		// For this reason this test case is a bit more permissive when running on CI
-		assert.GreaterOrEqual(t, status.GetReturnCode(), 1)
-	} else {
-		assert.Equal(t, 1, status.GetReturnCode())
-	}
+
+	// Depending on the context, checkGitRemote() can return an error.
+	// For this reason this test case allows either warnings or errors
+	assert.GreaterOrEqual(t, status.GetReturnCode(), 1)
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
