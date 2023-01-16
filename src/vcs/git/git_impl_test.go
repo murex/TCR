@@ -89,7 +89,7 @@ func Test_check_remote_access_on_in_memory_repo(t *testing.T) {
 	assert.False(t, g.CheckRemoteAccess())
 }
 
-func Test_git_diff_command(t *testing.T) {
+func Test_git_diff(t *testing.T) {
 	testFlags := []struct {
 		desc          string
 		gitDiffOutput string
@@ -100,13 +100,13 @@ func Test_git_diff_command(t *testing.T) {
 	}{
 		{"git command arguments",
 			"",
-			errors.New("git diff error"),
-			true,
+			nil,
+			false,
 			[]string{
 				"diff", "--numstat", "--ignore-cr-at-eol", "--ignore-all-space", "--ignore-blank-lines", "HEAD"},
 			nil,
 		},
-		{"git error",
+		{"git diff command call fails",
 			"",
 			errors.New("git diff error"),
 			true,
@@ -200,7 +200,7 @@ func Test_git_diff_command(t *testing.T) {
 	}
 }
 
-func Test_git_push_command(t *testing.T) {
+func Test_git_push(t *testing.T) {
 	testFlags := []struct {
 		desc                 string
 		pushEnabled          bool
@@ -209,28 +209,28 @@ func Test_git_push_command(t *testing.T) {
 		expectBranchOnRemote bool
 	}{
 		{
-			"push enabled and no git error",
+			"push enabled and git push command call succeeds",
 			true,
 			nil,
 			false,
 			true,
 		},
 		{
-			"push enabled and git error",
+			"push enabled and git push command call fails",
 			true,
 			errors.New("git push error"),
 			true,
 			false,
 		},
 		{
-			"push disabled and no git error",
+			"push disabled and git push command call succeeds",
 			false,
 			nil,
 			false,
 			false,
 		},
 		{
-			"push disabled and git error",
+			"push disabled and git push command call fails",
 			false,
 			errors.New("git push error"),
 			false,
@@ -258,7 +258,7 @@ func Test_git_push_command(t *testing.T) {
 	}
 }
 
-func Test_git_pull_command(t *testing.T) {
+func Test_git_pull(t *testing.T) {
 	testFlags := []struct {
 		desc           string
 		branchOnRemote bool
@@ -266,27 +266,27 @@ func Test_git_pull_command(t *testing.T) {
 		expectError    bool
 	}{
 		{
-			"branch on remote and no git error",
+			"branch on remote and git pull command call succeeds",
 			true,
 			nil,
 			false,
 		},
 		{
-			"branch on remote and git error",
+			"branch on remote and git pull command call fails",
 			true,
-			errors.New("git push error"),
+			errors.New("git pull error"),
 			true,
 		},
 		{
-			"no branch on remote and no git error",
+			"no branch on remote and git pull command call succeeds",
 			false,
 			nil,
 			false,
 		},
 		{
-			"no branch on remote and git error",
+			"no branch on remote and git pull command call fails",
 			false,
-			errors.New("git push error"),
+			errors.New("git pull error"),
 			false,
 		},
 	}
@@ -310,7 +310,7 @@ func Test_git_pull_command(t *testing.T) {
 	}
 }
 
-func Test_git_add_command(t *testing.T) {
+func Test_git_add(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		paths        []string
@@ -319,14 +319,14 @@ func Test_git_add_command(t *testing.T) {
 		expectedArgs []string
 	}{
 		{
-			"no git error",
+			"git add command call succeeds",
 			[]string{"some-path"},
 			nil,
 			false,
 			[]string{"add", "some-path"},
 		},
 		{
-			"git error",
+			"git add command call fails",
 			[]string{"some-path"},
 			errors.New("git add error"),
 			true,
@@ -367,7 +367,7 @@ func Test_git_add_command(t *testing.T) {
 	}
 }
 
-func Test_git_commit_command(t *testing.T) {
+func Test_git_commit(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		messages     []string
@@ -377,14 +377,14 @@ func Test_git_commit_command(t *testing.T) {
 		expectedArgs []string
 	}{
 		{
-			"no git error",
+			"git commit command call succeeds",
 			[]string{"some message"}, false,
 			nil,
 			false,
 			[]string{"commit", "--no-gpg-sign", "-m", "some message"},
 		},
 		{
-			"git error",
+			"git commit command call fails",
 			[]string{"some message"}, false,
 			errors.New("git commit error"),
 			false, // We currently ignore git commit errors to handle the case when there's nothing to commit
@@ -407,7 +407,7 @@ func Test_git_commit_command(t *testing.T) {
 		{
 			"with amend option",
 			[]string{"some message"}, true,
-			errors.New("git commit error"),
+			nil,
 			false,
 			[]string{"commit", "--no-gpg-sign", "--amend", "-m", "some message"},
 		},
@@ -431,20 +431,20 @@ func Test_git_commit_command(t *testing.T) {
 	}
 }
 
-func Test_git_restore_command(t *testing.T) {
+func Test_git_restore(t *testing.T) {
 	testFlags := []struct {
 		desc        string
 		gitError    error
 		expectError bool
 	}{
 		{
-			"no git error",
+			"git checkout command call succeeds",
 			nil,
 			false,
 		},
 		{
-			"git error",
-			errors.New("git restore error"),
+			"git checkout command call fails",
+			errors.New("git checkout error"),
 			true,
 		},
 	}
@@ -465,7 +465,7 @@ func Test_git_restore_command(t *testing.T) {
 	}
 }
 
-func Test_git_revert_command(t *testing.T) {
+func Test_git_revert(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		gitError     error
@@ -473,13 +473,13 @@ func Test_git_revert_command(t *testing.T) {
 		expectedArgs []string
 	}{
 		{
-			"no git error",
+			"git revert command call succeeds",
 			nil,
 			false,
 			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
 		},
 		{
-			"git error",
+			"git revert command call fails",
 			errors.New("git revert error"),
 			true,
 			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
@@ -505,7 +505,7 @@ func Test_git_revert_command(t *testing.T) {
 	}
 }
 
-func Test_git_stash_command(t *testing.T) {
+func Test_git_stash(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		message      string
@@ -514,14 +514,14 @@ func Test_git_stash_command(t *testing.T) {
 		expectedArgs []string
 	}{
 		{
-			"no git error",
+			"git stash command call succeeds",
 			"some message",
 			nil,
 			false,
 			[]string{"stash", "push", "--quiet", "--include-untracked", "--message", "some message"},
 		},
 		{
-			"git error",
+			"git stash command call fails",
 			"some message",
 			errors.New("git stash push error"),
 			true,
@@ -548,7 +548,7 @@ func Test_git_stash_command(t *testing.T) {
 	}
 }
 
-func Test_git_unstash_command(t *testing.T) {
+func Test_git_unstash(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		keep         bool
@@ -557,28 +557,28 @@ func Test_git_unstash_command(t *testing.T) {
 		expectedArgs []string
 	}{
 		{
-			"keep stash and no git error",
+			"keep stash and git stash command call succeeds",
 			true,
 			nil,
 			false,
 			[]string{"stash", "apply", "--quiet"},
 		},
 		{
-			"keep stash and git error",
+			"keep stash and git stash command call fails",
 			true,
 			errors.New("git stash apply error"),
 			true,
 			[]string{"stash", "apply", "--quiet"},
 		},
 		{
-			"remove stash and no git error",
+			"remove stash and git stash command call succeeds",
 			false,
 			nil,
 			false,
 			[]string{"stash", "pop", "--quiet"},
 		},
 		{
-			"remove stash and git error",
+			"remove stash and git stash command call fails",
 			false,
 			errors.New("git stash pop error"),
 			true,
@@ -605,7 +605,7 @@ func Test_git_unstash_command(t *testing.T) {
 	}
 }
 
-func Test_git_log_command(t *testing.T) {
+func Test_git_log(t *testing.T) {
 	// Note: this test may break if for any reason the TCR repository initial commit is altered
 	tcrInitialCommit := vcs.LogItem{
 		Hash:      "a823c098187455bade90ee44874d2b41c7ef96d9",
