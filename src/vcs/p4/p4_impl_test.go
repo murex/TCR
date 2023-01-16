@@ -26,10 +26,47 @@ import (
 	"errors"
 	"fmt"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/encoding/charmap"
+	"path/filepath"
 	"testing"
 )
+
+func Test_p4_auto_push_is_always_enabled(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.True(t, p.IsPushEnabled())
+}
+
+func Test_p4_enable_disable_push_has_no_effect(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	p.EnablePush(true)
+	assert.True(t, p.IsPushEnabled())
+	p.EnablePush(false)
+	assert.True(t, p.IsPushEnabled())
+}
+
+func Test_p4_init_fails_when_working_dir_is_not_in_a_depot(t *testing.T) {
+	p, err := New("/")
+	assert.Zero(t, p)
+	assert.Error(t, err)
+}
+
+func Test_p4_working_branch_is_always_empty(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	// We currently don't use p4 branches. This may change in the future
+	assert.Equal(t, "", p.GetWorkingBranch())
+}
+
+func Test_p4_is_always_remote_enabled(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.True(t, p.IsRemoteEnabled())
+}
+
+func Test_p4_check_remote_access_is_always_true(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.True(t, p.CheckRemoteAccess())
+}
 
 func Test_convert_line(t *testing.T) {
 	tests := []struct {
@@ -51,7 +88,7 @@ func Test_convert_line(t *testing.T) {
 	}
 }
 
-func Test_p4_diff_command(t *testing.T) {
+func Test_p4_diff(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		p4DiffOutput string
@@ -62,13 +99,12 @@ func Test_p4_diff_command(t *testing.T) {
 	}{
 		{"p4 command arguments",
 			"",
-			errors.New("p4 diff error"),
-			true,
-			[]string{
-				"diff", "-f", "-Od", "-dw", "-ds"},
+			nil,
+			false,
+			[]string{"diff", "-f", "-Od", "-dw", "-ds"},
 			nil,
 		},
-		{"p4 error",
+		{"p4 diff command call fails",
 			"",
 			errors.New("p4 diff error"),
 			true,
@@ -184,7 +220,7 @@ func Test_p4_diff_command(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			p, _ := newP4Impl(inMemoryDepotInit, "")
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
 			p.rootDir = ""
 			p.runP4Function = func(args ...string) (output []byte, err error) {
 				actualArgs = args[2:]
@@ -200,6 +236,181 @@ func Test_p4_diff_command(t *testing.T) {
 				assert.Equal(t, tt.expectedArgs, actualArgs)
 			}
 			assert.Equal(t, tt.expectedDiff, fileDiffs)
+		})
+	}
+}
+
+func Test_p4_push(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	// p4 push does nothing, thus is never expected to return an error
+	assert.NoError(t, p.Push())
+}
+
+func Test_p4_pull(t *testing.T) {
+	testFlags := []struct {
+		desc        string
+		p4Error     error
+		expectError bool
+	}{
+		{
+			"p4 sync command call succeeds",
+			nil,
+			false,
+		},
+		{
+			"p4 sync command call fails",
+			errors.New("p4 sync error"),
+			true,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.traceP4Function = func(_ ...string) (err error) {
+				return tt.p4Error
+			}
+			err := p.Pull()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_p4_add(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		paths        []string
+		p4Error      error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"p4 reconcile command call succeeds",
+			[]string{"some-path"},
+			nil,
+			false,
+			[]string{"reconcile", "-a", "-e", "-d", "some-path"},
+		},
+		{
+			"p4 reconcile command call fails",
+			[]string{"some-path"},
+			errors.New("p4 reconcile error"),
+			true,
+			[]string{"reconcile", "-a", "-e", "-d", "some-path"},
+		},
+		{
+			"default path",
+			nil,
+			nil,
+			false,
+			[]string{"reconcile", "-a", "-e", "-d", filepath.Clean("/...")},
+		},
+		{
+			"multiple paths",
+			[]string{"path1", "path2"},
+			nil,
+			false,
+			[]string{"reconcile", "-a", "-e", "-d", "path1", "path2"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.traceP4Function = func(args ...string) (err error) {
+				actualArgs = args[2:]
+				return tt.p4Error
+			}
+
+			err := p.Add(tt.paths...)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, actualArgs)
+		})
+	}
+}
+
+func Test_p4_commit(t *testing.T) {
+	testFlags := []struct {
+		desc                 string
+		messages             []string
+		amend                bool
+		p4ChangeError        error
+		p4ChangeOutput       string
+		p4SubmitError        error
+		p4SubmitExpectedArgs []string
+		expectError          bool
+	}{
+		{
+			"p4 change and p4 submit command calls succeed",
+			[]string{"some message"}, false,
+			nil, "change 1234567 created ...",
+			nil, []string{"submit", "-c", "1234567"},
+			false,
+		},
+		{
+			"p4 change command call fails",
+			[]string{"some message"}, false,
+			errors.New("p4 change error"), "",
+			nil, nil,
+			true,
+		},
+		{
+			"p4 submit command call fails",
+			[]string{"some message"}, false,
+			nil, "change 1234567 created ...",
+			errors.New("p4 submit error"), []string{"submit", "-c", "1234567"},
+			true,
+		},
+		{
+			"with multiple messages",
+			[]string{"main message", "additional message"}, false,
+			nil, "change 1234567 created ...",
+			nil, []string{"submit", "-c", "1234567"},
+			false,
+		},
+		{
+			"with multi-line messages",
+			[]string{"main message", "- line 1\n- line 2"}, false,
+			nil, "change 1234567 created ...",
+			nil, []string{"submit", "-c", "1234567"},
+			false,
+		},
+		{
+			"with amend option",
+			[]string{"some message"}, true,
+			nil, "change 1234567 created ...",
+			nil, []string{"submit", "-c", "1234567"},
+			false,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var p4SubmitActualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.runPipedP4Function = func(toCmd *shell.Command, args ...string) (output []byte, err error) {
+				// Stub for the call to "p4 change ... -o | p4 change -i"
+				return []byte(tt.p4ChangeOutput), tt.p4ChangeError
+			}
+			p.traceP4Function = func(args ...string) (err error) {
+				// Stub for the call to "p4 submit -c <cl_number>"
+				p4SubmitActualArgs = args[2:]
+				return tt.p4SubmitError
+			}
+
+			err := p.Commit(tt.amend, tt.messages...)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.p4SubmitExpectedArgs, p4SubmitActualArgs)
 		})
 	}
 }

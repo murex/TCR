@@ -32,6 +32,7 @@ import (
 	"github.com/spf13/afero"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -50,10 +51,10 @@ type p4Impl struct {
 
 // New initializes the p4 implementation based on the provided directory from local clone
 func New(dir string) (vcs.Interface, error) {
-	return newP4Impl(plainOpen, dir)
+	return newP4Impl(plainOpen, dir, false)
 }
 
-func newP4Impl(initDepotFs func() afero.Fs, dir string) (*p4Impl, error) {
+func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl, error) {
 	var p = p4Impl{
 		baseDir:              dir,
 		filesystem:           initDepotFs(),
@@ -62,13 +63,39 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string) (*p4Impl, error) {
 		runPipedP4Function:   runPipedP4Command,
 		tracePipedP4Function: tracePipedP4Command,
 	}
+
+	// For test purpose only: tests should run and pass without p4 installed and no p4 server available
+	if testFlag {
+		p.rootDir = ""
+		return &p, nil
+	}
+
 	err := p.retrieveRootDir()
-	return &p, err
+	if err != nil {
+		return nil, err
+	}
+
+	if !isSubPathOf(p.baseDir, p.GetRootDir()) {
+		return nil, fmt.Errorf("directory %s does not belong to a p4 depot", p.baseDir)
+	}
+
+	return &p, nil
 }
 
 // plainOpen is the regular function used to open a p4 depot
 func plainOpen() afero.Fs {
 	return afero.NewOsFs()
+}
+
+func isSubPathOf(aPath string, refPath string) bool {
+	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
+	if refPath == "" {
+		return true
+	}
+	if refPath == aPath || strings.HasPrefix(aPath, refPath+string(os.PathSeparator)) {
+		return true
+	}
+	return false
 }
 
 // retrieveRootDir retrieves the local root directory for the depot's workspace
@@ -129,6 +156,7 @@ type changeList struct {
 }
 
 // Commit commits changes to p4 index.
+// With current implementation, "amend" parameter is ignored.
 func (p *p4Impl) Commit(_ bool, messages ...string) error {
 	cl, err := p.createChangeList(messages...)
 	if err != nil {
@@ -263,6 +291,10 @@ func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 		return nil, err
 	}
 	// Output: "Change <change list number> created ..."
+	words := strings.Split(string(out), " ")
+	if len(words) < 3 {
+		return nil, fmt.Errorf("unexpected p4 change trace: %s", out)
+	}
 	clNumber := strings.Split(string(out), " ")[1]
 	return &changeList{clNumber}, err
 }
@@ -294,5 +326,5 @@ func (p *p4Impl) submitChangeList(cl *changeList) error {
 		report.PostWarning("Empty changelist!")
 		return nil
 	}
-	return p.traceP4Function("submit", "-c", cl.number)
+	return p.traceP4("submit", "-c", cl.number)
 }
