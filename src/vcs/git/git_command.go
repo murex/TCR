@@ -29,8 +29,8 @@ import (
 	"strings"
 )
 
-func newGitCommand() *shell.Command {
-	return shell.NewCommand("git")
+func newGitCommand() shell.Command {
+	return shell.NewCommandFunc("git")
 }
 
 // IsGitCommandAvailable indicates if git command is available on local machine

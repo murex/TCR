@@ -29,8 +29,16 @@ import (
 	"strings"
 )
 
-func newP4Command(params ...string) *shell.Command {
-	return shell.NewCommand("p4", params...)
+func init() {
+	shell.NewCommandFunc = shell.NewCommand
+}
+
+func newP4Command(params ...string) shell.Command {
+	return shell.NewCommandFunc("p4", params...)
+}
+
+func newP4CommandImpl(params ...string) *shell.CommandImpl {
+	return shell.NewCommandImpl("p4", params...)
 }
 
 // IsP4CommandAvailable indicates if p4 command is available on local machine
@@ -52,7 +60,7 @@ func GetP4CommandVersion() string {
 	scanner := bufio.NewScanner(bytes.NewReader(p4Output))
 	for scanner.Scan() {
 		if strings.Index(scanner.Text(), "Rev.") == 0 {
-			return strings.SplitAfter(scanner.Text(), "Rev. ")[1]
+			return strings.Split(scanner.Text(), " ")[1]
 		}
 	}
 	return ""
@@ -65,7 +73,8 @@ func GetP4UserName() string {
 
 func getP4ConfigValue(variable string) string {
 	p4Output, err := runP4Command("set", "-q", variable)
-	if err != nil || p4Output == nil || len(p4Output) == 0 {
+
+	if err != nil || p4Output == nil || len(bytes.Trim(p4Output, "\r\n")) == 0 {
 		return "not set"
 	}
 	scanner := bufio.NewScanner(bytes.NewReader(p4Output))
@@ -84,11 +93,11 @@ func runP4Command(params ...string) (output []byte, err error) {
 }
 
 // tracePipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
-func tracePipedP4Command(pipedTo *shell.Command, params ...string) error {
+func tracePipedP4Command(pipedTo shell.Command, params ...string) error {
 	return newP4Command().TraceAndPipe(pipedTo, params...)
 }
 
 // runPipedP4Command calls p4 command, pipes it to pipedTo command, and reports its output traces
-func runPipedP4Command(pipedTo *shell.Command, params ...string) (output []byte, err error) {
+func runPipedP4Command(pipedTo shell.Command, params ...string) (output []byte, err error) {
 	return newP4Command().RunAndPipe(pipedTo, params...)
 }
