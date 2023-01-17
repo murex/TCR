@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,66 +22,21 @@ SOFTWARE.
 
 package shell
 
-import (
-	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/report"
-	"os/exec"
-)
-
-// Command is a command that can be launched from a shell
-type Command struct {
-	name   string
-	params []string
+// Command provides the interface for a shell command.
+type Command interface {
+	Name() string
+	Params() []string
+	IsInPath() bool
+	GetFullPath() string
+	Run(params ...string) (output []byte, err error)
+	Trace(params ...string) error
+	RunAndPipe(toCmd Command, params ...string) (output []byte, err error)
+	TraceAndPipe(toCmd Command, params ...string) error
 }
 
-// NewCommand creates a new shell command instance
-func NewCommand(name string, params ...string) *Command {
-	return &Command{name: name, params: params}
-}
-
-// IsInPath indicates if the command can be found in the path
-func (c *Command) IsInPath() bool {
-	_, err := exec.LookPath(c.name)
-	return err == nil
-}
-
-// GetFullPath returns the full path for this command
-func (c *Command) GetFullPath() string {
-	path, _ := exec.LookPath(c.name)
-	return path
-}
-
-// Run calls the command with the provided parameters in a separate process and returns its output traces combined
-func (c *Command) Run(params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...))
-	return sh.Command(c.name, append(c.params, params...)).CombinedOutput()
-}
-
-// Trace calls the command with the provided parameters and reports its output traces
-func (c *Command) Trace(params ...string) error {
-	output, err := c.Run(params...)
-	if len(output) > 0 {
-		report.PostText(string(output))
-	}
-	return err
-}
-
-// RunAndPipe calls the command with the provided parameters in a separate process
-// and pipes its output to cmd. Returns toCmd's output traces combined
-func (c *Command) RunAndPipe(toCmd *Command, params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...), " | ", shell.name, " ", shell.params)
-	return sh.NewSession().
-		Command(c.name, append(c.params, params...)).
-		Command(toCmd.name, toCmd.params).
-		CombinedOutput()
-}
-
-// TraceAndPipe calls the command with the provided parameters in a separate process
-// and pipes its output to cmd. Reports toCmd's output traces
-func (c *Command) TraceAndPipe(toCmd *Command, params ...string) error {
-	output, err := c.RunAndPipe(toCmd, params...)
-	if len(output) > 0 {
-		report.PostText(string(output))
-	}
-	return err
-}
+// NewCommandFunc is the constructor used when creating a new command.
+// It points by default to the real command implementation constructor.
+// It's replaced in most of the tests by a stubbed command constructor allowing to
+// bypass real shell commands execution (which are both time-consuming
+// and depending on the environment)
+var NewCommandFunc = NewCommand

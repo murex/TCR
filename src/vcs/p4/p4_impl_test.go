@@ -394,7 +394,7 @@ func Test_p4_commit(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			var p4SubmitActualArgs []string
 			p, _ := newP4Impl(inMemoryDepotInit, "", true)
-			p.runPipedP4Function = func(toCmd *shell.Command, args ...string) (output []byte, err error) {
+			p.runPipedP4Function = func(toCmd shell.Command, args ...string) (output []byte, err error) {
 				// Stub for the call to "p4 change ... -o | p4 change -i"
 				return []byte(tt.p4ChangeOutput), tt.p4ChangeError
 			}

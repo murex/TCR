@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,45 +32,45 @@ import (
 )
 
 func Test_is_in_path_for_a_valid_command(t *testing.T) {
-	assert.True(t, NewCommand("ls").IsInPath())
+	assert.True(t, NewCommandFunc("ls").IsInPath())
 }
 
 func Test_is_in_path_for_an_invalid_command(t *testing.T) {
-	assert.False(t, NewCommand("unknown-command").IsInPath())
+	assert.False(t, NewCommandFunc("unknown-command").IsInPath())
 }
 
 func Test_get_full_path_for_a_valid_command(t *testing.T) {
-	base := filepath.Base(NewCommand("ls").GetFullPath())
+	base := filepath.Base(NewCommandFunc("ls").GetFullPath())
 	assert.Equal(t, strings.TrimSuffix(base, ".exe"), "ls")
 }
 
 func Test_get_full_path_for_an_invalid_command(t *testing.T) {
-	assert.Zero(t, NewCommand("unknown-command").GetFullPath())
+	assert.Zero(t, NewCommandFunc("unknown-command").GetFullPath())
 }
 
 func Test_run_valid_command_with_initial_parameters(t *testing.T) {
-	output, err := NewCommand("echo", "hello world!").Run()
+	output, err := NewCommandFunc("echo", "hello world!").Run()
 	assert.NoError(t, err)
 	trimmed := string(bytes.TrimRight(output, "\r\n"))
 	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_run_valid_command_with_additional_parameters(t *testing.T) {
-	output, err := NewCommand("echo").Run("hello world!")
+	output, err := NewCommandFunc("echo").Run("hello world!")
 	assert.NoError(t, err)
 	trimmed := string(bytes.TrimRight(output, "\r\n"))
 	assert.Equal(t, "hello world!", trimmed)
 }
 
 func Test_run_invalid_command(t *testing.T) {
-	output, err := NewCommand("unknown-command").Run()
+	output, err := NewCommandFunc("unknown-command").Run()
 	assert.Error(t, err)
 	assert.Zero(t, output)
 }
 
 func Test_trace_valid_command_with_initial_parameters(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("echo", "hello world!").Trace()
+	err := NewCommandFunc("echo", "hello world!").Trace()
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
@@ -80,7 +80,7 @@ func Test_trace_valid_command_with_initial_parameters(t *testing.T) {
 
 func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("echo").Trace("hello world!")
+	err := NewCommandFunc("echo").Trace("hello world!")
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
@@ -90,23 +90,23 @@ func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
 
 func Test_trace_invalid_command(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("unknown-command").Trace()
+	err := NewCommandFunc("unknown-command").Trace()
 	sniffer.Stop()
 	assert.Error(t, err)
 	assert.Equal(t, 0, sniffer.GetMatchCount())
 }
 
 func Test_run_pipe_valid_commands_with_initial_parameters(t *testing.T) {
-	output, err := NewCommand("echo", "hello\tworld!").RunAndPipe(
-		NewCommand("cut", "-f", "1"))
+	output, err := NewCommandFunc("echo", "hello\tworld!").RunAndPipe(
+		NewCommandFunc("cut", "-f", "1"))
 	assert.NoError(t, err)
 	trimmed := string(bytes.TrimRight(output, "\r\n"))
 	assert.Equal(t, "hello", trimmed)
 }
 
 func Test_run_pipe_valid_commands_with_additional_parameters(t *testing.T) {
-	output, err := NewCommand("echo").RunAndPipe(
-		NewCommand("cut", "-f", "1"),
+	output, err := NewCommandFunc("echo").RunAndPipe(
+		NewCommandFunc("cut", "-f", "1"),
 		"hello\tworld!")
 	assert.NoError(t, err)
 	trimmed := string(bytes.TrimRight(output, "\r\n"))
@@ -114,23 +114,23 @@ func Test_run_pipe_valid_commands_with_additional_parameters(t *testing.T) {
 }
 
 func Test_run_pipe_with_first_command_invalid(t *testing.T) {
-	output, err := NewCommand("unknown-command").RunAndPipe(
-		NewCommand("cut", "-f", "1"))
+	output, err := NewCommandFunc("unknown-command").RunAndPipe(
+		NewCommandFunc("cut", "-f", "1"))
 	assert.Error(t, err)
 	assert.Zero(t, output)
 }
 
 func Test_run_pipe_with_second_command_invalid(t *testing.T) {
-	output, err := NewCommand("echo").RunAndPipe(
-		NewCommand("unknown-command"))
+	output, err := NewCommandFunc("echo").RunAndPipe(
+		NewCommandFunc("unknown-command"))
 	assert.Error(t, err)
 	assert.Zero(t, output)
 }
 
 func Test_trace_pipe_valid_commands_with_initial_parameters(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("echo", "hello\tworld!").TraceAndPipe(
-		NewCommand("cut", "-f", "1"))
+	err := NewCommandFunc("echo", "hello\tworld!").TraceAndPipe(
+		NewCommandFunc("cut", "-f", "1"))
 	sniffer.Stop()
 	assert.NoError(t, err)
 	assert.Equal(t, 1, sniffer.GetMatchCount())
@@ -140,8 +140,8 @@ func Test_trace_pipe_valid_commands_with_initial_parameters(t *testing.T) {
 
 func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("echo").TraceAndPipe(
-		NewCommand("cut", "-f", "1"),
+	err := NewCommandFunc("echo").TraceAndPipe(
+		NewCommandFunc("cut", "-f", "1"),
 		"hello\tworld!")
 	sniffer.Stop()
 	assert.NoError(t, err)
@@ -152,8 +152,8 @@ func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
 
 func Test_trace_pipe_with_first_command_invalid(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("unknown-command").TraceAndPipe(
-		NewCommand("cut", "-f", "1"))
+	err := NewCommandFunc("unknown-command").TraceAndPipe(
+		NewCommandFunc("cut", "-f", "1"))
 	sniffer.Stop()
 	assert.Error(t, err)
 	assert.Equal(t, 0, sniffer.GetMatchCount())
@@ -161,8 +161,8 @@ func Test_trace_pipe_with_first_command_invalid(t *testing.T) {
 
 func Test_trace_pipe_with_second_command_invalid(t *testing.T) {
 	sniffer := report.NewSniffer()
-	err := NewCommand("echo").TraceAndPipe(
-		NewCommand("unknown-command"))
+	err := NewCommandFunc("echo").TraceAndPipe(
+		NewCommandFunc("unknown-command"))
 	sniffer.Stop()
 	assert.Error(t, err)
 	assert.Equal(t, 0, sniffer.GetMatchCount())

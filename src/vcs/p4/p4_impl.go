@@ -45,8 +45,8 @@ type p4Impl struct {
 	filesystem           afero.Fs
 	runP4Function        func(params ...string) (output []byte, err error)
 	traceP4Function      func(params ...string) (err error)
-	runPipedP4Function   func(toCmd *shell.Command, params ...string) (output []byte, err error)
-	tracePipedP4Function func(toCmd *shell.Command, params ...string) (err error)
+	runPipedP4Function   func(toCmd shell.Command, params ...string) (output []byte, err error)
+	tracePipedP4Function func(toCmd shell.Command, params ...string) (err error)
 }
 
 // New initializes the p4 implementation based on the provided directory from local clone
@@ -253,7 +253,7 @@ func (*p4Impl) Log(_ func(msg string) bool) (logs vcs.LogItems, err error) {
 // EnablePush sets a flag allowing to turn on/off p4 push operations.
 // Auto-push is always on with p4 due its architecture (all changes occur directly on the server)
 func (*p4Impl) EnablePush(_ bool) {
-	report.PostInfo("Perforce auto-push is always on")
+	// nothing to do here.
 }
 
 // IsPushEnabled indicates if p4 push operations are turned on.
