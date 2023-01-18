@@ -182,7 +182,11 @@ func (*p4Impl) Push() error {
 
 // Pull runs a pull operation ("p4 sync")
 func (p *p4Impl) Pull() error {
-	return p.traceP4("sync")
+	path, err := p.toP4ClientPath(p.baseDir)
+	if err != nil {
+		return err
+	}
+	return p.traceP4("sync", path)
 }
 
 // Stash creates a p4 stash.

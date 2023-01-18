@@ -248,28 +248,41 @@ func Test_p4_push(t *testing.T) {
 
 func Test_p4_pull(t *testing.T) {
 	testFlags := []struct {
-		desc        string
-		dir         string
-		p4Error     error
-		expectError bool
+		desc         string
+		rootDir      string
+		dir          string
+		clientName   string
+		p4Error      error
+		expectError  bool
+		expectedArgs []string
 	}{
 		{
 			"p4 sync command call succeeds",
-			"",
+			filepath.FromSlash("/p4root"),
+			filepath.FromSlash("/p4root/base_dir"),
+			"test_client",
 			nil,
 			false,
+			[]string{"sync", "//test_client/base_dir/..."},
 		},
 		{
 			"p4 sync command call fails",
-			"",
+			filepath.FromSlash("/p4root"),
+			filepath.FromSlash("/p4root/base_dir"),
+			"test_client",
 			errors.New("p4 sync error"),
 			true,
+			[]string{"sync", "//test_client/base_dir/..."},
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			p, _ := newP4Impl(inMemoryDepotInit, "", true)
-			p.traceP4Function = func(_ ...string) (err error) {
+			var actualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, tt.dir, true)
+			p.rootDir = tt.rootDir
+			p.clientName = tt.clientName
+			p.traceP4Function = func(args ...string) (err error) {
+				actualArgs = args[4:]
 				return tt.p4Error
 			}
 			err := p.Pull()
@@ -278,6 +291,8 @@ func Test_p4_pull(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
+
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }
