@@ -71,6 +71,11 @@ func GetP4UserName() string {
 	return getP4ConfigValue("P4USER")
 }
 
+// GetP4ClientName returns the client name retrieved from the local p4 configuration
+func GetP4ClientName() string {
+	return getP4ConfigValue("P4CLIENT")
+}
+
 func getP4ConfigValue(variable string) string {
 	p4Output, err := runP4Command("set", "-q", variable)
 
