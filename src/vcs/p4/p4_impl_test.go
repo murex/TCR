@@ -58,6 +58,11 @@ func Test_p4_working_branch_is_always_empty(t *testing.T) {
 	assert.Equal(t, "", p.GetWorkingBranch())
 }
 
+func Test_p4_is_on_root_branch_is_always_false(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.False(t, p.IsOnRootBranch())
+}
+
 func Test_p4_is_always_remote_enabled(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
 	assert.True(t, p.IsRemoteEnabled())
@@ -66,6 +71,11 @@ func Test_p4_is_always_remote_enabled(t *testing.T) {
 func Test_p4_check_remote_access_is_always_true(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
 	assert.True(t, p.CheckRemoteAccess())
+}
+
+func Test_p4_get_remote_name_is_always_empty(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.Equal(t, "", p.GetRemoteName())
 }
 
 func Test_convert_line(t *testing.T) {

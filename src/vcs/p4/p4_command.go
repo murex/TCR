@@ -76,8 +76,8 @@ func GetP4ClientName() string {
 	return getP4ConfigValue("P4CLIENT")
 }
 
-// GetRootDir retrieves the local root directory for the depot's workspace
-func GetRootDir() (string, error) {
+// GetP4RootDir retrieves the local root directory for the depot's workspace
+func GetP4RootDir() (string, error) {
 	root, err := runP4Command("-F", "%clientRoot%", "-ztag", "info")
 	if err != nil {
 		return "", err
