@@ -35,11 +35,10 @@ type CommandStub struct {
 	TraceAndPipeFunc func(toCmd Command, params ...string) error
 }
 
-// NewCommandStub creates a new shell command stub. Command methods are by
-// default set to the command's real implementation methods. They can be overridden afterwards
-// through setting CommandStub's function values.
-func NewCommandStub(name string, params ...string) *CommandStub {
-	impl := CommandImpl{name: name, params: params}
+// NewCommandStub creates a new shell command stub on top of a command implementation.
+// CommandStub methods are set by default to use the command's real implementation methods.
+// They can be overridden through setting its function attributes.
+func NewCommandStub(impl CommandImpl) *CommandStub {
 	return &CommandStub{
 		impl:             impl,
 		IsInPathFunc:     impl.IsInPath,
@@ -51,17 +50,17 @@ func NewCommandStub(name string, params ...string) *CommandStub {
 	}
 }
 
-// Name returns the command name
+// Name returns the command name (using the real implementation)
 func (stub *CommandStub) Name() string {
 	return stub.impl.Name()
 }
 
-// Params returns the parameters that the command will run with
+// Params returns the parameters that the command will run with (using the real implementation)
 func (stub *CommandStub) Params() []string {
 	return stub.impl.Params()
 }
 
-// IsInPath indicates if the command can be found in the path
+// IsInPath indicates if the command can be found in the path.
 func (stub *CommandStub) IsInPath() bool {
 	return stub.IsInPathFunc()
 }
