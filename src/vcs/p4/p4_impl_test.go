@@ -249,16 +249,19 @@ func Test_p4_push(t *testing.T) {
 func Test_p4_pull(t *testing.T) {
 	testFlags := []struct {
 		desc        string
+		dir         string
 		p4Error     error
 		expectError bool
 	}{
 		{
 			"p4 sync command call succeeds",
+			"",
 			nil,
 			false,
 		},
 		{
 			"p4 sync command call fails",
+			"",
 			errors.New("p4 sync error"),
 			true,
 		},
@@ -411,6 +414,75 @@ func Test_p4_commit(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.p4SubmitExpectedArgs, p4SubmitActualArgs)
+		})
+	}
+}
+
+func Test_convert_to_p4_client_path(t *testing.T) {
+	testFlags := []struct {
+		desc          string
+		rootDir       string
+		clientName    string
+		dir           string
+		expectedError error
+		expected      string
+	}{
+		{
+			"Dir is the root mount directory",
+			"D:\\p4root",
+			"test_client",
+			"D:\\p4root",
+			nil,
+			"//test_client/...",
+		},
+		{
+			"Dir is under the root directory",
+			"D:\\p4root",
+			"test_client",
+			"D:\\p4root\\sub_dir",
+			nil,
+			"//test_client/sub_dir/...",
+		},
+		{
+			"Root Dir has trailing separators",
+			"D:\\p4root\\\\",
+			"test_client",
+			"D:\\p4root\\sub_dir",
+			nil,
+			"//test_client/sub_dir/...",
+		},
+		{
+			"Dir has extra separators",
+			"D:\\p4root",
+			"test_client",
+			"D:\\p4root\\\\sub_dir\\\\",
+			nil,
+			"//test_client/sub_dir/...",
+		},
+		{
+			"Dir is empty",
+			"D:\\p4root",
+			"test_client",
+			"",
+			errors.New("can not convert an empty path"),
+			"",
+		},
+		{
+			"Dir outside the root directory",
+			"D:\\p4root",
+			"test_client",
+			"D:\\somewhereelse\\sub_dir",
+			errors.New("path is outside p4 root directory"),
+			"",
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			p, _ := newP4Impl(inMemoryDepotInit, tt.rootDir, true)
+			p.clientName = tt.clientName
+			clientPath, err := p.toP4ClientPath(tt.dir)
+			assert.Equal(t, tt.expected, clientPath)
+			assert.Equal(t, tt.expectedError, err)
 		})
 	}
 }
