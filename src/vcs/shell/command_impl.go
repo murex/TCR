@@ -34,7 +34,7 @@ type CommandImpl struct {
 	params []string
 }
 
-// NewCommand creates a new shell command instance
+// NewCommand creates a new shell command instance and returns it as a Command interface
 func NewCommand(name string, params ...string) Command {
 	return NewCommandImpl(name, params...)
 }

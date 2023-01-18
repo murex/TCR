@@ -31,8 +31,7 @@ import (
 
 // newP4CommandStub creates a new p4 shell command stub
 func newP4CommandStub() *shell.CommandStub {
-	p4Command := newP4CommandImpl()
-	return shell.NewCommandStub(p4Command.Name(), p4Command.Params()...)
+	return shell.NewCommandStub(*newP4CommandImpl())
 }
 
 // Make sure that shell.NewCommandFunc is back to normal after each test
