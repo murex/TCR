@@ -264,13 +264,17 @@ func (*p4Impl) CheckRemoteAccess() bool {
 // traceP4 runs a p4 command and traces its output.
 // The command is launched from the p4 root directory
 func (p *p4Impl) traceP4(args ...string) error {
-	return p.traceP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
+	return p.traceP4Function(p.buildP4Args(args...)...)
 }
 
 // runP4 calls p4 command in a separate process and returns its output traces
 // The command is launched from the p4 root directory
 func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
-	return p.runP4Function(append([]string{"-d", p.GetRootDir()}, args...)...)
+	return p.runP4Function(p.buildP4Args(args...)...)
+}
+
+func (p *p4Impl) buildP4Args(args ...string) []string {
+	return append([]string{"-d", p.GetRootDir(), "-c", p.clientName}, args...)
 }
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {

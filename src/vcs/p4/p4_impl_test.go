@@ -223,7 +223,7 @@ func Test_p4_diff(t *testing.T) {
 			p, _ := newP4Impl(inMemoryDepotInit, "", true)
 			p.rootDir = ""
 			p.runP4Function = func(args ...string) (output []byte, err error) {
-				actualArgs = args[2:]
+				actualArgs = args[4:]
 				return []byte(tt.p4DiffOutput), tt.p4DiffError
 			}
 			fileDiffs, err := p.Diff()
@@ -324,7 +324,7 @@ func Test_p4_add(t *testing.T) {
 			var actualArgs []string
 			p, _ := newP4Impl(inMemoryDepotInit, "", true)
 			p.traceP4Function = func(args ...string) (err error) {
-				actualArgs = args[2:]
+				actualArgs = args[4:]
 				return tt.p4Error
 			}
 
@@ -403,7 +403,7 @@ func Test_p4_commit(t *testing.T) {
 			}
 			p.traceP4Function = func(args ...string) (err error) {
 				// Stub for the call to "p4 submit -c <cl_number>"
-				p4SubmitActualArgs = args[2:]
+				p4SubmitActualArgs = args[4:]
 				return tt.p4SubmitError
 			}
 
@@ -485,4 +485,26 @@ func Test_convert_to_p4_client_path(t *testing.T) {
 			assert.Equal(t, tt.expectedError, err)
 		})
 	}
+}
+
+func Test_p4_run_command_global_parameters(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "/basedir", true)
+	p.clientName = "test_client"
+	p.runP4Function = func(params ...string) (out []byte, err error) {
+		return []byte(fmt.Sprintf("%v", params)), nil
+	}
+	output, _ := p.runP4()
+	assert.Equal(t, "[-d /basedir -c test_client]", string(output))
+}
+
+func Test_p4_trace_command_global_parameters(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "/basedir", true)
+	p.clientName = "test_client"
+	var trace string
+	p.traceP4Function = func(params ...string) (err error) {
+		trace = fmt.Sprintf("%v", params)
+		return nil
+	}
+	_ = p.traceP4()
+	assert.Equal(t, "[-d /basedir -c test_client]", trace)
 }
