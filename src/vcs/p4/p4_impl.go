@@ -25,6 +25,7 @@ package p4
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
@@ -42,6 +43,7 @@ import (
 type p4Impl struct {
 	baseDir              string
 	rootDir              string
+	clientName           string
 	filesystem           afero.Fs
 	runP4Function        func(params ...string) (output []byte, err error)
 	traceP4Function      func(params ...string) (err error)
@@ -66,19 +68,21 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 
 	// For test purpose only: tests should run and pass without p4 installed and no p4 server available
 	if testFlag {
-		p.rootDir = ""
-		return &p, nil
-	}
+		p.clientName = ""
+		p.rootDir = dir
+	} else {
+		p.clientName = GetP4ClientName()
 
-	err := p.retrieveRootDir()
-	if err != nil {
-		return nil, err
+		var err error
+		p.rootDir, err = GetRootDir()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if !isSubPathOf(p.baseDir, p.GetRootDir()) {
 		return nil, fmt.Errorf("directory %s does not belong to a p4 depot", p.baseDir)
 	}
-
 	return &p, nil
 }
 
@@ -96,17 +100,6 @@ func isSubPathOf(aPath string, refPath string) bool {
 		return true
 	}
 	return false
-}
-
-// retrieveRootDir retrieves the local root directory for the depot's workspace
-func (p *p4Impl) retrieveRootDir() error {
-	root, err := runP4Command("-F", "%clientRoot%", "-ztag", "info")
-	if err != nil {
-		p.rootDir = ""
-		return err
-	}
-	p.rootDir = strings.TrimSuffix(string(root), "\r\n")
-	return nil
 }
 
 // GetRootDir returns the root directory path
@@ -327,4 +320,20 @@ func (p *p4Impl) submitChangeList(cl *changeList) error {
 		return nil
 	}
 	return p.traceP4("submit", "-c", cl.number)
+}
+
+func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
+	cleanDir := filepath.Clean(dir)
+	cleanRoot := filepath.Clean(p.rootDir)
+
+	if dir == "" {
+		return "", errors.New("can not convert an empty path")
+	}
+	if strings.Index(cleanDir, cleanRoot) != 0 {
+		return "", errors.New("path is outside p4 root directory")
+	}
+
+	relativePath := strings.Replace(cleanDir, cleanRoot, "", 1)
+	slashedPath := strings.ReplaceAll(relativePath, "\\", "/")
+	return "//" + p.clientName + slashedPath + "/...", nil
 }
