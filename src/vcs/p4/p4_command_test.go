@@ -172,6 +172,42 @@ func Test_get_p4_username(t *testing.T) {
 	}
 }
 
+func Test_get_p4_client_name(t *testing.T) {
+	tests := []struct {
+		desc        string
+		p4CmdOutput string
+		p4CmdError  error
+		expected    string
+	}{
+		{
+			"p4 command found",
+			"P4CLIENT=tcr_client" + shell.GetAttributes().EOL,
+			nil,
+			"tcr_client",
+		},
+		{
+			"p4 command not found",
+			"",
+			errors.New("p4 command not found"),
+			"not set",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer teardownTest()
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := newP4CommandStub()
+				stub.RunFunc = func(params ...string) (output []byte, err error) {
+					return []byte(test.p4CmdOutput), test.p4CmdError
+				}
+				return stub
+			}
+			assert.Equal(t, test.expected, GetP4ClientName())
+		})
+	}
+}
+
 func Test_get_p4_config_value(t *testing.T) {
 	tests := []struct {
 		desc           string
