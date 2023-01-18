@@ -74,7 +74,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 		p.clientName = GetP4ClientName()
 
 		var err error
-		p.rootDir, err = GetRootDir()
+		p.rootDir, err = GetP4RootDir()
 		if err != nil {
 			return nil, err
 		}
@@ -120,14 +120,12 @@ func (*p4Impl) IsRemoteEnabled() bool {
 }
 
 // GetWorkingBranch returns the current p4 working branch
-// TODO clarify if we need to handle p4 branches
 func (*p4Impl) GetWorkingBranch() string {
 	// For now, always return an empty string
 	return ""
 }
 
 // IsOnRootBranch indicates if p4 is currently on its root branch or not.
-// TODO clarify if we need to handle p4 branches
 func (*p4Impl) IsOnRootBranch() bool {
 	// For now, always return false
 	return false
@@ -160,17 +158,15 @@ func (p *p4Impl) Commit(_ bool, messages ...string) error {
 }
 
 // Restore restores to last commit for the provided path.
-// TODO: p4 revert -c
+// TODO: VCS Restore - p4 revert -c
 func (*p4Impl) Restore(_ string) error {
-	//TODO implement me
-	panic("implement me")
+	return errors.New("VCS restore operation not yet available for p4")
 }
 
 // Revert runs a p4 revert operation.
-// TODO: p4 revert
+// TODO: VCS Revert - p4 revert
 func (*p4Impl) Revert() error {
-	//TODO implement me
-	panic("implement me")
+	return errors.New("VCS revert operation not yet available for p4")
 }
 
 // Push runs a push operation.
@@ -190,18 +186,16 @@ func (p *p4Impl) Pull() error {
 }
 
 // Stash creates a p4 stash.
-// TODO: ???
+// TODO: VCS Stash - p4 ???
 func (*p4Impl) Stash(_ string) error {
-	//TODO implement me
-	panic("implement me")
+	return errors.New("VCS stash operation not yet available for p4")
 }
 
 // UnStash applies a p4 stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
 // command is executed under the hood.
-// TODO: ???
+// TODO: VCS UnStash - p4 ???
 func (*p4Impl) UnStash(_ bool) error {
-	//TODO implement me
-	panic("implement me")
+	return errors.New("VCS unstash operation not yet available for p4")
 }
 
 // Diff returns the list of files modified since last commit with diff info for each file
@@ -241,10 +235,9 @@ func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
 
 // Log returns the list of p4 log items compliant with the provided msgFilter.
 // When no msgFilter is provided, returns all p4 log items unfiltered.
-// TODO:  p4 changes ./...
+// TODO: VCS Log - p4 changes ./...
 func (*p4Impl) Log(_ func(msg string) bool) (logs vcs.LogItems, err error) {
-	//TODO implement me
-	panic("implement me")
+	return nil, errors.New("VCS log operation not yet available for p4")
 }
 
 // EnablePush sets a flag allowing to turn on/off p4 push operations.
@@ -261,7 +254,6 @@ func (*p4Impl) IsPushEnabled() bool {
 
 // CheckRemoteAccess returns true if p4 remote can be accessed.
 func (*p4Impl) CheckRemoteAccess() bool {
-	// TODO check if anything should be done here. Returning true for now
 	return true
 }
 
