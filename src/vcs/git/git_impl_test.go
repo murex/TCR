@@ -742,3 +742,25 @@ func Test_is_on_root_branch(t *testing.T) {
 		})
 	}
 }
+
+func Test_git_run_command_global_parameters(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"))
+	var cmdParams []string
+	g.runGitFunction = func(params ...string) (out []byte, err error) {
+		cmdParams = params
+		return nil, nil
+	}
+	_, _ = g.runGit()
+	assert.Equal(t, []string{"-C", filepath.FromSlash("/")}, cmdParams)
+}
+
+func Test_git_trace_command_global_parameters(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"))
+	var cmdParams []string
+	g.traceGitFunction = func(params ...string) (err error) {
+		cmdParams = params
+		return nil
+	}
+	_ = g.traceGit()
+	assert.Equal(t, []string{"-C", filepath.FromSlash("/")}, cmdParams)
+}
