@@ -29,8 +29,16 @@ import (
 	"strings"
 )
 
+func init() {
+	shell.NewCommandFunc = shell.NewCommand
+}
+
 func newGitCommand() shell.Command {
 	return shell.NewCommandFunc("git")
+}
+
+func newGitCommandImpl(params ...string) *shell.CommandImpl {
+	return shell.NewCommandImpl("git", params...)
 }
 
 // IsGitCommandAvailable indicates if git command is available on local machine
@@ -61,7 +69,7 @@ func GetGitUserName() string {
 
 func getGitConfigValue(variable string) string {
 	gitOutput, err := runGitCommand("config", variable)
-	if err != nil || gitOutput == nil || len(gitOutput) == 0 {
+	if err != nil || gitOutput == nil || len(bytes.Trim(gitOutput, "\r\n")) == 0 {
 		return "not set"
 	}
 	scanner := bufio.NewScanner(bytes.NewReader(gitOutput))

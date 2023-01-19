@@ -386,11 +386,15 @@ func (g *gitImpl) CheckRemoteAccess() bool {
 // traceGit runs a git command and traces its output.
 // The command is launched from the git root directory
 func (g *gitImpl) traceGit(args ...string) error {
-	return g.traceGitFunction(append([]string{"-C", g.GetRootDir()}, args...)...)
+	return g.traceGitFunction(g.buildGitArgs(args...)...)
 }
 
 // runGit calls git command in a separate process and returns its output traces
 // The command is launched from the git root directory
 func (g *gitImpl) runGit(args ...string) (output []byte, err error) {
-	return g.runGitFunction(append([]string{"-C", g.GetRootDir()}, args...)...)
+	return g.runGitFunction(g.buildGitArgs(args...)...)
+}
+
+func (g *gitImpl) buildGitArgs(args ...string) []string {
+	return append([]string{"-C", g.GetRootDir()}, args...)
 }
