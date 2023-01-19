@@ -513,23 +513,25 @@ func Test_convert_to_p4_client_path(t *testing.T) {
 }
 
 func Test_p4_run_command_global_parameters(t *testing.T) {
-	p, _ := newP4Impl(inMemoryDepotInit, "/basedir", true)
+	p, _ := newP4Impl(inMemoryDepotInit, filepath.FromSlash("/basedir"), true)
 	p.clientName = "test_client"
+	var cmdParams []string
 	p.runP4Function = func(params ...string) (out []byte, err error) {
-		return []byte(fmt.Sprintf("%v", params)), nil
+		cmdParams = params
+		return nil, nil
 	}
-	output, _ := p.runP4()
-	assert.Equal(t, "[-d /basedir -c test_client]", string(output))
+	_, _ = p.runP4()
+	assert.Equal(t, []string{"-d", filepath.FromSlash("/basedir"), "-c", "test_client"}, cmdParams)
 }
 
 func Test_p4_trace_command_global_parameters(t *testing.T) {
-	p, _ := newP4Impl(inMemoryDepotInit, "/basedir", true)
+	p, _ := newP4Impl(inMemoryDepotInit, filepath.FromSlash("/basedir"), true)
 	p.clientName = "test_client"
-	var trace string
+	var cmdParams []string
 	p.traceP4Function = func(params ...string) (err error) {
-		trace = fmt.Sprintf("%v", params)
+		cmdParams = params
 		return nil
 	}
 	_ = p.traceP4()
-	assert.Equal(t, "[-d /basedir -c test_client]", trace)
+	assert.Equal(t, []string{"-d", filepath.FromSlash("/basedir"), "-c", "test_client"}, cmdParams)
 }
