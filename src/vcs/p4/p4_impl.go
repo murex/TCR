@@ -66,13 +66,12 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 		tracePipedP4Function: tracePipedP4Command,
 	}
 
-	// For test purpose only: tests should run and pass without p4 installed and no p4 server available
 	if testFlag {
+		// For test purpose only: tests should run and pass without having p4 installed and with no p4 server available
 		p.clientName = ""
 		p.rootDir = dir
 	} else {
 		p.clientName = GetP4ClientName()
-
 		var err error
 		p.rootDir, err = GetP4RootDir()
 		if err != nil {
@@ -317,7 +316,7 @@ func convertLine(charMap *charmap.Charmap, message string) string {
 func (p *p4Impl) submitChangeList(cl *changeList) error {
 	if cl == nil {
 		report.PostWarning("Empty changelist!")
-		return nil
+		return errors.New("empty p4 changelist")
 	}
 	return p.traceP4("submit", "-c", cl.number)
 }

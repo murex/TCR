@@ -284,6 +284,15 @@ func Test_p4_pull(t *testing.T) {
 			true,
 			[]string{"sync", "//test_client/base_dir/..."},
 		},
+		{
+			"base directory is empty",
+			filepath.FromSlash("/p4root"),
+			"",
+			"test_client",
+			nil,
+			true,
+			nil,
+		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
@@ -443,6 +452,54 @@ func Test_p4_commit(t *testing.T) {
 	}
 }
 
+func Test_p4_submit(t *testing.T) {
+	testFlags := []struct {
+		desc                 string
+		p4Changelist         *changeList
+		p4SubmitError        error
+		p4SubmitExpectedArgs []string
+		expectError          bool
+	}{
+		{
+			"p4 submit command call succeeds",
+			&changeList{number: "1234567"},
+			nil, []string{"submit", "-c", "1234567"},
+			false,
+		},
+		{
+			"p4 submit command call fails",
+			&changeList{number: "1234567"},
+			errors.New("p4 submit error"), []string{"submit", "-c", "1234567"},
+			true,
+		},
+		{
+			"empty changelist",
+			nil,
+			errors.New("p4 submit error"), nil,
+			true,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var p4SubmitActualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.traceP4Function = func(args ...string) (err error) {
+				// Stub for the call to "p4 submit -c <cl_number>"
+				p4SubmitActualArgs = args[4:]
+				return tt.p4SubmitError
+			}
+
+			err := p.submitChangeList(tt.p4Changelist)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.p4SubmitExpectedArgs, p4SubmitActualArgs)
+		})
+	}
+}
+
 func Test_convert_to_p4_client_path(t *testing.T) {
 	testFlags := []struct {
 		desc          string
@@ -496,7 +553,7 @@ func Test_convert_to_p4_client_path(t *testing.T) {
 			"Dir outside the root directory",
 			"D:\\p4root",
 			"test_client",
-			"D:\\somewhereelse\\sub_dir",
+			"D:\\somewhere_else\\sub_dir",
 			errors.New("path is outside p4 root directory"),
 			"",
 		},
