@@ -26,6 +26,7 @@ import (
 	"errors"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
+	"path/filepath"
 	"testing"
 )
 
@@ -132,6 +133,58 @@ Rev. P4/NTX64/2022.2/2369846 (2022/11/14).
 				return stub
 			}
 			assert.Equal(t, test.expected, GetP4CommandVersion())
+		})
+	}
+}
+
+func Test_get_p4_root_dir(t *testing.T) {
+	tests := []struct {
+		desc          string
+		p4CmdOutput   string
+		p4CmdError    error
+		expectError   bool
+		expectedValue string
+	}{
+		{
+			"p4 command found and rootDir field set",
+			filepath.ToSlash("/root-dir") + shell.GetAttributes().EOL,
+			nil,
+			false,
+			filepath.ToSlash("/root-dir"),
+		},
+		{
+			"p4 command found and rootDir field not set",
+			shell.GetAttributes().EOL,
+			nil,
+			true,
+			filepath.ToSlash(""),
+		},
+		{
+			"p4 command not found",
+			"",
+			errors.New("p4 command not found"),
+			true,
+			"",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer teardownTest()
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := newP4CommandStub()
+				stub.RunFunc = func(params ...string) (output []byte, err error) {
+					return []byte(test.p4CmdOutput), test.p4CmdError
+				}
+				return stub
+			}
+			dir, err := GetP4RootDir()
+			if test.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, test.expectedValue, dir)
 		})
 	}
 }
@@ -249,7 +302,7 @@ func Test_get_p4_config_value(t *testing.T) {
 				}
 				return stub
 			}
-			assert.Equal(t, test.expected, getP4ConfigValue(test.p4VariableName))
+			assert.Equal(t, test.expected, getP4SetValue(test.p4VariableName))
 		})
 	}
 }

@@ -25,6 +25,7 @@ package p4
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/murex/tcr/vcs/shell"
 	"strings"
 )
@@ -68,26 +69,34 @@ func GetP4CommandVersion() string {
 
 // GetP4UserName returns the user name retrieved from local p4 configuration
 func GetP4UserName() string {
-	return getP4ConfigValue("P4USER")
+	return getP4SetValue("P4USER")
 }
 
 // GetP4ClientName returns the client name retrieved from the local p4 configuration
 func GetP4ClientName() string {
-	return getP4ConfigValue("P4CLIENT")
+	return getP4SetValue("P4CLIENT")
 }
 
 // GetP4RootDir retrieves the local root directory for the depot's workspace
 func GetP4RootDir() (string, error) {
-	root, err := runP4Command("-F", "%clientRoot%", "-ztag", "info")
+	return getP4InfoValue("clientRoot")
+}
+
+func getP4InfoValue(key string) (value string, err error) {
+	var output []byte
+	output, err = runP4Command("-F", "%"+key+"%", "-ztag", "info")
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimSuffix(string(root), "\r\n"), nil
+	value = strings.TrimSuffix(string(output), "\r\n")
+	if value == "" {
+		return "", fmt.Errorf("p4 info value for %s not found", key)
+	}
+	return value, nil
 }
 
-func getP4ConfigValue(variable string) string {
+func getP4SetValue(variable string) string {
 	p4Output, err := runP4Command("set", "-q", variable)
-
 	if err != nil || p4Output == nil || len(bytes.Trim(p4Output, "\r\n")) == 0 {
 		return "not set"
 	}
