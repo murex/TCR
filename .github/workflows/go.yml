@@ -28,6 +28,7 @@ jobs:
         uses: fkirc/skip-duplicate-actions@v5.3.0
 
       - name: Set up Go
+        shell: bash
         uses: actions/setup-go@v3
         with:
           go-version: 1.19
@@ -40,16 +41,19 @@ jobs:
           check-latest: true
 
       - name: Install gotestsum
+        shell: bash
         run: |
           go install gotest.tools/gotestsum@latest
 
       - name: Test tcr module
+        shell: bash
         run: |
           cd src
           make tidy
           make test
 
       - name: Send tcr coverage to coveralls.io
+        shell: bash
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: shogo82148/actions-goveralls@v1
         with:
@@ -59,12 +63,14 @@ jobs:
           parallel: true
 
       - name: Build tcr application
+        shell: bash
         run: |
           cd src
           go build -v ./...
 
       # This step must be executed after the test steps so that coverage data is sent to SonarCloud
       - name: SonarCloud Scan
+        shell: bash
         if: ${{ matrix.os == 'ubuntu-latest' && github.actor != 'dependabot[bot]' }}
         uses: SonarSource/sonarcloud-github-action@master
         env:
