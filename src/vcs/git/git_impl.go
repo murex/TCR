@@ -376,7 +376,7 @@ func (g *gitImpl) IsPushEnabled() bool {
 // checking the return value of "git push --dry-run". This very likely does not guarantee that
 // git remote commands will work, but already gives an indication.
 func (g *gitImpl) CheckRemoteAccess() bool {
-	if g.IsRemoteEnabled() {
+	if g.remoteName != "" && g.workingBranch != "" && g.IsRemoteEnabled() {
 		_, err := g.runGit("push", "--dry-run", g.GetRemoteName(), g.GetWorkingBranch())
 		return err == nil
 	}

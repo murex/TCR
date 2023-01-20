@@ -723,6 +723,69 @@ func Test_nothing_to_commit(t *testing.T) {
 	}
 }
 
+func Test_check_remote_access(t *testing.T) {
+	testFlags := []struct {
+		desc           string
+		remoteEnabled  bool
+		remoteName     string
+		branchName     string
+		gitError       error
+		expectedResult bool
+		expectedArgs   []string
+	}{
+		{
+			"git push dry-run command call succeeds",
+			true, "origin", "main",
+			nil,
+			true,
+			[]string{"push", "--dry-run", "origin", "main"},
+		},
+		{
+			"git push dry-run command call fails",
+			true, "origin", "main",
+			errors.New("git push --dry-run error"),
+			false,
+			[]string{"push", "--dry-run", "origin", "main"},
+		},
+		{
+			"git remote is disabled",
+			false, "origin", "main",
+			nil,
+			false,
+			nil,
+		},
+		{
+			"git remote is not set",
+			true, "", "main",
+			nil,
+			false,
+			nil,
+		},
+		{
+			"git branch is not set",
+			true, "origin", "",
+			nil,
+			false,
+			nil,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.remoteEnabled = tt.remoteEnabled
+			g.remoteName = tt.remoteName
+			g.workingBranch = tt.branchName
+			g.runGitFunction = func(args ...string) (out []byte, err error) {
+				actualArgs = args[2:]
+				return nil, tt.gitError
+			}
+			assert.Equal(t, tt.expectedResult, g.CheckRemoteAccess())
+			assert.Equal(t, tt.expectedArgs, actualArgs)
+		})
+	}
+}
+
 func Test_is_on_root_branch(t *testing.T) {
 	testFlags := []struct {
 		desc     string
