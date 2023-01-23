@@ -88,7 +88,7 @@ func getP4InfoValue(key string) (value string, err error) {
 	if err != nil {
 		return "", err
 	}
-	value = strings.TrimSuffix(string(output), "\r\n")
+	value = strings.Trim(string(output), "\r\n")
 	if value == "" {
 		return "", fmt.Errorf("p4 info value for %s not found", key)
 	}
