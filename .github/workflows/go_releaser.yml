@@ -4,10 +4,15 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
+    inputs:
 
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v3

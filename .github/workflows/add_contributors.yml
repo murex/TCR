@@ -5,10 +5,15 @@ on:
   schedule:
     # once a week (Saturday 5:30)
     - cron: '30 5 * * 6'
+  workflow_dispatch:
+    inputs:
 
 jobs:
   add-contributors:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v3
       - uses: BobAnkh/add-contributors@master
