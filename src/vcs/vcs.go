@@ -30,6 +30,8 @@ const (
 // Interface provides the interface that a VCS implementation must satisfy for TCR engine to be
 // able to interact with it
 type Interface interface {
+	Name() string
+	SessionSummary() string
 	GetRootDir() string
 	GetRemoteName() string
 	GetWorkingBranch() string

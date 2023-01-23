@@ -24,11 +24,12 @@ package engine
 
 // SessionInfo contains TCR session information. Used mainly to exchange information between TCR engine and UI
 type SessionInfo struct {
-	BaseDir       string
-	WorkDir       string
-	LanguageName  string
-	ToolchainName string
-	AutoPush      bool
-	CommitOnFail  bool
-	BranchName    string
+	BaseDir           string
+	WorkDir           string
+	LanguageName      string
+	ToolchainName     string
+	VCSName           string
+	VCSSessionSummary string
+	CommitOnFail      bool
+	GitAutoPush       bool
 }

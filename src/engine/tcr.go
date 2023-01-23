@@ -181,7 +181,7 @@ func (*TCREngine) RunCheck(p params.Params) {
 // PrintLog prints the TCR VCS commit history
 func (tcr *TCREngine) PrintLog(p params.Params) {
 	tcrLogs := tcr.queryVCSLogs(p)
-	report.PostInfo("Printing TCR log for branch ", tcr.vcs.GetWorkingBranch())
+	report.PostInfo("Printing TCR log for ", tcr.vcs.SessionSummary())
 	for _, log := range tcrLogs {
 		report.PostTitle("commit:    ", log.Hash)
 		report.PostInfo("timestamp: ", log.Timestamp)
@@ -194,7 +194,7 @@ func (tcr *TCREngine) PrintLog(p params.Params) {
 // PrintStats prints the TCR execution stats
 func (tcr *TCREngine) PrintStats(p params.Params) {
 	tcrLogs := tcr.queryVCSLogs(p)
-	stats.Print(tcr.vcs.GetWorkingBranch(), tcrLogsToEvents(tcrLogs))
+	stats.Print(tcr.vcs.SessionSummary(), tcrLogsToEvents(tcrLogs))
 }
 
 func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
@@ -214,7 +214,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 		report.PostError(err)
 	}
 	if len(logs) == 0 {
-		report.PostWarning("no TCR commit found in branch ", tcr.vcs.GetWorkingBranch(), "'s history")
+		report.PostWarning("no TCR commit found in ", tcr.vcs.SessionSummary(), "'s history")
 	}
 	return logs
 }
@@ -252,9 +252,9 @@ func (tcr *TCREngine) initVCS(vcsName string) {
 
 	var err error
 	switch strings.ToLower(vcsName) {
-	case "git":
+	case git.Name:
 		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
-	case "p4", "perforce":
+	case p4.Name:
 		tcr.vcs, err = p4.New(tcr.sourceTree.GetBaseDir())
 	default:
 		tcr.handleError(fmt.Errorf("VCS not supported: %s", vcsName), true, status.ConfigError)
@@ -277,7 +277,7 @@ func (tcr *TCREngine) setVCS(vcsInterface vcs.Interface) {
 func (tcr *TCREngine) warnIfOnRootBranch(interactive bool) {
 	if tcr.vcs.IsOnRootBranch() {
 		message := "Running " + settings.ApplicationName +
-			" on branch \"" + tcr.vcs.GetWorkingBranch() + "\" is not recommended"
+			" on " + tcr.vcs.SessionSummary() + " is not recommended"
 		if interactive {
 			if !tcr.ui.Confirm(message, false) {
 				tcr.Quit()
@@ -457,7 +457,7 @@ func (tcr *TCREngine) test() (result toolchain.TestCommandResult) {
 }
 
 func (tcr *TCREngine) commit(event events.TCREvent) {
-	report.PostInfo("Committing changes on branch ", tcr.vcs.GetWorkingBranch())
+	report.PostInfo("Committing changes on ", tcr.vcs.SessionSummary())
 	var err error
 	err = tcr.vcs.Add()
 	tcr.handleError(err, false, status.VCSError)
@@ -550,13 +550,14 @@ func (tcr *TCREngine) revertFile(file string) error {
 // Used mainly by the user interface packages to retrieve and display this information
 func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 	return SessionInfo{
-		BaseDir:       tcr.sourceTree.GetBaseDir(),
-		WorkDir:       toolchain.GetWorkDir(),
-		LanguageName:  tcr.language.GetName(),
-		ToolchainName: tcr.toolchain.GetName(),
-		AutoPush:      tcr.vcs.IsPushEnabled(),
-		CommitOnFail:  tcr.commitOnFail,
-		BranchName:    tcr.vcs.GetWorkingBranch(),
+		BaseDir:           tcr.sourceTree.GetBaseDir(),
+		WorkDir:           toolchain.GetWorkDir(),
+		LanguageName:      tcr.language.GetName(),
+		ToolchainName:     tcr.toolchain.GetName(),
+		VCSName:           tcr.vcs.Name(),
+		VCSSessionSummary: tcr.vcs.SessionSummary(),
+		GitAutoPush:       tcr.vcs.IsPushEnabled(),
+		CommitOnFail:      tcr.commitOnFail,
 	}
 }
 

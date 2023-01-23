@@ -65,13 +65,14 @@ func NewFakeTCREngine() *FakeTCREngine {
 	return &FakeTCREngine{
 		returnCode: 0,
 		info: &SessionInfo{
-			BaseDir:       "fake",
-			WorkDir:       "fake",
-			LanguageName:  "fake",
-			ToolchainName: "fake",
-			AutoPush:      false,
-			CommitOnFail:  false,
-			BranchName:    "fake",
+			BaseDir:           "fake",
+			WorkDir:           "fake",
+			LanguageName:      "fake",
+			ToolchainName:     "fake",
+			VCSName:           "fake",
+			VCSSessionSummary: "VCS session \"fake\"",
+			GitAutoPush:       false,
+			CommitOnFail:      false,
 		},
 	}
 }
