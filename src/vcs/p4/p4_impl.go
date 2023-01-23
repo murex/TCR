@@ -39,6 +39,9 @@ import (
 	"strings"
 )
 
+// Name provides the name for this VCS implementation
+const Name = "p4"
+
 // p4Impl provides the implementation of the Perforce interface
 type p4Impl struct {
 	baseDir              string
@@ -68,7 +71,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 
 	if testFlag {
 		// For test purpose only: tests should run and pass without having p4 installed and with no p4 server available
-		p.clientName = ""
+		p.clientName = "test"
 		p.rootDir = dir
 	} else {
 		p.clientName = GetP4ClientName()
@@ -83,6 +86,16 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 		return nil, fmt.Errorf("directory %s does not belong to a p4 depot", p.baseDir)
 	}
 	return &p, nil
+}
+
+// Name returns VCS name
+func (*p4Impl) Name() string {
+	return Name
+}
+
+// SessionSummary provides a short description related to current VCS session summary
+func (p *p4Impl) SessionSummary() string {
+	return fmt.Sprintf("%s client \"%s\"", p.Name(), p.clientName)
 }
 
 // plainOpen is the regular function used to open a p4 depot

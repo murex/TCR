@@ -102,6 +102,14 @@ func NewFake(settings FakeSettings) (*Fake, error) {
 	return &Fake{impl: impl, settings: settings}, err
 }
 
+func (gf *Fake) Name() string {
+	return "fake-vcs"
+}
+
+func (gf *Fake) SessionSummary() string {
+	return "VCS session \"fake\""
+}
+
 // GetLastCommand returns the last command called
 func (gf *Fake) GetLastCommand() Command {
 	return gf.lastCommand

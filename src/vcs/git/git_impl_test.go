@@ -40,6 +40,16 @@ func slowTestTag(t *testing.T) {
 	}
 }
 
+func Test_get_vcs_name(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, "")
+	assert.Equal(t, "git", g.Name())
+}
+
+func Test_get_vcs_session_summary(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, "")
+	assert.Equal(t, "git branch \"master\"", g.SessionSummary())
+}
+
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
 	assert.Zero(t, g.IsPushEnabled())
@@ -61,6 +71,7 @@ func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
 
 func Test_can_retrieve_working_branch_on_in_memory_repo(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
+	// go-git's in memory repository default branch is "master"
 	assert.Equal(t, "master", g.GetWorkingBranch())
 }
 

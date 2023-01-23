@@ -439,7 +439,7 @@ func Test_set_auto_push(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
 			tcr.SetAutoPush(tt.state)
-			assert.Equal(t, tt.state, tcr.GetSessionInfo().AutoPush)
+			assert.Equal(t, tt.state, tcr.GetSessionInfo().GitAutoPush)
 		})
 	}
 }
@@ -497,23 +497,24 @@ func Test_vcs_push_highlights_errors(t *testing.T) {
 func Test_toggle_auto_push(t *testing.T) {
 	tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
 	tcr.SetAutoPush(false)
-	assert.Equal(t, false, tcr.GetSessionInfo().AutoPush)
+	assert.Equal(t, false, tcr.GetSessionInfo().GitAutoPush)
 	tcr.ToggleAutoPush()
-	assert.Equal(t, true, tcr.GetSessionInfo().AutoPush)
+	assert.Equal(t, true, tcr.GetSessionInfo().GitAutoPush)
 	tcr.ToggleAutoPush()
-	assert.Equal(t, false, tcr.GetSessionInfo().AutoPush)
+	assert.Equal(t, false, tcr.GetSessionInfo().GitAutoPush)
 }
 
 func Test_get_session_info(t *testing.T) {
 	tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
 	currentDir, _ := os.Getwd()
 	expected := SessionInfo{
-		BaseDir:       currentDir,
-		WorkDir:       currentDir,
-		LanguageName:  "fake-language",
-		ToolchainName: "fake-toolchain",
-		AutoPush:      false,
-		BranchName:    "master",
+		BaseDir:           currentDir,
+		WorkDir:           currentDir,
+		LanguageName:      "fake-language",
+		ToolchainName:     "fake-toolchain",
+		VCSName:           "fake-vcs",
+		VCSSessionSummary: "VCS session \"fake\"",
+		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())
 }
@@ -637,7 +638,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "warning when no record found",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "no TCR commit found in branch") == 0
+				return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "no TCR commit found in ") == 0
 			},
 			logItems:        nil,
 			expectedMatches: 1,

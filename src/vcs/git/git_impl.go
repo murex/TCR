@@ -40,6 +40,9 @@ import (
 	"strings"
 )
 
+// Name provides the name for this VCS implementation
+const Name = "git"
+
 // DefaultRemoteName is the alias used by default for the git remote repository
 const DefaultRemoteName = "origin"
 
@@ -91,6 +94,16 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 	}
 
 	return &g, err
+}
+
+// Name returns VCS name
+func (*gitImpl) Name() string {
+	return Name
+}
+
+// SessionSummary provides a short description related to current VCS session summary
+func (g *gitImpl) SessionSummary() string {
+	return fmt.Sprintf("%s branch \"%s\"", g.Name(), g.GetWorkingBranch())
 }
 
 // plainOpen is the regular function used to open a repository

@@ -33,6 +33,16 @@ import (
 	"testing"
 )
 
+func Test_get_vcs_name(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.Equal(t, "p4", p.Name())
+}
+
+func Test_get_vcs_session_summary(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.Equal(t, "p4 client \"test\"", p.SessionSummary())
+}
+
 func Test_p4_auto_push_is_always_enabled(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
 	assert.True(t, p.IsPushEnabled())

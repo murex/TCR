@@ -274,12 +274,10 @@ func (term *TerminalUI) ShowSessionInfo() {
 	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 
 	autoPush := "disabled"
-	if info.AutoPush {
+	if info.GitAutoPush {
 		autoPush = "enabled"
 	}
-	term.ReportInfo(false,
-		"Running on branch \"", info.BranchName,
-		"\" with auto-push ", autoPush)
+	term.ReportInfo(false, "Running on ", info.VCSSessionSummary, " with auto-push ", autoPush)
 }
 
 // Confirm asks the user for confirmation

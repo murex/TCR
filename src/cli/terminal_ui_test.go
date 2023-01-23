@@ -471,7 +471,7 @@ func Test_show_session_info(t *testing.T) {
 	expected := asCyanTraceWithSeparatorLine("Base Directory: fake") +
 		asCyanTrace("Work Directory: fake") +
 		asCyanTrace("Language=fake, Toolchain=fake") +
-		asCyanTrace("Running on branch \"fake\" with auto-push disabled")
+		asCyanTrace("Running on VCS session \"fake\" with auto-push disabled")
 
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
 		term, _, _ := terminalSetup(*params.AParamSet())
