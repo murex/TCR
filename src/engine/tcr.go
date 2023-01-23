@@ -23,7 +23,6 @@ SOFTWARE.
 package engine
 
 import (
-	"fmt"
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -39,8 +38,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
-	"github.com/murex/tcr/vcs/git"
-	"github.com/murex/tcr/vcs/p4"
+	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
 	"os"
 	"strings"
@@ -249,18 +247,14 @@ func (tcr *TCREngine) initVCS(vcsName string) {
 	if tcr.vcs != nil {
 		return // VCS should be initialized only once
 	}
-
 	var err error
-	switch strings.ToLower(vcsName) {
-	case git.Name:
-		tcr.vcs, err = git.New(tcr.sourceTree.GetBaseDir())
-	case p4.Name:
-		tcr.vcs, err = p4.New(tcr.sourceTree.GetBaseDir())
+	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir())
+	switch err.(type) {
+	case *factory.UnsupportedVCSError:
+		tcr.handleError(err, true, status.ConfigError)
 	default:
-		tcr.handleError(fmt.Errorf("VCS not supported: %s", vcsName), true, status.ConfigError)
-		return
+		tcr.handleError(err, true, status.VCSError)
 	}
-	tcr.handleError(err, true, status.VCSError)
 }
 
 func (tcr *TCREngine) initSourceTree(p params.Params) {
