@@ -28,6 +28,15 @@ import (
 	"testing"
 )
 
+func Test_supported_vcs(t *testing.T) {
+	for _, name := range []string{"git", "p4"} {
+		t.Run(name, func(t *testing.T) {
+			_, err := InitVCS(name, "")
+			assert.NotEqual(t, reflect.TypeOf(&UnsupportedVCSError{}), reflect.TypeOf(err))
+		})
+	}
+}
+
 func Test_vcs_factory_returns_an_error_when_vcs_is_not_supported(t *testing.T) {
 	v, err := InitVCS("unknown-vcs", "")
 	assert.IsType(t, &UnsupportedVCSError{}, err)
@@ -37,14 +46,4 @@ func Test_vcs_factory_returns_an_error_when_vcs_is_not_supported(t *testing.T) {
 func Test_unsupported_vcs_message_format(t *testing.T) {
 	err := UnsupportedVCSError{"some-vcs"}
 	assert.Equal(t, "VCS not supported: \"some-vcs\"", err.Error())
-}
-
-func Test_vcs_factory_supports_git(t *testing.T) {
-	_, err := InitVCS("git", "")
-	assert.NotEqual(t, reflect.TypeOf(&UnsupportedVCSError{}), reflect.TypeOf(err))
-}
-
-func Test_vcs_factory_supports_p4(t *testing.T) {
-	_, err := InitVCS("p4", "")
-	assert.NotEqual(t, reflect.TypeOf(&UnsupportedVCSError{}), reflect.TypeOf(err))
 }
