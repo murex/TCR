@@ -41,6 +41,7 @@ type TerminalUI struct {
 	tcr              engine.TCRInterface
 	params           params.Params
 	desktop          *desktop.Desktop
+	mainMenu         *menu
 }
 
 const (
@@ -65,6 +66,7 @@ const (
 func New(p params.Params, tcr engine.TCRInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
+	term.mainMenu = term.initMainMenu()
 	term.MuteDesktopNotifications(false)
 	term.StartReporting()
 	StartInterruptHandler()
@@ -104,46 +106,46 @@ func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
 }
 
 // ReportSimple reports simple messages
-func (*TerminalUI) ReportSimple(_ bool, a ...interface{}) {
+func (*TerminalUI) ReportSimple(_ bool, a ...any) {
 	printUntouched(a...)
 }
 
 // ReportInfo reports info messages
-func (*TerminalUI) ReportInfo(_ bool, a ...interface{}) {
+func (*TerminalUI) ReportInfo(_ bool, a ...any) {
 	printInCyan(a...)
 }
 
 // ReportTitle reports title messages
-func (*TerminalUI) ReportTitle(_ bool, a ...interface{}) {
+func (*TerminalUI) ReportTitle(_ bool, a ...any) {
 	printHorizontalLine()
 	printInCyan(a...)
 }
 
 // ReportTimer reports timer messages
-func (term *TerminalUI) ReportTimer(emphasis bool, a ...interface{}) {
+func (term *TerminalUI) ReportTimer(emphasis bool, a ...any) {
 	printInGreen(a...)
 	term.notifyOnEmphasis(emphasis, "⏳", a...)
 }
 
 // ReportSuccess reports success messages
-func (term *TerminalUI) ReportSuccess(emphasis bool, a ...interface{}) {
+func (term *TerminalUI) ReportSuccess(emphasis bool, a ...any) {
 	printInGreen(a...)
 	term.notifyOnEmphasis(emphasis, "🟢", a...)
 }
 
 // ReportWarning reports warning messages
-func (term *TerminalUI) ReportWarning(emphasis bool, a ...interface{}) {
+func (term *TerminalUI) ReportWarning(emphasis bool, a ...any) {
 	printInYellow(a...)
 	term.notifyOnEmphasis(emphasis, "🔶", a...)
 }
 
 // ReportError reports error messages
-func (term *TerminalUI) ReportError(emphasis bool, a ...interface{}) {
+func (term *TerminalUI) ReportError(emphasis bool, a ...any) {
 	printInRed(a...)
 	term.notifyOnEmphasis(emphasis, "🟥", a...)
 }
 
-func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...interface{}) {
+func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...any) {
 	if emphasis {
 		err := term.desktop.ShowNotification(desktop.NormalLevel, emoji+" "+settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
@@ -152,7 +154,7 @@ func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...inter
 	}
 }
 
-func (term *TerminalUI) mainMenu() {
+func (term *TerminalUI) enterMainMenu() { //nolint:revive
 	term.whatShallWeDo()
 
 	keyboardInput := make([]byte, 1)
@@ -162,37 +164,18 @@ func (term *TerminalUI) mainMenu() {
 			term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
 		}
 
-		switch keyboardInput[0] {
-		case '?':
-			term.listMainMenuOptions("Available Options:")
-		case 'd', 'D':
-			term.startAs(role.Driver{})
-			term.whatShallWeDo()
-		case 'n', 'N':
-			term.startAs(role.Navigator{})
-			term.whatShallWeDo()
-		case 'p', 'P':
-			term.tcr.ToggleAutoPush()
-			term.ShowSessionInfo()
-			term.whatShallWeDo()
-		case 'l', 'L':
-			term.vcsPull()
-			term.whatShallWeDo()
-		case 's', 'S':
-			term.vcsPush()
-			term.whatShallWeDo()
-		case 'q', 'Q':
-			Restore()
-			term.tcr.Quit()
-			// The return statement below is never reached when running the application
-			// due to the call to os.Exit() done in tcr.Quit(). We still want to keep
-			// it here for running the tests, so that we're able to get out of the infinite loop
-			// even when tcr.Quit() is faked.
-			return
-		case enterKey:
+		var matching bool
+		for _, option := range term.mainMenu.getOptions() {
+			if !matching && option.matchShortcut(keyboardInput[0]) {
+				matching = true
+				_ = option.run()
+				if option.quitOption {
+					return
+				}
+			}
+		}
+		if !matching && keyboardInput[0] != enterKey {
 			// We ignore enter key press
-			continue
-		default:
 			term.ReportWarning(false, "No action is mapped to shortcut '", string(keyboardInput), "'")
 			term.listMainMenuOptions("Please choose one of the following:")
 		}
@@ -329,7 +312,7 @@ func (term *TerminalUI) Start() {
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
 		// driver and navigator modes
-		term.mainMenu()
+		term.enterMainMenu()
 	case runmode.OneShot{}:
 		// When running TCR in one-shot mode, there's no selection menu:
 		// we directly ask TCR engine to run one cycle and quit when done
@@ -359,19 +342,15 @@ func (term *TerminalUI) initTCREngine() {
 	term.tcr.Init(term, term.params)
 }
 
-func (term *TerminalUI) printMenuOption(shortcut byte, description ...interface{}) {
-	term.ReportInfo(false, append([]interface{}{"\t", string(shortcut), " -> "}, description...)...)
+func (term *TerminalUI) printMenuOption(shortcut byte, description ...any) {
+	term.ReportInfo(false, append([]any{"\t", string(shortcut), " -> "}, description...)...)
 }
 
 func (term *TerminalUI) listMainMenuOptions(title string) {
 	term.ReportTitle(false, title)
-	term.printMenuOption('D', driverRoleMenuHelper)
-	term.printMenuOption('N', navigatorRoleMenuHelper)
-	term.printMenuOption('P', autoPushMenuHelper)
-	term.printMenuOption('L', pullMenuHelper)
-	term.printMenuOption('S', pushMenuHelper)
-	term.printMenuOption('Q', quitMenuHelper)
-	term.printMenuOption('?', optionsMenuHelper)
+	for _, option := range term.mainMenu.getOptions() {
+		term.printMenuOption(option.getShortcut(), option.getDescription())
+	}
 }
 
 func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
@@ -381,4 +360,46 @@ func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
 	}
 	term.printMenuOption('Q', "Quit ", r.LongName())
 	term.printMenuOption('?', optionsMenuHelper)
+}
+
+func (term *TerminalUI) initMainMenu() *menu {
+	m := newMenu("Main menu")
+	m.addOptions(
+		newMenuOption('D', driverRoleMenuHelper, "",
+			func() {
+				term.startAs(role.Driver{})
+				term.whatShallWeDo()
+			}, false),
+		newMenuOption('N', navigatorRoleMenuHelper, "",
+			func() {
+				term.startAs(role.Navigator{})
+				term.whatShallWeDo()
+			}, false),
+		newMenuOption('P', autoPushMenuHelper, "",
+			func() {
+				term.tcr.ToggleAutoPush()
+				term.ShowSessionInfo()
+				term.whatShallWeDo()
+			}, false),
+		newMenuOption('L', pullMenuHelper, "",
+			func() {
+				term.vcsPull()
+				term.whatShallWeDo()
+			}, false),
+		newMenuOption('S', pushMenuHelper, "",
+			func() {
+				term.vcsPush()
+				term.whatShallWeDo()
+			}, false),
+		newMenuOption('Q', quitMenuHelper, "",
+			func() {
+				Restore()
+				term.tcr.Quit()
+			}, true),
+		newMenuOption('?', optionsMenuHelper, "",
+			func() {
+				term.listMainMenuOptions("Available Options:")
+			}, false),
+	)
+	return m
 }

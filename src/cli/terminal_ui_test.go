@@ -102,11 +102,12 @@ func Test_confirm_question_with_default_answer_to_yes(t *testing.T) {
 	assert.Equal(t, "[Y/n]", yesOrNoAdvice(true))
 }
 
-func terminalSetup(p params.Params) (term TerminalUI, fakeEngine *engine.FakeTCREngine, fakeNotifier *desktop.FakeNotifier) {
+func terminalSetup(p params.Params) (term *TerminalUI, fakeEngine *engine.FakeTCREngine, fakeNotifier *desktop.FakeNotifier) {
 	setLinePrefix("TCR")
 	fakeEngine = engine.NewFakeTCREngine()
 	fakeNotifier = &desktop.FakeNotifier{}
-	term = TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
+	term = &TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
+	term.mainMenu = term.initMainMenu()
 	sttyCmdDisabled = true
 	report.Reset()
 	term.StartReporting()
@@ -193,7 +194,7 @@ func Test_terminal_tracing_methods(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			term, _, _ := terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
@@ -219,7 +220,7 @@ func Test_notify_role_starting(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleStarting(tt.currentRole)
 			}))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
@@ -245,7 +246,7 @@ func Test_notify_role_ending(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.NotifyRoleEnding(tt.currentRole)
 			}))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
@@ -277,13 +278,13 @@ func Test_list_role_menu_options(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.listRoleMenuOptions(tt.currentRole, title)
 			}))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
 
 func Test_simple_message_methods(t *testing.T) {
-	var term TerminalUI
+	var term *TerminalUI
 	var testFlags = []struct {
 		desc     string
 		method   func()
@@ -295,8 +296,10 @@ func Test_simple_message_methods(t *testing.T) {
 			expected: asYellowTrace("Key not recognized. Press ? for available options"),
 		},
 		{
-			desc:   "whatShallWeDo",
-			method: term.whatShallWeDo,
+			desc: "whatShallWeDo",
+			method: func() {
+				term.whatShallWeDo()
+			},
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
 				asCyanTrace("\tD -> "+driverRoleMenuHelper) +
 				asCyanTrace("\tN -> "+navigatorRoleMenuHelper) +
@@ -310,9 +313,9 @@ func Test_simple_message_methods(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			term, _, _ := terminalSetup(*params.AParamSet())
+			term, _, _ = terminalSetup(*params.AParamSet())
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
@@ -350,7 +353,7 @@ func Test_show_running_mode(t *testing.T) {
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
 				term.ShowRunningMode(tt.currentMode)
 			}))
-			terminalTeardown(term)
+			terminalTeardown(*term)
 		})
 	}
 }
@@ -422,7 +425,7 @@ func Test_terminal_reporting(t *testing.T) {
 				term, _, _ := terminalSetup(*params.AParamSet())
 				time.Sleep(1 * time.Millisecond)
 				tt.method()
-				terminalTeardown(term)
+				terminalTeardown(*term)
 			}))
 		})
 	}
@@ -461,7 +464,7 @@ func Test_terminal_notification_box_title(t *testing.T) {
 			tt.method(tt.desc)
 			time.Sleep(1 * time.Millisecond)
 			assert.Equal(t, tt.expected, fakeNotifier.LastTitle)
-			terminalTeardown(term)
+			terminalTeardown(*term)
 
 		})
 	}
@@ -476,7 +479,7 @@ func Test_show_session_info(t *testing.T) {
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
 		term, _, _ := terminalSetup(*params.AParamSet())
 		term.ShowSessionInfo()
-		terminalTeardown(term)
+		terminalTeardown(*term)
 	}))
 }
 
@@ -564,9 +567,9 @@ func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TCRCall
 	os.Stderr = os.NewFile(0, os.DevNull)
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
-	term.mainMenu()
+	term.enterMainMenu()
 	assert.Equal(t, append(expected, engine.TCRCallQuit), fakeEngine.GetCallHistory())
-	terminalTeardown(term)
+	terminalTeardown(*term)
 }
 
 func Test_driver_menu(t *testing.T) {
@@ -698,7 +701,7 @@ func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []en
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
 	term.startAs(r)
 	assert.Equal(t, append(expected, engine.TCRCallStop), fakeEngine.GetCallHistory())
-	terminalTeardown(term)
+	terminalTeardown(*term)
 }
 
 func Test_start_terminal(t *testing.T) {
@@ -772,6 +775,6 @@ func assertStartTerminal(t *testing.T, mode runmode.RunMode, input []byte, expec
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet(params.WithRunMode(mode)))
 	term.Start()
-	terminalTeardown(term)
+	terminalTeardown(*term)
 	assert.Equal(t, expected, fakeEngine.GetCallHistory())
 }
