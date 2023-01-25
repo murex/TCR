@@ -15,7 +15,7 @@ vet:
 
 define RUN_TESTS
 @mkdir -p _test_results
-@gotestsum --format pkgname --junitfile _test_results/output.xml -- $(1) -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
+@gotestsum --format pkgname --junitfile _test_results/output.xml --hide-summary=skipped -- $(1) -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
 @grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
 @sed -e 's:\(/tcr/\):\1src/:g' _test_results/coverage.out >| _test_results/coverage-sonar.out
 endef
