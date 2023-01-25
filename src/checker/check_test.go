@@ -43,6 +43,12 @@ var (
 
 // Assert utility functions
 
+func slowTestTag(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+}
+
 func initTestCheckEnv(params params.Params) {
 	initCheckEnv(params)
 	// We replace git implementation with a fake so that we bypass real git access
@@ -62,11 +68,11 @@ func assertWarning(t *testing.T, checker func(params params.Params) (cr *CheckRe
 	assertStatus(t, CheckStatusWarning, checker, params)
 }
 
+// Return code for check subcommand
+
 func assertError(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
 	assertStatus(t, CheckStatusError, checker, params)
 }
-
-// Return code for check subcommand
 
 func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 	t.Skip("need to provide fake configuration settings for tests")
@@ -81,6 +87,7 @@ func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 }
 
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
+	slowTestTag(t)
 	// The warning is triggered by the mob timer duration being under the min threshold
 	Run(*params.AParamSet(
 		params.WithConfigDir(testDataDirJava),
@@ -98,6 +105,7 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
+	slowTestTag(t)
 	const invalidDir = "invalid-dir"
 	Run(*params.AParamSet(
 		params.WithConfigDir(invalidDir),
