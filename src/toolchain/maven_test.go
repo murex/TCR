@@ -79,6 +79,7 @@ func Test_maven_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
 }
 
 func Test_maven_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	slowTestTag(t)
 	assertNoErrorWhenBuildPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }
 
@@ -98,6 +99,7 @@ func Test_maven_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
 }
 
 func Test_maven_wrapper_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	slowTestTag(t)
 	assertNoErrorWhenTestPasses(t, mavenWrapperToolchainName, testDataDirJava)
 }
 

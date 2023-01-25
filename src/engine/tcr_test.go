@@ -43,6 +43,12 @@ import (
 	"time"
 )
 
+func slowTestTag(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+}
+
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
@@ -513,6 +519,7 @@ func Test_get_session_info(t *testing.T) {
 }
 
 func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
+	slowTestTag(t)
 	if os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Skip("disabled on CI due to dangling results")
 	}
