@@ -554,6 +554,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 }
 
 func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
+	slowTestTag(t)
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
@@ -571,6 +572,7 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 }
 
 func Test_tcr_print_log(t *testing.T) {
+	slowTestTag(t)
 	now := time.Now()
 	sampleItems := vcs.LogItems{
 		vcs.NewLogItem("1111", now, "✅ TCR - tests passing"),
