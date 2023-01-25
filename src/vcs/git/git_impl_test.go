@@ -34,6 +34,12 @@ import (
 	"time"
 )
 
+func slowTestTag(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+}
+
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
 	assert.Zero(t, g.IsPushEnabled())
@@ -64,6 +70,7 @@ func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
 }
 
 func Test_check_remote_access_on_current_repo(t *testing.T) {
+	slowTestTag(t)
 	g, _ := New(".")
 	// Depending on where the test is run (local machine or CI) and which is the current branch,
 	// CheckRemoteAccess() result can vary.
