@@ -89,6 +89,12 @@ Once gotestsum is installed, you can run make's test target from the root direct
   make test-short
   ```
 
+- For listing slowest tests (default threshold: 500ms):
+
+  ```shell
+  make slow-tests
+  ```
+
 ## Build TCR executable
 
 To build TCR locally on your machine, simply type the following from the root directory:
