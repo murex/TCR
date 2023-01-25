@@ -28,6 +28,10 @@ test:
 test-short:
 	$(call RUN_TESTS,-short)
 
+.PHONY: slow-tests
+slow-tests:
+	@go test -json -tags=test_helper ./... | gotestsum tool slowest --threshold 500ms
+
 .PHONY: cov
 cov:
 	@go tool cover -html=_test_results/coverage.out
