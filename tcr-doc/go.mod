@@ -11,7 +11,7 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20230117203413-a47887b8f098 // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230124153114-0acdc8ae009b // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/cloudflare/circl v1.3.1 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
