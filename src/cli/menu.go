@@ -108,6 +108,11 @@ func (m *menu) addOptions(options ...*menuOption) {
 	m.options = append(m.options, options...)
 }
 
-func (m *menu) getOptions() []*menuOption {
-	return m.options
+func (m *menu) getOptions() (out []*menuOption) {
+	for _, option := range m.options {
+		if option.isEnabled() {
+			out = append(out, option)
+		}
+	}
+	return out
 }
