@@ -163,4 +163,9 @@ func Test_menu_get_options_drops_disabled_options(t *testing.T) {
 	mo2 := newMenuOption('Y', "some description", "some help", nil, false)
 	m.addOptions(mo2)
 	assert.Equal(t, m.getOptions(), []*menuOption{mo1, mo2})
+	mo2.setEnabled(false)
+	assert.Equal(t, m.getOptions(), []*menuOption{mo1})
+	mo1.setEnabled(false)
+	mo2.setEnabled(true)
+	assert.Equal(t, m.getOptions(), []*menuOption{mo2})
 }
