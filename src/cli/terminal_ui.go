@@ -154,32 +154,42 @@ func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...any) 
 	}
 }
 
-func (term *TerminalUI) enterMainMenu() { //nolint:revive
+func (term *TerminalUI) enterMainMenu() {
 	term.whatShallWeDo()
 
-	keyboardInput := make([]byte, 1)
 	for {
-		_, err := os.Stdin.Read(keyboardInput)
-		if err != nil {
-			term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
+		input := term.readKeyboardInput()
+		matching, done := term.matchMenuShortcut(term.mainMenu, input)
+		if done {
+			return
 		}
-
-		var matching bool
-		for _, option := range term.mainMenu.getOptions() {
-			if !matching && option.matchShortcut(keyboardInput[0]) {
-				matching = true
-				_ = option.run()
-				if option.quitOption {
-					return
-				}
-			}
-		}
-		if !matching && keyboardInput[0] != enterKey {
-			// We ignore enter key press
-			term.ReportWarning(false, "No action is mapped to shortcut '", string(keyboardInput), "'")
-			term.listMainMenuOptions("Please choose one of the following:")
+		if !matching && input != enterKey {
+			term.keyNotRecognizedMessage()
+			term.listMenuOptions(term.mainMenu, "Please choose one of the following:")
 		}
 	}
+}
+
+func (term *TerminalUI) readKeyboardInput() byte {
+	keyboardInput := make([]byte, 1)
+	_, err := os.Stdin.Read(keyboardInput)
+	if err != nil {
+		term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
+	}
+	return keyboardInput[0]
+}
+
+func (*TerminalUI) matchMenuShortcut(menu *menu, input byte) (matched bool, quit bool) {
+	for _, option := range menu.getOptions() {
+		if !matched && option.matchShortcut(input) {
+			matched = true
+			_ = option.run()
+			if option.quitOption {
+				return false, true
+			}
+		}
+	}
+	return matched, false
 }
 
 func (term *TerminalUI) vcsPull() {
@@ -191,7 +201,7 @@ func (term *TerminalUI) vcsPush() {
 }
 
 func (term *TerminalUI) whatShallWeDo() {
-	term.listMainMenuOptions("What shall we do?")
+	term.listMenuOptions(term.mainMenu, "What shall we do?")
 }
 
 func (term *TerminalUI) startAs(r role.Role) {
@@ -205,13 +215,9 @@ func (term *TerminalUI) startAs(r role.Role) {
 		term.ReportWarning(false, "No action defined for ", r.LongName())
 	}
 
-	// ...Until the user decides to stop
-	keyboardInput := make([]byte, 1)
 	for stopRequest := false; !stopRequest; {
-		if _, err := os.Stdin.Read(keyboardInput); err != nil {
-			term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
-		}
-		switch keyboardInput[0] {
+		input := term.readKeyboardInput()
+		switch input {
 		case '?':
 			term.listRoleMenuOptions(r, "Available Options:")
 		case 'q', 'Q', escapeKey:
@@ -342,14 +348,18 @@ func (term *TerminalUI) initTCREngine() {
 	term.tcr.Init(term, term.params)
 }
 
+func (term *TerminalUI) newPrintMenuOption(option menuOption) {
+	term.printMenuOption(option.getShortcut(), option.getDescription())
+}
+
 func (term *TerminalUI) printMenuOption(shortcut byte, description ...any) {
 	term.ReportInfo(false, append([]any{"\t", string(shortcut), " -> "}, description...)...)
 }
 
-func (term *TerminalUI) listMainMenuOptions(title string) {
+func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 	term.ReportTitle(false, title)
-	for _, option := range term.mainMenu.getOptions() {
-		term.printMenuOption(option.getShortcut(), option.getDescription())
+	for _, option := range m.getOptions() {
+		term.newPrintMenuOption(*option)
 	}
 }
 
@@ -398,7 +408,7 @@ func (term *TerminalUI) initMainMenu() *menu {
 			}, true),
 		newMenuOption('?', optionsMenuHelper, "",
 			func() {
-				term.listMainMenuOptions("Available Options:")
+				term.listMenuOptions(term.mainMenu, "Available Options:")
 			}, false),
 	)
 	return m
