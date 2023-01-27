@@ -42,24 +42,23 @@ type TerminalUI struct {
 	params           params.Params
 	desktop          *desktop.Desktop
 	mainMenu         *menu
+	roleMenu         *menu
 }
 
 const (
-	enterKey  = 0x0a
-	escapeKey = 0x1b
+	enterKey = 0x0a
 )
 
 const (
-	pullMenuHelper              = "Pull from remote"
-	pushMenuHelper              = "Push to remote"
-	driverRoleMenuHelper        = "Driver role"
-	navigatorRoleMenuHelper     = "Navigator role"
-	autoPushMenuHelper          = "Turn on/off VCS auto-push"
-	quitMenuHelper              = "Quit"
-	optionsMenuHelper           = "List available options"
-	timerStatusMenuHelper       = "Timer status"
-	quitDriverRoleMenuHelper    = "Quit Driver role"
-	quitNavigatorRoleMenuHelper = "Quit Navigator role"
+	pullMenuHelper          = "Pull from remote"
+	pushMenuHelper          = "Push to remote"
+	driverRoleMenuHelper    = "Driver role"
+	navigatorRoleMenuHelper = "Navigator role"
+	autoPushMenuHelper      = "Turn on/off VCS auto-push"
+	quitMenuHelper          = "Quit"
+	optionsMenuHelper       = "List available options"
+	timerStatusMenuHelper   = "Timer status"
+	quitRoleMenuHelper      = "Quit current role and go back to main menu"
 )
 
 // New creates a new instance of terminal
@@ -67,6 +66,7 @@ func New(p params.Params, tcr engine.TCRInterface) ui.UserInterface {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	term.mainMenu = term.initMainMenu()
+	term.roleMenu = term.initRoleMenu()
 	term.MuteDesktopNotifications(false)
 	term.StartReporting()
 	StartInterruptHandler()
@@ -156,16 +156,41 @@ func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...any) 
 
 func (term *TerminalUI) enterMainMenu() {
 	term.whatShallWeDo()
+	term.runMenuLoop(term.mainMenu)
+}
 
+func (term *TerminalUI) enterRole(r role.Role) {
+	// We ask first TCR engine to start...
+	if err := term.runTCR(r); err != nil {
+		term.ReportError(false, err)
+		return
+	}
+	// Then we enter the role menu loop, waiting for user input
+	term.runMenuLoop(term.roleMenu)
+}
+
+func (term *TerminalUI) runTCR(r role.Role) error {
+	switch r {
+	case role.Navigator{}:
+		term.tcr.RunAsNavigator()
+	case role.Driver{}:
+		term.tcr.RunAsDriver()
+	default:
+		return fmt.Errorf("no action defined for %s", r.LongName())
+	}
+	return nil
+}
+
+func (term *TerminalUI) runMenuLoop(m *menu) {
 	for {
 		input := term.readKeyboardInput()
-		matching, done := term.matchMenuShortcut(term.mainMenu, input)
-		if done {
+		matched, quit := m.matchAndRun(input)
+		if quit {
 			return
 		}
-		if !matching && input != enterKey {
+		if !matched && input != enterKey {
 			term.keyNotRecognizedMessage()
-			term.listMenuOptions(term.mainMenu, "Please choose one of the following:")
+			term.listMenuOptions(m, "Please choose one of the following:")
 		}
 	}
 }
@@ -179,19 +204,6 @@ func (term *TerminalUI) readKeyboardInput() byte {
 	return keyboardInput[0]
 }
 
-func (*TerminalUI) matchMenuShortcut(menu *menu, input byte) (matched bool, quit bool) {
-	for _, option := range menu.getOptions() {
-		if !matched && option.matchShortcut(input) {
-			matched = true
-			_ = option.run()
-			if option.quitOption {
-				return false, true
-			}
-		}
-	}
-	return matched, false
-}
-
 func (term *TerminalUI) vcsPull() {
 	term.tcr.VCSPull()
 }
@@ -202,37 +214,6 @@ func (term *TerminalUI) vcsPush() {
 
 func (term *TerminalUI) whatShallWeDo() {
 	term.listMenuOptions(term.mainMenu, "What shall we do?")
-}
-
-func (term *TerminalUI) startAs(r role.Role) {
-	// We ask TCR engine to start...
-	switch r {
-	case role.Navigator{}:
-		term.tcr.RunAsNavigator()
-	case role.Driver{}:
-		term.tcr.RunAsDriver()
-	default:
-		term.ReportWarning(false, "No action defined for ", r.LongName())
-	}
-
-	for stopRequest := false; !stopRequest; {
-		input := term.readKeyboardInput()
-		switch input {
-		case '?':
-			term.listRoleMenuOptions(r, "Available Options:")
-		case 'q', 'Q', escapeKey:
-			term.ReportWarning(false, "OK, I heard you")
-			stopRequest = true
-			term.tcr.Stop()
-		case 't', 'T':
-			term.showTimerStatus()
-		case enterKey:
-			// We ignore enter key press
-			continue
-		default:
-			term.keyNotRecognizedMessage()
-		}
-	}
 }
 
 func (term *TerminalUI) keyNotRecognizedMessage() {
@@ -311,7 +292,7 @@ func (term *TerminalUI) Start() {
 	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no selection menu:
 		// we directly enter driver mode, and quit when done
-		term.startAs(role.Driver{})
+		term.enterRole(role.Driver{})
 		Restore()
 		term.tcr.Quit()
 	case runmode.Mob{}:
@@ -348,68 +329,67 @@ func (term *TerminalUI) initTCREngine() {
 	term.tcr.Init(term, term.params)
 }
 
-func (term *TerminalUI) newPrintMenuOption(option menuOption) {
-	term.printMenuOption(option.getShortcut(), option.getDescription())
-}
-
-func (term *TerminalUI) printMenuOption(shortcut byte, description ...any) {
-	term.ReportInfo(false, append([]any{"\t", string(shortcut), " -> "}, description...)...)
-}
-
 func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 	term.ReportTitle(false, title)
 	for _, option := range m.getOptions() {
-		term.newPrintMenuOption(*option)
+		term.ReportInfo(false, (*option).toString())
 	}
-}
-
-func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
-	term.ReportTitle(false, title)
-	if settings.EnableMobTimer && r != nil && r.RunsWithTimer() {
-		term.printMenuOption('T', timerStatusMenuHelper)
-	}
-	term.printMenuOption('Q', "Quit ", r.LongName())
-	term.printMenuOption('?', optionsMenuHelper)
 }
 
 func (term *TerminalUI) initMainMenu() *menu {
 	m := newMenu("Main menu")
 	m.addOptions(
-		newMenuOption('D', driverRoleMenuHelper, "", nil,
+		newMenuOption('D', driverRoleMenuHelper, nil, func() {
+			term.enterRole(role.Driver{})
+			term.whatShallWeDo()
+		}, false),
+		newMenuOption('N', navigatorRoleMenuHelper, nil, func() {
+			term.enterRole(role.Navigator{})
+			term.whatShallWeDo()
+		}, false),
+		newMenuOption('P', autoPushMenuHelper, nil, func() {
+			term.tcr.ToggleAutoPush()
+			term.ShowSessionInfo()
+			term.whatShallWeDo()
+		}, false),
+		newMenuOption('L', pullMenuHelper, nil, func() {
+			term.vcsPull()
+			term.whatShallWeDo()
+		}, false),
+		newMenuOption('S', pushMenuHelper, nil, func() {
+			term.vcsPush()
+			term.whatShallWeDo()
+		}, false),
+		newMenuOption('Q', quitMenuHelper, nil, func() {
+			Restore()
+			term.tcr.Quit()
+		}, true),
+		newMenuOption('?', optionsMenuHelper, nil, func() {
+			term.listMenuOptions(term.mainMenu, "Available Options:")
+		}, false),
+	)
+	return m
+}
+
+func (term *TerminalUI) initRoleMenu() *menu {
+	m := newMenu("Role menu")
+	m.addOptions(
+
+		newMenuOption('T', timerStatusMenuHelper,
+			func() bool {
+				r := term.tcr.GetCurrentRole()
+				return settings.EnableMobTimer && r != nil && r.RunsWithTimer()
+			},
 			func() {
-				term.startAs(role.Driver{})
-				term.whatShallWeDo()
+				term.showTimerStatus()
 			}, false),
-		newMenuOption('N', navigatorRoleMenuHelper, "", nil,
-			func() {
-				term.startAs(role.Navigator{})
-				term.whatShallWeDo()
-			}, false),
-		newMenuOption('P', autoPushMenuHelper, "", nil,
-			func() {
-				term.tcr.ToggleAutoPush()
-				term.ShowSessionInfo()
-				term.whatShallWeDo()
-			}, false),
-		newMenuOption('L', pullMenuHelper, "", nil,
-			func() {
-				term.vcsPull()
-				term.whatShallWeDo()
-			}, false),
-		newMenuOption('S', pushMenuHelper, "", nil,
-			func() {
-				term.vcsPush()
-				term.whatShallWeDo()
-			}, false),
-		newMenuOption('Q', quitMenuHelper, "", nil,
-			func() {
-				Restore()
-				term.tcr.Quit()
-			}, true),
-		newMenuOption('?', optionsMenuHelper, "", nil,
-			func() {
-				term.listMenuOptions(term.mainMenu, "Available Options:")
-			}, false),
+		newMenuOption('Q', quitRoleMenuHelper, nil, func() {
+			term.ReportWarning(false, "OK, I heard you")
+			term.tcr.Stop()
+		}, true),
+		newMenuOption('?', optionsMenuHelper, nil, func() {
+			term.listMenuOptions(term.roleMenu, "Available Options:")
+		}, false),
 	)
 	return m
 }
