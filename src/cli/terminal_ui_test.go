@@ -108,6 +108,7 @@ func terminalSetup(p params.Params) (term *TerminalUI, fakeEngine *engine.FakeTC
 	fakeNotifier = &desktop.FakeNotifier{}
 	term = &TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
 	term.mainMenu = term.initMainMenu()
+	term.roleMenu = term.initRoleMenu()
 	sttyCmdDisabled = true
 	report.Reset()
 	term.StartReporting()
@@ -261,13 +262,13 @@ func Test_list_role_menu_options(t *testing.T) {
 			currentRole: role.Driver{},
 			expected: asCyanTraceWithSeparatorLine(title) +
 				asCyanTrace("\tT -> "+timerStatusMenuHelper) +
-				asCyanTrace("\tQ -> "+quitDriverRoleMenuHelper) +
+				asCyanTrace("\tQ -> "+quitRoleMenuHelper) +
 				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 		{
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tQ -> "+quitNavigatorRoleMenuHelper) +
+				asCyanTrace("\tQ -> "+quitRoleMenuHelper) +
 				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 	}
@@ -275,8 +276,9 @@ func Test_list_role_menu_options(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.currentRole.Name(), func(t *testing.T) {
 			term, _, _ := terminalSetup(*params.AParamSet())
+			_ = term.runTCR(tt.currentRole)
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term.listRoleMenuOptions(tt.currentRole, title)
+				term.listMenuOptions(term.roleMenu, title)
 			}))
 			terminalTeardown(*term)
 		})
@@ -699,7 +701,7 @@ func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []en
 	os.Stderr = os.NewFile(0, os.DevNull)
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
-	term.startAs(r)
+	term.enterRole(r)
 	assert.Equal(t, append(expected, engine.TCRCallStop), fakeEngine.GetCallHistory())
 	terminalTeardown(*term)
 }

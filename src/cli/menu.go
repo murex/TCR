@@ -25,6 +25,7 @@ package cli
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 type (
@@ -34,7 +35,6 @@ type (
 	menuOption struct {
 		shortcut    byte
 		description string
-		help        string
 		enabler     menuEnabler
 		action      menuAction
 		quitOption  bool
@@ -46,11 +46,10 @@ type (
 	}
 )
 
-func newMenuOption(s byte, d string, h string, e menuEnabler, a menuAction, q bool) *menuOption { //nolint:revive
+func newMenuOption(s byte, d string, e menuEnabler, a menuAction, q bool) *menuOption { //nolint:revive
 	return &menuOption{
 		shortcut:    s,
 		description: d,
-		help:        h,
 		enabler:     e,
 		action:      a,
 		quitOption:  q,
@@ -63,10 +62,6 @@ func (mo *menuOption) getDescription() string {
 
 func (mo *menuOption) getShortcut() byte {
 	return mo.shortcut
-}
-
-func (mo *menuOption) getHelp() string {
-	return mo.help
 }
 
 func (mo *menuOption) run() error {
@@ -90,6 +85,10 @@ func (mo *menuOption) isEnabled() bool {
 		return true
 	}
 	return mo.enabler()
+}
+
+func (mo *menuOption) toString() string {
+	return fmt.Sprintf("\t%c -> %s", mo.getShortcut(), mo.getDescription())
 }
 
 func newMenu(title string) *menu {
@@ -117,4 +116,17 @@ func (m *menu) getOptions() (out []*menuOption) {
 		}
 	}
 	return out
+}
+
+func (m *menu) matchAndRun(input byte) (matched bool, quit bool) {
+	for _, option := range m.getOptions() {
+		if !matched && option.matchShortcut(input) {
+			matched = true
+			_ = option.run()
+			if option.quitOption {
+				return false, true
+			}
+		}
+	}
+	return matched, false
 }
