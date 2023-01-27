@@ -375,38 +375,38 @@ func (term *TerminalUI) listRoleMenuOptions(r role.Role, title string) {
 func (term *TerminalUI) initMainMenu() *menu {
 	m := newMenu("Main menu")
 	m.addOptions(
-		newMenuOption('D', driverRoleMenuHelper, "",
+		newMenuOption('D', driverRoleMenuHelper, "", nil,
 			func() {
 				term.startAs(role.Driver{})
 				term.whatShallWeDo()
 			}, false),
-		newMenuOption('N', navigatorRoleMenuHelper, "",
+		newMenuOption('N', navigatorRoleMenuHelper, "", nil,
 			func() {
 				term.startAs(role.Navigator{})
 				term.whatShallWeDo()
 			}, false),
-		newMenuOption('P', autoPushMenuHelper, "",
+		newMenuOption('P', autoPushMenuHelper, "", nil,
 			func() {
 				term.tcr.ToggleAutoPush()
 				term.ShowSessionInfo()
 				term.whatShallWeDo()
 			}, false),
-		newMenuOption('L', pullMenuHelper, "",
+		newMenuOption('L', pullMenuHelper, "", nil,
 			func() {
 				term.vcsPull()
 				term.whatShallWeDo()
 			}, false),
-		newMenuOption('S', pushMenuHelper, "",
+		newMenuOption('S', pushMenuHelper, "", nil,
 			func() {
 				term.vcsPush()
 				term.whatShallWeDo()
 			}, false),
-		newMenuOption('Q', quitMenuHelper, "",
+		newMenuOption('Q', quitMenuHelper, "", nil,
 			func() {
 				Restore()
 				term.tcr.Quit()
 			}, true),
-		newMenuOption('?', optionsMenuHelper, "",
+		newMenuOption('?', optionsMenuHelper, "", nil,
 			func() {
 				term.listMenuOptions(term.mainMenu, "Available Options:")
 			}, false),
