@@ -27,25 +27,33 @@ import (
 	"errors"
 )
 
-type menuAction func()
+type (
+	menuAction  func()
+	menuEnabler func() bool
 
-type menuOption struct {
-	shortcut    byte
-	description string
-	help        string
-	action      menuAction
-	quitOption  bool
-	enabled     bool
-}
+	menuOption struct {
+		shortcut    byte
+		description string
+		help        string
+		enabler     menuEnabler
+		action      menuAction
+		quitOption  bool
+	}
 
-func newMenuOption(s byte, d string, h string, a menuAction, q bool) *menuOption { //nolint:revive
+	menu struct {
+		title   string
+		options []*menuOption
+	}
+)
+
+func newMenuOption(s byte, d string, h string, e menuEnabler, a menuAction, q bool) *menuOption { //nolint:revive
 	return &menuOption{
 		shortcut:    s,
 		description: d,
 		help:        h,
+		enabler:     e,
 		action:      a,
 		quitOption:  q,
-		enabled:     true,
 	}
 }
 
@@ -77,17 +85,11 @@ func (mo *menuOption) isQuitOption() bool {
 	return mo.quitOption
 }
 
-func (mo *menuOption) setEnabled(enable bool) {
-	mo.enabled = enable
-}
-
 func (mo *menuOption) isEnabled() bool {
-	return mo.enabled
-}
-
-type menu struct {
-	title   string
-	options []*menuOption
+	if mo.enabler == nil {
+		return true
+	}
+	return mo.enabler()
 }
 
 func newMenu(title string) *menu {

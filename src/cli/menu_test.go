@@ -28,23 +28,23 @@ import (
 )
 
 func Test_menu_option_get_description(t *testing.T) {
-	mo := newMenuOption(0, "menu option description", "", nil, false)
+	mo := newMenuOption(0, "menu option description", "", nil, nil, false)
 	assert.Equal(t, "menu option description", mo.getDescription())
 }
 
 func Test_menu_option_get_shortcut(t *testing.T) {
-	mo := newMenuOption('D', "", "", nil, false)
+	mo := newMenuOption('D', "", "", nil, nil, false)
 	assert.Equal(t, byte('D'), mo.getShortcut())
 }
 
 func Test_menu_option_get_help(t *testing.T) {
-	mo := newMenuOption(0, "", "menu option help", nil, false)
+	mo := newMenuOption(0, "", "menu option help", nil, nil, false)
 	assert.Equal(t, "menu option help", mo.getHelp())
 }
 
 func Test_menu_option_action(t *testing.T) {
 	var result string
-	mo := newMenuOption(0, "", "", func() {
+	mo := newMenuOption(0, "", "", nil, func() {
 		result = "some value"
 	}, false)
 	err := mo.run()
@@ -53,7 +53,7 @@ func Test_menu_option_action(t *testing.T) {
 }
 
 func Test_menu_option_run_returns_when_no_action_is_set(t *testing.T) {
-	mo := newMenuOption(0, "", "", nil, false)
+	mo := newMenuOption(0, "", "", nil, nil, false)
 	assert.Error(t, mo.run())
 }
 
@@ -70,7 +70,7 @@ func Test_menu_set_title(t *testing.T) {
 
 func Test_menu_add_one_option(t *testing.T) {
 	m := newMenu("menu title")
-	mo := newMenuOption('X', "some description", "some help", nil, false)
+	mo := newMenuOption('X', "some description", "some help", nil, nil, false)
 	assert.Equal(t, 0, len(m.options))
 	m.addOptions(mo)
 	assert.Equal(t, 1, len(m.options))
@@ -79,8 +79,8 @@ func Test_menu_add_one_option(t *testing.T) {
 
 func Test_menu_add_multiple_options(t *testing.T) {
 	m := newMenu("menu title")
-	mo1 := newMenuOption('X', "some description", "some help", nil, false)
-	mo2 := newMenuOption('Y', "some description", "some help", nil, false)
+	mo1 := newMenuOption('X', "some description", "some help", nil, nil, false)
+	mo2 := newMenuOption('Y', "some description", "some help", nil, nil, false)
 	assert.Equal(t, 0, len(m.options))
 	m.addOptions(mo1, mo2)
 	assert.Equal(t, 2, len(m.options))
@@ -90,9 +90,9 @@ func Test_menu_add_multiple_options(t *testing.T) {
 
 func Test_menu_get_options(t *testing.T) {
 	m := newMenu("menu title")
-	mo1 := newMenuOption('X', "some description", "some help", nil, false)
+	mo1 := newMenuOption('X', "some description", "some help", nil, nil, false)
 	m.addOptions(mo1)
-	mo2 := newMenuOption('Y', "some description", "some help", nil, false)
+	mo2 := newMenuOption('Y', "some description", "some help", nil, nil, false)
 	m.addOptions(mo2)
 	assert.Equal(t, m.getOptions(), []*menuOption{mo1, mo2})
 }
@@ -108,7 +108,7 @@ func Test_menu_option_quit_option(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			mo := newMenuOption(0, "", "", nil, test.option)
+			mo := newMenuOption(0, "", "", nil, nil, test.option)
 			assert.Equal(t, test.expected, mo.isQuitOption())
 		})
 	}
@@ -127,7 +127,7 @@ func Test_menu_option_match_shortcut(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			mo := newMenuOption(test.shortcut, "", "", nil, false)
+			mo := newMenuOption(test.shortcut, "", "", nil, nil, false)
 			assert.Equal(t, test.expected, mo.matchShortcut(test.input))
 		})
 	}
@@ -144,28 +144,33 @@ func Test_enable_menu_option(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			mo := newMenuOption(0, "", "", nil, false)
-			mo.setEnabled(test.enable)
+			mo := newMenuOption(0, "", "",
+				func() bool {
+					return test.enable
+				},
+				nil, false,
+			)
 			assert.Equal(t, test.expected, mo.isEnabled())
 		})
 	}
 }
 
 func Test_menu_options_are_enabled_by_default(t *testing.T) {
-	mo := newMenuOption(0, "", "", nil, false)
+	mo := newMenuOption(0, "", "", nil, nil, false)
 	assert.True(t, mo.isEnabled())
 }
 
 func Test_menu_get_options_drops_disabled_options(t *testing.T) {
 	m := newMenu("menu title")
-	mo1 := newMenuOption('X', "some description", "some help", nil, false)
+	mo1 := newMenuOption('X', "some description", "some help",
+		func() bool {
+			return false
+		}, nil, false)
 	m.addOptions(mo1)
-	mo2 := newMenuOption('Y', "some description", "some help", nil, false)
+	mo2 := newMenuOption('Y', "some description", "some help",
+		func() bool {
+			return true
+		}, nil, false)
 	m.addOptions(mo2)
-	assert.Equal(t, m.getOptions(), []*menuOption{mo1, mo2})
-	mo2.setEnabled(false)
-	assert.Equal(t, m.getOptions(), []*menuOption{mo1})
-	mo1.setEnabled(false)
-	mo2.setEnabled(true)
 	assert.Equal(t, m.getOptions(), []*menuOption{mo2})
 }
