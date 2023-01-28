@@ -50,15 +50,16 @@ const (
 )
 
 const (
-	pullMenuHelper          = "Pull from remote"
-	pushMenuHelper          = "Push to remote"
-	driverRoleMenuHelper    = "Driver role"
-	navigatorRoleMenuHelper = "Navigator role"
-	autoPushMenuHelper      = "Turn on/off VCS auto-push"
-	quitMenuHelper          = "Quit"
-	optionsMenuHelper       = "List available options"
-	timerStatusMenuHelper   = "Timer status"
-	quitRoleMenuHelper      = "Quit current role and go back to main menu"
+	pullMenuHelper               = "Pull from remote"
+	pushMenuHelper               = "Push to remote"
+	enterDriverRoleMenuHelper    = "Driver role"
+	enterNavigatorRoleMenuHelper = "Navigator role"
+	autoPushMenuHelper           = "Turn on/off VCS auto-push"
+	quitMenuHelper               = "Quit"
+	optionsMenuHelper            = "List available options"
+	timerStatusMenuHelper        = "Timer status"
+	quitDriverRoleMenuHelper     = "Quit Driver role"
+	quitNavigatorRoleMenuHelper  = "Quit Navigator role"
 )
 
 // New creates a new instance of terminal
@@ -339,34 +340,20 @@ func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 func (term *TerminalUI) initMainMenu() *menu {
 	m := newMenu("Main menu")
 	m.addOptions(
-		newMenuOption('D', driverRoleMenuHelper, nil, func() {
-			term.enterRole(role.Driver{})
-			term.whatShallWeDo()
-		}, false),
-		newMenuOption('N', navigatorRoleMenuHelper, nil, func() {
-			term.enterRole(role.Navigator{})
-			term.whatShallWeDo()
-		}, false),
-		newMenuOption('P', autoPushMenuHelper, nil, func() {
-			term.tcr.ToggleAutoPush()
-			term.ShowSessionInfo()
-			term.whatShallWeDo()
-		}, false),
-		newMenuOption('L', pullMenuHelper, nil, func() {
-			term.vcsPull()
-			term.whatShallWeDo()
-		}, false),
-		newMenuOption('S', pushMenuHelper, nil, func() {
-			term.vcsPush()
-			term.whatShallWeDo()
-		}, false),
-		newMenuOption('Q', quitMenuHelper, nil, func() {
-			Restore()
-			term.tcr.Quit()
-		}, true),
-		newMenuOption('?', optionsMenuHelper, nil, func() {
-			term.listMenuOptions(term.mainMenu, "Available Options:")
-		}, false),
+		newMenuOption('D', enterDriverRoleMenuHelper, nil,
+			term.enterRoleMenuAction(role.Driver{}), false),
+		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
+			term.enterRoleMenuAction(role.Navigator{}), false),
+		newMenuOption('P', autoPushMenuHelper, nil,
+			term.autoPushMenuAction(), false),
+		newMenuOption('L', pullMenuHelper, nil,
+			term.vcsPullMenuAction(), false),
+		newMenuOption('S', pushMenuHelper, nil,
+			term.vcsPushMenuAction(), false),
+		newMenuOption('Q', quitMenuHelper, nil,
+			term.quitMenuAction(), true),
+		newMenuOption('?', optionsMenuHelper, nil,
+			term.optionsMenuAction(m), false),
 	)
 	return m
 }
@@ -374,22 +361,85 @@ func (term *TerminalUI) initMainMenu() *menu {
 func (term *TerminalUI) initRoleMenu() *menu {
 	m := newMenu("Role menu")
 	m.addOptions(
-
 		newMenuOption('T', timerStatusMenuHelper,
-			func() bool {
-				r := term.tcr.GetCurrentRole()
-				return settings.EnableMobTimer && r != nil && r.RunsWithTimer()
-			},
-			func() {
-				term.showTimerStatus()
-			}, false),
-		newMenuOption('Q', quitRoleMenuHelper, nil, func() {
-			term.ReportWarning(false, "OK, I heard you")
-			term.tcr.Stop()
-		}, true),
-		newMenuOption('?', optionsMenuHelper, nil, func() {
-			term.listMenuOptions(term.roleMenu, "Available Options:")
-		}, false),
+			term.timerStatusMenuEnabler(),
+			term.timerStatusMenuAction(), false),
+		newMenuOption('Q', quitDriverRoleMenuHelper,
+			term.quitRoleMenuEnabler(role.Driver{}),
+			term.quitRoleMenuAction(), true),
+		newMenuOption('Q', quitNavigatorRoleMenuHelper,
+			term.quitRoleMenuEnabler(role.Navigator{}),
+			term.quitRoleMenuAction(), true),
+		newMenuOption('?', optionsMenuHelper, nil,
+			term.optionsMenuAction(m), false),
 	)
 	return m
+}
+
+func (term *TerminalUI) enterRoleMenuAction(r role.Role) menuAction {
+	return func() {
+		term.enterRole(r)
+		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) autoPushMenuAction() menuAction {
+	return func() {
+		term.tcr.ToggleAutoPush()
+		term.ShowSessionInfo()
+		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) vcsPullMenuAction() menuAction {
+	return func() {
+		term.vcsPull()
+		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) vcsPushMenuAction() menuAction {
+	return func() {
+		term.vcsPush()
+		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) optionsMenuAction(m *menu) menuAction {
+	return func() {
+		term.listMenuOptions(m, "Available Options:")
+	}
+}
+
+func (term *TerminalUI) quitMenuAction() menuAction {
+	return func() {
+		Restore()
+		term.tcr.Quit()
+	}
+}
+
+func (term *TerminalUI) timerStatusMenuEnabler() menuEnabler {
+	return func() bool {
+		r := term.tcr.GetCurrentRole()
+		return settings.EnableMobTimer && r != nil && r.RunsWithTimer()
+	}
+}
+
+func (term *TerminalUI) timerStatusMenuAction() menuAction {
+	return func() {
+		term.showTimerStatus()
+	}
+}
+
+func (term *TerminalUI) quitRoleMenuEnabler(r role.Role) menuEnabler {
+	return func() bool {
+		return term.tcr.GetCurrentRole() == r
+	}
+}
+
+func (term *TerminalUI) quitRoleMenuAction() menuAction {
+	return func() {
+		term.ReportWarning(false, "OK, I heard you")
+		term.tcr.Stop()
+	}
 }
