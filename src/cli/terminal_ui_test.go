@@ -262,13 +262,13 @@ func Test_list_role_menu_options(t *testing.T) {
 			currentRole: role.Driver{},
 			expected: asCyanTraceWithSeparatorLine(title) +
 				asCyanTrace("\tT -> "+timerStatusMenuHelper) +
-				asCyanTrace("\tQ -> "+quitRoleMenuHelper) +
+				asCyanTrace("\tQ -> "+quitDriverRoleMenuHelper) +
 				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 		{
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tQ -> "+quitRoleMenuHelper) +
+				asCyanTrace("\tQ -> "+quitNavigatorRoleMenuHelper) +
 				asCyanTrace("\t? -> "+optionsMenuHelper),
 		},
 	}
@@ -303,8 +303,8 @@ func Test_simple_message_methods(t *testing.T) {
 				term.whatShallWeDo()
 			},
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
-				asCyanTrace("\tD -> "+driverRoleMenuHelper) +
-				asCyanTrace("\tN -> "+navigatorRoleMenuHelper) +
+				asCyanTrace("\tD -> "+enterDriverRoleMenuHelper) +
+				asCyanTrace("\tN -> "+enterNavigatorRoleMenuHelper) +
 				asCyanTrace("\tP -> "+autoPushMenuHelper) +
 				asCyanTrace("\tL -> "+pullMenuHelper) +
 				asCyanTrace("\tS -> "+pushMenuHelper) +
