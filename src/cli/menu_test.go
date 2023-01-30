@@ -171,14 +171,63 @@ func Test_menu_get_options_drops_disabled_options(t *testing.T) {
 }
 
 func Test_menu_match_and_run(t *testing.T) {
-	// TODO: parameterize and add cases for different return value combinations
-	m := newMenu("menu title")
-	var didRun bool
-	m.addOptions(newMenuOption('X', "some description", nil, func() {
-		didRun = true
-	}, false))
-	didMatch, quit := m.matchAndRun('X')
-	assert.Equal(t, true, didMatch)
-	assert.Equal(t, true, didRun)
-	assert.Equal(t, false, quit)
+	tests := []struct {
+		desc          string
+		enabledFlag   bool
+		quitFlag      bool
+		input         byte
+		expectedMatch bool
+		expectedRun   bool
+		expectedQuit  bool
+	}{
+		{
+			"enabled regular option with matching input", true, false, 'X',
+			true, true, false,
+		},
+		{
+			"enabled regular option with non-matching input", true, false, 'Y',
+			false, false, false,
+		},
+		{
+			"disabled regular option with matching input", false, false, 'X',
+			false, false, false,
+		},
+		{
+			"disabled regular option with non-matching input", false, false, 'Y',
+			false, false, false,
+		},
+		{
+			"enabled quit option with matching input", true, true, 'X',
+			true, true, true,
+		},
+		{
+			"enabled quit option with non-matching input", true, true, 'Y',
+			false, false, false,
+		},
+		{
+			"disabled quit option with matching input", false, true, 'X',
+			false, false, false,
+		},
+		{
+			"disabled quit option with non-matching input", false, true, 'Y',
+			false, false, false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			m := newMenu("")
+			var didRun bool
+			m.addOptions(newMenuOption('X', "",
+				func() bool {
+					return test.enabledFlag
+				},
+				func() {
+					didRun = true
+				}, test.quitFlag))
+			didMatch, shouldQuit := m.matchAndRun(test.input)
+			assert.Equal(t, test.expectedMatch, didMatch, "input matching")
+			assert.Equal(t, test.expectedRun, didRun, "action triggering")
+			assert.Equal(t, test.expectedQuit, shouldQuit, "menu quit flag")
+		})
+	}
 }

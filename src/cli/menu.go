@@ -124,7 +124,7 @@ func (m *menu) matchAndRun(input byte) (matched bool, quit bool) {
 			matched = true
 			_ = option.run()
 			if option.quitOption {
-				return false, true
+				return matched, true
 			}
 		}
 	}
