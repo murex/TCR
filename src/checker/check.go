@@ -69,8 +69,8 @@ var checkEnv struct {
 	langErr       error
 	tchn          toolchain.TchnInterface
 	tchnErr       error
-	git           vcs.Interface
-	gitErr        error
+	vcs           vcs.Interface
+	vcsErr        error
 }
 
 // Run goes through all configuration, parameters and local environment to check
@@ -85,7 +85,6 @@ func Run(p params.Params) {
 		checkLanguage,
 		checkToolchain,
 		checkVCSEnvironment,
-		checkAutoPush,
 		checkCommitFailures,
 		checkPollingPeriod,
 		checkMobTimer,
@@ -131,7 +130,8 @@ func initCheckEnv(p params.Params) {
 	checkEnv.workDir = toolchain.GetWorkDir()
 
 	if checkEnv.sourceTreeErr == nil {
-		checkEnv.git, checkEnv.gitErr = git.New(checkEnv.sourceTree.GetBaseDir())
+		// TODO init with the right VCS instance
+		checkEnv.vcs, checkEnv.vcsErr = git.New(checkEnv.sourceTree.GetBaseDir())
 	}
 }
 
@@ -159,15 +159,15 @@ func checkpointsForList(headerMsg string, emptyMsg string, values []string) (cp 
 	return cp
 }
 
-func okCheckPoint(a ...interface{}) CheckPoint {
+func okCheckPoint(a ...any) CheckPoint {
 	return CheckPoint{rc: CheckStatusOk, description: fmt.Sprint(a...)}
 }
 
-func warningCheckPoint(a ...interface{}) CheckPoint {
+func warningCheckPoint(a ...any) CheckPoint {
 	return CheckPoint{rc: CheckStatusWarning, description: fmt.Sprint(a...)}
 }
 
-func errorCheckPoint(a ...interface{}) CheckPoint {
+func errorCheckPoint(a ...any) CheckPoint {
 	return CheckPoint{rc: CheckStatusError, description: fmt.Sprint(a...)}
 }
 
@@ -187,15 +187,15 @@ func (cr *CheckResults) add(checkPoints []CheckPoint) {
 	cr.checkPoints = append(cr.checkPoints, checkPoints...)
 }
 
-func (cr *CheckResults) ok(a ...interface{}) {
+func (cr *CheckResults) ok(a ...any) {
 	cr.addCheckPoint(okCheckPoint(a...))
 }
 
-func (cr *CheckResults) warning(a ...interface{}) {
+func (cr *CheckResults) warning(a ...any) {
 	cr.addCheckPoint(warningCheckPoint(a...))
 }
 
-//func (cr *CheckResults) error(a ...interface{}) {
+//func (cr *CheckResults) error(a ...any) {
 //	cr.addCheckPoint(errorCheckPoint(a...))
 //}
 

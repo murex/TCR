@@ -27,11 +27,11 @@ import (
 )
 
 func checkCommitFailures(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("VCS commit-failures")
+	cr = NewCheckResults("commit-failures")
 	if p.CommitFailures {
-		cr.ok("VCS commit-failures is turned on: test-breaking changes will be committed")
+		cr.ok("commit-failures is turned on: test-breaking changes will be committed")
 	} else {
-		cr.ok("VCS commit-failures is turned off: test-breaking changes will not be committed")
+		cr.ok("commit-failures is turned off: test-breaking changes will not be committed")
 	}
 	return cr
 }

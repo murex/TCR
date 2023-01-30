@@ -24,14 +24,16 @@ package checker
 
 import (
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/p4"
 	"strings"
 )
 
 func checkVCSEnvironment(p params.Params) (cr *CheckResults) {
 	switch strings.ToLower(p.VCS) {
-	case "git":
+	case git.Name:
 		return checkGitEnvironment(p)
-	case "p4":
+	case p4.Name:
 		return checkP4Environment(p)
 	default:
 		return nil
