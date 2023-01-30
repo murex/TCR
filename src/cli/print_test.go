@@ -85,5 +85,6 @@ func Test_print_in_red_function_formatting(t *testing.T) {
 }
 
 func Test_print_horizontal_line_when_terminal_width_is_unknown(t *testing.T) {
-	assertPrintFormatting(t, printHorizontalLine, ansiCyanFg, "TCR", strings.Repeat("-", 75))
+	assertPrintFormatting(t, printHorizontalLine, ansiCyanFg, "TCR",
+		strings.Repeat(horizontalLineCharacter, 75))
 }

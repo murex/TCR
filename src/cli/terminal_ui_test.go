@@ -32,6 +32,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/zenizh/go-capturer"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -126,7 +127,7 @@ func asCyanTrace(str string) string {
 }
 
 func asCyanTraceWithSeparatorLine(str string) string {
-	return asCyanTrace("---------------------------------------------------------------------------") +
+	return asCyanTrace(strings.Repeat(horizontalLineCharacter, 75)) +
 		asCyanTrace(str)
 }
 
@@ -261,15 +262,15 @@ func Test_list_role_menu_options(t *testing.T) {
 		{
 			currentRole: role.Driver{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tT -> "+timerStatusMenuHelper) +
-				asCyanTrace("\tQ -> "+quitDriverRoleMenuHelper) +
-				asCyanTrace("\t? -> "+optionsMenuHelper),
+				asCyanTrace("\tT "+menuArrow+" "+timerStatusMenuHelper) +
+				asCyanTrace("\tQ "+menuArrow+" "+quitDriverRoleMenuHelper) +
+				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
 		{
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
-				asCyanTrace("\tQ -> "+quitNavigatorRoleMenuHelper) +
-				asCyanTrace("\t? -> "+optionsMenuHelper),
+				asCyanTrace("\tQ "+menuArrow+" "+quitNavigatorRoleMenuHelper) +
+				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
 	}
 
@@ -303,13 +304,13 @@ func Test_simple_message_methods(t *testing.T) {
 				term.whatShallWeDo()
 			},
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
-				asCyanTrace("\tD -> "+enterDriverRoleMenuHelper) +
-				asCyanTrace("\tN -> "+enterNavigatorRoleMenuHelper) +
-				asCyanTrace("\tP -> "+autoPushMenuHelper) +
-				asCyanTrace("\tL -> "+pullMenuHelper) +
-				asCyanTrace("\tS -> "+pushMenuHelper) +
-				asCyanTrace("\tQ -> "+quitMenuHelper) +
-				asCyanTrace("\t? -> "+optionsMenuHelper),
+				asCyanTrace("\tD "+menuArrow+" "+enterDriverRoleMenuHelper) +
+				asCyanTrace("\tN "+menuArrow+" "+enterNavigatorRoleMenuHelper) +
+				asCyanTrace("\tP "+menuArrow+" "+autoPushMenuHelper) +
+				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
+				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
+				asCyanTrace("\tQ "+menuArrow+" "+quitMenuHelper) +
+				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
 	}
 
