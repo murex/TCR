@@ -29,6 +29,8 @@ import (
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/p4"
 	"github.com/stretchr/testify/assert"
 	"github.com/zenizh/go-capturer"
 	"os"
@@ -306,7 +308,7 @@ func Test_simple_message_methods(t *testing.T) {
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
 				asCyanTrace("\tD "+menuArrow+" "+enterDriverRoleMenuHelper) +
 				asCyanTrace("\tN "+menuArrow+" "+enterNavigatorRoleMenuHelper) +
-				asCyanTrace("\tP "+menuArrow+" "+autoPushMenuHelper) +
+				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
 				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
 				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitMenuHelper) +
@@ -490,54 +492,77 @@ func Test_main_menu(t *testing.T) {
 	slowTestTag(t)
 	testFlags := []struct {
 		desc     string
+		vcsName  string
 		input1   []byte
 		input2   []byte
 		expected []engine.TCRCall
 	}{
 		{
-			"Enter key has no action", []byte{enterKey}, nil,
+			"Enter key has no action", git.Name, []byte{enterKey}, nil,
 			engine.NoTCRCall,
 		},
 		{
-			"? key has no action on TCR", []byte{'?'}, nil,
+			"? key has no action on TCR", git.Name, []byte{'?'}, nil,
 			engine.NoTCRCall,
 		},
 		{
-			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
+			"Q key has no action on TCR", git.Name, []byte{'q'}, []byte{'Q'},
 			engine.NoTCRCall,
 		},
 		{
-			"T key has no action in main menu", []byte{'t'}, []byte{'T'},
+			"T key has no action in main menu", git.Name, []byte{'t'}, []byte{'T'},
 			engine.NoTCRCall,
 		},
 		{
-			"P key", []byte{'p'}, []byte{'P'},
+			"P key is actionable with git", git.Name, []byte{'p'}, []byte{'P'},
 			[]engine.TCRCall{
 				engine.TCRCallToggleAutoPush,
 				engine.TCRCallGetSessionInfo,
 			},
 		},
 		{
-			"L key", []byte{'l'}, []byte{'L'},
+			"P key has no action with p4", p4.Name, []byte{'p'}, []byte{'P'},
+			engine.NoTCRCall,
+		},
+		{
+			"L key is actionable with git", git.Name, []byte{'l'}, []byte{'L'},
 			[]engine.TCRCall{
 				engine.TCRCallVCSPull,
 			},
 		},
 		{
-			"S key", []byte{'s'}, []byte{'S'},
+			"L key has no action with p4", p4.Name, []byte{'l'}, []byte{'L'},
+			engine.NoTCRCall,
+		},
+		{
+			"S key is actionable with git", git.Name, []byte{'s'}, []byte{'S'},
 			[]engine.TCRCall{
 				engine.TCRCallVCSPush,
 			},
 		},
 		{
-			"D+Q keys", []byte{'d', 'q'}, []byte{'D', 'Q'},
+			"S key has no action with p4", p4.Name, []byte{'s'}, []byte{'S'},
+			engine.NoTCRCall,
+		},
+		{
+			"Y key has no action with git", git.Name, []byte{'y'}, []byte{'Y'},
+			engine.NoTCRCall,
+		},
+		{
+			"Y key is actionable with p4", p4.Name, []byte{'y'}, []byte{'Y'},
+			[]engine.TCRCall{
+				engine.TCRCallVCSPull,
+			},
+		},
+		{
+			"D+Q keys", git.Name, []byte{'d', 'q'}, []byte{'D', 'Q'},
 			[]engine.TCRCall{
 				engine.TCRCallRunAsDriver,
 				engine.TCRCallStop,
 			},
 		},
 		{
-			"N+Q keys", []byte{'n', 'q'}, []byte{'N', 'Q'},
+			"N+Q keys", git.Name, []byte{'n', 'q'}, []byte{'N', 'Q'},
 			[]engine.TCRCall{
 				engine.TCRCallRunAsNavigator,
 				engine.TCRCallStop,
@@ -548,14 +573,14 @@ func Test_main_menu(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			for _, input := range [][]byte{tt.input1, tt.input2} {
 				if input != nil {
-					assertMainMenuActions(t, input, tt.expected)
+					assertMainMenuActions(t, tt.vcsName, input, tt.expected)
 				}
 			}
 		})
 	}
 }
 
-func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TCRCall) {
+func assertMainMenuActions(t *testing.T, vcsName string, input []byte, expected []engine.TCRCall) {
 	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
@@ -569,7 +594,7 @@ func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TCRCall
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
 
-	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
+	term, fakeEngine, _ := terminalSetup(*params.AParamSet(params.WithVCS(vcsName)))
 	term.enterMainMenu()
 	assert.Equal(t, append(expected, engine.TCRCallQuit), fakeEngine.GetCallHistory())
 	terminalTeardown(*term)
