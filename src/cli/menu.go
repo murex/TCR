@@ -28,6 +28,8 @@ import (
 	"fmt"
 )
 
+const menuArrow = "─▶"
+
 type (
 	menuAction  func()
 	menuEnabler func() bool
@@ -88,7 +90,7 @@ func (mo *menuOption) isEnabled() bool {
 }
 
 func (mo *menuOption) toString() string {
-	return fmt.Sprintf("\t%c -> %s", mo.getShortcut(), mo.getDescription())
+	return fmt.Sprintf("\t%c %s %s", mo.getShortcut(), menuArrow, mo.getDescription())
 }
 
 func newMenu(title string) *menu {

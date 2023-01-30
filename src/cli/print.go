@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	horizontalLineCharacter = "-" // Character used for printing horizontal lines
+	horizontalLineCharacter = "─" // Character used for printing horizontal lines
 	defaultTerminalWidth    = 80  // Default terminal width if current terminal is not recognized
 )
 

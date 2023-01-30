@@ -39,7 +39,7 @@ func Test_menu_option_get_shortcut(t *testing.T) {
 
 func Test_menu_option_to_string(t *testing.T) {
 	mo := newMenuOption('Z', "menu option description", nil, nil, false)
-	assert.Equal(t, "\tZ -> menu option description", mo.toString())
+	assert.Equal(t, "\tZ "+menuArrow+" menu option description", mo.toString())
 }
 
 func Test_menu_option_action(t *testing.T) {
