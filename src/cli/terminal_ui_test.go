@@ -479,13 +479,56 @@ func Test_show_session_info(t *testing.T) {
 	expected := asCyanTraceWithSeparatorLine("Base Directory: fake") +
 		asCyanTrace("Work Directory: fake") +
 		asCyanTrace("Language=fake, Toolchain=fake") +
-		asCyanTrace("Running on VCS session \"fake\" with auto-push disabled")
+		asYellowTrace("VCS \"fake\" is unknown")
 
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
 		term, _, _ := terminalSetup(*params.AParamSet())
 		term.ShowSessionInfo()
 		terminalTeardown(*term)
 	}))
+}
+
+func Test_report_vcs_info(t *testing.T) {
+	tests := []struct {
+		desc     string
+		info     engine.SessionInfo
+		expected string
+	}{
+		{
+			"VCS not set",
+			engine.SessionInfo{VCSName: "", VCSSessionSummary: "", GitAutoPush: false},
+			asYellowTrace("VCS \"\" is unknown"),
+		},
+		{
+			"VCS unknown",
+			engine.SessionInfo{VCSName: "dummy", VCSSessionSummary: "", GitAutoPush: false},
+			asYellowTrace("VCS \"dummy\" is unknown"),
+		},
+		{
+			"git with auto-push on",
+			engine.SessionInfo{VCSName: "git", VCSSessionSummary: "git branch \"my-branch\"", GitAutoPush: true},
+			asCyanTrace("Running on git branch \"my-branch\" with auto-push enabled"),
+		},
+		{
+			"git with auto-push off",
+			engine.SessionInfo{VCSName: "git", VCSSessionSummary: "git branch \"my-branch\"", GitAutoPush: false},
+			asCyanTrace("Running on git branch \"my-branch\" with auto-push disabled"),
+		},
+		{
+			"p4",
+			engine.SessionInfo{VCSName: "p4", VCSSessionSummary: "p4 client \"my-client\"", GitAutoPush: false},
+			asCyanTrace("Running with p4 client \"my-client\""),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
+				term, _, _ := terminalSetup(*params.AParamSet())
+				term.reportVCSInfo(test.info)
+				terminalTeardown(*term)
+			}))
+		})
+	}
 }
 
 func Test_main_menu(t *testing.T) {

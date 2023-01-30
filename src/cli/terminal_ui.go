@@ -242,16 +242,25 @@ func (term *TerminalUI) ShowRunningMode(mode runmode.RunMode) {
 // ShowSessionInfo shows main information related to the current TCR session
 func (term *TerminalUI) ShowSessionInfo() {
 	info := term.tcr.GetSessionInfo()
-
 	term.ReportTitle(false, "Base Directory: ", info.BaseDir)
 	term.ReportInfo(false, "Work Directory: ", info.WorkDir)
 	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
+	term.reportVCSInfo(info)
+}
 
-	autoPush := "disabled"
-	if info.GitAutoPush {
-		autoPush = "enabled"
+func (term *TerminalUI) reportVCSInfo(info engine.SessionInfo) {
+	switch info.VCSName {
+	case git.Name:
+		autoPush := "disabled"
+		if info.GitAutoPush {
+			autoPush = "enabled"
+		}
+		term.ReportInfo(false, "Running on ", info.VCSSessionSummary, " with auto-push ", autoPush)
+	case p4.Name:
+		term.ReportInfo(false, "Running with ", info.VCSSessionSummary)
+	default:
+		term.ReportWarning(false, "VCS \"", info.VCSName, "\" is unknown")
 	}
-	term.ReportInfo(false, "Running on ", info.VCSSessionSummary, " with auto-push ", autoPush)
 }
 
 // Confirm asks the user for confirmation
