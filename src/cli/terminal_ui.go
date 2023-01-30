@@ -32,6 +32,8 @@ import (
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/p4"
 	"os"
 )
 
@@ -52,9 +54,10 @@ const (
 const (
 	pullMenuHelper               = "Pull from remote"
 	pushMenuHelper               = "Push to remote"
+	syncMenuHelper               = "Synchronize with depot"
 	enterDriverRoleMenuHelper    = "Driver role"
 	enterNavigatorRoleMenuHelper = "Navigator role"
-	autoPushMenuHelper           = "Turn on/off VCS auto-push"
+	gitAutoPushMenuHelper        = "Turn on/off git auto-push"
 	quitMenuHelper               = "Quit"
 	optionsMenuHelper            = "List available options"
 	timerStatusMenuHelper        = "Timer status"
@@ -344,12 +347,18 @@ func (term *TerminalUI) initMainMenu() *menu {
 			term.enterRoleMenuAction(role.Driver{}), false),
 		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
 			term.enterRoleMenuAction(role.Navigator{}), false),
-		newMenuOption('P', autoPushMenuHelper, nil,
+		newMenuOption('P', gitAutoPushMenuHelper,
+			term.gitMenuEnabler(),
 			term.autoPushMenuAction(), false),
-		newMenuOption('L', pullMenuHelper, nil,
+		newMenuOption('L', pullMenuHelper,
+			term.gitMenuEnabler(),
 			term.vcsPullMenuAction(), false),
-		newMenuOption('S', pushMenuHelper, nil,
+		newMenuOption('S', pushMenuHelper,
+			term.gitMenuEnabler(),
 			term.vcsPushMenuAction(), false),
+		newMenuOption('Y', syncMenuHelper,
+			term.p4MenuEnabler(),
+			term.vcsPullMenuAction(), false),
 		newMenuOption('Q', quitMenuHelper, nil,
 			term.quitMenuAction(), true),
 		newMenuOption('?', optionsMenuHelper, nil,
@@ -380,6 +389,18 @@ func (term *TerminalUI) enterRoleMenuAction(r role.Role) menuAction {
 	return func() {
 		term.enterRole(r)
 		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) gitMenuEnabler() menuEnabler {
+	return func() bool {
+		return term.params.VCS == git.Name
+	}
+}
+
+func (term *TerminalUI) p4MenuEnabler() menuEnabler {
+	return func() bool {
+		return term.params.VCS == p4.Name
 	}
 }
 
