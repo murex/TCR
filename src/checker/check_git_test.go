@@ -28,6 +28,28 @@ import (
 )
 
 func Test_check_git_returns_warning_with_brand_new_repo(t *testing.T) {
-	// Warning is triggered by default branch (master) being a root branch
+	// Warning is triggered by default if branch (master) being a root branch
 	assertWarning(t, checkGitEnvironment, *params.AParamSet())
+}
+
+func Test_check_git_auto_push(t *testing.T) {
+	tests := []struct {
+		desc     string
+		value    bool
+		expected CheckStatus
+	}{
+		{"enabled", true, CheckStatusOk},
+		{"disabled", false, CheckStatusOk},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assertStatus(t, test.expected,
+				func(p params.Params) (cr *CheckResults) {
+					cr = NewCheckResults("git auto-push parameter")
+					cr.add(checkGitAutoPush(p))
+					return cr
+				},
+				*params.AParamSet(params.WithAutoPush(test.value)))
+		})
+	}
 }
