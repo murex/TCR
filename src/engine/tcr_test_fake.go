@@ -51,6 +51,8 @@ const (
 	TCRCallVCSPush              TCRCall = "vcs-push"
 )
 
+var NoTCRCall []TCRCall
+
 // FakeTCREngine is a TCR engine fake. Used mainly for testing peripheral packages
 // such as cli.
 type FakeTCREngine struct {
