@@ -495,19 +495,19 @@ func Test_main_menu(t *testing.T) {
 	}{
 		{
 			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TCRCall{},
+			engine.NoTCRCall,
 		},
 		{
 			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TCRCall{},
+			engine.NoTCRCall,
 		},
 		{
 			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TCRCall{},
+			engine.NoTCRCall,
 		},
 		{
-			"T key", []byte{'t'}, []byte{'T'},
-			[]engine.TCRCall{},
+			"T key has no action in main menu", []byte{'t'}, []byte{'T'},
+			engine.NoTCRCall,
 		},
 		{
 			"P key", []byte{'p'}, []byte{'P'},
@@ -577,54 +577,51 @@ func assertMainMenuActions(t *testing.T, input []byte, expected []engine.TCRCall
 func Test_driver_menu(t *testing.T) {
 	testFlags := []struct {
 		desc     string
-		input1   []byte
-		input2   []byte
+		input    []byte
 		expected []engine.TCRCall
 	}{
 		{
-			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TCRCall{},
+			"Enter key has no action", []byte{enterKey},
+			engine.NoTCRCall,
 		},
 		{
-			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TCRCall{},
+			"? key has no action on TCR", []byte{'?'},
+			engine.NoTCRCall,
 		},
 		{
-			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TCRCall{},
+			"Q key has no action on TCR", []byte{'q', 'Q'},
+			engine.NoTCRCall,
 		},
 		{
-			"T key", []byte{'t'}, []byte{'T'},
+			"T key triggers reporting timer status", []byte{'t', 'T'},
 			[]engine.TCRCall{engine.TCRCallReportMobTimerStatus},
 		},
 		{
-			"P key has no action", []byte{'p'}, []byte{'P'},
-			[]engine.TCRCall{},
+			"P key has no action", []byte{'p', 'P'},
+			engine.NoTCRCall,
 		},
 		{
-			"D key has no action", []byte{'d'}, []byte{'D'},
-			[]engine.TCRCall{},
+			"D key has no action", []byte{'d', 'D'},
+			engine.NoTCRCall,
 		},
 		{
-			"N key has no action", []byte{'n'}, []byte{'N'},
-			[]engine.TCRCall{},
+			"N key has no action", []byte{'n', 'N'},
+			engine.NoTCRCall,
 		},
 		{
-			"L key has no action", []byte{'l'}, []byte{'L'},
-			[]engine.TCRCall{},
+			"L key has no action", []byte{'l', 'L'},
+			engine.NoTCRCall,
 		},
 		{
-			"S key has no action", []byte{'s'}, []byte{'S'},
-			[]engine.TCRCall{},
+			"S key has no action", []byte{'s', 'S'},
+			engine.NoTCRCall,
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			for _, input := range [][]byte{tt.input1, tt.input2} {
-				if input != nil {
-					assertStartAsActions(t, role.Driver{}, input,
-						append([]engine.TCRCall{engine.TCRCallRunAsDriver}, tt.expected...))
-				}
+			for _, input := range tt.input {
+				assertStartAsActions(t, role.Driver{}, input,
+					append([]engine.TCRCall{engine.TCRCallRunAsDriver}, tt.expected...))
 			}
 		})
 	}
@@ -633,60 +630,57 @@ func Test_driver_menu(t *testing.T) {
 func Test_navigator_menu(t *testing.T) {
 	testFlags := []struct {
 		desc     string
-		input1   []byte
-		input2   []byte
+		input    []byte
 		expected []engine.TCRCall
 	}{
 		{
-			"Enter key has no action", []byte{enterKey}, nil,
-			[]engine.TCRCall{},
+			"Enter key has no action", []byte{enterKey},
+			engine.NoTCRCall,
 		},
 		{
-			"? key has no action on TCR", []byte{'?'}, nil,
-			[]engine.TCRCall{},
+			"? key has no action on TCR", []byte{'?'},
+			engine.NoTCRCall,
 		},
 		{
-			"Q key has no action on TCR", []byte{'q'}, []byte{'Q'},
-			[]engine.TCRCall{},
+			"Q key has no action on TCR", []byte{'q', 'Q'},
+			engine.NoTCRCall,
 		},
 		{
-			"T key has no action", []byte{'t'}, []byte{'T'},
-			[]engine.TCRCall{},
+			"T key has no action", []byte{'t', 'T'},
+			engine.NoTCRCall,
 		},
 		{
-			"P key has no action", []byte{'p'}, []byte{'P'},
-			[]engine.TCRCall{},
+			"P key has no action", []byte{'p', 'P'},
+			engine.NoTCRCall,
 		},
 		{
-			"L key has no action", []byte{'l'}, []byte{'L'},
-			[]engine.TCRCall{},
+			"L key has no action", []byte{'l', 'L'},
+			engine.NoTCRCall,
 		},
 		{
-			"S key has no action", []byte{'s'}, []byte{'S'},
-			[]engine.TCRCall{},
+			"S key has no action", []byte{'s', 'S'},
+			engine.NoTCRCall,
 		},
 		{
-			"D key has no action", []byte{'d'}, []byte{'D'},
-			[]engine.TCRCall{},
+			"D key has no action", []byte{'d', 'D'},
+			engine.NoTCRCall,
 		},
 		{
-			"N key has no action", []byte{'n'}, []byte{'N'},
-			[]engine.TCRCall{},
+			"N key has no action", []byte{'n', 'N'},
+			engine.NoTCRCall,
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			for _, input := range [][]byte{tt.input1, tt.input2} {
-				if input != nil {
-					assertStartAsActions(t, role.Navigator{}, input,
-						append([]engine.TCRCall{engine.TCRCallRunAsNavigator}, tt.expected...))
-				}
+			for _, input := range tt.input {
+				assertStartAsActions(t, role.Navigator{}, input,
+					append([]engine.TCRCall{engine.TCRCallRunAsNavigator}, tt.expected...))
 			}
 		})
 	}
 }
 
-func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []engine.TCRCall) {
+func assertStartAsActions(t *testing.T, r role.Role, input byte, expected []engine.TCRCall) {
 	t.Helper()
 	stdin := os.Stdin
 	stdout := os.Stdout
@@ -695,7 +689,7 @@ func assertStartAsActions(t *testing.T, r role.Role, input []byte, expected []en
 	defer func() { os.Stdin = stdin; os.Stdout = stdout; os.Stderr = stderr }()
 	// We fake stdin so that we can simulate a key press
 	// We always add a 'q' at the end to make sure we get out of the infinite loop
-	os.Stdin = fakeStdin(t, append(input, 'q'))
+	os.Stdin = fakeStdin(t, []byte{input, 'q'})
 	// Displayed info on stdout and stderr is not used in the test
 	os.Stdout = os.NewFile(0, os.DevNull)
 	os.Stderr = os.NewFile(0, os.DevNull)
