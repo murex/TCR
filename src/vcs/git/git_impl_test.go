@@ -34,11 +34,11 @@ import (
 	"time"
 )
 
-func slowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-}
+//func slowTestTag(t *testing.T) {
+//	if testing.Short() {
+//		t.Skip("skipping test in short mode.")
+//	}
+//}
 
 func Test_get_vcs_name(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
