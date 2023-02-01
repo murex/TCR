@@ -46,8 +46,8 @@ If you are a technical coach, you can advise participants to your coaching sessi
 
 ### Prerequisites
 
-1. Have [git](https://git-scm.com/) installed on your machine
-2. Have a clone of the git repository containing the code you intend to work on
+1. Have [git](https://git-scm.com/) or [Perforce client](https://www.perforce.com/downloads/helix-visual-client-p4v) installed on your machine
+2. Have a clone of the git repository or a client view of the Perforce depot containing the code you intend to work on
 3. Supported platforms: macOS, Linux and Windows. Refer to [TCR releases page](https://github.com/murex/TCR/releases)
    for a complete list of supported platforms/architectures
 
@@ -133,6 +133,8 @@ TCR for various language/toolchain combinations.
 
 ### Running TCR
 
+#### Operating Systems
+
 <details>
   <summary>On MacOS</summary>
 
@@ -190,9 +192,14 @@ TCR for various language/toolchain combinations.
 
 </details>
 
-> ***Note***
->
-> <details><summary>TCR and git commits signing</summary>
+#### Version Control Systems
+
+<details>
+  <summary>Git</summary>
+
+TCR uses git by default. There is no need to specify anything particular to use git.
+
+> ***Note: TCR and git commits signin***
 >
 > Some users prefer to set up their git configuration so that each of their commits is
 > signed and verified through a GPG passphrase as described
@@ -205,8 +212,27 @@ TCR for various language/toolchain combinations.
 >
 > If signing every commit is important to you, you can still do it when you're done
 > working with TCR, when reworking git history and squashing TCR commits into meaningful ones.
->
-> </details>
+
+</details>
+
+<details>
+  <summary>Perforce</summary>
+
+Before running TCR with Perforce, make sure that the P4 Client is properly configured.
+
+To use TCR with Perforce, you'll need to add the `--vcs=p4` to the command line (you can also set this up in the `.tcr/config.yml`, see the [Configuration Directory](#configuration-directory) section below).
+
+> ***Note: Perforce limitations***
+> 
+> At the moment, TCR over Perforce is still in the experimentation phase. It does not yet support all the git options. Here are the main limitations:
+> 
+> - The option `--commit-failures` or `-f` is not supported
+> - The option `--auto-push` or `-p` has no meaning with Perforce and is ignored
+> - The sub-command `log` is not supported with Perforce
+> - The sub-command `stats` is not supported with Perforce
+> - The sub-command `check` does not check the Perforce configuration
+
+</details>
 
 ### Using TCR configuration
 
