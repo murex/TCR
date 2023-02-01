@@ -147,3 +147,9 @@ or [src](../src) directory:
 make run
 ```
 
+If you want to test with the Perforce client:
+
+```shell
+cd src
+./tcr-local-p4
+```
