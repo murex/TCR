@@ -126,3 +126,10 @@ func WithVCS(vcs string) func(params *Params) {
 		params.VCS = vcs
 	}
 }
+
+// WithMessageSuffix sets the provided value as the Message Suffix to be used
+func WithMessageSuffix(suffix string) func(params *Params) {
+	return func(params *Params) {
+		params.MessageSuffix = suffix
+	}
+}

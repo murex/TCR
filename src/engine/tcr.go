@@ -58,10 +58,6 @@ type (
 		RunAsNavigator()
 		Stop()
 		RunTCRCycle()
-		build() (result toolchain.CommandResult)
-		test() (result toolchain.TestCommandResult)
-		commit(event events.TCREvent)
-		revert(event events.TCREvent)
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
@@ -86,6 +82,7 @@ type (
 		mobTimer        *timer.PeriodicReminder
 		currentRole     role.Role
 		commitOnFail    bool
+		messageSuffix   string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
 	}
@@ -108,9 +105,10 @@ var (
 )
 
 // NewTCREngine instantiates TCR engine instance
-func NewTCREngine() TCRInterface {
-	TCR = &TCREngine{}
-	return TCR
+func NewTCREngine() (engine *TCREngine) {
+	engine = &TCREngine{}
+	TCR = engine
+	return engine
 }
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -143,6 +141,7 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
 	tcr.initVCS(p.VCS)
+	tcr.setMessageSuffix(p.MessageSuffix)
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
@@ -241,6 +240,21 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 		event.Status = events.StatusUnknown
 	}
 	return event
+}
+
+func (tcr *TCREngine) setMessageSuffix(suffix string) {
+	tcr.messageSuffix = suffix
+}
+
+func (tcr *TCREngine) prepareCommitMessages(statusMessage string, event *events.TCREvent) []string {
+	messages := []string{statusMessage}
+	if event != nil {
+		messages = append(messages, event.ToYAML())
+	}
+	if tcr.messageSuffix != "" {
+		messages = append(messages, "\n"+tcr.messageSuffix)
+	}
+	return messages
 }
 
 func (tcr *TCREngine) initVCS(vcsName string) {
@@ -458,7 +472,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYAML())
+	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageOk, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -494,7 +508,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYAML())
+	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageFail, &event)...)
 	if err != nil {
 		return err
 	}
@@ -504,7 +518,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 		return err
 	}
 	// Amend commit message on revert operation in VCS index
-	err = tcr.vcs.Commit(true, commitMessageRevert)
+	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageRevert, nil)...)
 	if err != nil {
 		return err
 	}
