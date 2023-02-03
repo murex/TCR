@@ -22,8 +22,6 @@
 
 set -u
 
-command_args=$*
-
 repo_root_dir="$(git rev-parse --show-toplevel)"
 src_dir="$(cd "${repo_root_dir}/src" && pwd)"
 example_dir="$(cd "${repo_root_dir}/examples" && pwd)"
@@ -57,7 +55,7 @@ for dir in "${example_dir}"/*; do
       cd "${dir}" && ./cmake_easy_setup.sh
     fi
 
-    cd "${src_dir}" && go run . $command_args \
+    cd "${src_dir}" && go run . "$@" \
       --base-dir="${dir}" \
       --config-dir="${dir}" \
       --work-dir="${dir}" \
