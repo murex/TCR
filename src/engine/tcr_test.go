@@ -715,6 +715,28 @@ func Test_parse_commit_message(t *testing.T) {
 				events.NewTestStats(10, 8, 2, 1, 0, 40*time.Millisecond),
 			),
 		},
+		{
+			desc: "commit with single line suffix message",
+			commitMessage: "✅ TCR - tests passing\n" +
+				"\n" +
+				"changed-lines:\n" +
+				"    src: 1\n" +
+				"    test: 2\n" +
+				"test-stats:\n" +
+				"    run: 3\n" +
+				"    passed: 4\n" +
+				"    failed: 5\n" +
+				"    skipped: 6\n" +
+				"    error: 7\n" +
+				"    duration: 8ms\n" +
+				"\n" +
+				"single line suffix\n",
+			expected: events.NewTCREvent(
+				events.StatusPass,
+				events.NewChangedLines(1, 2),
+				events.NewTestStats(3, 4, 5, 6, 7, 8*time.Millisecond),
+			),
+		},
 	}
 
 	for _, tt := range testFlags {
