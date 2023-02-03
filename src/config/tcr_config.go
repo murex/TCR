@@ -57,6 +57,7 @@ func (c TcrConfig) reset() {
 	c.AutoPush.reset()
 	c.CommitFailures.reset()
 	c.VCS.reset()
+	c.MessageSuffix.reset()
 }
 
 // Config is the placeholder for all TCR configuration parameters

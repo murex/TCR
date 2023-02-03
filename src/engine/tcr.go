@@ -246,7 +246,7 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 	tcr.messageSuffix = suffix
 }
 
-func (tcr *TCREngine) prepareCommitMessages(statusMessage string, event *events.TCREvent) []string {
+func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
 	messages := []string{statusMessage}
 	if event != nil {
 		messages = append(messages, event.ToYAML())
@@ -472,7 +472,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageOk, &event)...)
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageOk, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -508,7 +508,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageFail, &event)...)
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageFail, &event)...)
 	if err != nil {
 		return err
 	}
@@ -518,7 +518,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 		return err
 	}
 	// Amend commit message on revert operation in VCS index
-	err = tcr.vcs.Commit(false, tcr.prepareCommitMessages(commitMessageRevert, nil)...)
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageRevert, nil)...)
 	if err != nil {
 		return err
 	}
@@ -566,6 +566,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
+		MessageSuffix:     tcr.messageSuffix,
 	}
 }
 

@@ -38,7 +38,7 @@ func AddMessageSuffixParam(cmd *cobra.Command) *StringParam {
 			cobraSettings: cobraSettings{
 				name:       "message-suffix",
 				shorthand:  "m",
-				usage:      "indicate the suffix to be appended at the end of the commit message (ex: Issue Tracker Id [#1234])",
+				usage:      "indicate text to append at the end of TCR commit messages (ex: \"[#1234]\")",
 				persistent: true,
 			},
 		},
