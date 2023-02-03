@@ -246,6 +246,7 @@ func (term *TerminalUI) ShowSessionInfo() {
 	term.ReportInfo(false, "Work Directory: ", info.WorkDir)
 	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 	term.reportVCSInfo(info)
+	term.reportMessageSuffix(info.MessageSuffix)
 }
 
 func (term *TerminalUI) reportVCSInfo(info engine.SessionInfo) {
@@ -261,6 +262,13 @@ func (term *TerminalUI) reportVCSInfo(info engine.SessionInfo) {
 	default:
 		term.ReportWarning(false, "VCS \"", info.VCSName, "\" is unknown")
 	}
+}
+
+func (term *TerminalUI) reportMessageSuffix(suffix string) {
+	if suffix == "" {
+		return
+	}
+	term.ReportInfo(false, "Commit message suffix: \"", suffix, "\"")
 }
 
 // Confirm asks the user for confirmation

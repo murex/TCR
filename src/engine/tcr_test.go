@@ -797,7 +797,7 @@ func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			p := params.AParamSet(params.WithRunMode(runmode.OneShot{}), params.WithMessageSuffix(test.suffix))
 			tcr, _ := initTCREngineWithFakes(p, nil, nil, nil)
-			result := tcr.prepareCommitMessages(commitMessageOk, events.ATcrEvent())
+			result := tcr.wrapCommitMessages(commitMessageOk, events.ATcrEvent())
 			assert.Equal(t, test.expected, result[len(result)-len(test.expected):])
 		})
 	}
