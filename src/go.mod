@@ -9,7 +9,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20220909211152-5a9ec94374f6
 	github.com/go-git/go-billy/v5 v5.4.0
 	github.com/go-git/go-git/v5 v5.5.2
-	github.com/golangci/golangci-lint v1.51.0
+	github.com/golangci/golangci-lint v1.51.1
 	github.com/goreleaser/goreleaser v1.15.1
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
@@ -168,7 +168,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/go-toolsmith/astcast v1.0.0 // indirect
-	github.com/go-toolsmith/astcopy v1.0.2 // indirect
+	github.com/go-toolsmith/astcopy v1.0.3 // indirect
 	github.com/go-toolsmith/astequal v1.0.3 // indirect
 	github.com/go-toolsmith/astfmt v1.0.0 // indirect
 	github.com/go-toolsmith/astp v1.0.0 // indirect
@@ -231,7 +231,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/julz/importas v0.1.0 // indirect
-	github.com/junk1tm/musttag v0.4.3 // indirect
+	github.com/junk1tm/musttag v0.4.4 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
@@ -276,7 +276,7 @@ require (
 	github.com/nishanths/exhaustive v0.9.5 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
-	github.com/nunnatsa/ginkgolinter v0.8.0 // indirect
+	github.com/nunnatsa/ginkgolinter v0.8.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -332,7 +332,7 @@ require (
 	github.com/timakin/bodyclose v0.0.0-20221125081123-e39cf3fc478e // indirect
 	github.com/timonwong/loggercheck v0.9.3 // indirect
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 // indirect
-	github.com/tomarrell/wrapcheck/v2 v2.7.0 // indirect
+	github.com/tomarrell/wrapcheck/v2 v2.8.0 // indirect
 	github.com/tommy-muehle/go-mnd/v2 v2.5.1 // indirect
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
