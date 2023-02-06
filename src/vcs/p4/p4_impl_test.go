@@ -567,6 +567,22 @@ func Test_convert_to_p4_client_path(t *testing.T) {
 			errors.New("path is outside p4 root directory"),
 			"",
 		},
+		{
+			"Root dir is at window drive level",
+			"D:\\",
+			"test_client",
+			"D:\\sub_dir",
+			nil,
+			"//test_client/sub_dir/...",
+		},
+		{
+			"Root dir and dir are at window drive level",
+			"D:\\",
+			"test_client",
+			"D:\\",
+			nil,
+			"//test_client/...",
+		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {

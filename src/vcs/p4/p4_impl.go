@@ -108,7 +108,7 @@ func isSubPathOf(aPath string, refPath string) bool {
 	if refPath == "" {
 		return true
 	}
-	if refPath == aPath || strings.HasPrefix(aPath, refPath+string(os.PathSeparator)) {
+	if refPath == aPath || strings.HasPrefix(aPath, filepath.Clean(refPath+string(os.PathSeparator))) {
 		return true
 	}
 	return false
@@ -341,11 +341,17 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 	if dir == "" {
 		return "", errors.New("can not convert an empty path")
 	}
-	if strings.Index(cleanDir, cleanRoot) != 0 {
+	if !isSubPathOf(cleanDir, cleanRoot) {
 		return "", errors.New("path is outside p4 root directory")
 	}
 
 	relativePath := strings.Replace(cleanDir, cleanRoot, "", 1)
 	slashedPath := strings.ReplaceAll(relativePath, "\\", "/")
-	return "//" + p.clientName + slashedPath + "/...", nil
+	if !strings.HasPrefix(slashedPath, "/") {
+		slashedPath = "/" + slashedPath
+	}
+	if !strings.HasSuffix(slashedPath, "/") {
+		slashedPath = slashedPath + "/"
+	}
+	return "//" + p.clientName + slashedPath + "...", nil
 }
