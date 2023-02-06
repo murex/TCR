@@ -77,28 +77,28 @@ require (
 	github.com/ashanbrown/forbidigo v1.3.0 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.7.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.193 // indirect
-	github.com/aws/aws-sdk-go-v2 v1.17.3 // indirect
+	github.com/aws/aws-sdk-go v1.44.194 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.17.4 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.18.11 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.11 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.21 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.50 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.27 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.21 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.28 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.18 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.18.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.15.0 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.18.12 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.12 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.22 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.51 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.22 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.29 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.18.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.15.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.22 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.21 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.21 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kms v1.20.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.12.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.18.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.23 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.22 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.22 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kms v1.20.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.12.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.18.3 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.0.0-20230110223219-40efa3093a22 // indirect
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/bkielbasa/cyclop v1.2.0 // indirect
 	github.com/blakesmith/ar v0.0.0-20190502131153-809d4375e1fb // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
-	github.com/bombsimon/wsl/v3 v3.3.0 // indirect
+	github.com/bombsimon/wsl/v3 v3.4.0 // indirect
 	github.com/breml/bidichk v0.2.3 // indirect
 	github.com/breml/errchkjson v0.3.0 // indirect
 	github.com/butuzov/ireturn v0.1.1 // indirect
@@ -167,13 +167,13 @@ require (
 	github.com/go-openapi/validate v0.22.1 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
-	github.com/go-toolsmith/astcast v1.0.0 // indirect
-	github.com/go-toolsmith/astcopy v1.0.3 // indirect
-	github.com/go-toolsmith/astequal v1.0.3 // indirect
-	github.com/go-toolsmith/astfmt v1.0.0 // indirect
-	github.com/go-toolsmith/astp v1.0.0 // indirect
-	github.com/go-toolsmith/strparse v1.0.0 // indirect
-	github.com/go-toolsmith/typep v1.0.2 // indirect
+	github.com/go-toolsmith/astcast v1.1.0 // indirect
+	github.com/go-toolsmith/astcopy v1.1.0 // indirect
+	github.com/go-toolsmith/astequal v1.1.0 // indirect
+	github.com/go-toolsmith/astfmt v1.1.0 // indirect
+	github.com/go-toolsmith/astp v1.1.0 // indirect
+	github.com/go-toolsmith/strparse v1.1.0 // indirect
+	github.com/go-toolsmith/typep v1.1.0 // indirect
 	github.com/go-xmlfmt/xmlfmt v1.1.2 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
@@ -204,9 +204,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/gordonklaus/ineffassign v0.0.0-20230107090616-13ace0543b28 // indirect
-	github.com/goreleaser/chglog v0.3.0 // indirect
+	github.com/goreleaser/chglog v0.4.1 // indirect
 	github.com/goreleaser/fileglob v1.3.0 // indirect
-	github.com/goreleaser/nfpm/v2 v2.25.0 // indirect
+	github.com/goreleaser/nfpm/v2 v2.25.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/gostaticanalysis/comment v1.4.2 // indirect
@@ -245,7 +245,7 @@ require (
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20230131010333-9d9a2dddcf0d // indirect
+	github.com/letsencrypt/boulder v0.0.0-20230203225218-d73125d8f6ad // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -302,7 +302,7 @@ require (
 	github.com/sanposhiho/wastedassign/v2 v2.0.7 // indirect
 	github.com/sasha-s/go-csync v0.0.0-20210812194225-61421b77c44b // indirect
 	github.com/sashamelentyev/interfacebloat v1.1.0 // indirect
-	github.com/sashamelentyev/usestdlibvars v1.21.1 // indirect
+	github.com/sashamelentyev/usestdlibvars v1.22.0 // indirect
 	github.com/securego/gosec/v2 v2.14.0 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
@@ -354,8 +354,8 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	gocloud.dev v0.28.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp v0.0.0-20230202163644-54bba9f4231b // indirect
-	golang.org/x/exp/typeparams v0.0.0-20230202163644-54bba9f4231b // indirect
+	golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9 // indirect
+	golang.org/x/exp/typeparams v0.0.0-20230203172020-98cc5a0785f9 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/oauth2 v0.4.0 // indirect
