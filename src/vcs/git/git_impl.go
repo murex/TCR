@@ -77,14 +77,14 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 	var err error
 	g.repository, g.filesystem, err = initRepo(dir)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s - %s", Name, err.Error())
 	}
 
 	g.rootDir = retrieveRootDir(g.filesystem)
 
 	g.workingBranch, err = retrieveWorkingBranch(g.repository)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s - %s", Name, err.Error())
 	}
 
 	if isRemoteDefined(DefaultRemoteName, g.repository) {
