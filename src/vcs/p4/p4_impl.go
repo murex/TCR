@@ -281,14 +281,17 @@ func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
 	return p.runP4Function(p.buildP4Args(args...)...)
 }
 
+func (p *p4Impl) runPipedP4(toCmd shell.Command, args ...string) (output []byte, err error) {
+	return p.runPipedP4Function(toCmd, p.buildP4Args(args...)...)
+}
+
 func (p *p4Impl) buildP4Args(args ...string) []string {
 	return append([]string{"-d", p.GetRootDir(), "-c", p.clientName}, args...)
 }
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	// Command: p4 --field "Description=<message>" change -o | p4 change -i
-	out, err := p.runPipedP4Function(
-		newP4Command("change", "-i"),
+	out, err := p.runPipedP4(newP4Command(p.buildP4Args("change", "-i")...),
 		"-Q", "utf8",
 		"--field", buildDescriptionField(shell.GetAttributes(), messages...),
 		"change", "-o")
