@@ -25,6 +25,7 @@ package shell
 import (
 	"bytes"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/vcs"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"strings"
@@ -166,4 +167,78 @@ func Test_trace_pipe_with_second_command_invalid(t *testing.T) {
 	sniffer.Stop()
 	assert.Error(t, err)
 	assert.Equal(t, 0, sniffer.GetMatchCount())
+}
+
+func Test_command_as_string(t *testing.T) {
+	tests := []struct {
+		desc      string
+		command   Command
+		extraArgs []string
+		expected  string
+	}{
+		{
+			"0 arg and 0 extra arg",
+			NewCommandImpl("command"),
+			nil,
+			"command",
+		},
+		{
+			"1 arg and 0 extra arg",
+			NewCommandImpl("command", "arg1"),
+			nil,
+			"command arg1",
+		},
+		{
+			"1 arg and 1 extra arg",
+			NewCommandImpl("command", "arg1"),
+			[]string{"extra1"},
+			"command arg1 extra1",
+		},
+		{
+			"0 arg and 1 extra arg",
+			NewCommandImpl("command"),
+			[]string{"extra1"},
+			"command extra1",
+		},
+		{
+			"2 args and 3 extra args",
+			NewCommandImpl("command", "arg1", "arg2"),
+			[]string{"extra1", "extra2", "extra3"},
+			"command arg1 arg2 extra1 extra2 extra3",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, test.command.String(test.extraArgs...))
+		})
+	}
+}
+
+func Test_run_command_with_vcs_trace_enabled(t *testing.T) {
+	sniffer := report.NewSniffer(func(msg report.Message) bool {
+		return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "echo") == 0
+	})
+	vcs.SetTrace(true)
+	_, err := NewCommandFunc("echo", "hello world!").Run()
+	vcs.SetTrace(false)
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "echo hello world!", trimmed)
+}
+
+func Test_run_piped_command_with_vcs_trace_enabled(t *testing.T) {
+	sniffer := report.NewSniffer(func(msg report.Message) bool {
+		return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "echo") == 0
+	})
+	vcs.SetTrace(true)
+	_, err := NewCommandFunc("echo", "hello\tworld!").RunAndPipe(
+		NewCommandFunc("cut", "-f", "1"))
+	vcs.SetTrace(false)
+	sniffer.Stop()
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Text, "\r\n")
+	assert.Equal(t, "echo hello\tworld! | cut -f 1", trimmed)
 }

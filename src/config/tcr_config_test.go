@@ -270,6 +270,7 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.mob-timer.duration: %v", prefix, 5*time.Minute),
 		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.toolchain: %v", prefix, ""),
+		fmt.Sprintf("%v.tcr.trace: %v", prefix, "none"),
 		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
 	assertConfigTrace(t, expected,

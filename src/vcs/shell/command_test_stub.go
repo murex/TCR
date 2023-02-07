@@ -70,6 +70,11 @@ func (stub *CommandStub) GetFullPath() string {
 	return stub.GetFullPathFunc()
 }
 
+// String returns the command as a single string (including additional params if any)
+func (stub *CommandStub) String(params ...string) string {
+	return stub.impl.String(params...)
+}
+
 // Run calls the command with the provided parameters in a separate process and returns its output traces combined
 func (stub *CommandStub) Run(params ...string) (output []byte, err error) {
 	return stub.RunFunc(params...)

@@ -20,25 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package config
 
 import (
-	"github.com/murex/tcr/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
-	VCS             string
-	Trace           string
+// AddTraceParam adds trace parameter to the provided command
+func AddTraceParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: true,
+				keyPath: "config.tcr",
+				name:    "trace",
+			},
+			cobraSettings: cobraSettings{
+				name:       "trace",
+				shorthand:  "T",
+				usage:      "indicate trace options. Recognized values: `none` or `vcs`",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "none",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

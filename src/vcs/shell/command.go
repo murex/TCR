@@ -32,6 +32,7 @@ type Command interface {
 	Trace(params ...string) error
 	RunAndPipe(toCmd Command, params ...string) (output []byte, err error)
 	TraceAndPipe(toCmd Command, params ...string) error
+	String(params ...string) string
 }
 
 // NewCommandFunc is the constructor used when creating a new command.

@@ -25,7 +25,9 @@ package shell
 import (
 	"github.com/codeskyblue/go-sh"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/vcs"
 	"os/exec"
+	"strings"
 )
 
 // CommandImpl is a command that can be launched from a shell
@@ -66,10 +68,42 @@ func (c *CommandImpl) GetFullPath() string {
 	return path
 }
 
+// allParams returns all command params, e.g. the ones set in the command plus
+// any additional parameter passed to the function
+func (c *CommandImpl) allParams(params ...string) []string {
+	return append(c.params, params...)
+}
+
+// String returns the command as a single string (including additional params if any)
+func (c *CommandImpl) String(params ...string) string {
+	var pb strings.Builder
+	for _, param := range c.allParams(params...) {
+		_, _ = pb.WriteRune(' ')
+		_, _ = pb.WriteString(param)
+	}
+	return c.name + pb.String()
+}
+
+// traceCall traces the actual shell command that would be called.
+// There is no trace when VCS trace is disabled
+func (c *CommandImpl) traceCall(params ...string) {
+	if vcs.GetTrace() {
+		report.PostWarning(c.String(params...))
+	}
+}
+
+// tracePipedCall traces the actual shell command that would be called.
+// There is no trace when VCS trace is disabled
+func (c *CommandImpl) tracePipedCall(toCmd Command, params ...string) {
+	if vcs.GetTrace() {
+		report.PostWarning(c.String(params...), " | ", toCmd.String())
+	}
+}
+
 // Run calls the command with the provided parameters in a separate process and returns its output traces combined
 func (c *CommandImpl) Run(params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...))
-	return sh.Command(c.name, append(c.params, params...)).CombinedOutput()
+	c.traceCall(params...)
+	return sh.Command(c.name, c.allParams(params...)).CombinedOutput()
 }
 
 // Trace calls the command with the provided parameters and reports its output traces
@@ -85,8 +119,9 @@ func (c *CommandImpl) Trace(params ...string) error {
 // and pipes its output to cmd. Returns toCmd's output traces combined
 func (c *CommandImpl) RunAndPipe(toCmd Command, params ...string) (output []byte, err error) {
 	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...), " | ", shell.name, " ", shell.params)
+	c.tracePipedCall(toCmd, params...)
 	return sh.NewSession().
-		Command(c.name, append(c.params, params...)).
+		Command(c.name, c.allParams(params...)).
 		Command(toCmd.Name(), toCmd.Params()).
 		CombinedOutput()
 }

@@ -46,6 +46,7 @@ type TcrConfig struct {
 	AutoPush         *BoolParam
 	CommitFailures   *BoolParam
 	VCS              *StringParam
+	Trace            *StringParam
 }
 
 func (c TcrConfig) reset() {
@@ -56,6 +57,7 @@ func (c TcrConfig) reset() {
 	c.AutoPush.reset()
 	c.CommitFailures.reset()
 	c.VCS.reset()
+	c.Trace.reset()
 }
 
 // Config is the placeholder for all TCR configuration parameters
@@ -211,6 +213,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.AutoPush = AddAutoPushParam(cmd)
 	Config.CommitFailures = AddCommitFailuresParam(cmd)
 	Config.VCS = AddVCSParam(cmd)
+	Config.Trace = AddTraceParam(cmd)
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
@@ -225,4 +228,5 @@ func UpdateEngineParams(p *params.Params) {
 	p.AutoPush = Config.AutoPush.GetValue()
 	p.CommitFailures = Config.CommitFailures.GetValue()
 	p.VCS = Config.VCS.GetValue()
+	p.Trace = Config.Trace.GetValue()
 }

@@ -142,7 +142,7 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	tcr.initVCS(p.VCS)
+	tcr.initVCS(p.VCS, p.Trace)
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
@@ -205,7 +205,7 @@ func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
 
 func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
-	tcr.initVCS(p.VCS)
+	tcr.initVCS(p.VCS, p.Trace)
 
 	logs, err := tcr.vcs.Log(isTCRCommitMessage)
 	if err != nil {
@@ -243,10 +243,12 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 	return event
 }
 
-func (tcr *TCREngine) initVCS(vcsName string) {
+func (tcr *TCREngine) initVCS(vcsName string, trace string) {
 	if tcr.vcs != nil {
 		return // VCS should be initialized only once
 	}
+	// Set VCS trace trace flag
+	vcs.SetTrace(trace == "vcs")
 	var err error
 	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir())
 	switch err.(type) {

@@ -23,9 +23,28 @@ SOFTWARE.
 package vcs
 
 const (
-	// DefaultPushEnabled indicates the default state for VCS auto-push option
+	// DefaultPushEnabled provides the default value for auto-push (off by default)
 	DefaultPushEnabled = false
+	// DefaultTrace provides the default value for VCS commands trace (off by default)
+	DefaultTrace = false // VCS trace is off by default
 )
+
+var trace bool
+
+func init() {
+	trace = DefaultTrace
+}
+
+// SetTrace turn on/off trace flag for the VCS package. When trace is on, all calls
+// to VCS commands are traced by TCR
+func SetTrace(flag bool) {
+	trace = flag
+}
+
+// GetTrace returns VCS trace status
+func GetTrace() bool {
+	return trace
+}
 
 // Interface provides the interface that a VCS implementation must satisfy for TCR engine to be
 // able to interact with it
