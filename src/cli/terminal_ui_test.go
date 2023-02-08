@@ -39,6 +39,11 @@ import (
 	"time"
 )
 
+func init() {
+	// turn off the dynamic retriever of terminal width when running tests
+	tputCmdDisabled = true
+}
+
 func slowTestTag(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
