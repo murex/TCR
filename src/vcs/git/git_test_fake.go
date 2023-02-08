@@ -74,8 +74,8 @@ type (
 
 	// Fake provides a fake implementation of the git interface
 	Fake struct {
-		impl        vcs.Interface
 		settings    FakeSettings
+		pushEnabled bool
 		lastCommand Command
 	}
 )
@@ -98,8 +98,7 @@ func (gf *Fake) fakeCommand(cmd Command) (err error) {
 // NewFake initializes a fake git implementation which does nothing
 // apart from emulating errors on git operations
 func NewFake(settings FakeSettings) (*Fake, error) {
-	impl, err := newGitImpl(inMemoryRepoInit, "")
-	return &Fake{impl: impl, settings: settings}, err
+	return &Fake{settings: settings}, nil
 }
 
 func (gf *Fake) Name() string {
@@ -179,40 +178,40 @@ func (gf *Fake) Revert() error {
 
 // GetRootDir returns the root directory path
 func (gf *Fake) GetRootDir() string {
-	return gf.impl.GetRootDir()
+	return ""
 }
 
 // GetRemoteName returns the current git remote name
 func (gf *Fake) GetRemoteName() string {
-	return gf.impl.GetRemoteName()
+	return ""
 }
 
 // GetWorkingBranch returns the current git working branch
 func (gf *Fake) GetWorkingBranch() string {
-	return gf.impl.GetWorkingBranch()
+	return ""
 }
 
 // IsOnRootBranch indicates if git is currently on its root branch or not
 func (gf *Fake) IsOnRootBranch() bool {
-	return gf.impl.IsOnRootBranch()
+	return true
 }
 
 // EnablePush sets a flag allowing to turn on/off git push operations
 func (gf *Fake) EnablePush(flag bool) {
-	gf.impl.EnablePush(flag)
+	gf.pushEnabled = flag
 }
 
 // IsPushEnabled indicates if git push operations are turned on
 func (gf *Fake) IsPushEnabled() bool {
-	return gf.impl.IsPushEnabled()
+	return gf.pushEnabled
 }
 
 // IsRemoteEnabled indicates if git remote operations are enabled
-func (gf *Fake) IsRemoteEnabled() bool {
-	return gf.impl.IsRemoteEnabled()
+func (*Fake) IsRemoteEnabled() bool {
+	return false
 }
 
 // CheckRemoteAccess returns true if git remote can be accessed
-func (gf *Fake) CheckRemoteAccess() bool {
-	return gf.impl.CheckRemoteAccess()
+func (*Fake) CheckRemoteAccess() bool {
+	return true
 }
