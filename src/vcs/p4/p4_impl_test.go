@@ -510,6 +510,54 @@ func Test_p4_submit(t *testing.T) {
 	}
 }
 
+func Test_p4_restore(t *testing.T) {
+	testFlags := []struct {
+		desc         string
+		p4Error      error
+		expectedArgs []string
+		expectError  bool
+	}{
+		{
+			"p4 sync arguments",
+			nil,
+			[]string{"sync", "-f", "some-path"},
+			false,
+		},
+		{
+			"p4 sync command call succeeds",
+			nil,
+			nil,
+			false,
+		},
+		{
+			"p4 sync command call fails",
+			errors.New("p4 sync error"),
+			nil,
+			true,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			var actualArgs []string
+			p.traceP4Function = func(args ...string) (err error) {
+				actualArgs = args[4:]
+				return tt.p4Error
+			}
+
+			err := p.Restore("some-path")
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			if tt.expectedArgs != nil {
+				assert.Equal(t, tt.expectedArgs, actualArgs)
+			}
+		})
+	}
+}
+
 func Test_convert_to_p4_client_path(t *testing.T) {
 	testFlags := []struct {
 		desc          string

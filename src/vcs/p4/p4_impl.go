@@ -170,9 +170,9 @@ func (p *p4Impl) Commit(_ bool, messages ...string) error {
 }
 
 // Restore restores to last commit for the provided path.
-// TODO: VCS Restore - p4 revert -c
-func (*p4Impl) Restore(_ string) error {
-	return errors.New("VCS restore operation not yet available for p4")
+func (p *p4Impl) Restore(path string) error {
+	// Command: p4 sync -f <path>
+	return p.traceP4("sync", "-f", path)
 }
 
 // Revert runs a p4 revert operation.
