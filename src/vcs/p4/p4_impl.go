@@ -151,7 +151,7 @@ func (p *p4Impl) Add(paths ...string) error {
 	} else {
 		p4Args = append(p4Args, paths...)
 	}
-	return p.traceP4FromBaseDir(p4Args...)
+	return p.traceP4(p4Args...)
 }
 
 type changeList struct {
@@ -213,7 +213,7 @@ func (*p4Impl) UnStash(_ bool) error {
 // Diff returns the list of files modified since last commit with diff info for each file
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
 	var p4Output []byte
-	p4Output, err = p.runP4FromBaseDir("diff", "-f", "-Od", "-dw", "-ds")
+	p4Output, err = p.runP4("diff", "-f", "-Od", "-dw", "-ds", filepath.Join(p.baseDir, "/..."))
 	if err != nil {
 		return nil, err
 	}
@@ -275,22 +275,10 @@ func (p *p4Impl) traceP4(args ...string) error {
 	return p.traceP4Function(p.buildP4Args(args...)...)
 }
 
-// traceP4 runs a p4 command and traces its output.
-// The command is launched from the p4 root directory
-func (p *p4Impl) traceP4FromBaseDir(args ...string) error {
-	return p.traceP4Function(p.buildP4ArgsWithBaseDir(args...)...)
-}
-
 // runP4 calls p4 command in a separate process and returns its output traces
 // The command is launched from the p4 root directory
 func (p *p4Impl) runP4(args ...string) (output []byte, err error) {
 	return p.runP4Function(p.buildP4Args(args...)...)
-}
-
-// runP4 calls p4 command in a separate process and returns its output traces
-// The command is launched from the p4 root directory
-func (p *p4Impl) runP4FromBaseDir(args ...string) (output []byte, err error) {
-	return p.runP4Function(p.buildP4ArgsWithBaseDir(args...)...)
 }
 
 func (p *p4Impl) runPipedP4(toCmd shell.Command, args ...string) (output []byte, err error) {
@@ -299,10 +287,6 @@ func (p *p4Impl) runPipedP4(toCmd shell.Command, args ...string) (output []byte,
 
 func (p *p4Impl) buildP4Args(args ...string) []string {
 	return append([]string{"-d", p.GetRootDir(), "-c", p.clientName}, args...)
-}
-
-func (p *p4Impl) buildP4ArgsWithBaseDir(args ...string) []string {
-	return append([]string{"-d", p.baseDir, "-c", p.clientName}, args...)
 }
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {

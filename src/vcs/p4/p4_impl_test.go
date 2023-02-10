@@ -121,7 +121,7 @@ func Test_p4_diff(t *testing.T) {
 			"",
 			nil,
 			false,
-			[]string{"diff", "-f", "-Od", "-dw", "-ds"},
+			[]string{"diff", "-f", "-Od", "-dw", "-ds", filepath.Clean("/...")},
 			nil,
 		},
 		{"p4 diff command call fails",
