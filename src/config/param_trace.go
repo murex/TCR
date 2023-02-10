@@ -38,7 +38,7 @@ func AddTraceParam(cmd *cobra.Command) *StringParam {
 			cobraSettings: cobraSettings{
 				name:       "trace",
 				shorthand:  "T",
-				usage:      "indicate trace options. Recognized values: `none` or `vcs`",
+				usage:      "indicate trace options. Recognized values: none or vcs",
 				persistent: true,
 			},
 		},
