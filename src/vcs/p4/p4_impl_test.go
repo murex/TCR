@@ -518,20 +518,20 @@ func Test_p4_restore(t *testing.T) {
 		expectError  bool
 	}{
 		{
-			"p4 sync arguments",
+			"p4 revert arguments",
 			nil,
-			[]string{"sync", "-f", "some-path"},
+			[]string{"revert", "some-path"},
 			false,
 		},
 		{
-			"p4 sync command call succeeds",
+			"p4 revert command call succeeds",
 			nil,
 			nil,
 			false,
 		},
 		{
-			"p4 sync command call fails",
-			errors.New("p4 sync error"),
+			"p4 revert command call fails",
+			errors.New("p4 revert error"),
 			nil,
 			true,
 		},

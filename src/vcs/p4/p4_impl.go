@@ -171,8 +171,13 @@ func (p *p4Impl) Commit(_ bool, messages ...string) error {
 
 // Restore restores to last commit for the provided path.
 func (p *p4Impl) Restore(path string) error {
-	// Command: p4 sync -f <path>
-	return p.traceP4("sync", "-f", path)
+	// in order to work, p4 revert requires that the file be added beforehand
+	err := p.Add(path)
+	if err != nil {
+		report.PostWarning(err)
+	}
+	// Command: p4 revert <path>
+	return p.traceP4("revert", path)
 }
 
 // Revert runs a p4 revert operation.
