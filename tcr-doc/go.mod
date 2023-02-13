@@ -5,7 +5,7 @@ go 1.19
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v0.24.2
+	github.com/murex/tcr v0.24.4
 	github.com/spf13/cobra v1.6.1
 )
 
@@ -54,7 +54,7 @@ require (
 	golang.org/x/net v0.6.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	golang.org/x/tools v0.5.0 // indirect
+	golang.org/x/tools v0.6.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
