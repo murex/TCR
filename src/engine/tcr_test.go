@@ -525,10 +525,6 @@ func Test_get_session_info(t *testing.T) {
 }
 
 func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
-	slowTestTag(t)
-	if os.Getenv("GITHUB_ACTIONS") == "true" {
-		t.Skip("disabled on CI due to dangling results")
-	}
 	var tcr TCRInterface
 	testFlags := []struct {
 		timer time.Duration
@@ -560,7 +556,6 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 }
 
 func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
-	slowTestTag(t)
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
