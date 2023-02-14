@@ -145,6 +145,10 @@ func (*p4Impl) IsOnRootBranch() bool {
 
 // Add adds the listed paths to p4 changelist.
 func (p *p4Impl) Add(paths ...string) error {
+	return p.reconcile(paths...)
+}
+
+func (p *p4Impl) reconcile(paths ...string) error {
 	p4Args := []string{"reconcile", "-a", "-e", "-d"}
 	if len(paths) == 0 {
 		p4Args = append(p4Args, filepath.Join(p.baseDir, "/..."))
@@ -171,8 +175,8 @@ func (p *p4Impl) Commit(_ bool, messages ...string) error {
 
 // Restore restores to last commit for the provided path.
 func (p *p4Impl) Restore(path string) error {
-	// in order to work, p4 revert requires that the file be added beforehand
-	err := p.Add(path)
+	// in order to work, p4 revert requires that the file be reconciled beforehand
+	err := p.reconcile(path)
 	if err != nil {
 		report.PostWarning(err)
 	}
