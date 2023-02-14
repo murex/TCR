@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -85,10 +85,16 @@ type (
 		messageSuffix   string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
+		// fsWatchRearmDelay is the waiting time until TCR starts watching the filesystem again
+		// after a filesystem event was detected. The default value should not be changed except
+		// when running tests
+		fsWatchRearmDelay time.Duration
 	}
 )
 
 const traceReporterWaitingTime = 100 * time.Millisecond
+
+const fsWatchRearmDelay = 2 * time.Second
 
 const (
 	commitMessageOk     = "✅ TCR - tests passing"
@@ -106,7 +112,7 @@ var (
 
 // NewTCREngine instantiates TCR engine instance
 func NewTCREngine() (engine *TCREngine) {
-	engine = &TCREngine{}
+	engine = &TCREngine{fsWatchRearmDelay: fsWatchRearmDelay}
 	TCR = engine
 	return engine
 }
@@ -417,7 +423,7 @@ func (tcr *TCREngine) waitForChange(interrupt <-chan bool) bool {
 	report.PostInfo("Going to sleep until something interesting happens")
 	// We need to wait a bit to make sure the file watcher
 	// does not get triggered again following a revert operation
-	time.Sleep(2 * time.Second)
+	time.Sleep(tcr.fsWatchRearmDelay)
 	return tcr.sourceTree.Watch(
 		tcr.language.DirsToWatch(tcr.sourceTree.GetBaseDir()),
 		tcr.language.IsLanguageFile,

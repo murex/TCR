@@ -378,6 +378,8 @@ func initTCREngineWithFakes(
 
 	tcr := NewTCREngine()
 	tcr.Init(ui.NewFakeUI(), parameters)
+	// overwrite the default waiting time for re-arming watching for filesystem changes
+	tcr.fsWatchRearmDelay = 0
 	vcsFake := replaceVCSImplWithFake(tcr, vcsFailures, logItems)
 	return tcr, vcsFake
 }
