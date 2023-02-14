@@ -58,10 +58,6 @@ type (
 		RunAsNavigator()
 		Stop()
 		RunTCRCycle()
-		build() (result toolchain.CommandResult)
-		test() (result toolchain.TestCommandResult)
-		commit(event events.TCREvent)
-		revert(event events.TCREvent)
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
 		SetRunMode(m runmode.RunMode)
@@ -86,6 +82,7 @@ type (
 		mobTimer        *timer.PeriodicReminder
 		currentRole     role.Role
 		commitOnFail    bool
+		messageSuffix   string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
 	}
@@ -108,9 +105,10 @@ var (
 )
 
 // NewTCREngine instantiates TCR engine instance
-func NewTCREngine() TCRInterface {
-	TCR = &TCREngine{}
-	return TCR
+func NewTCREngine() (engine *TCREngine) {
+	engine = &TCREngine{}
+	TCR = engine
+	return engine
 }
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
@@ -143,6 +141,7 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
 	tcr.initVCS(p.VCS, p.Trace)
+	tcr.setMessageSuffix(p.MessageSuffix)
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
@@ -222,16 +221,37 @@ func isTCRCommitMessage(msg string) bool {
 }
 
 func parseCommitMessage(message string) (event events.TCREvent) {
-	var header string
 	// First line is the main commit message
 	// Second line is a blank line
-	// The YAML-structured data starts on the third line
-	const nbParts = 3
-	parts := strings.SplitN(message, "\n", nbParts)
-	if len(parts) == nbParts {
-		header = parts[0]
-		event = events.FromYAML(parts[nbParts-1])
+	// The YAML-structured data starts on the third line until we reach a blank line
+	// The user-specified message prefix, if any, is after the blank line
+
+	var header string
+	var statsYAML strings.Builder
+	var section = 1
+	for _, line := range strings.Split(message, "\n") {
+		switch section {
+		case 1: // main commit message
+			header = line
+			section++
+		case 2: // blank line between header and TCR event stats
+			section++
+		case 3: // YAML-structured data containing TCR event stats
+			if line == "" {
+				// First empty line or end of message should mark the end of YAML data
+				section++
+			} else {
+				_, _ = statsYAML.WriteString(line)
+				_, _ = statsYAML.WriteRune('\n')
+			}
+		case 4: // commit message suffix, if any
+			// Ignoring commit message suffix for now. May be useful in the future if
+			// we want to filter commit history based on its contents
+			continue
+		}
 	}
+
+	event = events.FromYAML(statsYAML.String())
 	switch header {
 	case commitMessageOk:
 		event.Status = events.StatusPass
@@ -241,6 +261,21 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 		event.Status = events.StatusUnknown
 	}
 	return event
+}
+
+func (tcr *TCREngine) setMessageSuffix(suffix string) {
+	tcr.messageSuffix = suffix
+}
+
+func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
+	messages := []string{statusMessage}
+	if event != nil {
+		messages = append(messages, event.ToYAML())
+	}
+	if tcr.messageSuffix != "" {
+		messages = append(messages, "\n"+tcr.messageSuffix)
+	}
+	return messages
 }
 
 func (tcr *TCREngine) initVCS(vcsName string, trace string) {
@@ -460,7 +495,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, commitMessageOk, event.ToYAML())
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageOk, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -496,7 +531,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(false, commitMessageFail, event.ToYAML())
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageFail, &event)...)
 	if err != nil {
 		return err
 	}
@@ -506,7 +541,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 		return err
 	}
 	// Amend commit message on revert operation in VCS index
-	err = tcr.vcs.Commit(true, commitMessageRevert)
+	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageRevert, nil)...)
 	if err != nil {
 		return err
 	}
@@ -554,6 +589,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
+		MessageSuffix:     tcr.messageSuffix,
 	}
 }
 

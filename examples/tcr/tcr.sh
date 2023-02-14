@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # Copyright (c) 2022 Murex
 # 
@@ -21,8 +21,6 @@
 # SOFTWARE.
 
 set -u
-
-command_args=$*
 
 BASE_DIR="$(cd "$(dirname -- "$0")" && pwd)"
 
@@ -234,5 +232,5 @@ tcr_go_exe=$(retrieve_tcr_go_exe)
 [ $? -ne 0 ] && trace_info "Aborting" && exit 1
 
 # shellcheck disable=SC2086
-"${tcr_go_exe}" $command_args --base-dir="${BASE_DIR}" --config-dir="${BASE_DIR}" --work-dir="${BASE_DIR}"
+"${tcr_go_exe}" "$@" --base-dir="${BASE_DIR}" --config-dir="${BASE_DIR}" --work-dir="${BASE_DIR}"
 exit $?

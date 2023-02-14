@@ -32,4 +32,5 @@ type SessionInfo struct {
 	VCSSessionSummary string
 	CommitOnFail      bool
 	GitAutoPush       bool
+	MessageSuffix     string
 }

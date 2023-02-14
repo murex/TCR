@@ -180,7 +180,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with no failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
-				tcr.commit(events.TCREvent{})
+				tcr.commit(*events.ATcrEvent())
 			},
 			status.Ok,
 		},
@@ -188,7 +188,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with VCS commit failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.CommitCommand}, nil)
-				tcr.commit(events.TCREvent{})
+				tcr.commit(*events.ATcrEvent())
 			},
 			status.VCSError,
 		},
@@ -196,7 +196,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"commit with VCS push failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.PushCommand}, nil)
-				tcr.commit(events.TCREvent{})
+				tcr.commit(*events.ATcrEvent())
 			},
 			status.VCSError,
 		},
@@ -204,7 +204,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with no failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
-				tcr.revert(events.TCREvent{})
+				tcr.revert(*events.ATcrEvent())
 			},
 			status.Ok,
 		},
@@ -212,7 +212,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with VCS diff failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.DiffCommand}, nil)
-				tcr.revert(events.TCREvent{})
+				tcr.revert(*events.ATcrEvent())
 			},
 			status.VCSError,
 		},
@@ -220,7 +220,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			"revert with VCS restore failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.RestoreCommand}, nil)
-				tcr.revert(events.TCREvent{})
+				tcr.revert(*events.ATcrEvent())
 			},
 			status.VCSError,
 		},
@@ -278,7 +278,7 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 			status.RecordState(status.Ok)
 			tcr, _ := initTCREngineWithFakes(nil, nil, tt.vcsFailures, nil)
 			tcr.SetCommitOnFail(true)
-			tcr.revert(events.TCREvent{})
+			tcr.revert(*events.ATcrEvent())
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
 		})
 	}
@@ -348,7 +348,7 @@ func initTCREngineWithFakes(
 	toolchainFailures toolchain.Operations,
 	vcsFailures git.Commands,
 	logItems vcs.LogItems,
-) (TCRInterface, *git.Fake) {
+) (*TCREngine, *git.Fake) {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
 
@@ -371,6 +371,8 @@ func initTCREngineWithFakes(
 			params.WithCommitFailures(p.CommitFailures),
 			params.WithPollingPeriod(p.PollingPeriod),
 			params.WithRunMode(p.Mode),
+			params.WithVCS(p.VCS),
+			params.WithMessageSuffix(p.MessageSuffix),
 		)
 	}
 
@@ -418,7 +420,8 @@ func Test_run_as_role_methods(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.role.LongName(), func(t *testing.T) {
-			tcr, _ = initTCREngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Mob{})), nil, nil, nil)
+			tcr, _ = initTCREngineWithFakes(
+				params.AParamSet(params.WithRunMode(runmode.Mob{})), nil, nil, nil)
 			tt.runAsMethod()
 			time.Sleep(10 * time.Millisecond)
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
@@ -712,6 +715,28 @@ func Test_parse_commit_message(t *testing.T) {
 				events.NewTestStats(10, 8, 2, 1, 0, 40*time.Millisecond),
 			),
 		},
+		{
+			desc: "commit with single line suffix message",
+			commitMessage: "✅ TCR - tests passing\n" +
+				"\n" +
+				"changed-lines:\n" +
+				"    src: 1\n" +
+				"    test: 2\n" +
+				"test-stats:\n" +
+				"    run: 3\n" +
+				"    passed: 4\n" +
+				"    failed: 5\n" +
+				"    skipped: 6\n" +
+				"    error: 7\n" +
+				"    duration: 8ms\n" +
+				"\n" +
+				"single line suffix\n",
+			expected: events.NewTCREvent(
+				events.StatusPass,
+				events.NewChangedLines(1, 2),
+				events.NewTestStats(3, 4, 5, 6, 7, 8*time.Millisecond),
+			),
+		},
 	}
 
 	for _, tt := range testFlags {
@@ -776,6 +801,26 @@ func Test_compute_number_of_changed_lines(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			assert.Equal(t, tt.expectedSrc, tt.diffs.ChangedLines(lang.IsSrcFile))
 			assert.Equal(t, tt.expectedTest, tt.diffs.ChangedLines(lang.IsTestFile))
+		})
+	}
+}
+
+func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
+	tests := []struct {
+		desc     string
+		suffix   string
+		expected []string
+	}{
+		{"simple suffix message", "XXXX", []string{"\nXXXX"}},
+		{"multi-line suffix message", "line1\nline2", []string{"\nline1\nline2"}},
+		{"no suffix message", "", []string{events.ATcrEvent().ToYAML()}},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := params.AParamSet(params.WithRunMode(runmode.OneShot{}), params.WithMessageSuffix(test.suffix))
+			tcr, _ := initTCREngineWithFakes(p, nil, nil, nil)
+			result := tcr.wrapCommitMessages(commitMessageOk, events.ATcrEvent())
+			assert.Equal(t, test.expected, result[len(result)-len(test.expected):])
 		})
 	}
 }

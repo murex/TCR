@@ -39,6 +39,11 @@ import (
 	"time"
 )
 
+func init() {
+	// turn off the dynamic retriever of terminal width when running tests
+	tputCmdDisabled = true
+}
+
 func slowTestTag(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
@@ -525,6 +530,39 @@ func Test_report_vcs_info(t *testing.T) {
 			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
 				term, _, _ := terminalSetup(*params.AParamSet())
 				term.reportVCSInfo(test.info)
+				terminalTeardown(*term)
+			}))
+		})
+	}
+}
+
+func Test_report_commit_message_suffix(t *testing.T) {
+	tests := []struct {
+		desc     string
+		suffix   string
+		expected string
+	}{
+		{
+			"not set",
+			"",
+			"",
+		},
+		{
+			"single-line suffix",
+			"simple suffix",
+			asCyanTrace("Commit message suffix: \"simple suffix\""),
+		},
+		{
+			"multi-line suffix",
+			"line 1\nline 2",
+			asCyanTrace("Commit message suffix: \"line 1\nline 2\""),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
+				term, _, _ := terminalSetup(*params.AParamSet())
+				term.reportMessageSuffix(test.suffix)
 				terminalTeardown(*term)
 			}))
 		})

@@ -22,8 +22,6 @@
 
 set -u
 
-command_args=$*
-
 repo_root_dir="$(git rev-parse --show-toplevel)"
 src_dir="$(cd "${repo_root_dir}/src" && pwd)"
 testdata_java_dir="/d/Perforce/tcr/dev/dxp/tcr/testdata/java/"
@@ -53,7 +51,7 @@ trace_error() {
 # Main
 # ------------------------------------------------------------------------------
 
-cd "${src_dir}" && go run . $command_args \
+cd "${src_dir}" && go run . "$@" \
   --base-dir="${TCR_BASE_DIR}" \
   --config-dir="${TCR_CONFIG_DIR}" \
   --work-dir="${TCR_WORK_DIR}" \

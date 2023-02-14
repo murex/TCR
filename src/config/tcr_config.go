@@ -46,6 +46,7 @@ type TcrConfig struct {
 	AutoPush         *BoolParam
 	CommitFailures   *BoolParam
 	VCS              *StringParam
+	MessageSuffix    *StringParam
 	Trace            *StringParam
 }
 
@@ -57,6 +58,7 @@ func (c TcrConfig) reset() {
 	c.AutoPush.reset()
 	c.CommitFailures.reset()
 	c.VCS.reset()
+	c.MessageSuffix.reset()
 	c.Trace.reset()
 }
 
@@ -213,6 +215,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.AutoPush = AddAutoPushParam(cmd)
 	Config.CommitFailures = AddCommitFailuresParam(cmd)
 	Config.VCS = AddVCSParam(cmd)
+	Config.MessageSuffix = AddMessageSuffixParam(cmd)
 	Config.Trace = AddTraceParam(cmd)
 }
 
@@ -228,5 +231,6 @@ func UpdateEngineParams(p *params.Params) {
 	p.AutoPush = Config.AutoPush.GetValue()
 	p.CommitFailures = Config.CommitFailures.GetValue()
 	p.VCS = Config.VCS.GetValue()
+	p.MessageSuffix = Config.MessageSuffix.GetValue()
 	p.Trace = Config.Trace.GetValue()
 }
