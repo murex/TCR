@@ -20,33 +20,63 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils
+package p4
 
 import (
-	"fmt"
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_is_sub_path_of_unix(t *testing.T) {
-	tests := []struct {
-		desc     string
-		subPath  string
-		refPath  string
-		expected bool
+func Test_convert_to_p4_client_path_windows(t *testing.T) {
+	testFlags := []struct {
+		desc          string
+		rootDir       string
+		clientName    string
+		dir           string
+		expectedError error
+		expected      string
 	}{
-		{"direct sub-dir", "/user/bob", "/user", true},
-		{"direct not quite sub-dir", "/usex/bob", "/user", false},
-		{"deep sub-dir", "/user/bob/deep/dir", "/user", true},
-		{"direct sub-dir with trailing on sub", "/user/bob/", "/user", true},
-		{"direct sub-dir with trailing on ref", "/user/bob", "/user/", true},
-		{"everything is subpath to an blanc refPath", "/user/bob", "", true},
-		{"direct not sub-dir", "/userx/bob", "/user", false},
+		{
+			"Dir is empty",
+			"D:\\p4root",
+			"test_client",
+			"",
+			errors.New("can not convert an empty path"),
+			"",
+		},
+		{
+			"Dir outside the root directory",
+			"D:\\p4root",
+			"test_client",
+			"D:\\somewhere_else\\sub_dir",
+			errors.New("path is outside p4 root directory"),
+			"",
+		},
+		{
+			"Root dir is at window drive level",
+			"D:\\",
+			"test_client",
+			"D:\\sub_dir",
+			nil,
+			"//test_client/sub_dir/...",
+		},
+		{
+			"Root dir and dir are at window drive level",
+			"D:\\",
+			"test_client",
+			"D:\\",
+			nil,
+			"//test_client/...",
+		},
 	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			assert.Equal(t, test.expected, IsSubPathOf(test.subPath, test.refPath),
-				fmt.Sprintf("%s vs %s", test.subPath, test.refPath))
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			p, _ := newP4Impl(inMemoryDepotInit, tt.rootDir, true)
+			p.clientName = tt.clientName
+			clientPath, err := p.toP4ClientPath(tt.dir)
+			assert.Equal(t, tt.expected, clientPath)
+			assert.Equal(t, tt.expectedError, err)
 		})
 	}
 }

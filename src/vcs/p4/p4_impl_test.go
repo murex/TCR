@@ -599,38 +599,6 @@ func Test_convert_to_p4_client_path(t *testing.T) {
 			nil,
 			"//test_client/sub_dir/...",
 		},
-		{
-			"Dir is empty",
-			"D:\\p4root",
-			"test_client",
-			"",
-			errors.New("can not convert an empty path"),
-			"",
-		},
-		{
-			"Dir outside the root directory",
-			"D:\\p4root",
-			"test_client",
-			"D:\\somewhere_else\\sub_dir",
-			errors.New("path is outside p4 root directory"),
-			"",
-		},
-		{
-			"Root dir is at window drive level",
-			"D:\\",
-			"test_client",
-			"D:\\sub_dir",
-			nil,
-			"//test_client/sub_dir/...",
-		},
-		{
-			"Root dir and dir are at window drive level",
-			"D:\\",
-			"test_client",
-			"D:\\",
-			nil,
-			"//test_client/...",
-		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
