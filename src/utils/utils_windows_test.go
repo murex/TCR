@@ -28,21 +28,20 @@ import (
 	"testing"
 )
 
-func Test_is_sub_path_of_unix(t *testing.T) {
+func Test_is_sub_path_of_windows(t *testing.T) {
 	tests := []struct {
 		desc     string
 		subPath  string
 		refPath  string
 		expected bool
 	}{
-		{"direct sub-dir", "/user/bob", "/user", true},
-		{"direct not quite sub-dir", "/usex/bob", "/user", false},
-		{"deep sub-dir", "/user/bob/deep/dir", "/user", true},
-		{"direct sub-dir with trailing on sub", "/user/bob/", "/user", true},
-		{"direct sub-dir with trailing on ref", "/user/bob", "/user/", true},
-		{"everything is subpath to an blanc refPath", "/user/bob", "", true},
-
-		//{"simple Unix direct not sub-dir", "/userx/bob", "/user", false},
+		{"direct sub-dir", "C:\\user\\bob", "C:\\user", true},
+		{"direct not quite sub-dir", "C:\\usex\\bob", "C:\\user", false},
+		{"deep sub-dir", "C:\\user\\bob\\deep\\dir", "C:\\user", true},
+		{"direct sub-dir with trailing on sub", "C:\\user\\bob\\", "C:\\user", true},
+		{"direct sub-dir with trailing on ref", "C:\\user\\bob", "C:\\user\\", true},
+		{"backslash sub-dir and slash ref-dir", "C:\\user\\bob", "C:/user", true},
+		{"slash ref-dir and backslash ref-dir", "C:/user/bob", "C:\\user", true},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
