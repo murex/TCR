@@ -51,6 +51,10 @@ func checkP4Command() (cp []CheckPoint) {
 }
 
 func checkP4Config() (cp []CheckPoint) {
+	if p4.GetP4UserName() == "not set" {
+		cp = append(cp, warningCheckPoint("p4 username is not set"))
+		return cp
+	}
 	cp = append(cp, okCheckPoint("p4 username is ", p4.GetP4UserName()))
 	return cp
 }
