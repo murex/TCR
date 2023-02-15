@@ -23,7 +23,6 @@ SOFTWARE.
 package utils
 
 import (
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -37,8 +36,6 @@ func IsSubPathOf(aPath string, refPath string) bool {
 
 	cleanPath := filepath.Clean(aPath)
 	cleanRefPath := filepath.Clean(refPath)
-	if cleanRefPath == cleanPath || strings.HasPrefix(cleanPath, filepath.Clean(cleanRefPath+string(os.PathSeparator))) {
-		return true
-	}
-	return false
+	relPath, err := filepath.Rel(cleanRefPath, cleanPath)
+	return err == nil && !strings.Contains(relPath, "..")
 }

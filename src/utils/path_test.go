@@ -41,8 +41,7 @@ func Test_is_sub_path_of_unix(t *testing.T) {
 		{"direct sub-dir with trailing on sub", "/user/bob/", "/user", true},
 		{"direct sub-dir with trailing on ref", "/user/bob", "/user/", true},
 		{"everything is subpath to an blanc refPath", "/user/bob", "", true},
-
-		//{"simple Unix direct not sub-dir", "/userx/bob", "/user", false},
+		{"simple Unix direct not sub-dir", "/userx/bob", "/user", false},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
