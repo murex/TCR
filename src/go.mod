@@ -3,7 +3,7 @@ module github.com/murex/tcr
 go 1.19
 
 require (
-	github.com/ProtonMail/go-crypto v0.0.0-20230201104953-d1d05f4e2bfb // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230214155104-81033d7f4442 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gen2brain/beeep v0.0.0-20220909211152-5a9ec94374f6
@@ -77,17 +77,17 @@ require (
 	github.com/ashanbrown/forbidigo v1.4.0 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.7.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.200 // indirect
+	github.com/aws/aws-sdk-go v1.44.201 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.17.4 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.18.12 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.12 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.22 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.51 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.52 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.22 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.29 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.19 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.20 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.18.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.15.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.11 // indirect
@@ -95,7 +95,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.22 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.22 // indirect
 	github.com/aws/aws-sdk-go-v2/service/kms v1.20.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.12.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.3 // indirect
@@ -231,7 +231,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/julz/importas v0.1.0 // indirect
-	github.com/junk1tm/musttag v0.4.4 // indirect
+	github.com/junk1tm/musttag v0.4.5 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
@@ -245,7 +245,7 @@ require (
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20230213213521-fdfea0d469b6 // indirect
+	github.com/letsencrypt/boulder v0.0.0-20230215012513-f9e4fb6c06d1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -357,7 +357,7 @@ require (
 	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb // indirect
 	golang.org/x/exp/typeparams v0.0.0-20230213192124-5e25df0256eb // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
@@ -375,7 +375,7 @@ require (
 	gopkg.in/mail.v2 v2.3.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	honnef.co/go/tools v0.4.0 // indirect
+	honnef.co/go/tools v0.4.1 // indirect
 	mvdan.cc/gofumpt v0.4.0 // indirect
 	mvdan.cc/interfacer v0.0.0-20180901003855-c20040233aed // indirect
 	mvdan.cc/lint v0.0.0-20170908181259-adc824a0674b // indirect

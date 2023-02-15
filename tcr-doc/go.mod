@@ -5,13 +5,13 @@ go 1.19
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v0.24.5
+	github.com/murex/tcr v0.25.0
 	github.com/spf13/cobra v1.6.1
 )
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20230201104953-d1d05f4e2bfb // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230214155104-81033d7f4442 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/cloudflare/circl v1.3.2 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
@@ -51,7 +51,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
