@@ -28,12 +28,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -82,7 +82,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 		}
 	}
 
-	if !isSubPathOf(p.baseDir, p.GetRootDir()) {
+	if !utils.IsSubPathOf(p.baseDir, p.GetRootDir()) {
 		return nil, fmt.Errorf("directory %s does not belong to a p4 depot", p.baseDir)
 	}
 	return &p, nil
@@ -101,17 +101,6 @@ func (p *p4Impl) SessionSummary() string {
 // plainOpen is the regular function used to open a p4 depot
 func plainOpen() afero.Fs {
 	return afero.NewOsFs()
-}
-
-func isSubPathOf(aPath string, refPath string) bool {
-	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
-	if refPath == "" {
-		return true
-	}
-	if refPath == aPath || strings.HasPrefix(aPath, filepath.Clean(refPath+string(os.PathSeparator))) {
-		return true
-	}
-	return false
 }
 
 // GetRootDir returns the root directory path
@@ -353,7 +342,7 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 	if dir == "" {
 		return "", errors.New("can not convert an empty path")
 	}
-	if !isSubPathOf(cleanDir, cleanRoot) {
+	if !utils.IsSubPathOf(cleanDir, cleanRoot) {
 		return "", errors.New("path is outside p4 root directory")
 	}
 

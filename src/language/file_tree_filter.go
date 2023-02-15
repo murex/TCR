@@ -24,6 +24,7 @@ package language
 
 import (
 	"errors"
+	"github.com/murex/tcr/utils"
 	"github.com/spf13/afero"
 	"os"
 	"path"
@@ -60,27 +61,16 @@ func (treeFilter FileTreeFilter) isInFileTree(aPath string, baseDir string) bool
 	absPath, _ := filepath.Abs(aPath)
 	// If no directory is configured, any path that is under baseDir path is ok
 	if treeFilter.Directories == nil || len(treeFilter.Directories) == 0 {
-		if isSubPathOf(absPath, baseDir) {
+		if utils.IsSubPathOf(absPath, baseDir) {
 			return true
 		}
 	}
 
 	for _, dir := range treeFilter.Directories {
 		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
-		if isSubPathOf(absPath, filterAbsPath) {
+		if utils.IsSubPathOf(absPath, filterAbsPath) {
 			return true
 		}
-	}
-	return false
-}
-
-func isSubPathOf(aPath string, refPath string) bool {
-	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
-	if refPath == "" {
-		return true
-	}
-	if refPath == aPath || strings.HasPrefix(aPath, refPath+string(os.PathSeparator)) {
-		return true
 	}
 	return false
 }

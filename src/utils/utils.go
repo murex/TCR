@@ -30,14 +30,14 @@ import (
 
 // IsSubPathOf indicates if aPath is a sub-path of refPath
 func IsSubPathOf(aPath string, refPath string) bool {
-	cleanDir := filepath.Clean(aPath)
-	cleanRoot := filepath.Clean(refPath)
-
 	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
-	if cleanRoot == "" {
+	if refPath == "" {
 		return true
 	}
-	if cleanRoot == cleanDir || strings.HasPrefix(cleanDir, filepath.Clean(cleanRoot+string(os.PathSeparator))) {
+
+	cleanPath := filepath.Clean(aPath)
+	cleanRefPath := filepath.Clean(refPath)
+	if cleanRefPath == cleanPath || strings.HasPrefix(cleanPath, filepath.Clean(cleanRefPath+string(os.PathSeparator))) {
 		return true
 	}
 	return false
