@@ -24,10 +24,8 @@ package checker
 
 import (
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs/p4"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 func checkP4Environment(p params.Params) (cr *CheckResults) {
@@ -73,29 +71,15 @@ func checkP4Workspace(p params.Params) (cp []CheckPoint) {
 	}
 	cp = append(cp, okCheckPoint("p4 client root is ", p4RootDir))
 
-	if !isSubPathOf(p.BaseDir, p4RootDir) {
+	if !utils.IsSubPathOf(p.BaseDir, p4RootDir) {
 		cp = append(cp, errorCheckPoint("TCR base dir is not under p4 client root dir"))
 		return cp
 	}
 
-	if !isSubPathOf(p.WorkDir, p4RootDir) {
+	if !utils.IsSubPathOf(p.WorkDir, p4RootDir) {
 		cp = append(cp, errorCheckPoint("TCR work dir is not under p4 client root dir"))
 		return cp
 	}
 
 	return cp
-}
-
-func isSubPathOf(aPath string, refPath string) bool {
-	cleanDir := filepath.Clean(aPath)
-	cleanRoot := filepath.Clean(refPath)
-
-	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
-	if cleanRoot == "" {
-		return true
-	}
-	if cleanRoot == cleanDir || strings.HasPrefix(cleanDir, filepath.Clean(cleanRoot+string(os.PathSeparator))) {
-		return true
-	}
-	return false
 }
