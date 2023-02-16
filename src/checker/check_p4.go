@@ -33,8 +33,6 @@ func checkP4Environment(p params.Params) (cr *CheckResults) {
 	cr.add(checkP4Command())
 	cr.add(checkP4Config())
 	cr.add(checkP4Workspace(p))
-	// TODO Add p4-specific checks
-	//cr.add(checkP4Depot())
 	return cr
 }
 
