@@ -37,12 +37,6 @@ var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
 )
 
-func slowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-}
-
 func assertToolchainName(t *testing.T, name string) {
 	toolchain, _ := GetToolchain(name)
 	assert.Equal(t, name, toolchain.GetName())
