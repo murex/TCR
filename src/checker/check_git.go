@@ -29,11 +29,11 @@ import (
 
 func checkGitEnvironment(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("git environment")
-	cr.add(checkGitCommand())
-	cr.add(checkGitConfig())
-	cr.add(checkGitRepository())
-	cr.add(checkGitRemote())
-	cr.add(checkGitAutoPush(p))
+	cr.add(checkGitCommand()...)
+	cr.add(checkGitConfig()...)
+	cr.add(checkGitRepository()...)
+	cr.add(checkGitRemote()...)
+	cr.add(checkGitAutoPush(p)...)
 	return cr
 }
 

@@ -30,9 +30,9 @@ import (
 
 func checkP4Environment(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("perforce environment")
-	cr.add(checkP4Command())
-	cr.add(checkP4Config())
-	cr.add(checkP4Workspace(p))
+	cr.add(checkP4Command()...)
+	cr.add(checkP4Config()...)
+	cr.add(checkP4Workspace(p)...)
 	return cr
 }
 

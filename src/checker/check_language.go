@@ -30,19 +30,19 @@ func checkLanguage(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("language")
 
 	if p.Language == "" {
-		cr.add(checkpointsWhenLanguageIsNotSet())
+		cr.add(checkpointsWhenLanguageIsNotSet()...)
 	} else {
-		cr.add(checkpointsWhenLanguageIsSet(p.Language))
+		cr.add(checkpointsWhenLanguageIsSet(p.Language)...)
 	}
 
 	if checkEnv.lang != nil {
-		cr.add(checkSrcDirectories())
-		cr.add(checkSrcPatterns())
-		cr.add(checkSrcFiles())
+		cr.add(checkSrcDirectories()...)
+		cr.add(checkSrcPatterns()...)
+		cr.add(checkSrcFiles()...)
 
-		cr.add(checkTestDirectories())
-		cr.add(checkTestPatterns())
-		cr.add(checkTestFiles())
+		cr.add(checkTestDirectories()...)
+		cr.add(checkTestPatterns()...)
+		cr.add(checkTestFiles()...)
 	}
 	return cr
 }
@@ -82,7 +82,7 @@ func checkSrcDirectories() []CheckPoint {
 	return checkpointsForList(
 		"source directories:",
 		"no source directory defined for "+languageInText(),
-		checkEnv.lang.GetSrcFileFilter().Directories,
+		checkEnv.lang.GetSrcFileFilter().Directories...,
 	)
 }
 
@@ -90,7 +90,7 @@ func checkSrcPatterns() []CheckPoint {
 	return checkpointsForList(
 		"source filename matching patterns:",
 		"no source filename pattern defined for "+languageInText(),
-		checkEnv.lang.GetSrcFileFilter().FilePatterns,
+		checkEnv.lang.GetSrcFileFilter().FilePatterns...,
 	)
 }
 
@@ -102,7 +102,7 @@ func checkSrcFiles() (cp []CheckPoint) {
 	cp = append(cp, checkpointsForList(
 		"matching source files found:",
 		"no matching source file found",
-		srcFiles,
+		srcFiles...,
 	)...)
 	return cp
 }
@@ -111,7 +111,7 @@ func checkTestDirectories() []CheckPoint {
 	return checkpointsForList(
 		"test directories:",
 		"no test directory defined for "+languageInText(),
-		checkEnv.lang.GetTestFileFilter().Directories,
+		checkEnv.lang.GetTestFileFilter().Directories...,
 	)
 }
 
@@ -119,7 +119,7 @@ func checkTestPatterns() []CheckPoint {
 	return checkpointsForList(
 		"test filename matching patterns:",
 		"no test filename pattern defined for "+languageInText(),
-		checkEnv.lang.GetTestFileFilter().FilePatterns,
+		checkEnv.lang.GetTestFileFilter().FilePatterns...,
 	)
 }
 
@@ -131,7 +131,7 @@ func checkTestFiles() (cp []CheckPoint) {
 	cp = append(cp, checkpointsForList(
 		"matching test files found:",
 		"no matching test file found",
-		testFiles,
+		testFiles...,
 	)...)
 	return cp
 }

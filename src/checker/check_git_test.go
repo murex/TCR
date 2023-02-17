@@ -46,7 +46,7 @@ func Test_check_git_auto_push(t *testing.T) {
 			assertStatus(t, test.expected,
 				func(p params.Params) (cr *CheckResults) {
 					cr = NewCheckResults("git auto-push parameter")
-					cr.add(checkGitAutoPush(p))
+					cr.add(checkGitAutoPush(p)...)
 					return cr
 				},
 				*params.AParamSet(params.WithAutoPush(test.value)))

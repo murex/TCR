@@ -147,7 +147,7 @@ func checkpointsForDirAccessError(dir string, err error) []CheckPoint {
 	return []CheckPoint{checkpoint}
 }
 
-func checkpointsForList(headerMsg string, emptyMsg string, values []string) (cp []CheckPoint) {
+func checkpointsForList(headerMsg string, emptyMsg string, values ...string) (cp []CheckPoint) {
 	if len(values) == 0 {
 		cp = append(cp, warningCheckPoint(emptyMsg))
 		return cp
@@ -183,7 +183,7 @@ func (cr *CheckResults) addCheckPoint(checkpoint CheckPoint) {
 	cr.checkPoints = append(cr.checkPoints, checkpoint)
 }
 
-func (cr *CheckResults) add(checkPoints []CheckPoint) {
+func (cr *CheckResults) add(checkPoints ...CheckPoint) {
 	cr.checkPoints = append(cr.checkPoints, checkPoints...)
 }
 
@@ -239,6 +239,5 @@ func (cp CheckPoint) print() {
 		report.PostWarning("\t● ", cp.description)
 	case CheckStatusError:
 		report.PostError("\t▼ ", cp.description)
-		//fmt.Println("EEE - ", cp.description)
 	}
 }

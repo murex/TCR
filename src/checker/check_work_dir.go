@@ -36,7 +36,7 @@ func checkWorkDirectory(p params.Params) (cr *CheckResults) {
 	}
 
 	if checkEnv.workDirErr != nil {
-		cr.add(checkpointsForDirAccessError(p.WorkDir, checkEnv.workDirErr))
+		cr.add(checkpointsForDirAccessError(p.WorkDir, checkEnv.workDirErr)...)
 	} else {
 		cr.ok("work directory absolute path is ", checkEnv.workDir)
 	}
