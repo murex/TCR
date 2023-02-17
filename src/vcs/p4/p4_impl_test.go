@@ -27,11 +27,17 @@ import (
 	"fmt"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/encoding/charmap"
 	"path/filepath"
 	"testing"
 )
+
+// inMemoryDepotInit initializes a brand new depot in memory (for use in tests)
+func inMemoryDepotInit() afero.Fs {
+	return afero.NewMemMapFs()
+}
 
 func Test_get_vcs_name(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)

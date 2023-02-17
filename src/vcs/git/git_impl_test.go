@@ -24,8 +24,11 @@ package git
 
 import (
 	"errors"
+	"github.com/go-git/go-billy/v5"
+	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/murex/tcr/vcs"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -39,6 +42,13 @@ import (
 //		t.Skip("skipping test in short mode.")
 //	}
 //}
+
+// inMemoryRepoInit initializes a brand new repository in memory (for use in tests)
+func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err error) {
+	fs = memfs.New()
+	repo, err = git.Init(memory.NewStorage(), fs)
+	return
+}
 
 func Test_get_vcs_name(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
