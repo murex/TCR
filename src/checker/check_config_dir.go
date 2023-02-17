@@ -23,47 +23,48 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/config"
 	"github.com/murex/tcr/params"
 	"path/filepath"
 )
 
-func checkConfigDirectory(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("configuration directory")
+func checkConfigDirectory(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("configuration directory")
 
 	// TODO see how we can handle incorrect configuration settings, knowing that conf is already loaded when we get here
 
 	if p.ConfigDir == "" {
-		cr.ok("configuration directory parameter is not set explicitly")
-		cr.ok("using current directory as configuration directory")
+		cg.Ok("configuration directory parameter is not set explicitly")
+		cg.Ok("using current directory as configuration directory")
 	} else {
-		cr.ok("configuration directory parameter is: ", p.ConfigDir)
+		cg.Ok("configuration directory parameter is: ", p.ConfigDir)
 	}
 	tcrDirPath, _ := filepath.Abs(config.GetConfigDirPath())
-	cr.ok("TCR configuration root directory is ", tcrDirPath)
+	cg.Ok("TCR configuration root directory is ", tcrDirPath)
 
-	cr.add(checkLanguageConfig()...)
-	cr.add(checkToolchainConfig()...)
+	cg.Add(checkLanguageConfig()...)
+	cg.Add(checkToolchainConfig()...)
 
-	return cr
+	return cg
 }
 
-func checkLanguageConfig() []CheckPoint {
+func checkLanguageConfig() []model.CheckPoint {
 	return checkpointsForConfigSubDir("language",
 		config.GetLanguageConfigDirPath(),
 		config.GetLanguageConfigFileList())
 }
 
-func checkToolchainConfig() []CheckPoint {
+func checkToolchainConfig() []model.CheckPoint {
 	return checkpointsForConfigSubDir("toolchain",
 		config.GetToolchainConfigDirPath(),
 		config.GetToolchainConfigFileList())
 }
 
-func checkpointsForConfigSubDir(name string, path string, files []string) (cp []CheckPoint) {
+func checkpointsForConfigSubDir(name string, path string, files []string) (cp []model.CheckPoint) {
 	dirPath, _ := filepath.Abs(path)
-	cp = append(cp, okCheckPoint(name+" configuration directory is ", dirPath))
-	cp = append(cp, checkpointsForList(
+	cp = append(cp, model.OkCheckPoint(name+" configuration directory is ", dirPath))
+	cp = append(cp, model.CheckpointsForList(
 		name+" configuration files:", "no "+name+" configuration file found", files...)...)
 	return cp
 }

@@ -23,6 +23,7 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
@@ -98,10 +99,10 @@ func Test_check_toolchain_return_value_for_test_result_dir(t *testing.T) {
 	testFlags := []struct {
 		desc     string
 		dir      string
-		expected CheckStatus
+		expected model.CheckStatus
 	}{
-		{"when not set", "", CheckStatusWarning},
-		{"when set", ".", CheckStatusOk},
+		{"when not set", "", model.CheckStatusWarning},
+		{"when set", ".", model.CheckStatusOk},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {

@@ -23,22 +23,23 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 )
 
-func checkWorkDirectory(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("work directory")
+func checkWorkDirectory(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("work directory")
 
 	if p.WorkDir == "" {
-		cr.ok("work directory parameter is not set explicitly")
+		cg.Ok("work directory parameter is not set explicitly")
 	} else {
-		cr.ok("work directory parameter is ", p.WorkDir)
+		cg.Ok("work directory parameter is ", p.WorkDir)
 	}
 
 	if checkEnv.workDirErr != nil {
-		cr.add(checkpointsForDirAccessError(p.WorkDir, checkEnv.workDirErr)...)
+		cg.Add(model.CheckpointsForDirAccessError(p.WorkDir, checkEnv.workDirErr)...)
 	} else {
-		cr.ok("work directory absolute path is ", checkEnv.workDir)
+		cg.Ok("work directory absolute path is ", checkEnv.workDir)
 	}
-	return cr
+	return cg
 }
