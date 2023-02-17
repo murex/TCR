@@ -35,7 +35,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
-	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
@@ -187,7 +187,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"commit with VCS commit failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.CommitCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.CommitCommand}, nil)
 				tcr.commit(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -195,7 +195,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"commit with VCS push failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.PushCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
 				tcr.commit(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -211,7 +211,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"revert with VCS diff failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.DiffCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.DiffCommand}, nil)
 				tcr.revert(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -219,7 +219,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"revert with VCS restore failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.RestoreCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.RestoreCommand}, nil)
 				tcr.revert(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -238,7 +238,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 	testFlags := []struct {
 		desc           string
-		vcsFailures    git.Commands
+		vcsFailures    fake.Commands
 		expectedStatus status.Status
 	}{
 		{
@@ -248,27 +248,27 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 		},
 		{
 			"VCS stash failure",
-			git.Commands{git.StashCommand},
+			fake.Commands{fake.StashCommand},
 			status.VCSError,
 		},
 		{
 			"VCS un-stash failure",
-			git.Commands{git.UnStashCommand},
+			fake.Commands{fake.UnStashCommand},
 			status.VCSError,
 		},
 		{
 			"VCS add failure",
-			git.Commands{git.AddCommand},
+			fake.Commands{fake.AddCommand},
 			status.VCSError,
 		},
 		{
 			"VCS commit failure",
-			git.Commands{git.CommitCommand},
+			fake.Commands{fake.CommitCommand},
 			status.VCSError,
 		},
 		{
 			"VCS revert failure",
-			git.Commands{git.RevertCommand},
+			fake.Commands{fake.RevertCommand},
 			status.VCSError,
 		},
 	}
@@ -288,7 +288,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
 		toolchainFailures toolchain.Operations
-		vcsFailures       git.Commands
+		vcsFailures       fake.Commands
 		expectedStatus    status.Status
 	}{
 		{
@@ -308,27 +308,27 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 		},
 		{
 			"with VCS add failure",
-			nil, git.Commands{git.AddCommand},
+			nil, fake.Commands{fake.AddCommand},
 			status.VCSError,
 		},
 		{
 			"with VCS commit failure",
-			nil, git.Commands{git.CommitCommand},
+			nil, fake.Commands{fake.CommitCommand},
 			status.VCSError,
 		},
 		{
 			"with VCS push failure",
-			nil, git.Commands{git.PushCommand},
+			nil, fake.Commands{fake.PushCommand},
 			status.VCSError,
 		},
 		{
 			"with test and VCS diff failure",
-			toolchain.Operations{toolchain.TestOperation}, git.Commands{git.DiffCommand},
+			toolchain.Operations{toolchain.TestOperation}, fake.Commands{fake.DiffCommand},
 			status.VCSError,
 		},
 		{
 			"with test and VCS restore failure",
-			toolchain.Operations{toolchain.TestOperation}, git.Commands{git.RestoreCommand},
+			toolchain.Operations{toolchain.TestOperation}, fake.Commands{fake.RestoreCommand},
 			status.VCSError,
 		},
 	}
@@ -346,9 +346,9 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 func initTCREngineWithFakes(
 	p *params.Params,
 	toolchainFailures toolchain.Operations,
-	vcsFailures git.Commands,
+	vcsFailures fake.Commands,
 	logItems vcs.LogItems,
-) (*TCREngine, *git.Fake) {
+) (*TCREngine, *fake.VCSFake) {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
 
@@ -400,13 +400,13 @@ func registerFakeLanguage(toolchainName string) string {
 	return fake.GetName()
 }
 
-func replaceVCSImplWithFake(tcr TCRInterface, failures git.Commands, logItems vcs.LogItems) *git.Fake {
-	fakeSettings := git.FakeSettings{
+func replaceVCSImplWithFake(tcr TCRInterface, failures fake.Commands, logItems vcs.LogItems) *fake.VCSFake {
+	fakeSettings := fake.Settings{
 		FailingCommands: failures,
 		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
 		Logs:            logItems,
 	}
-	fake, _ := git.NewFake(fakeSettings)
+	fake, _ := fake.NewVCSFake(fakeSettings)
 	tcr.setVCS(fake)
 	return fake
 }
@@ -470,7 +470,7 @@ func Test_set_commit_on_fail(t *testing.T) {
 func Test_vcs_pull_calls_vcs_command(t *testing.T) {
 	tcr, vcsFake := initTCREngineWithFakes(nil, nil, nil, nil)
 	tcr.VCSPull()
-	assert.Equal(t, git.PullCommand, vcsFake.GetLastCommand())
+	assert.Equal(t, fake.PullCommand, vcsFake.GetLastCommand())
 }
 
 func Test_vcs_pull_highlights_errors(t *testing.T) {
@@ -479,7 +479,7 @@ func Test_vcs_pull_highlights_errors(t *testing.T) {
 			return msg.Type.Severity == report.Error && msg.Text == "VCS pull command failed!"
 		},
 	)
-	tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.PullCommand}, nil)
+	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PullCommand}, nil)
 	tcr.VCSPull()
 	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
@@ -492,7 +492,7 @@ func Test_vcs_push_highlights_errors(t *testing.T) {
 			return msg.Type.Severity == report.Error && msg.Text == "VCS push command failed!"
 		},
 	)
-	tcr, _ := initTCREngineWithFakes(nil, nil, git.Commands{git.PushCommand}, nil)
+	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
 	tcr.VCSPush()
 	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
@@ -517,7 +517,7 @@ func Test_get_session_info(t *testing.T) {
 		WorkDir:           currentDir,
 		LanguageName:      "fake-language",
 		ToolchainName:     "fake-toolchain",
-		VCSName:           "fake-vcs",
+		VCSName:           "vcs-fake",
 		VCSSessionSummary: "VCS session \"fake\"",
 		GitAutoPush:       false,
 	}
