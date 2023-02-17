@@ -44,12 +44,6 @@ func init() {
 	tputCmdDisabled = true
 }
 
-func slowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-}
-
 func Test_confirm_answer(t *testing.T) {
 	testFlags := []struct {
 		desc         string
@@ -570,7 +564,6 @@ func Test_report_commit_message_suffix(t *testing.T) {
 }
 
 func Test_main_menu(t *testing.T) {
-	slowTestTag(t)
 	testFlags := []struct {
 		desc     string
 		vcsName  string

@@ -34,6 +34,7 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
@@ -42,12 +43,6 @@ import (
 	"testing"
 	"time"
 )
-
-func slowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-}
 
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
@@ -573,7 +568,7 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 }
 
 func Test_tcr_print_log(t *testing.T) {
-	slowTestTag(t)
+	utils.SlowTestTag(t)
 	now := time.Now()
 	sampleItems := vcs.LogItems{
 		vcs.NewLogItem("1111", now, "✅ TCR - tests passing"),
