@@ -62,7 +62,7 @@ func (cg *CheckGroup) Error(a ...any) {
 // its contained checkpoints statuses (with Error > Warning > Ok)
 func (cg *CheckGroup) GetStatus() (s CheckStatus) {
 	s = CheckStatusOk
-	if cg == nil {
+	if cg == nil || len(cg.checkpoints) == 0 {
 		return CheckStatusOk
 	}
 	for _, checkpoint := range cg.checkpoints {
