@@ -32,16 +32,16 @@ func checkToolchain(p params.Params) (cr *CheckResults) {
 	cr = NewCheckResults("toolchain")
 
 	if p.Toolchain == "" {
-		cr.add(checkpointsWhenToolchainIsNotSet())
+		cr.add(checkpointsWhenToolchainIsNotSet()...)
 	} else {
-		cr.add(checkpointsWhenToolchainIsSet(p.Toolchain))
+		cr.add(checkpointsWhenToolchainIsSet(p.Toolchain)...)
 	}
 
 	if checkEnv.tchn != nil {
 		cr.ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
-		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine()))
-		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine()))
-		cr.add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath()))
+		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine())...)
+		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine())...)
+		cr.add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath())...)
 	}
 	return cr
 }

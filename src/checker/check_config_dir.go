@@ -42,8 +42,8 @@ func checkConfigDirectory(p params.Params) (cr *CheckResults) {
 	tcrDirPath, _ := filepath.Abs(config.GetConfigDirPath())
 	cr.ok("TCR configuration root directory is ", tcrDirPath)
 
-	cr.add(checkLanguageConfig())
-	cr.add(checkToolchainConfig())
+	cr.add(checkLanguageConfig()...)
+	cr.add(checkToolchainConfig()...)
 
 	return cr
 }
@@ -64,9 +64,6 @@ func checkpointsForConfigSubDir(name string, path string, files []string) (cp []
 	dirPath, _ := filepath.Abs(path)
 	cp = append(cp, okCheckPoint(name+" configuration directory is ", dirPath))
 	cp = append(cp, checkpointsForList(
-		name+" configuration files:",
-		"no "+name+" configuration file found",
-		files,
-	)...)
+		name+" configuration files:", "no "+name+" configuration file found", files...)...)
 	return cp
 }
