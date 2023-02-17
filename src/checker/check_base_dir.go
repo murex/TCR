@@ -23,22 +23,23 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 )
 
-func checkBaseDirectory(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("base directory")
+func checkBaseDirectory(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("base directory")
 
 	if p.BaseDir == "" {
-		cr.ok("base directory parameter is not set explicitly")
+		cg.Ok("base directory parameter is not set explicitly")
 	} else {
-		cr.ok("base directory parameter is ", p.BaseDir)
+		cg.Ok("base directory parameter is ", p.BaseDir)
 	}
 
 	if checkEnv.sourceTreeErr != nil {
-		cr.add(checkpointsForDirAccessError(p.BaseDir, checkEnv.sourceTreeErr)...)
+		cg.Add(model.CheckpointsForDirAccessError(p.BaseDir, checkEnv.sourceTreeErr)...)
 	} else {
-		cr.ok("base directory absolute path is ", checkEnv.sourceTree.GetBaseDir())
+		cg.Ok("base directory absolute path is ", checkEnv.sourceTree.GetBaseDir())
 	}
-	return cr
+	return cg
 }

@@ -23,6 +23,7 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"testing"
 )
@@ -36,18 +37,18 @@ func Test_check_git_auto_push(t *testing.T) {
 	tests := []struct {
 		desc     string
 		value    bool
-		expected CheckStatus
+		expected model.CheckStatus
 	}{
-		{"enabled", true, CheckStatusOk},
-		{"disabled", false, CheckStatusOk},
+		{"enabled", true, model.CheckStatusOk},
+		{"disabled", false, model.CheckStatusOk},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			assertStatus(t, test.expected,
-				func(p params.Params) (cr *CheckResults) {
-					cr = NewCheckResults("git auto-push parameter")
-					cr.add(checkGitAutoPush(p)...)
-					return cr
+				func(p params.Params) (cg *model.CheckGroup) {
+					cg = model.NewCheckGroup("git auto-push parameter")
+					cg.Add(checkGitAutoPush(p)...)
+					return cg
 				},
 				*params.AParamSet(params.WithAutoPush(test.value)))
 		})

@@ -23,8 +23,10 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/status"
+	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
@@ -42,35 +44,32 @@ var (
 
 // Assert utility functions
 
-func slowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-}
-
 func initTestCheckEnv(params params.Params) {
 	initCheckEnv(params)
 	// We replace git implementation with a fake so that we bypass real git access
 	checkEnv.vcs, checkEnv.vcsErr = fake.NewVCSFake(fake.Settings{})
 }
 
-func assertStatus(t *testing.T, expected CheckStatus, checker func(params params.Params) (cr *CheckResults), params params.Params) {
+func assertStatus(t *testing.T, expected model.CheckStatus, checker checkerFunc, params params.Params) {
 	initTestCheckEnv(params)
-	assert.Equal(t, expected, checker(params).getStatus())
+	assert.Equal(t, expected, checker(params).GetStatus())
 }
 
-func assertOk(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
-	assertStatus(t, CheckStatusOk, checker, params)
+func assertOk(t *testing.T, checker checkerFunc, params params.Params) {
+	t.Helper()
+	assertStatus(t, model.CheckStatusOk, checker, params)
 }
 
-func assertWarning(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
-	assertStatus(t, CheckStatusWarning, checker, params)
+func assertWarning(t *testing.T, checker checkerFunc, params params.Params) {
+	t.Helper()
+	assertStatus(t, model.CheckStatusWarning, checker, params)
 }
 
 // Return code for check subcommand
 
-func assertError(t *testing.T, checker func(params params.Params) (cr *CheckResults), params params.Params) {
-	assertStatus(t, CheckStatusError, checker, params)
+func assertError(t *testing.T, checker checkerFunc, params params.Params) {
+	t.Helper()
+	assertStatus(t, model.CheckStatusError, checker, params)
 }
 
 func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
@@ -86,7 +85,7 @@ func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 }
 
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
-	slowTestTag(t)
+	utils.SlowTestTag(t)
 	// The warning is triggered by the mob timer duration being under the min threshold
 	Run(*params.AParamSet(
 		params.WithConfigDir(testDataDirJava),
@@ -101,7 +100,7 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
-	slowTestTag(t)
+	utils.SlowTestTag(t)
 	const invalidDir = "invalid-dir"
 	Run(*params.AParamSet(
 		params.WithConfigDir(invalidDir),

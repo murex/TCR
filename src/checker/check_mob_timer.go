@@ -23,6 +23,7 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"time"
 )
@@ -32,17 +33,17 @@ const (
 	mobTimerHighThreshold = 15 * time.Minute
 )
 
-func checkMobTimer(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("mob timer")
-	cr.ok("mob timer duration is ", p.MobTurnDuration.String())
+func checkMobTimer(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("mob timer")
+	cg.Ok("mob timer duration is ", p.MobTurnDuration.String())
 	if p.MobTurnDuration == 0 {
-		cr.warning("mob timer is turned off")
+		cg.Warning("mob timer is turned off")
 	} else if p.MobTurnDuration < mobTimerLowThreshold {
-		cr.warning("mob timer duration is quite short (under ", mobTimerLowThreshold, ")")
+		cg.Warning("mob timer duration is quite short (under ", mobTimerLowThreshold, ")")
 	} else if p.MobTurnDuration > mobTimerHighThreshold {
-		cr.warning("mob timer duration is quite long (above ", mobTimerHighThreshold, ")")
+		cg.Warning("mob timer duration is quite long (above ", mobTimerHighThreshold, ")")
 	} else {
-		cr.ok("mob timer duration is in the recommended range")
+		cg.Ok("mob timer duration is in the recommended range")
 	}
-	return cr
+	return cg
 }

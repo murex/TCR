@@ -23,81 +23,82 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
 	"runtime"
 )
 
-func checkToolchain(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("toolchain")
+func checkToolchain(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("toolchain")
 
 	if p.Toolchain == "" {
-		cr.add(checkpointsWhenToolchainIsNotSet()...)
+		cg.Add(checkpointsWhenToolchainIsNotSet()...)
 	} else {
-		cr.add(checkpointsWhenToolchainIsSet(p.Toolchain)...)
+		cg.Add(checkpointsWhenToolchainIsSet(p.Toolchain)...)
 	}
 
 	if checkEnv.tchn != nil {
-		cr.ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
-		cr.add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine())...)
-		cr.add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine())...)
-		cr.add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath())...)
+		cg.Ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
+		cg.Add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine())...)
+		cg.Add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine())...)
+		cg.Add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath())...)
 	}
-	return cr
+	return cg
 }
 
-func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []CheckPoint) {
-	cp = append(cp, okCheckPoint(name, " command line: ", cmdLine))
+func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []model.CheckPoint) {
+	cp = append(cp, model.OkCheckPoint(name, " command line: ", cmdLine))
 
 	path, err := checkEnv.tchn.CheckCommandAccess(cmdPath)
 	if err != nil {
-		cp = append(cp, errorCheckPoint("cannot access ", name, " command: ", cmdPath))
+		cp = append(cp, model.ErrorCheckPoint("cannot access ", name, " command: ", cmdPath))
 	} else {
-		cp = append(cp, okCheckPoint(name, " command path: ", path))
+		cp = append(cp, model.OkCheckPoint(name, " command path: ", path))
 	}
 	return cp
 }
 
-func checkTestResultDir(dir string, path string) (cp []CheckPoint) {
+func checkTestResultDir(dir string, path string) (cp []model.CheckPoint) {
 	if dir == "" {
-		cp = append(cp, warningCheckPoint(
+		cp = append(cp, model.WarningCheckPoint(
 			"test result directory parameter is not set explicitly (default: work directory)"))
 	} else {
-		cp = append(cp, okCheckPoint("test result directory parameter is ", dir))
+		cp = append(cp, model.OkCheckPoint("test result directory parameter is ", dir))
 	}
 
-	cp = append(cp, okCheckPoint("test result directory absolute path is ", path))
+	cp = append(cp, model.OkCheckPoint("test result directory absolute path is ", path))
 	return cp
 }
 
-func checkpointsWhenToolchainIsSet(name string) (cp []CheckPoint) {
-	cp = append(cp, okCheckPoint("toolchain parameter is set to ", name))
+func checkpointsWhenToolchainIsSet(name string) (cp []model.CheckPoint) {
+	cp = append(cp, model.OkCheckPoint("toolchain parameter is set to ", name))
 	if checkEnv.tchnErr != nil {
-		cp = append(cp, errorCheckPoint(checkEnv.tchnErr))
+		cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
 	} else {
-		cp = append(cp, okCheckPoint(checkEnv.tchn.GetName(), " toolchain is valid"))
+		cp = append(cp, model.OkCheckPoint(checkEnv.tchn.GetName(), " toolchain is valid"))
 		if checkEnv.langErr == nil {
-			cp = append(cp, okCheckPoint(checkEnv.tchn.GetName(), " toolchain is compatible with ",
+			cp = append(cp, model.OkCheckPoint(checkEnv.tchn.GetName(), " toolchain is compatible with ",
 				checkEnv.lang.GetName(), " language"))
 		} else {
-			cp = append(cp, warningCheckPoint("skipping toolchain/language compatibility check"))
+			cp = append(cp, model.WarningCheckPoint("skipping toolchain/language compatibility check"))
 		}
 	}
 	return cp
 }
 
-func checkpointsWhenToolchainIsNotSet() (cp []CheckPoint) {
-	cp = append(cp, okCheckPoint("toolchain parameter is not set explicitly"))
+func checkpointsWhenToolchainIsNotSet() (cp []model.CheckPoint) {
+	cp = append(cp, model.OkCheckPoint("toolchain parameter is not set explicitly"))
 
 	if checkEnv.langErr != nil {
-		cp = append(cp, warningCheckPoint("language is unknown"))
-		cp = append(cp, errorCheckPoint("cannot retrieve toolchain from an unknown language"))
+		cp = append(cp, model.WarningCheckPoint("language is unknown"))
+		cp = append(cp, model.ErrorCheckPoint("cannot retrieve toolchain from an unknown language"))
 	} else {
-		cp = append(cp, okCheckPoint("using language's default toolchain"))
+		cp = append(cp, model.OkCheckPoint("using language's default toolchain"))
 		if checkEnv.tchnErr != nil {
-			cp = append(cp, errorCheckPoint(checkEnv.tchnErr))
+			cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
 		} else {
-			cp = append(cp, okCheckPoint("default toolchain for ", checkEnv.lang.GetName(),
+			cp = append(cp, model.OkCheckPoint("default toolchain for ", checkEnv.lang.GetName(),
 				" language is ", checkEnv.tchn.GetName()))
 		}
 	}

@@ -23,59 +23,60 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs/p4"
 )
 
-func checkP4Environment(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("perforce environment")
-	cr.add(checkP4Command()...)
-	cr.add(checkP4Config()...)
-	cr.add(checkP4Workspace(p)...)
-	return cr
+func checkP4Environment(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("perforce environment")
+	cg.Add(checkP4Command()...)
+	cg.Add(checkP4Config()...)
+	cg.Add(checkP4Workspace(p)...)
+	return cg
 }
 
-func checkP4Command() (cp []CheckPoint) {
+func checkP4Command() (cp []model.CheckPoint) {
 	if !p4.IsP4CommandAvailable() {
-		cp = append(cp, errorCheckPoint("p4 command was not found on path"))
+		cp = append(cp, model.ErrorCheckPoint("p4 command was not found on path"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("p4 command path is ", p4.GetP4CommandPath()))
-	cp = append(cp, okCheckPoint("p4 version is ", p4.GetP4CommandVersion()))
+	cp = append(cp, model.OkCheckPoint("p4 command path is ", p4.GetP4CommandPath()))
+	cp = append(cp, model.OkCheckPoint("p4 version is ", p4.GetP4CommandVersion()))
 	return cp
 }
 
-func checkP4Config() (cp []CheckPoint) {
+func checkP4Config() (cp []model.CheckPoint) {
 	if p4.GetP4UserName() == "not set" {
-		cp = append(cp, warningCheckPoint("p4 username is not set"))
+		cp = append(cp, model.WarningCheckPoint("p4 username is not set"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("p4 username is ", p4.GetP4UserName()))
+	cp = append(cp, model.OkCheckPoint("p4 username is ", p4.GetP4UserName()))
 	return cp
 }
 
-func checkP4Workspace(p params.Params) (cp []CheckPoint) {
+func checkP4Workspace(p params.Params) (cp []model.CheckPoint) {
 	if p4.GetP4ClientName() == "not set" {
-		cp = append(cp, errorCheckPoint("p4 client name is not set"))
+		cp = append(cp, model.ErrorCheckPoint("p4 client name is not set"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("p4 client name is ", p4.GetP4ClientName()))
+	cp = append(cp, model.OkCheckPoint("p4 client name is ", p4.GetP4ClientName()))
 
 	p4RootDir, err := p4.GetP4RootDir()
 	if err != nil {
-		cp = append(cp, errorCheckPoint("p4 client root is not set"))
+		cp = append(cp, model.ErrorCheckPoint("p4 client root is not set"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("p4 client root is ", p4RootDir))
+	cp = append(cp, model.OkCheckPoint("p4 client root is ", p4RootDir))
 
 	if !utils.IsSubPathOf(p.BaseDir, p4RootDir) {
-		cp = append(cp, errorCheckPoint("TCR base dir is not under p4 client root dir"))
+		cp = append(cp, model.ErrorCheckPoint("TCR base dir is not under p4 client root dir"))
 		return cp
 	}
 
 	if !utils.IsSubPathOf(p.WorkDir, p4RootDir) {
-		cp = append(cp, errorCheckPoint("TCR work dir is not under p4 client root dir"))
+		cp = append(cp, model.ErrorCheckPoint("TCR work dir is not under p4 client root dir"))
 		return cp
 	}
 

@@ -23,13 +23,14 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"strings"
 )
 
-func checkVCSEnvironment(p params.Params) (cr *CheckResults) {
+func checkVCSEnvironment(p params.Params) (cg *model.CheckGroup) {
 	switch strings.ToLower(p.VCS) {
 	case git.Name:
 		return checkGitEnvironment(p)

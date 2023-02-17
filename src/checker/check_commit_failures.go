@@ -23,15 +23,16 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 )
 
-func checkCommitFailures(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("commit-failures")
+func checkCommitFailures(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("commit-failures")
 	if p.CommitFailures {
-		cr.ok("commit-failures is turned on: test-breaking changes will be committed")
+		cg.Ok("commit-failures is turned on: test-breaking changes will be committed")
 	} else {
-		cr.ok("commit-failures is turned off: test-breaking changes will not be committed")
+		cg.Ok("commit-failures is turned off: test-breaking changes will not be committed")
 	}
-	return cr
+	return cg
 }

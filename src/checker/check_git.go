@@ -23,81 +23,82 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
 )
 
-func checkGitEnvironment(p params.Params) (cr *CheckResults) {
-	cr = NewCheckResults("git environment")
-	cr.add(checkGitCommand()...)
-	cr.add(checkGitConfig()...)
-	cr.add(checkGitRepository()...)
-	cr.add(checkGitRemote()...)
-	cr.add(checkGitAutoPush(p)...)
-	return cr
+func checkGitEnvironment(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("git environment")
+	cg.Add(checkGitCommand()...)
+	cg.Add(checkGitConfig()...)
+	cg.Add(checkGitRepository()...)
+	cg.Add(checkGitRemote()...)
+	cg.Add(checkGitAutoPush(p)...)
+	return cg
 }
 
-func checkGitCommand() (cp []CheckPoint) {
+func checkGitCommand() (cp []model.CheckPoint) {
 	if !git.IsGitCommandAvailable() {
-		cp = append(cp, errorCheckPoint("git command was not found on path"))
+		cp = append(cp, model.ErrorCheckPoint("git command was not found on path"))
 		return cp
 	}
-	cp = append(cp, okCheckPoint("git command path is ", git.GetGitCommandPath()))
-	cp = append(cp, okCheckPoint("git version is ", git.GetGitCommandVersion()))
+	cp = append(cp, model.OkCheckPoint("git command path is ", git.GetGitCommandPath()))
+	cp = append(cp, model.OkCheckPoint("git version is ", git.GetGitCommandVersion()))
 	// We could add here a check on git minimum version. No specific need for now.
 	return cp
 }
 
-func checkGitConfig() (cp []CheckPoint) {
-	cp = append(cp, okCheckPoint("git username is ", git.GetGitUserName()))
+func checkGitConfig() (cp []model.CheckPoint) {
+	cp = append(cp, model.OkCheckPoint("git username is ", git.GetGitUserName()))
 	return cp
 }
 
-func checkGitRepository() (cp []CheckPoint) {
+func checkGitRepository() (cp []model.CheckPoint) {
 	if checkEnv.sourceTreeErr != nil {
-		cp = append(cp, errorCheckPoint("cannot retrieve git repository information from base directory name"))
+		cp = append(cp, model.ErrorCheckPoint("cannot retrieve git repository information from base directory name"))
 		return cp
 	}
 	if checkEnv.vcsErr != nil {
-		cp = append(cp, errorCheckPoint(checkEnv.vcsErr))
+		cp = append(cp, model.ErrorCheckPoint(checkEnv.vcsErr))
 		return cp
 	}
 
-	cp = append(cp, okCheckPoint("git repository root is ", checkEnv.vcs.GetRootDir()))
+	cp = append(cp, model.OkCheckPoint("git repository root is ", checkEnv.vcs.GetRootDir()))
 
-	cp = append(cp, okCheckPoint("git working branch is ", checkEnv.vcs.GetWorkingBranch()))
+	cp = append(cp, model.OkCheckPoint("git working branch is ", checkEnv.vcs.GetWorkingBranch()))
 	if checkEnv.vcs.IsOnRootBranch() {
-		cp = append(cp, warningCheckPoint("running TCR from a root branch is not recommended"))
+		cp = append(cp, model.WarningCheckPoint("running TCR from a root branch is not recommended"))
 	}
 	return cp
 }
 
-func checkGitRemote() (cp []CheckPoint) {
+func checkGitRemote() (cp []model.CheckPoint) {
 	if checkEnv.vcs == nil {
 		// If git is not properly initialized, no point in trying to go further
 		return cp
 	}
 
 	if !checkEnv.vcs.IsRemoteEnabled() {
-		cp = append(cp, okCheckPoint("git remote is disabled: all operations will be done locally"))
+		cp = append(cp, model.OkCheckPoint("git remote is disabled: all operations will be done locally"))
 		return cp
 	}
 
-	cp = append(cp, okCheckPoint("git remote name is ", checkEnv.vcs.GetRemoteName()))
+	cp = append(cp, model.OkCheckPoint("git remote name is ", checkEnv.vcs.GetRemoteName()))
 
 	if checkEnv.vcs.CheckRemoteAccess() {
-		cp = append(cp, okCheckPoint("git remote access seems to be working"))
+		cp = append(cp, model.OkCheckPoint("git remote access seems to be working"))
 	} else {
-		cp = append(cp, errorCheckPoint("git remote access does not seem to be working"))
+		cp = append(cp, model.ErrorCheckPoint("git remote access does not seem to be working"))
 	}
 	return cp
 }
 
-func checkGitAutoPush(p params.Params) (cp []CheckPoint) {
+func checkGitAutoPush(p params.Params) (cp []model.CheckPoint) {
 	if p.AutoPush {
-		cp = append(cp, okCheckPoint("git auto-push is turned on: every commit will be pushed to origin"))
+		cp = append(cp, model.OkCheckPoint("git auto-push is turned on: every commit will be pushed to origin"))
 	} else {
-		cp = append(cp, okCheckPoint("git auto-push is turned off: commits will only be applied locally"))
+		cp = append(cp, model.OkCheckPoint("git auto-push is turned off: commits will only be applied locally"))
 	}
 	return cp
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package checker
-
-import (
-	"github.com/murex/tcr/checker/model"
-	"github.com/murex/tcr/params"
-	"time"
-)
-
-const (
-	pollingPeriodLowThreshold  = 2 * time.Second
-	pollingPeriodHighThreshold = 1 * time.Minute
-)
-
-func checkPollingPeriod(p params.Params) (cg *model.CheckGroup) {
-	cg = model.NewCheckGroup("polling period")
-	cg.Ok("polling period is ", p.PollingPeriod.String())
-	if p.PollingPeriod == 0 {
-		cg.Warning("code refresh (for navigator role) is turned off")
-	} else if p.PollingPeriod > pollingPeriodHighThreshold {
-		cg.Warning("polling period is very slow (above ", pollingPeriodHighThreshold, ")")
-	} else if p.PollingPeriod < pollingPeriodLowThreshold {
-		cg.Warning("polling period is very fast (below ", pollingPeriodLowThreshold, ")")
-	} else {
-		cg.Ok("polling period is in the recommended range")
-	}
-	return cg
-}
+package model
