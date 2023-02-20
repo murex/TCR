@@ -29,7 +29,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// runCmd represents the run command
+// oneShotCmd represents the one-shot command
 var oneShotCmd = &cobra.Command{
 	Use:   "one-shot",
 	Short: "Run one TCR cycle and exit",
