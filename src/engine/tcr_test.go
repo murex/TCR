@@ -36,6 +36,7 @@ import (
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -155,8 +156,6 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			tcr, _ := initTCREngineWithFakes(nil, toolchain.Operations{tt.failAt}, nil, nil)
 			tcr.build()
 			tcr.test()
-
-			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
 
 			assert.Equal(t, 1, sniffer.GetMatchCount())
@@ -372,38 +371,37 @@ func initTCREngineWithFakes(
 	}
 
 	tcr := NewTCREngine()
+	// Replace VCS factory initializer in order to use a VCS fake instead of the real thing
+	var vcsFake *fake.VCSFake
+	factory.InitVCS = func(_ string, _ string) (vcs.Interface, error) {
+		fakeSettings := fake.Settings{
+			FailingCommands: vcsFailures,
+			ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
+			Logs:            logItems,
+		}
+		vcsFake = fake.NewVCSFake(fakeSettings)
+		return vcsFake, nil
+	}
 	tcr.Init(ui.NewFakeUI(), parameters)
 	// overwrite the default waiting time for re-arming watching for filesystem changes
 	tcr.fsWatchRearmDelay = 0
-	vcsFake := replaceVCSImplWithFake(tcr, vcsFailures, logItems)
 	return tcr, vcsFake
 }
 
 func registerFakeToolchain(failures toolchain.Operations) string {
-	fake := toolchain.NewFakeToolchain(failures, toolchain.TestStats{})
-	if err := toolchain.Register(fake); err != nil {
+	f := toolchain.NewFakeToolchain(failures, toolchain.TestStats{})
+	if err := toolchain.Register(f); err != nil {
 		fmt.Println(err)
 	}
-	return fake.GetName()
+	return f.GetName()
 }
 
 func registerFakeLanguage(toolchainName string) string {
-	fake := language.NewFakeLanguage(toolchainName)
-	if err := language.Register(fake); err != nil {
+	f := language.NewFakeLanguage(toolchainName)
+	if err := language.Register(f); err != nil {
 		fmt.Println(err)
 	}
-	return fake.GetName()
-}
-
-func replaceVCSImplWithFake(tcr TCRInterface, failures fake.Commands, logItems vcs.LogItems) *fake.VCSFake {
-	fakeSettings := fake.Settings{
-		FailingCommands: failures,
-		ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
-		Logs:            logItems,
-	}
-	fake, _ := fake.NewVCSFake(fakeSettings)
-	tcr.setVCS(fake)
-	return fake
+	return f.GetName()
 }
 
 func Test_run_as_role_methods(t *testing.T) {
@@ -476,7 +474,6 @@ func Test_vcs_pull_highlights_errors(t *testing.T) {
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PullCommand}, nil)
 	tcr.VCSPull()
-	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
@@ -489,7 +486,6 @@ func Test_vcs_push_highlights_errors(t *testing.T) {
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
 	tcr.VCSPush()
-	time.Sleep(1 * time.Millisecond)
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
@@ -512,8 +508,8 @@ func Test_get_session_info(t *testing.T) {
 		WorkDir:           currentDir,
 		LanguageName:      "fake-language",
 		ToolchainName:     "fake-toolchain",
-		VCSName:           "vcs-fake",
-		VCSSessionSummary: "VCS session \"fake\"",
+		VCSName:           fake.Name,
+		VCSSessionSummary: "VCS session \"" + fake.Name + "\"",
 		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())
@@ -646,9 +642,7 @@ func Test_tcr_print_log(t *testing.T) {
 			p := params.AParamSet(params.WithRunMode(runmode.Log{}))
 			tcr, _ := initTCREngineWithFakes(p, nil, nil, tt.logItems)
 			tcr.PrintLog(*p)
-			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
-			//fmt.Println(sniffer.GetAllMatches())
 			assert.Equal(t, tt.expectedMatches, sniffer.GetMatchCount())
 		})
 	}

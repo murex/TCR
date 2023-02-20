@@ -29,6 +29,9 @@ import (
 	"github.com/murex/tcr/vcs"
 )
 
+// Name provides the name for this VCS implementation
+const Name = "vcs-fake"
+
 type (
 	// Command is the name of a Git command
 	Command string
@@ -79,23 +82,25 @@ type (
 func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 	vf.lastCommand = cmd
 	if vf.settings.FailingCommands.contains(cmd) {
-		err = errors.New("vcs " + string(cmd) + " fake error")
+		err = errors.New(vf.Name() + " " + string(cmd) + " error")
 	}
 	return
 }
 
 // NewVCSFake initializes a fake VCS implementation which does nothing
 // apart from emulating errors on VCS operations
-func NewVCSFake(settings Settings) (*VCSFake, error) {
-	return &VCSFake{settings: settings}, nil
+func NewVCSFake(settings Settings) *VCSFake {
+	return &VCSFake{settings: settings}
 }
 
+// Name returns VCS name
 func (vf *VCSFake) Name() string {
-	return "vcs-fake"
+	return Name
 }
 
+// SessionSummary provides a short description related to current VCS session summary
 func (vf *VCSFake) SessionSummary() string {
-	return "VCS session \"fake\""
+	return "VCS session \"" + vf.Name() + "\""
 }
 
 // GetLastCommand returns the last command called

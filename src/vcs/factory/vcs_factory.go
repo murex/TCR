@@ -30,6 +30,16 @@ import (
 	"strings"
 )
 
+// InitVCS returns the VCS instance of type defined by name, working on the provided directory
+var InitVCS func(name string, dir string) (vcs.Interface, error)
+
+func init() {
+	// InitVCS is set by default to real VCS implementation factory.
+	// This may be overridden when running tests to prevent going through VCS initialization
+	// when running tests
+	InitVCS = initVCS
+}
+
 // UnsupportedVCSError is returned when the provided VCS name is not supported by the factory.
 type UnsupportedVCSError struct {
 	vcsName string
@@ -40,8 +50,8 @@ func (e *UnsupportedVCSError) Error() string {
 	return fmt.Sprintf("VCS not supported: \"%s\"", e.vcsName)
 }
 
-// InitVCS returns the VCS instance of type defined by name, working on the provided directory
-func InitVCS(name string, dir string) (vcs.Interface, error) {
+// initVCS returns the VCS instance of type defined by name, working on the provided directory
+func initVCS(name string, dir string) (vcs.Interface, error) {
 	switch strings.ToLower(name) {
 	case git.Name:
 		return git.New(dir)
