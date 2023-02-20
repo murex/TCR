@@ -23,9 +23,10 @@ SOFTWARE.
 package model
 
 import (
+	"errors"
 	"fmt"
 	"github.com/murex/tcr/report"
-	"os"
+	"io/fs"
 )
 
 // CheckPoint is used for describing the result of a single check point
@@ -38,9 +39,9 @@ type CheckPoint struct {
 // related to accessing a directory
 func CheckpointsForDirAccessError(dir string, err error) []CheckPoint {
 	var checkpoint CheckPoint
-	if os.IsNotExist(err) {
+	if errors.Is(err, fs.ErrNotExist) {
 		checkpoint = ErrorCheckPoint("directory not found: ", dir)
-	} else if os.IsPermission(err) {
+	} else if errors.Is(err, fs.ErrPermission) {
 		checkpoint = ErrorCheckPoint("cannot access directory ", dir)
 	} else {
 		checkpoint = ErrorCheckPoint(err)

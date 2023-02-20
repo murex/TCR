@@ -24,6 +24,8 @@ SOFTWARE.
 
 package report
 
+import "time"
+
 type messageFilter func(msg Message) bool
 
 // Sniffer is a test utility allowing to track captured sent through TCR reporter
@@ -110,6 +112,9 @@ func (sniffer *Sniffer) ReportError(emphasis bool, a ...interface{}) {
 
 // Stop tells the sniffer to stop
 func (sniffer *Sniffer) Stop() {
+	// Micro-timer to give a chance to reporters to process their messages
+	// before the sniffer stops listening
+	time.Sleep(1 * time.Millisecond)
 	if sniffer.reportingChannel != nil {
 		Unsubscribe(sniffer.reportingChannel)
 	}
