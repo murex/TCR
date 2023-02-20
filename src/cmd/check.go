@@ -29,7 +29,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// runCmd represents the run command
+// checkCmd represents the check command
 var checkCmd = &cobra.Command{
 	Use:   "check",
 	Short: "Check TCR configuration and parameters and exit",
