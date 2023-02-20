@@ -22,4 +22,48 @@ SOFTWARE.
 
 package model
 
-// TODO
+import (
+	"github.com/murex/tcr/status"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_record_check_state(t *testing.T) {
+	tests := []struct {
+		desc        string
+		checkStatus CheckStatus
+		expectedRC  int
+	}{
+		{"status ok", CheckStatusOk, 0},
+		{"status warning", CheckStatusWarning, 1},
+		{"status error", CheckStatusError, 2},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			status.RecordState(status.Ok)
+			RecordCheckState(test.checkStatus)
+			assert.Equal(t, test.expectedRC, status.GetReturnCode())
+		})
+	}
+}
+
+func Test_update_return_state(t *testing.T) {
+	tests := []struct {
+		desc       string
+		checkpoint CheckPoint
+		expectedRC int
+	}{
+		{"status ok", OkCheckPoint("A"), 0},
+		{"status warning", WarningCheckPoint("A"), 1},
+		{"status error", ErrorCheckPoint("A"), 2},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			cg := NewCheckGroup("check group")
+			cg.Add(test.checkpoint)
+			status.RecordState(status.Ok)
+			UpdateReturnState(cg)
+			assert.Equal(t, test.expectedRC, status.GetReturnCode())
+		})
+	}
+}

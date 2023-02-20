@@ -23,6 +23,7 @@ SOFTWARE.
 package model
 
 import (
+	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -106,5 +107,48 @@ func Test_add_error_checkpoint(t *testing.T) {
 }
 
 func Test_check_group_print(t *testing.T) {
-	// TODO
+	tests := []struct {
+		desc                   string
+		checkpoints            []CheckPoint
+		expectedReportSeverity report.Severity
+	}{
+		{
+			"0 checkpoint",
+			nil,
+			report.Info,
+		},
+		{
+			"1 ok checkpoint",
+			[]CheckPoint{OkCheckPoint("A")},
+			report.Info,
+		},
+		{
+			"1 warning checkpoint",
+			[]CheckPoint{WarningCheckPoint("A")},
+			report.Warning,
+		},
+		{
+			"1 error checkpoint",
+			[]CheckPoint{ErrorCheckPoint("A")},
+			report.Error,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer()
+			cg := NewCheckGroup("check group")
+			cg.Add(test.checkpoints...)
+			cg.Print()
+			sniffer.Stop()
+
+			assert.Equal(t, 2+len(test.checkpoints), sniffer.GetMatchCount())
+			assert.Equal(t, report.Info, sniffer.GetAllMatches()[0].Type.Severity)
+			assert.Equal(t, "", sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, test.expectedReportSeverity, sniffer.GetAllMatches()[1].Type.Severity)
+			assert.Equal(t, "➤ checking check group", sniffer.GetAllMatches()[1].Text)
+			for i := range test.checkpoints {
+				assert.Equal(t, test.expectedReportSeverity, sniffer.GetAllMatches()[2+i].Type.Severity)
+			}
+		})
+	}
 }
