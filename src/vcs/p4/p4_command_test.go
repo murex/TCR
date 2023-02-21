@@ -30,16 +30,6 @@ import (
 	"testing"
 )
 
-// newP4CommandStub creates a new p4 shell command stub
-func newP4CommandStub() *shell.CommandStub {
-	return shell.NewCommandStub(*newP4CommandImpl())
-}
-
-// Make sure that shell.NewCommandFunc is back to normal after each test
-func teardownTest() {
-	shell.NewCommandFunc = shell.NewCommand
-}
-
 func Test_is_p4_command_available(t *testing.T) {
 	tests := []struct {
 		desc     string
@@ -52,9 +42,9 @@ func Test_is_p4_command_available(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.IsInPathFunc = func() bool {
 					return test.inPath
 				}
@@ -77,9 +67,9 @@ func Test_get_p4_command_path(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.GetFullPathFunc = func() string {
 					return test.realPath
 				}
@@ -124,9 +114,9 @@ Rev. P4/NTX64/2022.2/2369846 (2022/11/14).
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -170,9 +160,9 @@ func Test_get_p4_root_dir(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -212,9 +202,9 @@ func Test_get_p4_username(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -248,9 +238,9 @@ func Test_get_p4_client_name(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -294,9 +284,9 @@ func Test_get_p4_config_value(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -346,9 +336,9 @@ var (
 func Test_run_p4_command(t *testing.T) {
 	for _, test := range runP4CmdTests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -364,10 +354,10 @@ func Test_run_p4_command(t *testing.T) {
 func Test_trace_p4_command(t *testing.T) {
 	for _, test := range runP4CmdTests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			var trace string
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (output []byte, err error) {
 					return []byte(test.p4CmdOutput), test.p4CmdError
 				}
@@ -388,9 +378,9 @@ func Test_trace_p4_command(t *testing.T) {
 func Test_run_piped_p4_command(t *testing.T) {
 	for _, test := range runP4CmdTests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunAndPipeFunc = func(_ shell.Command, params ...string) (output []byte, err error) {
 					// We don't run a real command pipe here (would imply that we run real commands,
 					// which is exactly what we want to avoid)
@@ -409,10 +399,10 @@ func Test_run_piped_p4_command(t *testing.T) {
 func Test_trace_piped_p4_command(t *testing.T) {
 	for _, test := range runP4CmdTests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer teardownTest()
+			defer RestoreP4Command()
 			var trace string
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
-				stub := newP4CommandStub()
+				stub := NewP4CommandStub()
 				stub.RunAndPipeFunc = func(_ shell.Command, params ...string) (output []byte, err error) {
 					// We don't run a real command pipe here (would imply that we run real commands,
 					// which is exactly what we want to avoid)
