@@ -22,4 +22,98 @@ SOFTWARE.
 
 package checker
 
-// TODO add p4 checker tests
+import (
+	"github.com/murex/tcr/checker/model"
+	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs/p4"
+	"github.com/murex/tcr/vcs/shell"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_check_p4_environment(t *testing.T) {
+	t.Skip("TODO")
+}
+
+func Test_check_p4_command(t *testing.T) {
+	tests := []struct {
+		desc     string
+		isInPath bool
+		fullPath string
+		version  string
+		expected []model.CheckPoint
+	}{
+		{
+			"p4 command not found", false, "", "",
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("p4 command was not found on path"),
+			},
+		},
+		{
+			"p4 command found", true, "some-path", "some-version",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 command path is some-path"),
+				model.OkCheckPoint("p4 version is some-version"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer p4.RestoreP4Command()
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := p4.NewP4CommandStub()
+				stub.IsInPathFunc = func() bool {
+					return test.isInPath
+				}
+				stub.GetFullPathFunc = func() string {
+					return test.fullPath
+				}
+				stub.RunFunc = func(params ...string) (out []byte, err error) {
+					return []byte("Rev. " + test.version + " (0000/00/00)."), nil
+				}
+				return stub
+			}
+			initTestCheckEnv(*params.AParamSet())
+			assert.Equal(t, test.expected, checkP4Command())
+		})
+	}
+}
+
+func Test_check_p4_config(t *testing.T) {
+	tests := []struct {
+		desc     string
+		username string
+		expected []model.CheckPoint
+	}{
+		{
+			"p4 username set", "jane-doe",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 username is jane-doe"),
+			},
+		},
+		{
+			"p4 username not set", "not set",
+			[]model.CheckPoint{
+				model.WarningCheckPoint("p4 username is not set"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer p4.RestoreP4Command()
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := p4.NewP4CommandStub()
+				stub.RunFunc = func(params ...string) (out []byte, err error) {
+					return []byte(test.username), nil
+				}
+				return stub
+			}
+			initTestCheckEnv(*params.AParamSet())
+			assert.Equal(t, test.expected, checkP4Config())
+		})
+	}
+}
+
+func Test_check_p4_workspace(t *testing.T) {
+	t.Skip("TODO")
+}
