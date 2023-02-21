@@ -85,6 +85,10 @@ type (
 		messageSuffix   string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
+		// traceReporterWaitingTime is used to prevent trace reporter overflow when
+		// due to slowness of terminal output when there is a large quantity
+		// of information to report (such as when printing VCS log outcome)
+		traceReporterWaitingTime time.Duration
 		// fsWatchRearmDelay is the waiting time until TCR starts watching the filesystem again
 		// after a filesystem event was detected. The default value should not be changed except
 		// when running tests
@@ -112,7 +116,10 @@ var (
 
 // NewTCREngine instantiates TCR engine instance
 func NewTCREngine() (engine *TCREngine) {
-	engine = &TCREngine{fsWatchRearmDelay: fsWatchRearmDelay}
+	engine = &TCREngine{
+		fsWatchRearmDelay:        fsWatchRearmDelay,
+		traceReporterWaitingTime: traceReporterWaitingTime,
+	}
 	TCR = engine
 	return engine
 }
@@ -190,7 +197,7 @@ func (tcr *TCREngine) PrintLog(p params.Params) {
 		report.PostInfo("timestamp: ", log.Timestamp)
 		report.PostInfo("message:   ", log.Message)
 		// Giving trace reporter some time to flush its contents
-		time.Sleep(traceReporterWaitingTime)
+		time.Sleep(tcr.traceReporterWaitingTime)
 	}
 }
 

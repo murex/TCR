@@ -34,7 +34,6 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
-	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
@@ -383,8 +382,9 @@ func initTCREngineWithFakes(
 		return vcsFake, nil
 	}
 	tcr.Init(ui.NewFakeUI(), parameters)
-	// overwrite the default waiting time for re-arming watching for filesystem changes
+	// overwrite the default waiting times when running tests
 	tcr.fsWatchRearmDelay = 0
+	tcr.traceReporterWaitingTime = 0
 	return tcr, vcsFake
 }
 
@@ -564,7 +564,6 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 }
 
 func Test_tcr_print_log(t *testing.T) {
-	utils.SlowTestTag(t)
 	now := time.Now()
 	sampleItems := vcs.LogItems{
 		vcs.NewLogItem("1111", now, "✅ TCR - tests passing"),
