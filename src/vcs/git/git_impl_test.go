@@ -650,7 +650,7 @@ func Test_git_log(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := New(".")
+			g, _ := newGitImpl(inMemoryRepoInit, ".")
 			items, err := g.Log(tt.filter)
 			assert.NoError(t, err)
 			tt.asserter(t, items)
