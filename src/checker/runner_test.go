@@ -26,7 +26,8 @@ import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/status"
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
@@ -45,9 +46,11 @@ var (
 // Assert utility functions
 
 func initTestCheckEnv(params params.Params) {
+	// Replace VCS factory initializer in order to use a VCS fake instead of the real thing
+	factory.InitVCS = func(_ string, _ string) (vcs.Interface, error) {
+		return fake.NewVCSFake(fake.Settings{}), nil
+	}
 	initCheckEnv(params)
-	// We replace git implementation with a fake so that we bypass real git access
-	checkEnv.vcs = fake.NewVCSFake(fake.Settings{})
 }
 
 func assertStatus(t *testing.T, expected model.CheckStatus, checker checkerFunc, params params.Params) {
@@ -85,7 +88,6 @@ func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 }
 
 func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
-	utils.SlowTestTag(t)
 	// The warning is triggered by the mob timer duration being under the min threshold
 	Run(*params.AParamSet(
 		params.WithConfigDir(testDataDirJava),
@@ -93,14 +95,10 @@ func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
 		params.WithWorkDir(testDataDirJava),
 		params.WithMobTimerDuration(1*time.Second),
 	))
-
-	// Depending on the context, checkGitRemote() can return an error.
-	// For this reason this test case allows either warnings or errors
-	assert.GreaterOrEqual(t, status.GetReturnCode(), 1)
+	assert.Equal(t, status.GetReturnCode(), 1)
 }
 
 func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
-	utils.SlowTestTag(t)
 	const invalidDir = "invalid-dir"
 	Run(*params.AParamSet(
 		params.WithConfigDir(invalidDir),
