@@ -39,11 +39,25 @@ const (
 	testDataRootDir = "../testdata"
 )
 
+// stub checkpoint runners used for testing
+
 var (
-	testDataDirJava = filepath.Join(testDataRootDir, "java")
+	checkPointRunnerOkStub = func(p params.Params) []model.CheckPoint {
+		return []model.CheckPoint{model.OkCheckPoint("")}
+	}
+	checkPointRunnerWarningStub = func(p params.Params) []model.CheckPoint {
+		return []model.CheckPoint{model.WarningCheckPoint("")}
+	}
+	checkPointRunnerErrorStub = func(p params.Params) []model.CheckPoint {
+		return []model.CheckPoint{model.ErrorCheckPoint("")}
+	}
 )
 
 // Assert utility functions
+
+var (
+	testDataDirJava = filepath.Join(testDataRootDir, "java")
+)
 
 func initTestCheckEnv(params params.Params) {
 	// Replace VCS factory initializer in order to use a VCS fake instead of the real thing
@@ -53,24 +67,24 @@ func initTestCheckEnv(params params.Params) {
 	initCheckEnv(params)
 }
 
-func assertStatus(t *testing.T, expected model.CheckStatus, checker checkerFunc, params params.Params) {
+func assertStatus(t *testing.T, expected model.CheckStatus, checker checkGroupRunner, params params.Params) {
 	initTestCheckEnv(params)
 	assert.Equal(t, expected, checker(params).GetStatus())
 }
 
-func assertOk(t *testing.T, checker checkerFunc, params params.Params) {
+func assertOk(t *testing.T, checker checkGroupRunner, params params.Params) {
 	t.Helper()
 	assertStatus(t, model.CheckStatusOk, checker, params)
 }
 
-func assertWarning(t *testing.T, checker checkerFunc, params params.Params) {
+// Return code for check subcommand
+
+func assertWarning(t *testing.T, checker checkGroupRunner, params params.Params) {
 	t.Helper()
 	assertStatus(t, model.CheckStatusWarning, checker, params)
 }
 
-// Return code for check subcommand
-
-func assertError(t *testing.T, checker checkerFunc, params params.Params) {
+func assertError(t *testing.T, checker checkGroupRunner, params params.Params) {
 	t.Helper()
 	assertStatus(t, model.CheckStatusError, checker, params)
 }

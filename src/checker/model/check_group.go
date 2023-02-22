@@ -80,13 +80,18 @@ func (cg *CheckGroup) Print() {
 	const messagePrefix = "➤ checking "
 	switch cg.GetStatus() {
 	case CheckStatusOk:
-		report.PostInfo(messagePrefix, cg.topic)
+		report.PostInfo(messagePrefix, cg.GetTopic())
 	case CheckStatusWarning:
-		report.PostWarning(messagePrefix, cg.topic)
+		report.PostWarning(messagePrefix, cg.GetTopic())
 	case CheckStatusError:
-		report.PostError(messagePrefix, cg.topic)
+		report.PostError(messagePrefix, cg.GetTopic())
 	}
 	for _, checkpoint := range cg.checkpoints {
 		checkpoint.Print()
 	}
+}
+
+// GetTopic returns the topic name for this CheckGroup
+func (cg *CheckGroup) GetTopic() string {
+	return cg.topic
 }
