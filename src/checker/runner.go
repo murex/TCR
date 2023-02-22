@@ -34,7 +34,9 @@ import (
 	"github.com/murex/tcr/vcs/factory"
 )
 
-type checkerFunc func(params.Params) *model.CheckGroup
+type checkGroupRunner func(params.Params) *model.CheckGroup
+
+type checkPointRunner func(p params.Params) []model.CheckPoint
 
 var checkEnv struct {
 	configDir     string
@@ -90,8 +92,8 @@ func initCheckEnv(p params.Params) {
 	}
 }
 
-func initCheckers() []checkerFunc {
-	return []checkerFunc{
+func initCheckers() []checkGroupRunner {
+	return []checkGroupRunner{
 		checkConfigDirectory,
 		checkBaseDirectory,
 		checkWorkDirectory,

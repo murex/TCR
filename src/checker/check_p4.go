@@ -29,15 +29,25 @@ import (
 	"github.com/murex/tcr/vcs/p4"
 )
 
+var p4Runners []checkPointRunner
+
+func init() {
+	p4Runners = []checkPointRunner{
+		checkP4Command,
+		checkP4Config,
+		checkP4Workspace,
+	}
+}
+
 func checkP4Environment(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("perforce environment")
-	cg.Add(checkP4Command()...)
-	cg.Add(checkP4Config()...)
-	cg.Add(checkP4Workspace(p)...)
+	for _, runner := range p4Runners {
+		cg.Add(runner(p)...)
+	}
 	return cg
 }
 
-func checkP4Command() (cp []model.CheckPoint) {
+func checkP4Command(_ params.Params) (cp []model.CheckPoint) {
 	if !p4.IsP4CommandAvailable() {
 		cp = append(cp, model.ErrorCheckPoint("p4 command was not found on path"))
 		return cp
@@ -47,7 +57,7 @@ func checkP4Command() (cp []model.CheckPoint) {
 	return cp
 }
 
-func checkP4Config() (cp []model.CheckPoint) {
+func checkP4Config(_ params.Params) (cp []model.CheckPoint) {
 	if p4.GetP4UserName() == "not set" {
 		cp = append(cp, model.WarningCheckPoint("p4 username is not set"))
 		return cp

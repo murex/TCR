@@ -34,7 +34,23 @@ import (
 )
 
 func Test_check_p4_environment(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		desc     string
+		runner   checkPointRunner
+		expected model.CheckStatus
+	}{
+		{"ok", checkPointRunnerOkStub, model.CheckStatusOk},
+		{"warning", checkPointRunnerWarningStub, model.CheckStatusWarning},
+		{"error", checkPointRunnerErrorStub, model.CheckStatusError},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p4Runners = []checkPointRunner{test.runner}
+			cg := checkP4Environment(*params.AParamSet())
+			assert.Equal(t, "perforce environment", cg.GetTopic())
+			assert.Equal(t, test.expected, cg.GetStatus())
+		})
+	}
 }
 
 func Test_check_p4_command(t *testing.T) {
@@ -75,8 +91,9 @@ func Test_check_p4_command(t *testing.T) {
 				}
 				return stub
 			}
-			initTestCheckEnv(*params.AParamSet())
-			assert.Equal(t, test.expected, checkP4Command())
+			p := *params.AParamSet()
+			initTestCheckEnv(p)
+			assert.Equal(t, test.expected, checkP4Command(p))
 		})
 	}
 }
@@ -110,8 +127,9 @@ func Test_check_p4_config(t *testing.T) {
 				}
 				return stub
 			}
-			initTestCheckEnv(*params.AParamSet())
-			assert.Equal(t, test.expected, checkP4Config())
+			p := *params.AParamSet()
+			initTestCheckEnv(p)
+			assert.Equal(t, test.expected, checkP4Config(p))
 		})
 	}
 }
