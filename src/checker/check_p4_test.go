@@ -23,11 +23,13 @@ SOFTWARE.
 package checker
 
 import (
+	"errors"
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/p4"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
@@ -86,15 +88,15 @@ func Test_check_p4_config(t *testing.T) {
 		expected []model.CheckPoint
 	}{
 		{
-			"p4 username set", "jane-doe",
-			[]model.CheckPoint{
-				model.OkCheckPoint("p4 username is jane-doe"),
-			},
-		},
-		{
 			"p4 username not set", "not set",
 			[]model.CheckPoint{
 				model.WarningCheckPoint("p4 username is not set"),
+			},
+		},
+		{
+			"p4 username set", "jane-doe",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 username is jane-doe"),
 			},
 		},
 	}
@@ -115,5 +117,91 @@ func Test_check_p4_config(t *testing.T) {
 }
 
 func Test_check_p4_workspace(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		desc            string
+		clientName      string
+		clientRoot      string
+		clientRootError error
+		baseDir         string
+		workDir         string
+		expected        []model.CheckPoint
+	}{
+		{
+			"p4 client name not set",
+			"not set",
+			"", nil,
+			"", "",
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("p4 client name is not set"),
+			},
+		},
+		{
+			"p4 client root not set",
+			"client-name",
+			"", errors.New("some error"),
+			"", "",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 client name is client-name"),
+				model.ErrorCheckPoint("p4 client root is not set"),
+			},
+		},
+		{
+			"base dir not under p4 client root dir",
+			"client-name",
+			"/client-root", nil,
+			"/base-dir", "",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 client name is client-name"),
+				model.OkCheckPoint("p4 client root is /client-root"),
+				model.ErrorCheckPoint("TCR base dir is not under p4 client root dir"),
+			},
+		},
+		{
+			"work dir not under p4 client root dir",
+			"client-name",
+			"/client-root", nil,
+			"/client-root/base-dir", "/work-dir",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 client name is client-name"),
+				model.OkCheckPoint("p4 client root is /client-root"),
+				model.ErrorCheckPoint("TCR work dir is not under p4 client root dir"),
+			},
+		},
+		{
+			"all green",
+			"client-name",
+			"/client-root", nil,
+			"/client-root/base-dir", "/client-root/work-dir",
+			[]model.CheckPoint{
+				model.OkCheckPoint("p4 client name is client-name"),
+				model.OkCheckPoint("p4 client root is /client-root"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			defer p4.RestoreP4Command()
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := p4.NewP4CommandStub()
+				stub.RunFunc = func(params ...string) (out []byte, err error) {
+					//t.Log(params)
+					switch strings.Join(params, " ") {
+					case "set -q P4CLIENT":
+						return []byte(test.clientName), nil
+					case "-F %clientRoot% -ztag info":
+						return []byte(test.clientRoot), test.clientRootError
+					default:
+						return []byte(""), nil
+					}
+				}
+				return stub
+			}
+			p := *params.AParamSet(
+				params.WithBaseDir(test.baseDir),
+				params.WithWorkDir(test.workDir),
+			)
+			initTestCheckEnv(p)
+			assert.Equal(t, test.expected, checkP4Workspace(p))
+		})
+	}
 }
