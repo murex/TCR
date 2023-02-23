@@ -73,29 +73,44 @@ func assertError(t *testing.T, checker checkGroupRunner, params params.Params) {
 	assertStatus(t, model.CheckStatusError, checker, params)
 }
 
-func assertCheckGroup(t *testing.T, runners *[]checkPointRunner, expectedTopic string) {
+func assertCheckGroupRunner(t *testing.T,
+	cgRunner checkGroupRunner, cpRunners *[]checkPointRunner, expectedTopic string) {
 	tests := []struct {
-		desc       string
-		runnerStub checkPointRunner
-		expected   model.CheckStatus
+		desc           string
+		runnerStub     checkPointRunner
+		expectedStatus model.CheckStatus
 	}{
-		{"ok", func(p params.Params) []model.CheckPoint {
-			return []model.CheckPoint{model.OkCheckPoint("")}
-		}, model.CheckStatusOk},
-		{"warning", func(p params.Params) []model.CheckPoint {
-			return []model.CheckPoint{model.WarningCheckPoint("")}
-		}, model.CheckStatusWarning},
-		{"error", func(p params.Params) []model.CheckPoint {
-			return []model.CheckPoint{model.ErrorCheckPoint("")}
-		}, model.CheckStatusError},
+		{
+			"ok",
+			func(p params.Params) []model.CheckPoint {
+				return []model.CheckPoint{model.OkCheckPoint("")}
+			},
+			model.CheckStatusOk,
+		},
+		{
+			"warning",
+			func(p params.Params) []model.CheckPoint {
+				return []model.CheckPoint{model.WarningCheckPoint("")}
+			},
+			model.CheckStatusWarning,
+		},
+		{
+			"error",
+			func(p params.Params) []model.CheckPoint {
+				return []model.CheckPoint{model.ErrorCheckPoint("")}
+			},
+			model.CheckStatusError,
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			*runners = []checkPointRunner{test.runnerStub}
-			cg := checkP4Environment(*params.AParamSet())
+			cpRunnersBackup := *cpRunners
+			defer func() { *cpRunners = cpRunnersBackup }()
+			*cpRunners = []checkPointRunner{test.runnerStub}
+			cg := cgRunner(*params.AParamSet())
 			assert.Equal(t, expectedTopic, cg.GetTopic())
-			assert.Equal(t, test.expected, cg.GetStatus())
+			assert.Equal(t, test.expectedStatus, cg.GetStatus())
 		})
 	}
 }

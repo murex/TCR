@@ -28,17 +28,27 @@ import (
 	"github.com/murex/tcr/vcs/git"
 )
 
+var checkGitRunners []checkPointRunner
+
+func init() {
+	checkGitRunners = []checkPointRunner{
+		checkGitCommand,
+		checkGitConfig,
+		checkGitRepository,
+		checkGitRemote,
+		checkGitAutoPush,
+	}
+}
+
 func checkGitEnvironment(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("git environment")
-	cg.Add(checkGitCommand()...)
-	cg.Add(checkGitConfig()...)
-	cg.Add(checkGitRepository()...)
-	cg.Add(checkGitRemote()...)
-	cg.Add(checkGitAutoPush(p)...)
+	for _, runner := range checkGitRunners {
+		cg.Add(runner(p)...)
+	}
 	return cg
 }
 
-func checkGitCommand() (cp []model.CheckPoint) {
+func checkGitCommand(_ params.Params) (cp []model.CheckPoint) {
 	if !git.IsGitCommandAvailable() {
 		cp = append(cp, model.ErrorCheckPoint("git command was not found on path"))
 		return cp
@@ -49,12 +59,12 @@ func checkGitCommand() (cp []model.CheckPoint) {
 	return cp
 }
 
-func checkGitConfig() (cp []model.CheckPoint) {
+func checkGitConfig(_ params.Params) (cp []model.CheckPoint) {
 	cp = append(cp, model.OkCheckPoint("git username is ", git.GetGitUserName()))
 	return cp
 }
 
-func checkGitRepository() (cp []model.CheckPoint) {
+func checkGitRepository(_ params.Params) (cp []model.CheckPoint) {
 	if checkEnv.sourceTreeErr != nil {
 		cp = append(cp, model.ErrorCheckPoint("cannot retrieve git repository information from base directory name"))
 		return cp
@@ -73,7 +83,7 @@ func checkGitRepository() (cp []model.CheckPoint) {
 	return cp
 }
 
-func checkGitRemote() (cp []model.CheckPoint) {
+func checkGitRemote(_ params.Params) (cp []model.CheckPoint) {
 	if checkEnv.vcs == nil {
 		// If git is not properly initialized, no point in trying to go further
 		return cp
