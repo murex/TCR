@@ -29,10 +29,10 @@ import (
 	"github.com/murex/tcr/vcs/p4"
 )
 
-var p4Runners []checkPointRunner
+var checkP4Runners []checkPointRunner
 
 func init() {
-	p4Runners = []checkPointRunner{
+	checkP4Runners = []checkPointRunner{
 		checkP4Command,
 		checkP4Config,
 		checkP4Workspace,
@@ -41,7 +41,7 @@ func init() {
 
 func checkP4Environment(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("perforce environment")
-	for _, runner := range p4Runners {
+	for _, runner := range checkP4Runners {
 		cg.Add(runner(p)...)
 	}
 	return cg

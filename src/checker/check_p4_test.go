@@ -34,23 +34,7 @@ import (
 )
 
 func Test_check_p4_environment(t *testing.T) {
-	tests := []struct {
-		desc     string
-		runner   checkPointRunner
-		expected model.CheckStatus
-	}{
-		{"ok", checkPointRunnerOkStub, model.CheckStatusOk},
-		{"warning", checkPointRunnerWarningStub, model.CheckStatusWarning},
-		{"error", checkPointRunnerErrorStub, model.CheckStatusError},
-	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			p4Runners = []checkPointRunner{test.runner}
-			cg := checkP4Environment(*params.AParamSet())
-			assert.Equal(t, "perforce environment", cg.GetTopic())
-			assert.Equal(t, test.expected, cg.GetStatus())
-		})
-	}
+	assertCheckGroup(t, &checkP4Runners, "perforce environment")
 }
 
 func Test_check_p4_command(t *testing.T) {
