@@ -27,6 +27,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs/p4"
+	"strings"
 )
 
 var checkP4Runners []checkPointRunner
@@ -41,8 +42,11 @@ func init() {
 
 func checkP4Environment(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("perforce environment")
-	for _, runner := range checkP4Runners {
-		cg.Add(runner(p)...)
+	// p4 environment is checked only when p4 is the selected VCS
+	if strings.ToLower(p.VCS) == p4.Name {
+		for _, runner := range checkP4Runners {
+			cg.Add(runner(p)...)
+		}
 	}
 	return cg
 }

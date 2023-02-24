@@ -25,11 +25,16 @@ package checker
 import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs/git"
 	"testing"
 )
 
 func Test_check_git_environment(t *testing.T) {
-	assertCheckGroupRunner(t, checkGitEnvironment, &checkGitRunners, "git environment")
+	assertCheckGroupRunner(t,
+		checkGitEnvironment,
+		&checkGitRunners,
+		*params.AParamSet(params.WithVCS(git.Name)),
+		"git environment")
 }
 
 func Test_check_git_returns_warning_with_brand_new_repo(t *testing.T) {

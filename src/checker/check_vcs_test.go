@@ -22,8 +22,15 @@ SOFTWARE.
 
 package checker
 
-import "testing"
+import (
+	"github.com/murex/tcr/params"
+	"testing"
+)
 
-func Test_vcs_checker(t *testing.T) {
-	t.Skip("TODO")
+func Test_check_vcs_configuration(t *testing.T) {
+	assertCheckGroupRunner(t,
+		checkVCSConfiguration,
+		&checkVCSRunners,
+		*params.AParamSet(),
+		"VCS configuration")
 }

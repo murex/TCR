@@ -34,7 +34,11 @@ import (
 )
 
 func Test_check_p4_environment(t *testing.T) {
-	assertCheckGroupRunner(t, checkP4Environment, &checkP4Runners, "perforce environment")
+	assertCheckGroupRunner(t,
+		checkP4Environment,
+		&checkP4Runners,
+		*params.AParamSet(params.WithVCS(p4.Name)),
+		"perforce environment")
 }
 
 func Test_check_p4_command(t *testing.T) {

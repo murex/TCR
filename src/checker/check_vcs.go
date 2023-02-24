@@ -30,13 +30,28 @@ import (
 	"strings"
 )
 
-func checkVCSEnvironment(p params.Params) (cg *model.CheckGroup) {
-	switch strings.ToLower(p.VCS) {
-	case git.Name:
-		return checkGitEnvironment(p)
-	case p4.Name:
-		return checkP4Environment(p)
-	default:
-		return nil
+var checkVCSRunners []checkPointRunner
+
+func init() {
+	checkVCSRunners = []checkPointRunner{
+		checkVCSParameter,
 	}
+}
+
+func checkVCSConfiguration(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("VCS configuration")
+	for _, runner := range checkVCSRunners {
+		cg.Add(runner(p)...)
+	}
+	return cg
+}
+
+func checkVCSParameter(p params.Params) (cp []model.CheckPoint) {
+	switch strings.ToLower(p.VCS) {
+	case git.Name, p4.Name:
+		cp = append(cp, model.OkCheckPoint("selected VCS is ", p.VCS))
+	default:
+		cp = append(cp, model.OkCheckPoint("selected VCS is not supported: \"", p.VCS, "\""))
+	}
+	return cp
 }
