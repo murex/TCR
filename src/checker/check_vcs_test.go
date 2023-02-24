@@ -23,8 +23,13 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/p4"
+	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func Test_check_vcs_configuration(t *testing.T) {
@@ -33,4 +38,100 @@ func Test_check_vcs_configuration(t *testing.T) {
 		&checkVCSRunners,
 		*params.AParamSet(),
 		"VCS configuration")
+}
+
+func Test_check_vcs_selection(t *testing.T) {
+	tests := []struct {
+		desc     string
+		vcsName  string
+		expected []model.CheckPoint
+	}{
+		{
+			"empty", "",
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("no VCS is selected"),
+			},
+		},
+		{
+			"unknown", "unknown-vcs",
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("selected VCS is not supported: \"unknown-vcs\""),
+			},
+		},
+		{
+			"git", git.Name,
+			[]model.CheckPoint{
+				model.OkCheckPoint("selected VCS is git"),
+			},
+		},
+		{
+			"p4", p4.Name,
+			[]model.CheckPoint{
+				model.OkCheckPoint("selected VCS is p4"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := *params.AParamSet(params.WithVCS(test.vcsName))
+			assert.Equal(t, test.expected, checkVCSSelection(p))
+		})
+	}
+}
+
+func Test_check_vcs_polling_period(t *testing.T) {
+	tests := []struct {
+		desc          string
+		pollingPeriod time.Duration
+		expected      []model.CheckPoint
+	}{
+		{
+			"0s turned off", 0,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 0s"),
+				model.OkCheckPoint("code refresh (for navigator role) is turned off"),
+			},
+		},
+		{
+			"1s too fast", 1 * time.Second,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 1s"),
+				model.WarningCheckPoint("polling is very fast (below 2s-period)"),
+			},
+		},
+		{
+			"2s low threshold", pollingPeriodLowThreshold,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 2s"),
+				model.OkCheckPoint("polling period is in the recommended range"),
+			},
+		},
+		{
+			"30s in range", 30 * time.Second,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 30s"),
+				model.OkCheckPoint("polling period is in the recommended range"),
+			},
+		},
+		{
+			"1m high threshold", pollingPeriodHighThreshold,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 1m0s"),
+				model.OkCheckPoint("polling period is in the recommended range"),
+			},
+		},
+		{
+			"2m too slow", 2 * time.Minute,
+			[]model.CheckPoint{
+				model.OkCheckPoint("polling period is 2m0s"),
+				model.WarningCheckPoint("polling is very slow (above 1m0s-period)"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := *params.AParamSet(params.WithPollingPeriod(test.pollingPeriod))
+			assert.Equal(t, test.expected, checkVCSPollingPeriod(p))
+		})
+	}
 }
