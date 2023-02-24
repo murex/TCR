@@ -106,30 +106,35 @@ func Test_add_error_checkpoint(t *testing.T) {
 	assert.Equal(t, CheckStatusError, cg.GetStatus())
 }
 
-func Test_check_group_print(t *testing.T) {
+func Test_check_group_print_with_checkpoints(t *testing.T) {
 	tests := []struct {
 		desc                   string
 		checkpoints            []CheckPoint
 		expectedReportSeverity report.Severity
 	}{
 		{
-			"0 checkpoint",
-			nil,
-			report.Info,
-		},
-		{
-			"1 ok checkpoint",
+			"1 ok",
 			[]CheckPoint{OkCheckPoint("A")},
 			report.Info,
 		},
 		{
-			"1 warning checkpoint",
+			"1 warning",
 			[]CheckPoint{WarningCheckPoint("A")},
 			report.Warning,
 		},
 		{
-			"1 error checkpoint",
+			"1 error",
 			[]CheckPoint{ErrorCheckPoint("A")},
+			report.Error,
+		},
+		{
+			"1 ok, 1 warning",
+			[]CheckPoint{OkCheckPoint("A"), WarningCheckPoint("B")},
+			report.Warning,
+		},
+		{
+			"1 ok, 1 warning, 1 error",
+			[]CheckPoint{OkCheckPoint("A"), WarningCheckPoint("B"), ErrorCheckPoint("C")},
 			report.Error,
 		},
 	}
@@ -142,13 +147,41 @@ func Test_check_group_print(t *testing.T) {
 			sniffer.Stop()
 
 			assert.Equal(t, 2+len(test.checkpoints), sniffer.GetMatchCount())
-			assert.Equal(t, report.Info, sniffer.GetAllMatches()[0].Type.Severity)
-			assert.Equal(t, "", sniffer.GetAllMatches()[0].Text)
-			assert.Equal(t, test.expectedReportSeverity, sniffer.GetAllMatches()[1].Type.Severity)
-			assert.Equal(t, "➤ checking check group", sniffer.GetAllMatches()[1].Text)
+			messages := sniffer.GetAllMatches()
+			assert.Equal(t, report.Info, messages[0].Type.Severity)
+			assert.Equal(t, "", messages[0].Text)
+			assert.Equal(t, test.expectedReportSeverity, messages[1].Type.Severity)
+			assert.Equal(t, "➤ checking check group", messages[1].Text)
 			for i := range test.checkpoints {
-				assert.Equal(t, test.expectedReportSeverity, sniffer.GetAllMatches()[2+i].Type.Severity)
+				assert.GreaterOrEqual(t, test.expectedReportSeverity, messages[2+i].Type.Severity)
 			}
+		})
+	}
+}
+
+func Test_check_group_print_with_no_checkpoints(t *testing.T) {
+	tests := []struct {
+		desc        string
+		checkpoints []CheckPoint
+	}{
+		{
+			"no checkpoint list",
+			nil,
+		},
+		{
+			"empty checkpoint list",
+			[]CheckPoint{},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer()
+			cg := NewCheckGroup("check group")
+			cg.Add(test.checkpoints...)
+			cg.Print()
+			sniffer.Stop()
+
+			assert.Equal(t, 0, sniffer.GetMatchCount())
 		})
 	}
 }
