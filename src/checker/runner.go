@@ -103,7 +103,6 @@ func initCheckers() []checkGroupRunner {
 		checkGitEnvironment,
 		checkP4Environment,
 		checkCommitFailures,
-		checkPollingPeriod,
 		checkMobTimer,
 	}
 }

@@ -28,13 +28,15 @@ import (
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"strings"
+	"time"
 )
 
 var checkVCSRunners []checkPointRunner
 
 func init() {
 	checkVCSRunners = []checkPointRunner{
-		checkVCSParameter,
+		checkVCSSelection,
+		checkVCSPollingPeriod,
 	}
 }
 
@@ -46,12 +48,35 @@ func checkVCSConfiguration(p params.Params) (cg *model.CheckGroup) {
 	return cg
 }
 
-func checkVCSParameter(p params.Params) (cp []model.CheckPoint) {
+func checkVCSSelection(p params.Params) (cp []model.CheckPoint) {
 	switch strings.ToLower(p.VCS) {
 	case git.Name, p4.Name:
 		cp = append(cp, model.OkCheckPoint("selected VCS is ", p.VCS))
+	case "":
+		cp = append(cp, model.ErrorCheckPoint("no VCS is selected"))
 	default:
-		cp = append(cp, model.OkCheckPoint("selected VCS is not supported: \"", p.VCS, "\""))
+		cp = append(cp, model.ErrorCheckPoint("selected VCS is not supported: \"", p.VCS, "\""))
+	}
+	return cp
+}
+
+const (
+	pollingPeriodLowThreshold  = 2 * time.Second
+	pollingPeriodHighThreshold = 1 * time.Minute
+)
+
+func checkVCSPollingPeriod(p params.Params) (cp []model.CheckPoint) {
+	cp = append(cp, model.OkCheckPoint("polling period is ", p.PollingPeriod.String()))
+	if p.PollingPeriod == 0 {
+		cp = append(cp, model.OkCheckPoint("code refresh (for navigator role) is turned off"))
+	} else if p.PollingPeriod > pollingPeriodHighThreshold {
+		cp = append(cp,
+			model.WarningCheckPoint("polling is very slow (above ", pollingPeriodHighThreshold, "-period)"))
+	} else if p.PollingPeriod < pollingPeriodLowThreshold {
+		cp = append(cp,
+			model.WarningCheckPoint("polling is very fast (below ", pollingPeriodLowThreshold, "-period)"))
+	} else {
+		cp = append(cp, model.OkCheckPoint("polling period is in the recommended range"))
 	}
 	return cp
 }
