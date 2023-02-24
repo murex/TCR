@@ -172,17 +172,17 @@ func (vf *VCSFake) Revert() error {
 
 // GetRootDir returns the root directory path
 func (vf *VCSFake) GetRootDir() string {
-	return ""
+	return "vcs-fake-root-dir"
 }
 
 // GetRemoteName returns the current VCS remote name
 func (vf *VCSFake) GetRemoteName() string {
-	return ""
+	return "vcs-fake-remote-name"
 }
 
 // GetWorkingBranch returns the current VCS working branch
 func (vf *VCSFake) GetWorkingBranch() string {
-	return ""
+	return "vcs-fake-working-branch"
 }
 
 // IsOnRootBranch indicates if VCS is currently on its root branch or not

@@ -66,7 +66,7 @@ const (
 )
 
 func checkVCSPollingPeriod(p params.Params) (cp []model.CheckPoint) {
-	cp = append(cp, model.OkCheckPoint("polling period is ", p.PollingPeriod.String()))
+	cp = append(cp, model.OkCheckPoint("polling period is set to ", p.PollingPeriod.String()))
 	if p.PollingPeriod == 0 {
 		cp = append(cp, model.OkCheckPoint("code refresh (for navigator role) is turned off"))
 	} else if p.PollingPeriod > pollingPeriodHighThreshold {

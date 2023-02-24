@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,6 +121,9 @@ func assertCheckGroupRunner(t *testing.T,
 		})
 	}
 }
+
+// TODO remove the 3 tests below once all check group tests are refactored
+// (check status level management is already tested in model subpackage)
 
 func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
 	t.Skip("need to provide fake configuration settings for tests")

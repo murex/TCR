@@ -65,7 +65,7 @@ func Test_check_p4_command(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer p4.RestoreP4Command()
+			t.Cleanup(p4.RestoreP4Command)
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
 				stub := p4.NewP4CommandStub()
 				stub.IsInPathFunc = func() bool {
@@ -107,7 +107,7 @@ func Test_check_p4_config(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer p4.RestoreP4Command()
+			t.Cleanup(p4.RestoreP4Command)
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
 				stub := p4.NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (out []byte, err error) {
@@ -186,7 +186,7 @@ func Test_check_p4_workspace(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			defer p4.RestoreP4Command()
+			t.Cleanup(p4.RestoreP4Command)
 			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
 				stub := p4.NewP4CommandStub()
 				stub.RunFunc = func(params ...string) (out []byte, err error) {
