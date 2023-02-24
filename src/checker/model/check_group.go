@@ -76,6 +76,10 @@ func (cg *CheckGroup) GetStatus() (s CheckStatus) {
 // Print prints a report for the CheckGroup and all its contained checkpoints.
 // Print color depends on the CheckGroup's status
 func (cg *CheckGroup) Print() {
+	if len(cg.checkpoints) == 0 {
+		// We don't report anything when there is no checkpoint
+		return
+	}
 	report.PostInfo()
 	const messagePrefix = "➤ checking "
 	switch cg.GetStatus() {
