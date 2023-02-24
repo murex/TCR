@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,6 +64,10 @@ func checkGitCommand(_ params.Params) (cp []model.CheckPoint) {
 }
 
 func checkGitConfig(_ params.Params) (cp []model.CheckPoint) {
+	if git.GetGitUserName() == "not set" {
+		cp = append(cp, model.WarningCheckPoint("git username is not set"))
+		return cp
+	}
 	cp = append(cp, model.OkCheckPoint("git username is ", git.GetGitUserName()))
 	return cp
 }

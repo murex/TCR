@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,12 @@ SOFTWARE.
 package checker
 
 import (
+	"errors"
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
+	"github.com/murex/tcr/vcs/shell"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -37,29 +40,152 @@ func Test_check_git_environment(t *testing.T) {
 		"git environment")
 }
 
-func Test_check_git_returns_warning_with_brand_new_repo(t *testing.T) {
-	// Warning is triggered by default with branch (master) being a root branch
-	assertWarning(t, checkGitEnvironment, *params.AParamSet())
+func Test_check_git_command(t *testing.T) {
+	tests := []struct {
+		desc     string
+		isInPath bool
+		fullPath string
+		version  string
+		expected []model.CheckPoint
+	}{
+		{
+			"git command not found", false, "", "",
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("git command was not found on path"),
+			},
+		},
+		{
+			"git command found", true, "some-path", "some-version",
+			[]model.CheckPoint{
+				model.OkCheckPoint("git command path is some-path"),
+				model.OkCheckPoint("git version is some-version"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			t.Cleanup(git.RestoreGitCommand)
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := git.NewGitCommandStub()
+				stub.IsInPathFunc = func() bool {
+					return test.isInPath
+				}
+				stub.GetFullPathFunc = func() string {
+					return test.fullPath
+				}
+				stub.RunFunc = func(params ...string) (out []byte, err error) {
+					return []byte("git version " + test.version), nil
+				}
+				return stub
+			}
+			p := *params.AParamSet()
+			initTestCheckEnv(p)
+			assert.Equal(t, test.expected, checkGitCommand(p))
+		})
+	}
+}
+
+func Test_check_git_config(t *testing.T) {
+	tests := []struct {
+		desc     string
+		username string
+		expected []model.CheckPoint
+	}{
+		{
+			"git username not set", "not set",
+			[]model.CheckPoint{
+				model.WarningCheckPoint("git username is not set"),
+			},
+		},
+		{
+			"git username set", "jane-doe",
+			[]model.CheckPoint{
+				model.OkCheckPoint("git username is jane-doe"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			t.Cleanup(git.RestoreGitCommand)
+			shell.NewCommandFunc = func(name string, params ...string) shell.Command {
+				stub := git.NewGitCommandStub()
+				stub.RunFunc = func(params ...string) (out []byte, err error) {
+					return []byte(test.username), nil
+				}
+				return stub
+			}
+			p := *params.AParamSet()
+			initTestCheckEnv(p)
+			assert.Equal(t, test.expected, checkGitConfig(p))
+		})
+	}
+}
+
+func Test_check_git_repository(t *testing.T) {
+	tests := []struct {
+		desc            string
+		sourceTreeError error
+		vcsError        error
+		expected        []model.CheckPoint
+	}{
+		{
+			"git source tree init failed",
+			errors.New("git source tree init failed"), nil,
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("cannot retrieve git repository information from base directory name"),
+			},
+		},
+		{
+			"git error",
+			nil, errors.New("some git error"),
+			[]model.CheckPoint{
+				model.ErrorCheckPoint("some git error"),
+			},
+		},
+		{
+			"root branch warning",
+			nil, nil,
+			[]model.CheckPoint{
+				model.OkCheckPoint("git repository root is vcs-fake-root-dir"),
+				model.OkCheckPoint("git working branch is vcs-fake-working-branch"),
+				model.WarningCheckPoint("running TCR from a root branch is not recommended"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := *params.AParamSet()
+			initTestCheckEnv(p)
+			checkEnv.sourceTreeErr = test.sourceTreeError
+			checkEnv.vcsErr = test.vcsError
+			assert.Equal(t, test.expected, checkGitRepository(p))
+		})
+	}
+}
+
+func Test_check_git_remote(t *testing.T) {
+	t.Skip("TODO")
 }
 
 func Test_check_git_auto_push(t *testing.T) {
 	tests := []struct {
 		desc     string
 		value    bool
-		expected model.CheckStatus
+		expected []model.CheckPoint
 	}{
-		{"enabled", true, model.CheckStatusOk},
-		{"disabled", false, model.CheckStatusOk},
+		{"enabled", true, []model.CheckPoint{
+			model.OkCheckPoint("git auto-push is turned on: every commit will be pushed to origin"),
+		},
+		},
+		{"disabled", false, []model.CheckPoint{
+			model.OkCheckPoint("git auto-push is turned off: commits will only be applied locally"),
+		},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			assertStatus(t, test.expected,
-				func(p params.Params) (cg *model.CheckGroup) {
-					cg = model.NewCheckGroup("git auto-push parameter")
-					cg.Add(checkGitAutoPush(p)...)
-					return cg
-				},
-				*params.AParamSet(params.WithAutoPush(test.value)))
+			p := *params.AParamSet(params.WithAutoPush(test.value))
+			assert.Equal(t, test.expected, checkGitAutoPush(p))
 		})
 	}
 }

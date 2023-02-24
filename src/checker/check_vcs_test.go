@@ -88,42 +88,42 @@ func Test_check_vcs_polling_period(t *testing.T) {
 		{
 			"0s turned off", 0,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 0s"),
+				model.OkCheckPoint("polling period is set to 0s"),
 				model.OkCheckPoint("code refresh (for navigator role) is turned off"),
 			},
 		},
 		{
 			"1s too fast", 1 * time.Second,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 1s"),
+				model.OkCheckPoint("polling period is set to 1s"),
 				model.WarningCheckPoint("polling is very fast (below 2s-period)"),
 			},
 		},
 		{
-			"2s low threshold", pollingPeriodLowThreshold,
+			"2s low threshold", 2 * time.Second,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 2s"),
+				model.OkCheckPoint("polling period is set to 2s"),
 				model.OkCheckPoint("polling period is in the recommended range"),
 			},
 		},
 		{
 			"30s in range", 30 * time.Second,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 30s"),
+				model.OkCheckPoint("polling period is set to 30s"),
 				model.OkCheckPoint("polling period is in the recommended range"),
 			},
 		},
 		{
-			"1m high threshold", pollingPeriodHighThreshold,
+			"1m high threshold", 1 * time.Minute,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 1m0s"),
+				model.OkCheckPoint("polling period is set to 1m0s"),
 				model.OkCheckPoint("polling period is in the recommended range"),
 			},
 		},
 		{
 			"2m too slow", 2 * time.Minute,
 			[]model.CheckPoint{
-				model.OkCheckPoint("polling period is 2m0s"),
+				model.OkCheckPoint("polling period is set to 2m0s"),
 				model.WarningCheckPoint("polling is very slow (above 1m0s-period)"),
 			},
 		},
