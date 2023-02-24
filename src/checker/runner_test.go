@@ -74,7 +74,11 @@ func assertError(t *testing.T, checker checkGroupRunner, params params.Params) {
 }
 
 func assertCheckGroupRunner(t *testing.T,
-	cgRunner checkGroupRunner, cpRunners *[]checkPointRunner, expectedTopic string) {
+	cgRunner checkGroupRunner,
+	cpRunners *[]checkPointRunner,
+	p params.Params,
+	expectedTopic string) {
+	t.Helper()
 	tests := []struct {
 		desc           string
 		runnerStub     checkPointRunner
@@ -105,10 +109,13 @@ func assertCheckGroupRunner(t *testing.T,
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			cpRunnersBackup := *cpRunners
-			defer func() { *cpRunners = cpRunnersBackup }()
-			*cpRunners = []checkPointRunner{test.runnerStub}
-			cg := cgRunner(*params.AParamSet())
+			t.Helper()
+			if cpRunners != nil {
+				cpRunnersBackup := *cpRunners
+				t.Cleanup(func() { *cpRunners = cpRunnersBackup })
+				*cpRunners = []checkPointRunner{test.runnerStub}
+			}
+			cg := cgRunner(p)
 			assert.Equal(t, expectedTopic, cg.GetTopic())
 			assert.Equal(t, test.expectedStatus, cg.GetStatus())
 		})

@@ -26,6 +26,7 @@ import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
+	"strings"
 )
 
 var checkGitRunners []checkPointRunner
@@ -42,8 +43,11 @@ func init() {
 
 func checkGitEnvironment(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("git environment")
-	for _, runner := range checkGitRunners {
-		cg.Add(runner(p)...)
+	// git environment is checked only when git is the selected VCS
+	if strings.ToLower(p.VCS) == git.Name {
+		for _, runner := range checkGitRunners {
+			cg.Add(runner(p)...)
+		}
 	}
 	return cg
 }
