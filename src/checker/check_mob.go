@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,22 +28,41 @@ import (
 	"time"
 )
 
+var checkMobConfigurationRunners []checkPointRunner
+
+func init() {
+	checkMobConfigurationRunners = []checkPointRunner{
+		checkMobTimer,
+	}
+}
+
+func checkMobConfiguration(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("mob configuration")
+	for _, runner := range checkMobConfigurationRunners {
+		cg.Add(runner(p)...)
+	}
+	return cg
+}
+
 const (
 	mobTimerLowThreshold  = 3 * time.Minute
 	mobTimerHighThreshold = 15 * time.Minute
 )
 
-func checkMobTimer(p params.Params) (cg *model.CheckGroup) {
-	cg = model.NewCheckGroup("mob timer")
-	cg.Ok("mob timer duration is ", p.MobTurnDuration.String())
-	if p.MobTurnDuration == 0 {
-		cg.Warning("mob timer is turned off")
-	} else if p.MobTurnDuration < mobTimerLowThreshold {
-		cg.Warning("mob timer duration is quite short (under ", mobTimerLowThreshold, ")")
-	} else if p.MobTurnDuration > mobTimerHighThreshold {
-		cg.Warning("mob timer duration is quite long (above ", mobTimerHighThreshold, ")")
-	} else {
-		cg.Ok("mob timer duration is in the recommended range")
+func checkMobTimer(p params.Params) (cp []model.CheckPoint) {
+	timer := p.MobTurnDuration
+	cp = append(cp, model.OkCheckPoint("mob timer duration is set to ", timer.String()))
+	switch {
+	case timer == 0:
+		cp = append(cp, model.OkCheckPoint("mob timer is turned off"))
+	case timer < mobTimerLowThreshold:
+		cp = append(cp, model.WarningCheckPoint(
+			"mob timer duration is quite short (under ", mobTimerLowThreshold, ")"))
+	case timer > mobTimerHighThreshold:
+		cp = append(cp, model.WarningCheckPoint(
+			"mob timer duration is quite long (above ", mobTimerHighThreshold, ")"))
+	default:
+		cp = append(cp, model.OkCheckPoint("mob timer duration is in the recommended range"))
 	}
-	return cg
+	return cp
 }
