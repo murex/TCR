@@ -63,11 +63,6 @@ func assertOk(t *testing.T, checker checkGroupRunner, params params.Params) {
 	assertStatus(t, model.CheckStatusOk, checker, params)
 }
 
-func assertWarning(t *testing.T, checker checkGroupRunner, params params.Params) {
-	t.Helper()
-	assertStatus(t, model.CheckStatusWarning, checker, params)
-}
-
 func assertError(t *testing.T, checker checkGroupRunner, params params.Params) {
 	t.Helper()
 	assertStatus(t, model.CheckStatusError, checker, params)
