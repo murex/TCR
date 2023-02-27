@@ -66,9 +66,11 @@ const (
 type (
 	// Settings provide a few ways to tune VCS Fake behaviour
 	Settings struct {
-		FailingCommands Commands
-		ChangedFiles    vcs.FileDiffs
-		Logs            vcs.LogItems
+		FailingCommands     Commands
+		ChangedFiles        vcs.FileDiffs
+		Logs                vcs.LogItems
+		RemoteEnabled       bool
+		RemoteAccessWorking bool
 	}
 
 	// VCSFake provides a fake implementation of the VCS interface
@@ -201,11 +203,11 @@ func (vf *VCSFake) IsPushEnabled() bool {
 }
 
 // IsRemoteEnabled indicates if VCS remote operations are enabled
-func (*VCSFake) IsRemoteEnabled() bool {
-	return false
+func (vf *VCSFake) IsRemoteEnabled() bool {
+	return vf.settings.RemoteEnabled
 }
 
 // CheckRemoteAccess returns true if VCS remote can be accessed
-func (*VCSFake) CheckRemoteAccess() bool {
-	return true
+func (vf *VCSFake) CheckRemoteAccess() bool {
+	return vf.settings.RemoteAccessWorking
 }
