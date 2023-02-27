@@ -26,6 +26,8 @@ import (
 	"errors"
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/fake"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
@@ -164,7 +166,44 @@ func Test_check_git_repository(t *testing.T) {
 }
 
 func Test_check_git_remote(t *testing.T) {
-	t.Skip("TODO")
+	tests := []struct {
+		desc     string
+		vcs      vcs.Interface
+		expected []model.CheckPoint
+	}{
+		{
+			"VCS not initialized", nil, []model.CheckPoint{},
+		},
+		{
+			"git remote disabled",
+			fake.NewVCSFake(fake.Settings{RemoteEnabled: false}),
+			[]model.CheckPoint{
+				model.OkCheckPoint("git remote is disabled: all operations will be done locally"),
+			},
+		},
+		{
+			"git remote access not working",
+			fake.NewVCSFake(fake.Settings{RemoteEnabled: true, RemoteAccessWorking: false}),
+			[]model.CheckPoint{
+				model.OkCheckPoint("git remote name is vcs-fake-remote-name"),
+				model.ErrorCheckPoint("git remote access does not seem to be working"),
+			},
+		},
+		{
+			"git remote access working",
+			fake.NewVCSFake(fake.Settings{RemoteEnabled: true, RemoteAccessWorking: true}),
+			[]model.CheckPoint{
+				model.OkCheckPoint("git remote name is vcs-fake-remote-name"),
+				model.OkCheckPoint("git remote access seems to be working"),
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			checkEnv.vcs = test.vcs
+			assert.Equal(t, test.expected, checkGitRemote(*params.AParamSet()))
+		})
+	}
 }
 
 func Test_check_git_auto_push(t *testing.T) {

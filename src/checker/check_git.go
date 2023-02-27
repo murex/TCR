@@ -94,7 +94,7 @@ func checkGitRepository(_ params.Params) (cp []model.CheckPoint) {
 func checkGitRemote(_ params.Params) (cp []model.CheckPoint) {
 	if checkEnv.vcs == nil {
 		// If git is not properly initialized, no point in trying to go further
-		return cp
+		return []model.CheckPoint{}
 	}
 
 	if !checkEnv.vcs.IsRemoteEnabled() {
