@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,34 @@ SOFTWARE.
 package checker
 
 import (
+	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
-	"testing"
 )
 
-func Test_check_commit_failures_returns_ok_when_set_to_true(t *testing.T) {
-	assertOk(t, checkCommitFailures, *params.AParamSet(params.WithCommitFailures(true)))
+var checkWorkflowRunners []checkPointRunner
+
+func init() {
+	checkWorkflowRunners = []checkPointRunner{
+		checkCommitFailures,
+	}
 }
 
-func Test_check_commit_failures_returns_ok_when_set_to_false(t *testing.T) {
-	assertOk(t, checkCommitFailures, *params.AParamSet(params.WithCommitFailures(false)))
+func checkWorkflowConfiguration(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("TCR workflow configuration")
+	for _, runner := range checkWorkflowRunners {
+		cg.Add(runner(p)...)
+	}
+	return cg
+}
+
+func checkCommitFailures(p params.Params) (cp []model.CheckPoint) {
+	switch p.CommitFailures {
+	case true:
+		cp = append(cp, model.OkCheckPoint(
+			"commit-failures is turned on: test-breaking changes will be committed"))
+	case false:
+		cp = append(cp, model.OkCheckPoint(
+			"commit-failures is turned off: test-breaking changes will not be committed"))
+	}
+	return cp
 }
