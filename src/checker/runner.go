@@ -53,13 +53,26 @@ var checkEnv struct {
 	vcsErr        error
 }
 
+func checkGroupRunners() []checkGroupRunner {
+	return []checkGroupRunner{
+		checkConfigDirectory,
+		checkDirectories,
+		checkLanguage,
+		checkToolchain,
+		checkVCSConfiguration,
+		checkGitEnvironment,
+		checkP4Environment,
+		checkWorkflowConfiguration,
+		checkMobConfiguration,
+	}
+}
+
 // Run goes through all configuration, parameters and local environment to check
 // if TCR is ready to be used
 func Run(p params.Params) {
 	initCheckEnv(p)
-
-	for _, checker := range initCheckers() {
-		results := checker(p)
+	for _, runner := range checkGroupRunners() {
+		results := runner(p)
 		results.Print()
 		model.UpdateReturnState(results)
 	}
@@ -89,20 +102,5 @@ func initCheckEnv(p params.Params) {
 
 	if checkEnv.sourceTreeErr == nil {
 		checkEnv.vcs, checkEnv.vcsErr = factory.InitVCS(p.VCS, checkEnv.sourceTree.GetBaseDir())
-	}
-}
-
-func initCheckers() []checkGroupRunner {
-	return []checkGroupRunner{
-		checkConfigDirectory,
-		checkBaseDirectory,
-		checkWorkDirectory,
-		checkLanguage,
-		checkToolchain,
-		checkVCSConfiguration,
-		checkGitEnvironment,
-		checkP4Environment,
-		checkWorkflowConfiguration,
-		checkMobConfiguration,
 	}
 }
