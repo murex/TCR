@@ -65,7 +65,19 @@ func Test_check_vcs_selection(t *testing.T) {
 			},
 		},
 		{
+			"GIT", "GIT",
+			[]model.CheckPoint{
+				model.OkCheckPoint("selected VCS is git"),
+			},
+		},
+		{
 			"p4", p4.Name,
+			[]model.CheckPoint{
+				model.OkCheckPoint("selected VCS is p4"),
+			},
+		},
+		{
+			"P4", "P4",
 			[]model.CheckPoint{
 				model.OkCheckPoint("selected VCS is p4"),
 			},
