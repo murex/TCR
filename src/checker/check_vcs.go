@@ -49,13 +49,13 @@ func checkVCSConfiguration(p params.Params) (cg *model.CheckGroup) {
 }
 
 func checkVCSSelection(p params.Params) (cp []model.CheckPoint) {
-	switch strings.ToLower(p.VCS) {
+	switch vcs := strings.ToLower(p.VCS); vcs {
 	case git.Name, p4.Name:
-		cp = append(cp, model.OkCheckPoint("selected VCS is ", p.VCS))
+		cp = append(cp, model.OkCheckPoint("selected VCS is ", vcs))
 	case "":
 		cp = append(cp, model.ErrorCheckPoint("no VCS is selected"))
 	default:
-		cp = append(cp, model.ErrorCheckPoint("selected VCS is not supported: \"", p.VCS, "\""))
+		cp = append(cp, model.ErrorCheckPoint("selected VCS is not supported: \"", vcs, "\""))
 	}
 	return cp
 }
@@ -66,16 +66,18 @@ const (
 )
 
 func checkVCSPollingPeriod(p params.Params) (cp []model.CheckPoint) {
-	cp = append(cp, model.OkCheckPoint("polling period is set to ", p.PollingPeriod.String()))
-	if p.PollingPeriod == 0 {
+	period := p.PollingPeriod
+	cp = append(cp, model.OkCheckPoint("polling period is set to ", period.String()))
+	switch {
+	case period == 0:
 		cp = append(cp, model.OkCheckPoint("code refresh (for navigator role) is turned off"))
-	} else if p.PollingPeriod > pollingPeriodHighThreshold {
+	case period > pollingPeriodHighThreshold:
 		cp = append(cp,
 			model.WarningCheckPoint("polling is very slow (above ", pollingPeriodHighThreshold, "-period)"))
-	} else if p.PollingPeriod < pollingPeriodLowThreshold {
+	case period < pollingPeriodLowThreshold:
 		cp = append(cp,
 			model.WarningCheckPoint("polling is very fast (below ", pollingPeriodLowThreshold, "-period)"))
-	} else {
+	default:
 		cp = append(cp, model.OkCheckPoint("polling period is in the recommended range"))
 	}
 	return cp
