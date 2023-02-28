@@ -55,7 +55,7 @@ var checkEnv struct {
 
 func checkGroupRunners() []checkGroupRunner {
 	return []checkGroupRunner{
-		checkConfigDirectory,
+		checkConfigFiles,
 		checkDirectories,
 		checkLanguage,
 		checkToolchain,
