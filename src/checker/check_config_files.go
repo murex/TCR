@@ -31,10 +31,16 @@ import (
 
 var checkConfigRunners []checkPointRunner
 
-var getLanguageConfigDirPath func() string
-var getLanguageConfigFileList func() []string
-var getToolchainConfigDirPath func() string
-var getToolchainConfigFileList func() []string
+type configSubDir struct {
+	name        string
+	getDirPath  func() string
+	getFileList func() []string
+}
+
+var (
+	languageConfigDir  configSubDir
+	toolchainConfigDir configSubDir
+)
 
 func init() {
 	checkConfigRunners = []checkPointRunner{
@@ -43,10 +49,16 @@ func init() {
 		checkToolchainConfig,
 	}
 
-	getLanguageConfigDirPath = config.GetLanguageConfigDirPath
-	getLanguageConfigFileList = config.GetLanguageConfigFileList
-	getToolchainConfigDirPath = config.GetToolchainConfigDirPath
-	getToolchainConfigFileList = config.GetToolchainConfigFileList
+	languageConfigDir = configSubDir{
+		name:        "language",
+		getDirPath:  config.GetLanguageConfigDirPath,
+		getFileList: config.GetLanguageConfigFileList,
+	}
+	toolchainConfigDir = configSubDir{
+		name:        "toolchain",
+		getDirPath:  config.GetToolchainConfigDirPath,
+		getFileList: config.GetToolchainConfigFileList,
+	}
 }
 
 func checkConfigFiles(p params.Params) (cg *model.CheckGroup) {
@@ -70,17 +82,17 @@ func checkConfigDirectory(p params.Params) (cp []model.CheckPoint) {
 }
 
 func checkLanguageConfig(_ params.Params) (cp []model.CheckPoint) {
-	return checkSubDirConfig("language", getLanguageConfigDirPath(), getLanguageConfigFileList())
+	return checkSubDirConfig(languageConfigDir)
 }
 
 func checkToolchainConfig(_ params.Params) (cp []model.CheckPoint) {
-	return checkSubDirConfig("toolchain", getToolchainConfigDirPath(), getToolchainConfigFileList())
+	return checkSubDirConfig(toolchainConfigDir)
 }
 
-func checkSubDirConfig(name string, path string, files []string) (cp []model.CheckPoint) {
-	dirPath, _ := filepath.Abs(path)
-	cp = append(cp, model.OkCheckPoint(name+" configuration directory is ", dirPath))
-	cp = append(cp, model.CheckpointsForList(
-		name+" configuration files:", "no "+name+" configuration file found", files...)...)
+func checkSubDirConfig(configDir configSubDir) (cp []model.CheckPoint) {
+	dirPath, _ := filepath.Abs(configDir.getDirPath())
+	cp = append(cp, model.OkCheckPoint(configDir.name+" configuration directory is ", dirPath))
+	cp = append(cp, model.CheckpointsForList(configDir.name+" configuration files:",
+		"no "+configDir.name+" configuration file found", configDir.getFileList()...)...)
 	return cp
 }
