@@ -105,11 +105,12 @@ func Test_check_language_config(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			getLanguageConfigDirPath = func() string {
-				return test.dir
-			}
-			getLanguageConfigFileList = func() []string {
-				return test.fileList
+			saved := languageConfigDir
+			t.Cleanup(func() { languageConfigDir = saved })
+			languageConfigDir = configSubDir{
+				name:        "language",
+				getDirPath:  func() string { return test.dir },
+				getFileList: func() []string { return test.fileList },
 			}
 			assert.Equal(t, test.expected, checkLanguageConfig(*params.AParamSet()))
 		})
@@ -151,11 +152,12 @@ func Test_check_toolchain_config(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			getToolchainConfigDirPath = func() string {
-				return test.dir
-			}
-			getToolchainConfigFileList = func() []string {
-				return test.fileList
+			saved := toolchainConfigDir
+			t.Cleanup(func() { toolchainConfigDir = saved })
+			toolchainConfigDir = configSubDir{
+				name:        "toolchain",
+				getDirPath:  func() string { return test.dir },
+				getFileList: func() []string { return test.fileList },
 			}
 			assert.Equal(t, test.expected, checkToolchainConfig(*params.AParamSet()))
 		})
