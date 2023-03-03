@@ -1,7 +1,7 @@
 //go:build test_helper
 
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,43 +24,126 @@ SOFTWARE.
 
 package language
 
+import "github.com/murex/tcr/toolchain"
+
+type allFilesFunc func() ([]string, error)
+
 type (
 	// FakeLanguage is a Language fake that makes sure there is no filesystem
-	// access. It overwrites AllSrcFiles() so that it always returns a non-empty
-	// list of filenames
+	// access. It allows to overwrite AllSrcFiles() and AllTestFiles() behavior
 	FakeLanguage struct {
-		Language
+		lang         Language
+		allSrcFiles  allFilesFunc
+		allTestFiles allFilesFunc
 	}
 )
 
 // NewFakeLanguage creates a new Language instance compatible with the provided toolchain
 func NewFakeLanguage(toolchainName string) *FakeLanguage {
 	return &FakeLanguage{
-		Language: Language{
+		lang: Language{
 			name: "fake-language",
 			toolchains: Toolchains{
 				Default:    toolchainName,
 				Compatible: []string{toolchainName},
 			},
 		},
+		// Default behaviour for AllSrcFiles()
+		allSrcFiles: func() ([]string, error) {
+			return []string{"fake-src-file1", "fake-src-file2"}, nil
+		},
+		// Default behaviour for AllTestFiles()
+		allTestFiles: func() ([]string, error) {
+			return []string{"fake-test-file1", "fake-test-file2"}, nil
+		},
 	}
+}
+
+// WithAllSrcFiles allows to change the behaviour of AllSrcFiles() method
+func (fl *FakeLanguage) WithAllSrcFiles(f allFilesFunc) *FakeLanguage {
+	fl.allSrcFiles = f
+	return fl
+}
+
+// WithAllTestFiles allows to change the behaviour of AllTestFiles() method
+func (fl *FakeLanguage) WithAllTestFiles(f allFilesFunc) *FakeLanguage {
+	fl.allTestFiles = f
+	return fl
 }
 
 // AllSrcFiles returns the list of source files for this language.
 // Always returns a list of 2 fake filenames.
-func (lang *FakeLanguage) AllSrcFiles() (result []string, err error) {
-	result = []string{"fake-src-file1", "fake-src-file2"}
-	return
+func (fl *FakeLanguage) AllSrcFiles() (result []string, err error) {
+	return fl.allSrcFiles()
 }
 
 // AllTestFiles returns the list of test files for this language.
 // Always returns a list of 2 fake filenames.
-func (lang *FakeLanguage) AllTestFiles() (result []string, err error) {
-	result = []string{"fake-test-file1", "fake-test-file2"}
-	return
+func (fl *FakeLanguage) AllTestFiles() (result []string, err error) {
+	return fl.allTestFiles()
 }
 
 // IsSrcFile returns true if the provided filePath is recognized as a source file for this language
-func (lang *FakeLanguage) IsSrcFile(filepath string) bool {
+func (fl *FakeLanguage) IsSrcFile(_ string) bool {
 	return true
+}
+
+// GetName uses real Language behaviour
+func (fl *FakeLanguage) GetName() string {
+	return fl.lang.GetName()
+}
+
+// GetToolchains uses real Language behaviour
+func (fl *FakeLanguage) GetToolchains() Toolchains {
+	return fl.lang.GetToolchains()
+}
+
+// GetSrcFileFilter uses real Language behaviour
+func (fl *FakeLanguage) GetSrcFileFilter() FileTreeFilter {
+	return fl.lang.GetSrcFileFilter()
+}
+
+// GetTestFileFilter uses real Language behaviour
+func (fl *FakeLanguage) GetTestFileFilter() FileTreeFilter {
+	return fl.lang.GetTestFileFilter()
+}
+
+// GetToolchain uses real Language behaviour
+func (fl *FakeLanguage) GetToolchain(toolchainName string) (toolchain.TchnInterface, error) {
+	return fl.lang.GetToolchain(toolchainName)
+}
+
+// DirsToWatch uses real Language behaviour
+func (fl *FakeLanguage) DirsToWatch(baseDir string) []string {
+	return fl.lang.DirsToWatch(baseDir)
+}
+
+// IsTestFile uses real Language behaviour
+func (fl *FakeLanguage) IsTestFile(aPath string) bool {
+	return fl.lang.IsTestFile(aPath)
+}
+
+// IsLanguageFile uses real Language behaviour
+func (fl *FakeLanguage) IsLanguageFile(filename string) bool {
+	return fl.lang.IsLanguageFile(filename)
+}
+
+func (fl *FakeLanguage) checkName() error {
+	return fl.lang.checkName()
+}
+
+func (fl *FakeLanguage) checkCompatibleToolchains() error {
+	return fl.lang.checkCompatibleToolchains()
+}
+
+func (fl *FakeLanguage) checkDefaultToolchain() error {
+	return fl.lang.checkDefaultToolchain()
+}
+
+func (fl *FakeLanguage) setBaseDir(dir string) {
+	fl.lang.setBaseDir(dir)
+}
+
+func (fl *FakeLanguage) worksWithToolchain(toolchainName string) bool {
+	return fl.lang.worksWithToolchain(toolchainName)
 }
