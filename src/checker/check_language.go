@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,113 +27,137 @@ import (
 	"github.com/murex/tcr/params"
 )
 
+var checkLanguageRunners []checkPointRunner
+
+func init() {
+	checkLanguageRunners = []checkPointRunner{
+		checkLanguageParameter,
+		checkLanguageDetection,
+		checkLanguageSrcDirectories,
+		checkLanguageSrcPatterns,
+		checkLanguageSrcFiles,
+		checkLanguageTestDirectories,
+		checkLanguageTestPatterns,
+		checkLanguageTestFiles,
+	}
+}
+
 func checkLanguage(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("language")
-
-	if p.Language == "" {
-		cg.Add(checkpointsWhenLanguageIsNotSet()...)
-	} else {
-		cg.Add(checkpointsWhenLanguageIsSet(p.Language)...)
-	}
-
-	if checkEnv.lang != nil {
-		cg.Add(checkSrcDirectories()...)
-		cg.Add(checkSrcPatterns()...)
-		cg.Add(checkSrcFiles()...)
-
-		cg.Add(checkTestDirectories()...)
-		cg.Add(checkTestPatterns()...)
-		cg.Add(checkTestFiles()...)
+	for _, runner := range checkLanguageRunners {
+		cg.Add(runner(p)...)
 	}
 	return cg
 }
 
-func languageInText() string {
-	return checkEnv.lang.GetName() + " language"
-}
+func checkLanguageParameter(p params.Params) (cp []model.CheckPoint) {
+	if p.Language == "" {
+		return cp
+	}
+	cp = append(cp, model.OkCheckPoint("language parameter is set to ", p.Language))
 
-func checkpointsWhenLanguageIsSet(name string) (cp []model.CheckPoint) {
-	cp = append(cp, model.OkCheckPoint("language parameter is set to ", name))
 	if checkEnv.langErr != nil {
 		cp = append(cp, model.ErrorCheckPoint(checkEnv.langErr))
-	} else {
-		cp = append(cp, model.OkCheckPoint(languageInText()+" is valid"))
+		return cp
 	}
+
+	cp = append(cp, model.OkCheckPoint(p.Language+" language is valid"))
 	return cp
 }
 
-func checkpointsWhenLanguageIsNotSet() (cp []model.CheckPoint) {
+func checkLanguageDetection(p params.Params) (cp []model.CheckPoint) {
+	if p.Language != "" {
+		return cp
+	}
 	cp = append(cp, model.OkCheckPoint("language parameter is not set explicitly"))
-	if checkEnv.sourceTree != nil && checkEnv.sourceTree.IsValid() {
-		cp = append(cp, model.OkCheckPoint("using base directory name for language detection"))
-		cp = append(cp, model.OkCheckPoint("base directory is ", checkEnv.sourceTree.GetBaseDir()))
 
-		if checkEnv.langErr != nil {
-			cp = append(cp, model.ErrorCheckPoint(checkEnv.langErr))
-		} else {
-			cp = append(cp,
-				model.OkCheckPoint("language retrieved from base directory name: ", checkEnv.lang.GetName()))
-		}
-	} else {
+	if checkEnv.sourceTree == nil || !checkEnv.sourceTree.IsValid() {
 		cp = append(cp, model.ErrorCheckPoint("cannot retrieve language from base directory name"))
+		return cp
 	}
+
+	cp = append(cp, model.OkCheckPoint("using base directory name for language detection"))
+	cp = append(cp, model.OkCheckPoint("base directory is ", checkEnv.sourceTree.GetBaseDir()))
+
+	if checkEnv.langErr != nil {
+		cp = append(cp, model.ErrorCheckPoint(checkEnv.langErr))
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint("language retrieved from base directory name: ", checkEnv.lang.GetName()))
 	return cp
 }
 
-func checkSrcDirectories() []model.CheckPoint {
+func checkLanguageSrcDirectories(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	return model.CheckpointsForList(
 		"source directories:",
-		"no source directory defined for "+languageInText(),
-		checkEnv.lang.GetSrcFileFilter().Directories...,
-	)
+		"no source directory defined for "+languageAsText(),
+		checkEnv.lang.GetSrcFileFilter().Directories...)
 }
 
-func checkSrcPatterns() []model.CheckPoint {
+func checkLanguageSrcPatterns(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	return model.CheckpointsForList(
 		"source filename matching patterns:",
-		"no source filename pattern defined for "+languageInText(),
-		checkEnv.lang.GetSrcFileFilter().FilePatterns...,
-	)
+		"no source filename pattern defined for "+languageAsText(),
+		checkEnv.lang.GetSrcFileFilter().FilePatterns...)
 }
 
-func checkSrcFiles() (cp []model.CheckPoint) {
+func checkLanguageSrcFiles(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	srcFiles, err := checkEnv.lang.AllSrcFiles()
 	if err != nil {
 		cp = append(cp, model.ErrorCheckPoint(err))
+		return cp
 	}
-	cp = append(cp, model.CheckpointsForList(
+	return model.CheckpointsForList(
 		"matching source files found:",
 		"no matching source file found",
-		srcFiles...,
-	)...)
-	return cp
+		srcFiles...)
 }
 
-func checkTestDirectories() []model.CheckPoint {
+func checkLanguageTestDirectories(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	return model.CheckpointsForList(
 		"test directories:",
-		"no test directory defined for "+languageInText(),
-		checkEnv.lang.GetTestFileFilter().Directories...,
-	)
+		"no test directory defined for "+languageAsText(),
+		checkEnv.lang.GetTestFileFilter().Directories...)
 }
 
-func checkTestPatterns() []model.CheckPoint {
+func checkLanguageTestPatterns(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	return model.CheckpointsForList(
 		"test filename matching patterns:",
-		"no test filename pattern defined for "+languageInText(),
-		checkEnv.lang.GetTestFileFilter().FilePatterns...,
-	)
+		"no test filename pattern defined for "+languageAsText(),
+		checkEnv.lang.GetTestFileFilter().FilePatterns...)
 }
 
-func checkTestFiles() (cp []model.CheckPoint) {
+func checkLanguageTestFiles(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.lang == nil {
+		return cp
+	}
 	testFiles, err := checkEnv.lang.AllTestFiles()
 	if err != nil {
 		cp = append(cp, model.ErrorCheckPoint(err))
+		return cp
 	}
-	cp = append(cp, model.CheckpointsForList(
+	return model.CheckpointsForList(
 		"matching test files found:",
 		"no matching test file found",
-		testFiles...,
-	)...)
-	return cp
+		testFiles...)
+}
+
+func languageAsText() string {
+	return checkEnv.lang.GetName() + " language"
 }
