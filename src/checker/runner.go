@@ -53,25 +53,23 @@ var checkEnv struct {
 	vcsErr        error
 }
 
-func checkGroupRunners() []checkGroupRunner {
-	return []checkGroupRunner{
-		checkConfigFiles,
-		checkDirectories,
-		checkLanguage,
-		checkToolchain,
-		checkVCSConfiguration,
-		checkGitEnvironment,
-		checkP4Environment,
-		checkWorkflowConfiguration,
-		checkMobConfiguration,
-	}
+var checkGroupRunners = []checkGroupRunner{
+	checkConfigFiles,
+	checkDirectories,
+	checkLanguage,
+	checkToolchain,
+	checkVCSConfiguration,
+	checkGitEnvironment,
+	checkP4Environment,
+	checkWorkflowConfiguration,
+	checkMobConfiguration,
 }
 
 // Run goes through all configuration, parameters and local environment to check
 // if TCR is ready to be used
 func Run(p params.Params) {
 	initCheckEnv(p)
-	for _, runner := range checkGroupRunners() {
+	for _, runner := range checkGroupRunners {
 		results := runner(p)
 		results.Print()
 		model.UpdateReturnState(results)

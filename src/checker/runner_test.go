@@ -30,17 +30,7 @@ import (
 	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
 	"testing"
-	"time"
-)
-
-const (
-	testDataRootDir = "../testdata"
-)
-
-var (
-	testDataDirJava = filepath.Join(testDataRootDir, "java")
 )
 
 func initTestCheckEnv(params params.Params) {
@@ -100,38 +90,41 @@ func assertCheckGroupRunner(t *testing.T,
 	}
 }
 
-// TODO remove the 3 tests below once all check group tests are refactored
-// (check status level management is already tested in model subpackage)
+func Test_checker_run(t *testing.T) {
+	okRunner := func(_ params.Params) *model.CheckGroup {
+		cg := model.NewCheckGroup("ok runner")
+		cg.Add(model.OkCheckPoint("always returns ok"))
+		return cg
+	}
+	warningRunner := func(_ params.Params) *model.CheckGroup {
+		cg := model.NewCheckGroup("warning runner")
+		cg.Add(model.WarningCheckPoint("always returns warning"))
+		return cg
+	}
+	errorRunner := func(_ params.Params) *model.CheckGroup {
+		cg := model.NewCheckGroup("error runner")
+		cg.Add(model.ErrorCheckPoint("always returns error"))
+		return cg
+	}
 
-func Test_checker_should_return_0_if_no_error_or_warning(t *testing.T) {
-	t.Skip("need to provide fake configuration settings for tests")
-	Run(*params.AParamSet(
-		params.WithConfigDir(testDataDirJava),
-		params.WithBaseDir(testDataDirJava),
-		params.WithWorkDir(testDataDirJava),
-		params.WithMobTimerDuration(mobTimerLowThreshold),
-		params.WithPollingPeriod(pollingPeriodLowThreshold),
-	))
-	assert.Equal(t, 0, status.GetReturnCode())
-}
-
-func Test_checker_should_return_1_if_one_or_more_warnings(t *testing.T) {
-	// The warning is triggered by the mob timer duration being under the min threshold
-	Run(*params.AParamSet(
-		params.WithConfigDir(testDataDirJava),
-		params.WithBaseDir(testDataDirJava),
-		params.WithWorkDir(testDataDirJava),
-		params.WithMobTimerDuration(1*time.Second),
-	))
-	assert.Equal(t, status.GetReturnCode(), 1)
-}
-
-func Test_checker_should_return_2_if_one_or_more_errors(t *testing.T) {
-	const invalidDir = "invalid-dir"
-	Run(*params.AParamSet(
-		params.WithConfigDir(invalidDir),
-		params.WithBaseDir(invalidDir),
-		params.WithWorkDir(invalidDir),
-	))
-	assert.Equal(t, 2, status.GetReturnCode())
+	tests := []struct {
+		desc       string
+		runners    []checkGroupRunner
+		expectedRC int
+	}{
+		{"1 ok", []checkGroupRunner{okRunner}, 0},
+		{"1 warning", []checkGroupRunner{warningRunner}, 1},
+		{"1 error", []checkGroupRunner{errorRunner}, 2},
+		{"1 ok 1 warning", []checkGroupRunner{okRunner, warningRunner}, 1},
+		{"1 ok 1 error", []checkGroupRunner{okRunner, errorRunner}, 2},
+		{"1 warning 1 error", []checkGroupRunner{warningRunner, errorRunner}, 2},
+		{"1 ok 1 warning 1 error", []checkGroupRunner{okRunner, warningRunner, errorRunner}, 2},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			checkGroupRunners = test.runners
+			Run(params.Params{})
+			assert.Equal(t, test.expectedRC, status.GetReturnCode())
+		})
+	}
 }
