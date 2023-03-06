@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,22 +29,105 @@ import (
 	"runtime"
 )
 
+var checkToolchainRunners []checkPointRunner
+
+func init() {
+	checkToolchainRunners = []checkPointRunner{
+		checkToolchainParameter,
+		checkToolchainLanguageCompatibility,
+		checkToolchainDetection,
+		checkToolchainPlatform,
+		checkToolchainBuildCommand,
+		checkToolchainTestCommand,
+		checkToolchainTestResultDir,
+	}
+}
+
 func checkToolchain(p params.Params) (cg *model.CheckGroup) {
 	cg = model.NewCheckGroup("toolchain")
-
-	if p.Toolchain == "" {
-		cg.Add(checkpointsWhenToolchainIsNotSet()...)
-	} else {
-		cg.Add(checkpointsWhenToolchainIsSet(p.Toolchain)...)
-	}
-
-	if checkEnv.tchn != nil {
-		cg.Ok("local platform is "+toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH))
-		cg.Add(checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine())...)
-		cg.Add(checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine())...)
-		cg.Add(checkTestResultDir(checkEnv.tchn.GetTestResultDir(), checkEnv.tchn.GetTestResultPath())...)
+	for _, runner := range checkToolchainRunners {
+		cg.Add(runner(p)...)
 	}
 	return cg
+}
+
+func checkToolchainParameter(p params.Params) (cp []model.CheckPoint) {
+	if p.Toolchain == "" {
+		return cp
+	}
+	cp = append(cp, model.OkCheckPoint("toolchain parameter is set to ", p.Toolchain))
+
+	if checkEnv.tchnErr != nil {
+		cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint(p.Toolchain, " toolchain is valid"))
+	return cp
+}
+
+func checkToolchainLanguageCompatibility(p params.Params) (cp []model.CheckPoint) {
+	if p.Toolchain == "" {
+		return cp
+	}
+
+	if checkEnv.langErr != nil {
+		cp = append(cp, model.WarningCheckPoint("skipping toolchain/language compatibility check"))
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint(p.Toolchain, " toolchain is compatible with ",
+		checkEnv.lang.GetName(), " language"))
+	return cp
+}
+
+func checkToolchainDetection(p params.Params) (cp []model.CheckPoint) {
+	if p.Toolchain != "" {
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint("toolchain parameter is not set explicitly"))
+
+	if checkEnv.langErr != nil {
+		cp = append(cp, model.WarningCheckPoint("language is unknown"))
+		cp = append(cp, model.ErrorCheckPoint("cannot retrieve toolchain from an unknown language"))
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint("using language's default toolchain"))
+
+	if checkEnv.tchnErr != nil {
+		cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
+		return cp
+	}
+
+	cp = append(cp, model.OkCheckPoint("default toolchain for ",
+		checkEnv.lang.GetName(), " language is ",
+		checkEnv.lang.GetToolchains().Default))
+	return cp
+}
+
+func checkToolchainPlatform(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.tchn == nil {
+		return cp
+	}
+	cp = append(cp, model.OkCheckPoint("local platform is ",
+		toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH)))
+	return cp
+}
+
+func checkToolchainBuildCommand(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.tchn == nil {
+		return cp
+	}
+	return checkCommandLine("build", checkEnv.tchn.BuildCommandPath(), checkEnv.tchn.BuildCommandLine())
+}
+
+func checkToolchainTestCommand(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.tchn == nil {
+		return cp
+	}
+	return checkCommandLine("test", checkEnv.tchn.TestCommandPath(), checkEnv.tchn.TestCommandLine())
 }
 
 func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []model.CheckPoint) {
@@ -53,13 +136,19 @@ func checkCommandLine(name string, cmdPath string, cmdLine string) (cp []model.C
 	path, err := checkEnv.tchn.CheckCommandAccess(cmdPath)
 	if err != nil {
 		cp = append(cp, model.ErrorCheckPoint("cannot access ", name, " command: ", cmdPath))
-	} else {
-		cp = append(cp, model.OkCheckPoint(name, " command path: ", path))
+		return cp
 	}
+
+	cp = append(cp, model.OkCheckPoint(name, " command path: ", path))
 	return cp
 }
 
-func checkTestResultDir(dir string, path string) (cp []model.CheckPoint) {
+func checkToolchainTestResultDir(_ params.Params) (cp []model.CheckPoint) {
+	if checkEnv.tchn == nil {
+		return cp
+	}
+
+	dir := checkEnv.tchn.GetTestResultDir()
 	if dir == "" {
 		cp = append(cp, model.WarningCheckPoint(
 			"test result directory parameter is not set explicitly (default: work directory)"))
@@ -67,40 +156,7 @@ func checkTestResultDir(dir string, path string) (cp []model.CheckPoint) {
 		cp = append(cp, model.OkCheckPoint("test result directory parameter is ", dir))
 	}
 
-	cp = append(cp, model.OkCheckPoint("test result directory absolute path is ", path))
-	return cp
-}
-
-func checkpointsWhenToolchainIsSet(name string) (cp []model.CheckPoint) {
-	cp = append(cp, model.OkCheckPoint("toolchain parameter is set to ", name))
-	if checkEnv.tchnErr != nil {
-		cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
-	} else {
-		cp = append(cp, model.OkCheckPoint(checkEnv.tchn.GetName(), " toolchain is valid"))
-		if checkEnv.langErr == nil {
-			cp = append(cp, model.OkCheckPoint(checkEnv.tchn.GetName(), " toolchain is compatible with ",
-				checkEnv.lang.GetName(), " language"))
-		} else {
-			cp = append(cp, model.WarningCheckPoint("skipping toolchain/language compatibility check"))
-		}
-	}
-	return cp
-}
-
-func checkpointsWhenToolchainIsNotSet() (cp []model.CheckPoint) {
-	cp = append(cp, model.OkCheckPoint("toolchain parameter is not set explicitly"))
-
-	if checkEnv.langErr != nil {
-		cp = append(cp, model.WarningCheckPoint("language is unknown"))
-		cp = append(cp, model.ErrorCheckPoint("cannot retrieve toolchain from an unknown language"))
-	} else {
-		cp = append(cp, model.OkCheckPoint("using language's default toolchain"))
-		if checkEnv.tchnErr != nil {
-			cp = append(cp, model.ErrorCheckPoint(checkEnv.tchnErr))
-		} else {
-			cp = append(cp, model.OkCheckPoint("default toolchain for ", checkEnv.lang.GetName(),
-				" language is ", checkEnv.tchn.GetName()))
-		}
-	}
+	cp = append(cp, model.OkCheckPoint(
+		"test result directory absolute path is ", checkEnv.tchn.GetTestResultPath()))
 	return cp
 }

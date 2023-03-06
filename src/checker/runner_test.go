@@ -39,8 +39,6 @@ const (
 	testDataRootDir = "../testdata"
 )
 
-// Assert utility functions
-
 var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
 )
@@ -51,21 +49,6 @@ func initTestCheckEnv(params params.Params) {
 		return fake.NewVCSFake(fake.Settings{}), nil
 	}
 	initCheckEnv(params)
-}
-
-func assertStatus(t *testing.T, expected model.CheckStatus, checker checkGroupRunner, params params.Params) {
-	initTestCheckEnv(params)
-	assert.Equal(t, expected, checker(params).GetStatus())
-}
-
-func assertOk(t *testing.T, checker checkGroupRunner, params params.Params) {
-	t.Helper()
-	assertStatus(t, model.CheckStatusOk, checker, params)
-}
-
-func assertError(t *testing.T, checker checkGroupRunner, params params.Params) {
-	t.Helper()
-	assertStatus(t, model.CheckStatusError, checker, params)
 }
 
 func assertCheckGroupRunner(t *testing.T,
