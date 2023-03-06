@@ -1,7 +1,7 @@
 //go:build test_helper
 
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,9 @@ SOFTWARE.
 */
 
 package toolchain
+
+type commandFunc func() string
+type checkCommandFunc func() (string, error)
 
 type (
 	// Operation is the name of a toolchain operation
@@ -51,8 +54,13 @@ func (operations Operations) contains(operation Operation) bool {
 // responses, but without actually calling a real command.
 type FakeToolchain struct {
 	Toolchain
-	failingOperations Operations
-	testStats         TestStats
+	failingOperations  Operations
+	testStats          TestStats
+	buildCommandPath   commandFunc
+	testCommandPath    commandFunc
+	buildCommandLine   commandFunc
+	testCommandLine    commandFunc
+	checkCommandAccess checkCommandFunc
 }
 
 // NewFakeToolchain creates a FakeToolchain instance
@@ -63,33 +71,93 @@ func NewFakeToolchain(failingOperations Operations, testStats TestStats) *FakeTo
 			buildCommands: nil,
 			testCommands:  nil,
 		},
-		failingOperations: failingOperations,
-		testStats:         testStats,
+		failingOperations:  failingOperations,
+		testStats:          testStats,
+		buildCommandPath:   func() string { return "" },
+		testCommandPath:    func() string { return "" },
+		buildCommandLine:   func() string { return "" },
+		testCommandLine:    func() string { return "" },
+		checkCommandAccess: func() (string, error) { return "", nil },
 	}
 }
 
-func (tchn FakeToolchain) checkBuildCommand() error {
+// CheckCommandAccess verifies if the provided command path can be accessed (faked)
+func (ft *FakeToolchain) CheckCommandAccess(_ string) (string, error) {
+	return ft.checkCommandAccess()
+}
+
+// WithCheckCommandAccess allows to change the behaviour of CheckCommandAccess() method
+func (ft *FakeToolchain) WithCheckCommandAccess(f checkCommandFunc) *FakeToolchain {
+	ft.checkCommandAccess = f
+	return ft
+}
+
+// BuildCommandPath returns the build command path for this toolchain (faked)
+func (ft *FakeToolchain) BuildCommandPath() string {
+	return ft.buildCommandPath()
+}
+
+// WithBuildCommandPath allows to change the behaviour of BuildCommandPath() method
+func (ft *FakeToolchain) WithBuildCommandPath(f commandFunc) *FakeToolchain {
+	ft.buildCommandPath = f
+	return ft
+}
+
+// TestCommandPath returns the test command path for this toolchain (faked)
+func (ft *FakeToolchain) TestCommandPath() string {
+	return ft.testCommandPath()
+}
+
+// WithTestCommandPath allows to change the behaviour of TestCommandPath() method
+func (ft *FakeToolchain) WithTestCommandPath(f commandFunc) *FakeToolchain {
+	ft.testCommandPath = f
+	return ft
+}
+
+// BuildCommandLine returns the toolchain's build command line as a string (faked)
+func (ft *FakeToolchain) BuildCommandLine() string {
+	return ft.buildCommandLine()
+}
+
+// WithBuildCommandLine allows to change the behaviour of BuildCommandLine() method
+func (ft *FakeToolchain) WithBuildCommandLine(f commandFunc) *FakeToolchain {
+	ft.buildCommandLine = f
+	return ft
+}
+
+// TestCommandLine returns the toolchain's test command line as a string (faked)
+func (ft *FakeToolchain) TestCommandLine() string {
+	return ft.testCommandLine()
+}
+
+// WithTestCommandLine allows to change the behaviour of TestCommandLine() method
+func (ft *FakeToolchain) WithTestCommandLine(f commandFunc) *FakeToolchain {
+	ft.testCommandLine = f
+	return ft
+}
+
+func (*FakeToolchain) checkBuildCommand() error {
 	return nil
 }
 
-func (tchn FakeToolchain) checkTestCommand() error {
+func (*FakeToolchain) checkTestCommand() error {
 	return nil
 }
 
 // RunBuild returns an error if build is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunBuild() CommandResult {
-	return tchn.fakeOperation(BuildOperation)
+func (ft *FakeToolchain) RunBuild() CommandResult {
+	return ft.fakeOperation(BuildOperation)
 }
 
 // RunTests returns an error if test is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (tchn FakeToolchain) RunTests() TestCommandResult {
-	return TestCommandResult{tchn.fakeOperation(TestOperation), tchn.testStats}
+func (ft *FakeToolchain) RunTests() TestCommandResult {
+	return TestCommandResult{ft.fakeOperation(TestOperation), ft.testStats}
 }
 
-func (tchn FakeToolchain) fakeOperation(operation Operation) (result CommandResult) {
-	if tchn.failingOperations.contains(operation) {
+func (ft *FakeToolchain) fakeOperation(operation Operation) (result CommandResult) {
+	if ft.failingOperations.contains(operation) {
 		result = CommandResult{Status: CommandStatusFail, Output: "toolchain " + string(operation) + " fake error"}
 	} else {
 		result = CommandResult{Status: CommandStatusPass, Output: ""}
