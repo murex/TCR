@@ -9,7 +9,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20230307103607-6e717729cb4f
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.6.1
-	github.com/golangci/golangci-lint v1.51.2
+	github.com/golangci/golangci-lint v1.52.0
 	github.com/goreleaser/goreleaser v1.16.2
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
@@ -153,7 +153,7 @@ require (
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/firefart/nonamedreturns v1.0.4 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-	github.com/go-critic/go-critic v0.6.7 // indirect
+	github.com/go-critic/go-critic v0.7.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.3 // indirect
