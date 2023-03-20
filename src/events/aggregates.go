@@ -26,9 +26,9 @@ import "time"
 
 // Aggregates is a convenience type for returning min, max, average, etc. altogether
 type Aggregates interface {
-	Min() interface{}
-	Avg() interface{}
-	Max() interface{}
+	Min() any
+	Avg() any
+	Max() any
 }
 
 // DurationAggregates is the Aggregates implementation for time.Duration type
@@ -39,17 +39,17 @@ type DurationAggregates struct {
 }
 
 // Min returns the min duration value
-func (da DurationAggregates) Min() interface{} {
+func (da DurationAggregates) Min() any {
 	return da.min
 }
 
 // Avg returns the average duration value
-func (da DurationAggregates) Avg() interface{} {
+func (da DurationAggregates) Avg() any {
 	return da.avg
 }
 
 // Max returns the max duration value
-func (da DurationAggregates) Max() interface{} {
+func (da DurationAggregates) Max() any {
 	return da.max
 }
 
@@ -61,16 +61,16 @@ type IntAggregates struct {
 }
 
 // Min returns the min value
-func (ia IntAggregates) Min() interface{} {
+func (ia IntAggregates) Min() any {
 	return ia.min
 }
 
 // Avg returns the average value
-func (ia IntAggregates) Avg() interface{} {
+func (ia IntAggregates) Avg() any {
 	return ia.avg
 }
 
 // Max returns the max value
-func (ia IntAggregates) Max() interface{} {
+func (ia IntAggregates) Max() any {
 	return ia.max
 }

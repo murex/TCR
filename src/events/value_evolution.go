@@ -26,8 +26,8 @@ import "time"
 
 // ValueEvolution describes evolution of a value between first and last record
 type ValueEvolution interface {
-	From() interface{}
-	To() interface{}
+	From() any
+	To() any
 }
 
 // DurationValueEvolution implements ValueEvolution interface for a time.Duration value
@@ -37,12 +37,12 @@ type DurationValueEvolution struct {
 }
 
 // From returns the starting value of a DurationValueEvolution instance
-func (dve DurationValueEvolution) From() interface{} {
+func (dve DurationValueEvolution) From() any {
 	return dve.from
 }
 
 // To returns the ending value of a DurationValueEvolution instance
-func (dve DurationValueEvolution) To() interface{} {
+func (dve DurationValueEvolution) To() any {
 	return dve.to
 }
 
@@ -53,11 +53,11 @@ type IntValueEvolution struct {
 }
 
 // From returns the starting value of an IntValueEvolution instance
-func (ive IntValueEvolution) From() interface{} {
+func (ive IntValueEvolution) From() any {
 	return ive.from
 }
 
 // To returns the ending value of an IntValueEvolution instance
-func (ive IntValueEvolution) To() interface{} {
+func (ive IntValueEvolution) To() any {
 	return ive.to
 }

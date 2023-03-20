@@ -62,10 +62,10 @@ func setStty(state *bytes.Buffer) (err error) {
 	if sttyCmdDisabled {
 		return nil
 	}
-	cmd := exec.Command("stty", state.String()) //nolint:gosec
+	cmd := exec.Command("stty", state.String()) // nolint:gosec
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
-	//report.PostInfo("Command: ", cmd)
+	// report.PostInfo("Command: ", cmd)
 	return cmd.Run()
 }
 
@@ -73,7 +73,7 @@ func setStty(state *bytes.Buffer) (err error) {
 func SetRaw() bytes.Buffer {
 	var initialState bytes.Buffer
 	err := readStty(&initialState)
-	//report.PostInfo(initialState.String())
+	// report.PostInfo(initialState.String())
 	if err != nil {
 		report.PostError("stty -g: ", err)
 	}
@@ -93,13 +93,13 @@ func SetRaw() bytes.Buffer {
 
 // Restore puts back the terminal state to a "normal" state
 func Restore() {
-	//func Restore(state *bytes.Buffer)
+	// func Restore(state *bytes.Buffer)
 	// For some unknown reason restoring previous stty state
 	// fails on WSL, while working correctly on Windows git bash
 	// Still need to test it on macOS and on a non-WSL Linux box
 	// Until then we set back echo and -cbreak instead of
 	// restoring the previous state
-	//report.PostInfo("Restoring stty initial state")
+	// report.PostInfo("Restoring stty initial state")
 	_ = setStty(bytes.NewBufferString("-cbreak"))
 	_ = setStty(bytes.NewBufferString("echo"))
 }

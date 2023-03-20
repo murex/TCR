@@ -118,7 +118,7 @@ func (c *CommandImpl) Trace(params ...string) error {
 // RunAndPipe calls the command with the provided parameters in a separate process
 // and pipes its output to cmd. Returns toCmd's output traces combined
 func (c *CommandImpl) RunAndPipe(toCmd Command, params ...string) (output []byte, err error) {
-	//report.PostWarning("Command: ", c.name, " ", append(c.params, params...), " | ", shell.name, " ", shell.params)
+	// report.PostWarning("Command: ", c.name, " ", append(c.params, params...), " | ", shell.name, " ", shell.params)
 	c.tracePipedCall(toCmd, params...)
 	return sh.NewSession().
 		Command(c.name, c.allParams(params...)).

@@ -49,23 +49,23 @@ func printPrefixedAndColored(fgColor aurora.Color, message string) {
 		colorizer.Colorize(message, fgColor))
 }
 
-func printInCyan(a ...interface{}) {
+func printInCyan(a ...any) {
 	printPrefixedAndColored(aurora.CyanFg, fmt.Sprint(a...))
 }
 
-func printInYellow(a ...interface{}) {
+func printInYellow(a ...any) {
 	printPrefixedAndColored(aurora.YellowFg, fmt.Sprint(a...))
 }
 
-func printInGreen(a ...interface{}) {
+func printInGreen(a ...any) {
 	printPrefixedAndColored(aurora.GreenFg, fmt.Sprint(a...))
 }
 
-func printInRed(a ...interface{}) {
+func printInRed(a ...any) {
 	printPrefixedAndColored(aurora.RedFg, fmt.Sprint(a...))
 }
 
-func printUntouched(a ...interface{}) {
+func printUntouched(a ...any) {
 	_, _ = fmt.Println(a...)
 }
 

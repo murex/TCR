@@ -45,13 +45,13 @@ const (
 
 // MessageReporter provides the interface that any message listener needs to implement
 type MessageReporter interface {
-	ReportSimple(emphasis bool, a ...interface{})
-	ReportInfo(emphasis bool, a ...interface{})
-	ReportTitle(emphasis bool, a ...interface{})
-	ReportTimer(emphasis bool, a ...interface{})
-	ReportSuccess(emphasis bool, a ...interface{})
-	ReportWarning(emphasis bool, a ...interface{})
-	ReportError(emphasis bool, a ...interface{})
+	ReportSimple(emphasis bool, a ...any)
+	ReportInfo(emphasis bool, a ...any)
+	ReportTitle(emphasis bool, a ...any)
+	ReportTimer(emphasis bool, a ...any)
+	ReportSuccess(emphasis bool, a ...any)
+	ReportWarning(emphasis bool, a ...any)
+	ReportError(emphasis bool, a ...any)
 }
 
 // MessageType type used for message characterization
@@ -85,7 +85,7 @@ func Subscribe(reporter MessageReporter) chan bool {
 	stream := msgProperty.Observe()
 
 	msg := stream.Value().(Message)
-	//fmt.Printf("initial value: %v\n", msg)
+	// fmt.Printf("initial value: %v\n", msg)
 
 	unsubscribe := make(chan bool)
 	var wg sync.WaitGroup
@@ -99,7 +99,7 @@ func Subscribe(reporter MessageReporter) chan bool {
 				// advance to next value
 				s.Next()
 				msg = s.Value().(Message)
-				//fmt.Printf("got new value: %v\n", msg)
+				// fmt.Printf("got new value: %v\n", msg)
 				reportMessage(reporter, msg)
 			case <-unsubscribe:
 				return
@@ -112,7 +112,7 @@ func Subscribe(reporter MessageReporter) chan bool {
 
 // reportMessage tells the reporter to report msg depending on its severity
 func reportMessage(reporter MessageReporter, msg Message) {
-	report := map[Severity]func(r MessageReporter, emphasis bool, a ...interface{}){
+	report := map[Severity]func(r MessageReporter, emphasis bool, a ...any){
 		Info:    MessageReporter.ReportInfo,
 		Normal:  MessageReporter.ReportSimple,
 		Title:   MessageReporter.ReportTitle,
@@ -131,60 +131,60 @@ func Unsubscribe(c chan bool) {
 }
 
 // Post posts some text for reporting. This is actually the same as PostText()
-func Post(a ...interface{}) {
+func Post(a ...any) {
 	PostText(a...)
 }
 
 // PostText posts some text for reporting
-func PostText(a ...interface{}) {
+func PostText(a ...any) {
 	postMessage(MessageType{Severity: Normal}, a...)
 }
 
 // PostInfo posts an information message for reporting
-func PostInfo(a ...interface{}) {
+func PostInfo(a ...any) {
 	postMessage(MessageType{Severity: Info}, a...)
 }
 
 // PostTitle posts a title message for reporting
-func PostTitle(a ...interface{}) {
+func PostTitle(a ...any) {
 	postMessage(MessageType{Severity: Title}, a...)
 }
 
 // PostWarning posts a warning message for reporting
-func PostWarning(a ...interface{}) {
+func PostWarning(a ...any) {
 	postMessage(MessageType{Severity: Warning}, a...)
 }
 
 // PostError posts an error message for reporting
-func PostError(a ...interface{}) {
+func PostError(a ...any) {
 	postMessage(MessageType{Severity: Error}, a...)
 }
 
 // PostTimerWithEmphasis posts a timer message with emphasis
-func PostTimerWithEmphasis(a ...interface{}) {
+func PostTimerWithEmphasis(a ...any) {
 	postMessage(MessageType{Severity: Timer, Emphasis: true}, a...)
 }
 
 // PostSuccessWithEmphasis posts a success message for reporting
-func PostSuccessWithEmphasis(a ...interface{}) {
+func PostSuccessWithEmphasis(a ...any) {
 	postMessage(MessageType{Severity: Success, Emphasis: true}, a...)
 }
 
 // PostWarningWithEmphasis posts a warning with emphasis
-func PostWarningWithEmphasis(a ...interface{}) {
+func PostWarningWithEmphasis(a ...any) {
 	postMessage(MessageType{Severity: Warning, Emphasis: true}, a...)
 }
 
 // PostErrorWithEmphasis posts an error message for reporting
-func PostErrorWithEmphasis(a ...interface{}) {
+func PostErrorWithEmphasis(a ...any) {
 	postMessage(MessageType{Severity: Error, Emphasis: true}, a...)
 }
 
-func postMessage(msgType MessageType, a ...interface{}) {
+func postMessage(msgType MessageType, a ...any) {
 	msgProperty.Update(NewMessage(msgType, a...))
 }
 
 // NewMessage returns a message with the specified type
-func NewMessage(messageType MessageType, a ...interface{}) Message {
+func NewMessage(messageType MessageType, a ...any) Message {
 	return Message{messageType, fmt.Sprint(a...), time.Now()}
 }

@@ -27,7 +27,7 @@ import "time"
 // ValueAndRatio provides a value with its associated percentage.
 // The percentage is rounded to an int value (ex: percentage=50 means 50%)
 type ValueAndRatio interface {
-	Value() interface{}
+	Value() any
 	Percentage() int
 }
 
@@ -38,7 +38,7 @@ type DurationValueAndRatio struct {
 }
 
 // Value returns the value of a DurationValueAndRatio instance
-func (dvr DurationValueAndRatio) Value() interface{} {
+func (dvr DurationValueAndRatio) Value() any {
 	return dvr.value
 }
 
@@ -54,7 +54,7 @@ type IntValueAndRatio struct {
 }
 
 // Value returns the value of an IntValueAndRatio instance
-func (ivr IntValueAndRatio) Value() interface{} {
+func (ivr IntValueAndRatio) Value() any {
 	return ivr.value
 }
 

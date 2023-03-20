@@ -36,7 +36,7 @@ const (
 )
 
 // loadFromYAML loads a structure configuration from a YAML file
-func loadFromYAML(filename string, out interface{}) {
+func loadFromYAML(filename string, out any) {
 	// In case we need to use variables in yaml configuration files:
 	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
 	// Cf. https://pkg.go.dev/os#Expand
@@ -51,7 +51,7 @@ func loadFromYAML(filename string, out interface{}) {
 }
 
 // saveToYAML saves a structure configuration into a YAML file
-func saveToYAML(in interface{}, filename string) {
+func saveToYAML(in any, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)

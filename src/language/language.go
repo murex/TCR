@@ -151,7 +151,7 @@ func (lang *Language) DirsToWatch(baseDir string) (dirs []string) {
 	for dir := range unique {
 		dirs = append(dirs, filepath.Join(baseDir, toLocalPath(dir)))
 	}
-	//report.PostInfo(dirs)
+	// report.PostInfo(dirs)
 	return dirs
 }
 

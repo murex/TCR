@@ -50,7 +50,7 @@ func Print(branch string, tcrEvents events.TcrEvents) {
 }
 
 func printStatEvolution(name string, stat events.ValueEvolution) {
-	//printStat(name, "from ", stat.From(), " to ", stat.To())
+	// printStat(name, "from ", stat.From(), " to ", stat.To())
 	printStat(name, stat.From(), " --> ", stat.To())
 }
 
@@ -62,7 +62,7 @@ func printStatValueAndRatio(name string, stat events.ValueAndRatio) {
 	printStat(name, stat.Value(), " (", stat.Percentage(), "%)")
 }
 
-func printStat(name string, stat ...interface{}) {
+func printStat(name string, stat ...any) {
 	report.PostInfo(
 		fmt.Sprintf("- %-26s ", name+":"),
 		fmt.Sprint(stat...),
