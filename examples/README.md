@@ -31,3 +31,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [maven](kotlin-maven/README.md)
 - With [maven wrapper](kotlin-maven-wrapper/README.md)
 - With [make](kotlin-make/README.md)
+
+## Python
+
+- With [pytest](python-pytest/README.md)
