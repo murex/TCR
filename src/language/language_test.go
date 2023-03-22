@@ -214,11 +214,13 @@ func Test_retrieve_language_files(t *testing.T) {
 // Assert utility functions for language type
 
 func assertDefaultToolchain(t *testing.T, expected string, name string) {
+	t.Helper()
 	lang, _ := Get(name)
 	assert.Equal(t, expected, lang.GetToolchains().Default)
 }
 
 func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
+	t.Helper()
 	dirList := getBuiltIn(name).DirsToWatch("")
 	for _, dir := range expected {
 		assert.Contains(t, dirList, toLocalPath(dir))
@@ -226,6 +228,7 @@ func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
 }
 
 func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
+	t.Helper()
 	lang := getBuiltIn(name)
 	for _, tchn := range expected {
 		assert.True(t, lang.worksWithToolchain(tchn))
@@ -233,6 +236,7 @@ func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
 }
 
 func assertIncompatibleToolchains(t *testing.T, expected []string, name string) {
+	t.Helper()
 	lang := getBuiltIn(name)
 	for _, tchn := range expected {
 		assert.False(t, lang.worksWithToolchain(tchn))
@@ -275,6 +279,7 @@ func buildFilePathMatchers(matcher func(string) filePathMatcher, parentDir strin
 }
 
 func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
+	t.Helper()
 	lang, _ := GetLanguage(name, "")
 	for _, matcher := range matchers {
 		assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
