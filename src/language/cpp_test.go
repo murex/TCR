@@ -83,6 +83,7 @@ func Test_cpp_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, cppLanguageName)
 	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, cppLanguageName)
 	assertIncompatibleToolchains(t, []string{"dotnet"}, cppLanguageName)
+	assertIncompatibleToolchains(t, []string{"pytest"}, cppLanguageName)
 }
 
 func Test_cpp_valid_file_paths(t *testing.T) {
