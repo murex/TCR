@@ -90,4 +90,10 @@ updates:
     directory: "/examples/kotlin-gradle-wrapper"
     schedule:
       interval: "weekly"
-      
+
+  # Maintain dependencies for Python examples
+
+  - package-ecosystem: "pip"
+    directory: "/examples/python-pytest"
+    schedule:
+      interval: "weekly"
