@@ -73,15 +73,17 @@ func Test_java_default_toolchain(t *testing.T) {
 }
 
 func Test_java_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, javaLanguageName)
-	assertCompatibleToolchains(t, []string{"make"}, javaLanguageName)
+	languageName := javaLanguageName
+	assertCompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, languageName)
+	assertCompatibleToolchains(t, []string{"make"}, languageName)
 }
 
 func Test_java_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, []string{"cmake"}, javaLanguageName)
-	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, javaLanguageName)
-	assertIncompatibleToolchains(t, []string{"dotnet"}, javaLanguageName)
-	assertIncompatibleToolchains(t, []string{"pytest"}, javaLanguageName)
+	languageName := javaLanguageName
+	assertIncompatibleToolchains(t, []string{"cmake"}, languageName)
+	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, languageName)
+	assertIncompatibleToolchains(t, []string{"dotnet"}, languageName)
+	assertIncompatibleToolchains(t, []string{"pytest"}, languageName)
 }
 
 func Test_java_valid_file_paths(t *testing.T) {

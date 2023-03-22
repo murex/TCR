@@ -73,15 +73,17 @@ func Test_csharp_default_toolchain(t *testing.T) {
 }
 
 func Test_csharp_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, []string{"dotnet"}, csharpLanguageName)
-	assertCompatibleToolchains(t, []string{"make"}, csharpLanguageName)
+	languageName := csharpLanguageName
+	assertCompatibleToolchains(t, []string{"dotnet"}, languageName)
+	assertCompatibleToolchains(t, []string{"make"}, languageName)
 }
 
 func Test_csharp_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, csharpLanguageName)
-	assertIncompatibleToolchains(t, []string{"cmake"}, csharpLanguageName)
-	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, csharpLanguageName)
-	assertIncompatibleToolchains(t, []string{"pytest"}, csharpLanguageName)
+	languageName := csharpLanguageName
+	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, languageName)
+	assertIncompatibleToolchains(t, []string{"cmake"}, languageName)
+	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, languageName)
+	assertIncompatibleToolchains(t, []string{"pytest"}, languageName)
 }
 
 func Test_csharp_valid_file_paths(t *testing.T) {
