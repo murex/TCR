@@ -81,6 +81,7 @@ func Test_kotlin_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"cmake"}, kotlinLanguageName)
 	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, kotlinLanguageName)
 	assertIncompatibleToolchains(t, []string{"dotnet"}, kotlinLanguageName)
+	assertIncompatibleToolchains(t, []string{"pytest"}, kotlinLanguageName)
 }
 
 func Test_kotlin_valid_file_paths(t *testing.T) {

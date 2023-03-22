@@ -81,6 +81,7 @@ func Test_java_incompatible_toolchains(t *testing.T) {
 	assertIncompatibleToolchains(t, []string{"cmake"}, javaLanguageName)
 	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, javaLanguageName)
 	assertIncompatibleToolchains(t, []string{"dotnet"}, javaLanguageName)
+	assertIncompatibleToolchains(t, []string{"pytest"}, javaLanguageName)
 }
 
 func Test_java_valid_file_paths(t *testing.T) {
