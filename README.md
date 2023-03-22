@@ -80,6 +80,7 @@ provided as built-in.
 | go       | go-tools, gotestsum, make                          | go-tools       |
 | java     | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
 | kotlin   | gradle, gradle-wrapper, maven, maven-wrapper, make | gradle-wrapper |
+| python   | pytest, make                                       | pytest         |
 
 ### Base directory
 
