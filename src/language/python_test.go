@@ -29,11 +29,13 @@ const (
 )
 
 var (
-	pythonLanguageExtensions = []string{".py"}
+	pythonLanguageExtensions   = []string{".py"}
+	pythonCompatibleToolchains = []string{"pytest", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(pythonLanguageExtensions...)
+	registerToolchainsForTests(pythonCompatibleToolchains...)
 }
 
 func Test_python_is_a_built_in_language(t *testing.T) {
@@ -73,11 +75,11 @@ func Test_python_default_toolchain(t *testing.T) {
 }
 
 func Test_python_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, pythonLanguageName, "pytest", "make")
+	assertCompatibleToolchains(t, pythonLanguageName, pythonCompatibleToolchains...)
 }
 
 func Test_python_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, pythonLanguageName, "dummy")
+	assertIncompatibleToolchains(t, pythonLanguageName, allKnownToolchainsBut(pythonCompatibleToolchains...)...)
 }
 
 func Test_python_valid_file_paths(t *testing.T) {

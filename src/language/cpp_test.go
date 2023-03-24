@@ -31,11 +31,13 @@ const (
 )
 
 var (
-	cppLanguageExtensions = []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx"}
+	cppLanguageExtensions   = []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx"}
+	cppCompatibleToolchains = []string{"cmake", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(cppLanguageExtensions...)
+	registerToolchainsForTests(cppCompatibleToolchains...)
 }
 
 func Test_cpp_is_a_built_in_language(t *testing.T) {
@@ -75,11 +77,11 @@ func Test_cpp_default_toolchain(t *testing.T) {
 }
 
 func Test_cpp_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, cppLanguageName, "cmake", "make")
+	assertCompatibleToolchains(t, cppLanguageName, cppCompatibleToolchains...)
 }
 
 func Test_cpp_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, cppLanguageName, "dummy")
+	assertIncompatibleToolchains(t, cppLanguageName, allKnownToolchainsBut(cppCompatibleToolchains...)...)
 }
 
 func Test_cpp_valid_file_paths(t *testing.T) {

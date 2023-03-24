@@ -35,6 +35,10 @@ import (
 
 var languageFileExtensions []string
 
+func registerLanguageFileExtensionsForTests(ext ...string) {
+	languageFileExtensions = append(languageFileExtensions, ext...)
+}
+
 func allLanguageFileExtensionsBut(ext ...string) (out []string) {
 	for _, e := range languageFileExtensions {
 		if !contains(ext, e) {
@@ -53,8 +57,21 @@ func contains(items []string, searched string) bool {
 	return false
 }
 
-func registerLanguageFileExtensionsForTests(ext ...string) {
-	languageFileExtensions = append(languageFileExtensions, ext...)
+var knownToolchains = make(map[string]bool)
+
+func registerToolchainsForTests(toolchainNames ...string) {
+	for _, t := range toolchainNames {
+		knownToolchains[t] = true
+	}
+}
+
+func allKnownToolchainsBut(toolchainNames ...string) (out []string) {
+	for k := range knownToolchains {
+		if !contains(toolchainNames, k) {
+			out = append(out, k)
+		}
+	}
+	return out
 }
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
