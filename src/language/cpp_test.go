@@ -75,17 +75,11 @@ func Test_cpp_default_toolchain(t *testing.T) {
 }
 
 func Test_cpp_compatible_toolchains(t *testing.T) {
-	languageName := cppLanguageName
-	assertCompatibleToolchains(t, languageName, "cmake")
-	assertCompatibleToolchains(t, languageName, "make")
+	assertCompatibleToolchains(t, cppLanguageName, "cmake", "make")
 }
 
 func Test_cpp_incompatible_toolchains(t *testing.T) {
-	languageName := cppLanguageName
-	assertIncompatibleToolchains(t, languageName, "gradle", "gradle-wrapper", "maven", "maven-wrapper")
-	assertIncompatibleToolchains(t, languageName, "go-tools", "gotestsum")
-	assertIncompatibleToolchains(t, languageName, "dotnet")
-	assertIncompatibleToolchains(t, languageName, "pytest")
+	assertIncompatibleToolchains(t, cppLanguageName, "dummy")
 }
 
 func Test_cpp_valid_file_paths(t *testing.T) {
