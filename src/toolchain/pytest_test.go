@@ -53,19 +53,19 @@ func Test_pytest_toolchain_name(t *testing.T) {
 }
 
 func Test_pytest_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "pytest", pytestToolchainName)
+	assertBuildCommandPath(t, pytestToolchainName, "pytest")
 }
 
 func Test_pytest_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"--collect-only"}, pytestToolchainName)
+	assertBuildCommandArgs(t, pytestToolchainName, []string{"--collect-only"})
 }
 
 func Test_pytest_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "pytest", pytestToolchainName)
+	assertTestCommandPath(t, pytestToolchainName, "pytest")
 }
 
 func Test_pytest_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{}, pytestToolchainName)
+	assertTestCommandArgs(t, pytestToolchainName, []string{})
 }
 
 func Test_pytest_toolchain_supported_platforms(t *testing.T) {
@@ -73,5 +73,5 @@ func Test_pytest_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_pytest_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "pytest", pytestToolchainName)
+	assertTestResultDir(t, pytestToolchainName, "pytest")
 }

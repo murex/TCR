@@ -55,24 +55,24 @@ func Test_gotestsum_toolchain_name(t *testing.T) {
 }
 
 func Test_gotestsum_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "go", gotestsumToolchainName)
+	assertBuildCommandPath(t, gotestsumToolchainName, "go")
 }
 
 func Test_gotestsum_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"test", "-count=0", "./..."}, gotestsumToolchainName)
+	assertBuildCommandArgs(t, gotestsumToolchainName, []string{"test", "-count=0", "./..."})
 }
 
 func Test_gotestsum_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "gotestsum", gotestsumToolchainName)
+	assertTestCommandPath(t, gotestsumToolchainName, "gotestsum")
 }
 
 func Test_gotestsum_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t,
+	assertTestCommandArgs(t, gotestsumToolchainName,
 		[]string{
-			"--format", "pkgname",
-			"--junitfile", "_test_results/output.xml",
+			"--format", "pkgname", "--junitfile", "_test_results/output.xml",
 			"--", "-short", "./...",
-		}, gotestsumToolchainName)
+		},
+	)
 }
 
 func Test_gotestsum_toolchain_supported_platforms(t *testing.T) {
@@ -80,5 +80,5 @@ func Test_gotestsum_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_gotestsum_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "_test_results", gotestsumToolchainName)
+	assertTestResultDir(t, gotestsumToolchainName, "_test_results")
 }

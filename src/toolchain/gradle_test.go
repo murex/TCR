@@ -65,14 +65,14 @@ func Test_gradle_toolchains_name(t *testing.T) {
 }
 
 func Test_gradle_toolchains_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, gradleCommandPath, gradleToolchainName)
-	assertBuildCommandPath(t, gradleWrapperCommandPath, gradleWrapperToolchainName)
+	assertBuildCommandPath(t, gradleToolchainName, gradleCommandPath)
+	assertBuildCommandPath(t, gradleWrapperToolchainName, gradleWrapperCommandPath)
 }
 
 func Test_gradle_toolchains_build_command_args(t *testing.T) {
 	buildCommandArgs := []string{"build", "testClasses", "-x", "test"}
-	assertBuildCommandArgs(t, buildCommandArgs, gradleToolchainName)
-	assertBuildCommandArgs(t, buildCommandArgs, gradleWrapperToolchainName)
+	assertBuildCommandArgs(t, gradleToolchainName, buildCommandArgs)
+	assertBuildCommandArgs(t, gradleWrapperToolchainName, buildCommandArgs)
 }
 
 func Test_gradle_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
@@ -85,14 +85,14 @@ func Test_gradle_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
 }
 
 func Test_gradle_toolchains_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, gradleCommandPath, gradleToolchainName)
-	assertTestCommandPath(t, gradleWrapperCommandPath, gradleWrapperToolchainName)
+	assertTestCommandPath(t, gradleToolchainName, gradleCommandPath)
+	assertTestCommandPath(t, gradleWrapperToolchainName, gradleWrapperCommandPath)
 }
 
 func Test_gradle_toolchains_test_command_args(t *testing.T) {
 	testCommandArgs := []string{"test"}
-	assertTestCommandArgs(t, testCommandArgs, gradleToolchainName)
-	assertTestCommandArgs(t, testCommandArgs, gradleWrapperToolchainName)
+	assertTestCommandArgs(t, gradleToolchainName, testCommandArgs)
+	assertTestCommandArgs(t, gradleWrapperToolchainName, testCommandArgs)
 }
 
 func Test_gradle_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
@@ -111,6 +111,6 @@ func Test_gradle_toolchains_supported_platforms(t *testing.T) {
 
 func Test_gradle_toolchains_test_result_dir(t *testing.T) {
 	const testResultDir = "build/test-results/test"
-	assertTestResultDir(t, testResultDir, gradleToolchainName)
-	assertTestResultDir(t, testResultDir, gradleWrapperToolchainName)
+	assertTestResultDir(t, gradleToolchainName, testResultDir)
+	assertTestResultDir(t, gradleWrapperToolchainName, testResultDir)
 }

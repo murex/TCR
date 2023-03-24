@@ -55,19 +55,19 @@ func Test_dotnet_toolchain_name(t *testing.T) {
 }
 
 func Test_dotnet_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "dotnet", dotnetToolchainName)
+	assertBuildCommandPath(t, dotnetToolchainName, "dotnet")
 }
 
 func Test_dotnet_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build"}, dotnetToolchainName)
+	assertBuildCommandArgs(t, dotnetToolchainName, []string{"build"})
 }
 
 func Test_dotnet_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "dotnet", dotnetToolchainName)
+	assertTestCommandPath(t, dotnetToolchainName, "dotnet")
 }
 
 func Test_dotnet_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test", "--no-build", "--logger=junit"}, dotnetToolchainName)
+	assertTestCommandArgs(t, dotnetToolchainName, []string{"test", "--no-build", "--logger=junit"})
 }
 
 func Test_dotnet_toolchain_supported_platforms(t *testing.T) {
@@ -75,5 +75,5 @@ func Test_dotnet_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_dotnet_toolchain_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "tests", dotnetToolchainName)
+	assertTestResultDir(t, dotnetToolchainName, "tests")
 }

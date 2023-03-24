@@ -55,19 +55,19 @@ func Test_make_toolchain_name(t *testing.T) {
 }
 
 func Test_make_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "make", makeToolchainName)
+	assertBuildCommandPath(t, makeToolchainName, "make")
 }
 
 func Test_make_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"build"}, makeToolchainName)
+	assertBuildCommandArgs(t, makeToolchainName, []string{"build"})
 }
 
 func Test_make_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "make", makeToolchainName)
+	assertTestCommandPath(t, makeToolchainName, "make")
 }
 
 func Test_make_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test"}, makeToolchainName)
+	assertTestCommandArgs(t, makeToolchainName, []string{"test"})
 }
 
 func Test_make_toolchain_supported_platforms(t *testing.T) {
@@ -75,5 +75,5 @@ func Test_make_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_make_toolchain_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, ".", makeToolchainName)
+	assertTestResultDir(t, makeToolchainName, ".")
 }
