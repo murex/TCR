@@ -65,14 +65,14 @@ func Test_maven_toolchains_name(t *testing.T) {
 }
 
 func Test_maven_toolchains_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, mavenCommandPath, mavenToolchainName)
-	assertBuildCommandPath(t, mavenWrapperCommandPath, mavenWrapperToolchainName)
+	assertBuildCommandPath(t, mavenToolchainName, mavenCommandPath)
+	assertBuildCommandPath(t, mavenWrapperToolchainName, mavenWrapperCommandPath)
 }
 
 func Test_maven_toolchains_build_command_args(t *testing.T) {
 	buildCommandArgs := []string{"test-compile"}
-	assertBuildCommandArgs(t, buildCommandArgs, mavenToolchainName)
-	assertBuildCommandArgs(t, buildCommandArgs, mavenWrapperToolchainName)
+	assertBuildCommandArgs(t, mavenToolchainName, buildCommandArgs)
+	assertBuildCommandArgs(t, mavenWrapperToolchainName, buildCommandArgs)
 }
 
 func Test_maven_wrapper_toolchain_returns_error_when_build_fails(t *testing.T) {
@@ -85,14 +85,14 @@ func Test_maven_wrapper_toolchain_returns_ok_when_build_passes(t *testing.T) {
 }
 
 func Test_maven_toolchains_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, mavenCommandPath, mavenToolchainName)
-	assertTestCommandPath(t, mavenWrapperCommandPath, mavenWrapperToolchainName)
+	assertTestCommandPath(t, mavenToolchainName, mavenCommandPath)
+	assertTestCommandPath(t, mavenWrapperToolchainName, mavenWrapperCommandPath)
 }
 
 func Test_maven_toolchains_test_command_args(t *testing.T) {
 	testCommandArgs := []string{"test"}
-	assertTestCommandArgs(t, testCommandArgs, mavenToolchainName)
-	assertTestCommandArgs(t, testCommandArgs, mavenWrapperToolchainName)
+	assertTestCommandArgs(t, mavenToolchainName, testCommandArgs)
+	assertTestCommandArgs(t, mavenWrapperToolchainName, testCommandArgs)
 }
 
 func Test_maven_wrapper_toolchain_returns_error_when_tests_fail(t *testing.T) {
@@ -111,6 +111,6 @@ func Test_maven_toolchains_supported_platforms(t *testing.T) {
 
 func Test_maven_toolchains_test_result_dir(t *testing.T) {
 	const testResultDir = "target/surefire-reports"
-	assertTestResultDir(t, testResultDir, mavenToolchainName)
-	assertTestResultDir(t, testResultDir, mavenWrapperToolchainName)
+	assertTestResultDir(t, mavenToolchainName, testResultDir)
+	assertTestResultDir(t, mavenWrapperToolchainName, testResultDir)
 }

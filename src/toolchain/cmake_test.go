@@ -55,19 +55,19 @@ func Test_cmake_toolchain_name(t *testing.T) {
 }
 
 func Test_cmake_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "cmake", cmakeToolchainName)
+	assertBuildCommandPath(t, cmakeToolchainName, "cmake")
 }
 
 func Test_cmake_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"--build", "build", "--config", "Debug"}, cmakeToolchainName)
+	assertBuildCommandArgs(t, cmakeToolchainName, []string{"--build", "build", "--config", "Debug"})
 }
 
 func Test_cmake_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "ctest", cmakeToolchainName)
+	assertTestCommandPath(t, cmakeToolchainName, "ctest")
 }
 
 func Test_cmake_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"}, cmakeToolchainName)
+	assertTestCommandArgs(t, cmakeToolchainName, []string{"--output-on-failure", "--test-dir", "build", "--build-config", "Debug"})
 }
 
 func Test_cmake_toolchain_supported_platforms(t *testing.T) {
@@ -75,5 +75,5 @@ func Test_cmake_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_cmake_toolchain_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, "build", cmakeToolchainName)
+	assertTestResultDir(t, cmakeToolchainName, "build")
 }

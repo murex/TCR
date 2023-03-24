@@ -55,19 +55,19 @@ func Test_go_tools_toolchain_name(t *testing.T) {
 }
 
 func Test_go_tools_toolchain_build_command_path(t *testing.T) {
-	assertBuildCommandPath(t, "go", goToolchainName)
+	assertBuildCommandPath(t, goToolchainName, "go")
 }
 
 func Test_go_tools_toolchain_build_command_args(t *testing.T) {
-	assertBuildCommandArgs(t, []string{"test", "-count=0", "./..."}, goToolchainName)
+	assertBuildCommandArgs(t, goToolchainName, []string{"test", "-count=0", "./..."})
 }
 
 func Test_go_tools_toolchain_test_command_path(t *testing.T) {
-	assertTestCommandPath(t, "go", goToolchainName)
+	assertTestCommandPath(t, goToolchainName, "go")
 }
 
 func Test_go_tools_toolchain_test_command_args(t *testing.T) {
-	assertTestCommandArgs(t, []string{"test", "-short", "./..."}, goToolchainName)
+	assertTestCommandArgs(t, goToolchainName, []string{"test", "-short", "./..."})
 }
 
 func Test_go_tools_toolchain_supported_platforms(t *testing.T) {
@@ -75,5 +75,5 @@ func Test_go_tools_toolchain_supported_platforms(t *testing.T) {
 }
 
 func Test_go_tools_test_result_dir(t *testing.T) {
-	assertTestResultDir(t, ".", goToolchainName)
+	assertTestResultDir(t, goToolchainName, ".")
 }

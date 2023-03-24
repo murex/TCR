@@ -37,54 +37,54 @@ var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
 )
 
-func assertToolchainName(t *testing.T, name string) {
-	toolchain, _ := GetToolchain(name)
-	assert.Equal(t, name, toolchain.GetName())
+func assertToolchainName(t *testing.T, toolchainName string) {
+	toolchain, _ := GetToolchain(toolchainName)
+	assert.Equal(t, toolchainName, toolchain.GetName())
 }
 
-func assertBuildCommandPath(t *testing.T, expected string, name string) {
-	toolchain, _ := GetToolchain(name)
+func assertBuildCommandPath(t *testing.T, toolchainName string, expected string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.Equal(t, expected, toolchain.BuildCommandPath())
 }
 
-func assertBuildCommandArgs(t *testing.T, expected []string, name string) {
-	toolchain, _ := GetToolchain(name)
+func assertBuildCommandArgs(t *testing.T, toolchainName string, expected []string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.Equal(t, expected, toolchain.BuildCommandArgs())
 }
 
-func assertTestCommandPath(t *testing.T, expected string, name string) {
-	toolchain, _ := GetToolchain(name)
+func assertTestCommandPath(t *testing.T, toolchainName string, expected string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.Equal(t, expected, toolchain.TestCommandPath())
 }
 
-func assertTestCommandArgs(t *testing.T, expected []string, name string) {
-	toolchain, _ := GetToolchain(name)
+func assertTestCommandArgs(t *testing.T, toolchainName string, expected []string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.Equal(t, expected, toolchain.TestCommandArgs())
 }
 
-func assertTestResultDir(t *testing.T, expected string, name string) {
-	toolchain, _ := GetToolchain(name)
+func assertTestResultDir(t *testing.T, toolchainName string, expected string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.Equal(t, expected, toolchain.GetTestResultDir())
 }
 
-func assertErrorWhenBuildFails(t *testing.T, name string, workDir string) {
-	toolchain, _ := GetToolchain(name)
+func assertErrorWhenBuildFails(t *testing.T, toolchainName string, workDir string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusFail)
 		})
 }
 
-func assertNoErrorWhenBuildPasses(t *testing.T, name string, workDir string) {
-	toolchain, _ := GetToolchain(name)
+func assertNoErrorWhenBuildPasses(t *testing.T, toolchainName string, workDir string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusPass)
 		})
 }
 
-func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
-	toolchain, _ := GetToolchain(name)
+func assertErrorWhenTestFails(t *testing.T, toolchainName string, workDir string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			result := toolchain.RunTests()
@@ -92,8 +92,8 @@ func assertErrorWhenTestFails(t *testing.T, name string, workDir string) {
 		})
 }
 
-func assertNoErrorWhenTestPasses(t *testing.T, name string, workDir string) {
-	toolchain, _ := GetToolchain(name)
+func assertNoErrorWhenTestPasses(t *testing.T, toolchainName string, workDir string) {
+	toolchain, _ := GetToolchain(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
 			result := toolchain.RunTests()
@@ -120,12 +120,14 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {
 	// We don't check all platforms, just verifying that at least all OS's with amd64 are supported
 	for _, osName := range GetAllOsNames() {
-		assertRunsOnPlatform(t, name, osName, ArchAmd64)
+		t.Run(string(osName), func(t *testing.T) {
+			assertRunsOnPlatform(t, name, osName, ArchAmd64)
+		})
 	}
 }
 
-func assertRunsOnPlatform(t *testing.T, name string, osName OsName, archName ArchName) {
-	toolchain, _ := GetToolchain(name)
+func assertRunsOnPlatform(t *testing.T, toolchainName string, osName OsName, archName ArchName) {
+	toolchain, _ := GetToolchain(toolchainName)
 	assert.True(t, toolchain.runsOnPlatform(osName, archName))
 }
 
