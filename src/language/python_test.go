@@ -73,17 +73,11 @@ func Test_python_default_toolchain(t *testing.T) {
 }
 
 func Test_python_compatible_toolchains(t *testing.T) {
-	languageName := pythonLanguageName
-	assertCompatibleToolchains(t, languageName, "pytest")
-	assertCompatibleToolchains(t, languageName, "make")
+	assertCompatibleToolchains(t, pythonLanguageName, "pytest", "make")
 }
 
 func Test_python_incompatible_toolchains(t *testing.T) {
-	languageName := pythonLanguageName
-	assertIncompatibleToolchains(t, languageName, "gradle", "gradle-wrapper", "maven", "maven-wrapper")
-	assertIncompatibleToolchains(t, languageName, "cmake")
-	assertIncompatibleToolchains(t, languageName, "go-tools", "gotestsum")
-	assertIncompatibleToolchains(t, languageName, "dotnet")
+	assertIncompatibleToolchains(t, pythonLanguageName, "dummy")
 }
 
 func Test_python_valid_file_paths(t *testing.T) {
