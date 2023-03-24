@@ -65,39 +65,43 @@ func Test_fallbacks_on_python_dir_name_if_language_is_not_specified(t *testing.T
 }
 
 func Test_list_of_dirs_to_watch_in_python(t *testing.T) {
-	assertListOfDirsToWatch(t, []string{"src", "tests"}, pythonLanguageName)
+	assertListOfDirsToWatch(t, pythonLanguageName, "src", "tests")
 }
 
 func Test_python_default_toolchain(t *testing.T) {
-	assertDefaultToolchain(t, "pytest", pythonLanguageName)
+	assertDefaultToolchain(t, pythonLanguageName, "pytest")
 }
 
 func Test_python_compatible_toolchains(t *testing.T) {
 	languageName := pythonLanguageName
-	assertCompatibleToolchains(t, []string{"pytest"}, languageName)
-	assertCompatibleToolchains(t, []string{"make"}, languageName)
+	assertCompatibleToolchains(t, languageName, "pytest")
+	assertCompatibleToolchains(t, languageName, "make")
 }
 
 func Test_python_incompatible_toolchains(t *testing.T) {
 	languageName := pythonLanguageName
-	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, languageName)
-	assertIncompatibleToolchains(t, []string{"cmake"}, languageName)
-	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, languageName)
-	assertIncompatibleToolchains(t, []string{"dotnet"}, languageName)
+	assertIncompatibleToolchains(t, languageName, "gradle", "gradle-wrapper", "maven", "maven-wrapper")
+	assertIncompatibleToolchains(t, languageName, "cmake")
+	assertIncompatibleToolchains(t, languageName, "go-tools", "gotestsum")
+	assertIncompatibleToolchains(t, languageName, "dotnet")
 }
 
 func Test_python_valid_file_paths(t *testing.T) {
 	languageName := pythonLanguageName
 	for _, ext := range pythonLanguageExtensions {
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "some_src_file", ext), languageName)
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "tests", "some_src_file_test", ext), languageName)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldMatchSrc, "src", "some_src_file", ext)...)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldMatchTest, "tests", "some_src_file_test", ext)...)
 	}
 }
 
 func Test_python_invalid_file_paths(t *testing.T) {
 	languageName := pythonLanguageName
 	for _, ext := range allLanguageFileExtensionsBut(pythonLanguageExtensions...) {
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src", "some_src_file", ext), languageName)
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "tests", "some_src_file_test", ext), languageName)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldNotMatch, "src", "some_src_file", ext)...)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldNotMatch, "tests", "some_src_file_test", ext)...)
 	}
 }

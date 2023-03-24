@@ -213,33 +213,39 @@ func Test_retrieve_language_files(t *testing.T) {
 
 // Assert utility functions for language type
 
-func assertDefaultToolchain(t *testing.T, expected string, name string) {
+func assertDefaultToolchain(t *testing.T, languageName string, toolchainName string) {
 	t.Helper()
-	lang, _ := Get(name)
-	assert.Equal(t, expected, lang.GetToolchains().Default)
+	lang, _ := Get(languageName)
+	assert.Equal(t, toolchainName, lang.GetToolchains().Default)
 }
 
-func assertListOfDirsToWatch(t *testing.T, expected []string, name string) {
+func assertListOfDirsToWatch(t *testing.T, languageName string, dirs ...string) {
 	t.Helper()
-	dirList := getBuiltIn(name).DirsToWatch("")
-	for _, dir := range expected {
-		assert.Contains(t, dirList, toLocalPath(dir))
+	dirList := getBuiltIn(languageName).DirsToWatch("")
+	for _, dir := range dirs {
+		t.Run(dir, func(t *testing.T) {
+			assert.Contains(t, dirList, toLocalPath(dir))
+		})
 	}
 }
 
-func assertCompatibleToolchains(t *testing.T, expected []string, name string) {
+func assertCompatibleToolchains(t *testing.T, languageName string, toolchainNames ...string) {
 	t.Helper()
-	lang := getBuiltIn(name)
-	for _, tchn := range expected {
-		assert.True(t, lang.worksWithToolchain(tchn))
+	lang := getBuiltIn(languageName)
+	for _, tchn := range toolchainNames {
+		t.Run(tchn, func(t *testing.T) {
+			assert.True(t, lang.worksWithToolchain(tchn))
+		})
 	}
 }
 
-func assertIncompatibleToolchains(t *testing.T, expected []string, name string) {
+func assertIncompatibleToolchains(t *testing.T, languageName string, toolchainNames ...string) {
 	t.Helper()
-	lang := getBuiltIn(name)
-	for _, tchn := range expected {
-		assert.False(t, lang.worksWithToolchain(tchn))
+	lang := getBuiltIn(languageName)
+	for _, tchn := range toolchainNames {
+		t.Run(tchn, func(t *testing.T) {
+			assert.False(t, lang.worksWithToolchain(tchn))
+		})
 	}
 }
 
@@ -278,9 +284,9 @@ func buildFilePathMatchers(matcher func(string) filePathMatcher, parentDir strin
 	}
 }
 
-func assertFilePathsMatching(t *testing.T, matchers []filePathMatcher, name string) {
+func assertFilePathsMatching(t *testing.T, languageName string, matchers ...filePathMatcher) {
 	t.Helper()
-	lang, _ := GetLanguage(name, "")
+	lang, _ := GetLanguage(languageName, "")
 	for _, matcher := range matchers {
 		assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
 			"Should %v be a source file?", matcher.filePath)
