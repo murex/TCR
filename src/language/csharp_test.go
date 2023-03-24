@@ -65,39 +65,43 @@ func Test_fallbacks_on_csharp_dir_name_if_language_is_not_specified(t *testing.T
 }
 
 func Test_list_of_dirs_to_watch_in_csharp(t *testing.T) {
-	assertListOfDirsToWatch(t, []string{"src", "tests"}, csharpLanguageName)
+	assertListOfDirsToWatch(t, csharpLanguageName, "src", "tests")
 }
 
 func Test_csharp_default_toolchain(t *testing.T) {
-	assertDefaultToolchain(t, "dotnet", csharpLanguageName)
+	assertDefaultToolchain(t, csharpLanguageName, "dotnet")
 }
 
 func Test_csharp_compatible_toolchains(t *testing.T) {
 	languageName := csharpLanguageName
-	assertCompatibleToolchains(t, []string{"dotnet"}, languageName)
-	assertCompatibleToolchains(t, []string{"make"}, languageName)
+	assertCompatibleToolchains(t, languageName, "dotnet")
+	assertCompatibleToolchains(t, languageName, "make")
 }
 
 func Test_csharp_incompatible_toolchains(t *testing.T) {
 	languageName := csharpLanguageName
-	assertIncompatibleToolchains(t, []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper"}, languageName)
-	assertIncompatibleToolchains(t, []string{"cmake"}, languageName)
-	assertIncompatibleToolchains(t, []string{"go-tools", "gotestsum"}, languageName)
-	assertIncompatibleToolchains(t, []string{"pytest"}, languageName)
+	assertIncompatibleToolchains(t, languageName, "gradle", "gradle-wrapper", "maven", "maven-wrapper")
+	assertIncompatibleToolchains(t, languageName, "cmake")
+	assertIncompatibleToolchains(t, languageName, "go-tools", "gotestsum")
+	assertIncompatibleToolchains(t, languageName, "pytest")
 }
 
 func Test_csharp_valid_file_paths(t *testing.T) {
 	languageName := csharpLanguageName
 	for _, ext := range csharpLanguageExtensions {
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext), languageName)
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldMatchTest, "tests", "SomeTestFile", ext), languageName)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldMatchSrc, "src", "SomeSrcFile", ext)...)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldMatchTest, "tests", "SomeTestFile", ext)...)
 	}
 }
 
 func Test_csharp_invalid_file_paths(t *testing.T) {
 	languageName := csharpLanguageName
 	for _, ext := range allLanguageFileExtensionsBut(csharpLanguageExtensions...) {
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "src", "SomeSrcFile", ext), languageName)
-		assertFilePathsMatching(t, buildFilePathMatchers(shouldNotMatch, "tests", "SomeTestFile", ext), languageName)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldNotMatch, "src", "SomeSrcFile", ext)...)
+		assertFilePathsMatching(t, languageName,
+			buildFilePathMatchers(shouldNotMatch, "tests", "SomeTestFile", ext)...)
 	}
 }
