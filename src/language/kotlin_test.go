@@ -29,11 +29,13 @@ const (
 )
 
 var (
-	kotlinLanguageExtensions = []string{".kt"}
+	kotlinLanguageExtensions   = []string{".kt"}
+	kotlinCompatibleToolchains = []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(kotlinLanguageExtensions...)
+	registerToolchainsForTests(kotlinCompatibleToolchains...)
 }
 
 func Test_kotlin_is_a_built_in_language(t *testing.T) {
@@ -73,12 +75,11 @@ func Test_kotlin_default_toolchain(t *testing.T) {
 }
 
 func Test_kotlin_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, kotlinLanguageName,
-		"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make")
+	assertCompatibleToolchains(t, kotlinLanguageName, kotlinCompatibleToolchains...)
 }
 
 func Test_kotlin_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, kotlinLanguageName, "dummy")
+	assertIncompatibleToolchains(t, kotlinLanguageName, allKnownToolchainsBut(kotlinCompatibleToolchains...)...)
 }
 
 func Test_kotlin_valid_file_paths(t *testing.T) {

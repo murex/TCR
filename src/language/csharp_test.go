@@ -29,11 +29,13 @@ const (
 )
 
 var (
-	csharpLanguageExtensions = []string{".cs", ".csx"}
+	csharpLanguageExtensions   = []string{".cs", ".csx"}
+	csharpCompatibleToolchains = []string{"dotnet", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(csharpLanguageExtensions...)
+	registerToolchainsForTests(csharpCompatibleToolchains...)
 }
 
 func Test_csharp_is_a_built_in_language(t *testing.T) {
@@ -73,11 +75,11 @@ func Test_csharp_default_toolchain(t *testing.T) {
 }
 
 func Test_csharp_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, csharpLanguageName, "dotnet", "make")
+	assertCompatibleToolchains(t, csharpLanguageName, csharpCompatibleToolchains...)
 }
 
 func Test_csharp_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, csharpLanguageName, "dummy")
+	assertIncompatibleToolchains(t, csharpLanguageName, allKnownToolchainsBut(csharpCompatibleToolchains...)...)
 }
 
 func Test_csharp_valid_file_paths(t *testing.T) {

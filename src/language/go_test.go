@@ -29,11 +29,13 @@ const (
 )
 
 var (
-	goLanguageExtensions = []string{".go"}
+	goLanguageExtensions   = []string{".go"}
+	goCompatibleToolchains = []string{"gotestsum", "go-tools", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(goLanguageExtensions...)
+	registerToolchainsForTests(goCompatibleToolchains...)
 }
 
 func Test_go_is_a_built_in_language(t *testing.T) {
@@ -73,11 +75,11 @@ func Test_go_default_toolchain(t *testing.T) {
 }
 
 func Test_go_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, goLanguageName, "gotestsum", "go-tools", "make")
+	assertCompatibleToolchains(t, goLanguageName, goCompatibleToolchains...)
 }
 
 func Test_go_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, goLanguageName, "dummy")
+	assertIncompatibleToolchains(t, goLanguageName, allKnownToolchainsBut(goCompatibleToolchains...)...)
 }
 
 func Test_go_valid_file_paths(t *testing.T) {

@@ -29,11 +29,13 @@ const (
 )
 
 var (
-	javaLanguageExtensions = []string{".java"}
+	javaLanguageExtensions   = []string{".java"}
+	javaCompatibleToolchains = []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
 )
 
 func init() {
 	registerLanguageFileExtensionsForTests(javaLanguageExtensions...)
+	registerToolchainsForTests(javaCompatibleToolchains...)
 }
 
 func Test_java_is_a_built_in_language(t *testing.T) {
@@ -73,12 +75,11 @@ func Test_java_default_toolchain(t *testing.T) {
 }
 
 func Test_java_compatible_toolchains(t *testing.T) {
-	assertCompatibleToolchains(t, javaLanguageName,
-		"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make")
+	assertCompatibleToolchains(t, javaLanguageName, javaCompatibleToolchains...)
 }
 
 func Test_java_incompatible_toolchains(t *testing.T) {
-	assertIncompatibleToolchains(t, javaLanguageName, "dummy")
+	assertIncompatibleToolchains(t, javaLanguageName, allKnownToolchainsBut(javaCompatibleToolchains...)...)
 }
 
 func Test_java_valid_file_paths(t *testing.T) {
