@@ -3,14 +3,14 @@ module github.com/murex/tcr
 go 1.19
 
 require (
-	github.com/ProtonMail/go-crypto v0.0.0-20230411080316-8b3893ee7fca // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230417170513-8ee5748c52b5 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gen2brain/beeep v0.0.0-20230307103607-6e717729cb4f
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.6.1
 	github.com/golangci/golangci-lint v1.52.2
-	github.com/goreleaser/goreleaser v1.17.1
+	github.com/goreleaser/goreleaser v1.17.2
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mengdaming/go-junit v0.1.3
@@ -77,7 +77,7 @@ require (
 	github.com/ashanbrown/forbidigo v1.5.1 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.7.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.244 // indirect
+	github.com/aws/aws-sdk-go v1.44.245 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.17.8 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.18.21 // indirect
@@ -109,14 +109,14 @@ require (
 	github.com/bombsimon/wsl/v3 v3.4.0 // indirect
 	github.com/breml/bidichk v0.2.4 // indirect
 	github.com/breml/errchkjson v0.3.1 // indirect
-	github.com/butuzov/ireturn v0.1.1 // indirect
+	github.com/butuzov/ireturn v0.2.0 // indirect
 	github.com/caarlos0/ctrlc v1.2.0 // indirect
 	github.com/caarlos0/env/v8 v8.0.0 // indirect
 	github.com/caarlos0/go-reddit/v3 v3.0.1 // indirect
 	github.com/caarlos0/go-shellwords v1.0.12 // indirect
 	github.com/caarlos0/log v0.2.2 // indirect
 	github.com/cavaliergopher/cpio v1.0.1 // indirect
-	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
+	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/charithe/durationcheck v0.0.10 // indirect
 	github.com/charmbracelet/lipgloss v0.7.1 // indirect
@@ -139,9 +139,9 @@ require (
 	github.com/disgoorg/log v1.2.0 // indirect
 	github.com/disgoorg/snowflake/v2 v2.0.1 // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
-	github.com/docker/cli v23.0.3+incompatible // indirect
+	github.com/docker/cli v23.0.4+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v23.0.3+incompatible // indirect
+	github.com/docker/docker v23.0.4+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -160,7 +160,7 @@ require (
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/loads v0.21.2 // indirect
-	github.com/go-openapi/runtime v0.25.0 // indirect
+	github.com/go-openapi/runtime v0.26.0 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect
 	github.com/go-openapi/strfmt v0.21.7 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
@@ -237,7 +237,7 @@ require (
 	github.com/kisielk/errcheck v1.6.3 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/kkHAIKE/contextcheck v1.1.4 // indirect
-	github.com/klauspost/compress v1.16.4 // indirect
+	github.com/klauspost/compress v1.16.5 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.6 // indirect
@@ -246,7 +246,7 @@ require (
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.5.0 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20230415023224-0ac848173ea4 // indirect
+	github.com/letsencrypt/boulder v0.0.0-20230417230511-bd2da9b83023 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lufeee/execinquery v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
@@ -342,7 +342,7 @@ require (
 	github.com/uudashr/gocognit v1.0.6 // indirect
 	github.com/vbatts/tar-split v0.11.3 // indirect
 	github.com/withfig/autocomplete-tools/integrations/cobra v1.2.1 // indirect
-	github.com/xanzy/go-gitlab v0.82.0 // indirect
+	github.com/xanzy/go-gitlab v0.83.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.2.0 // indirect
