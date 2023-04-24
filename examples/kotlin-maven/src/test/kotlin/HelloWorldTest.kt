@@ -1,5 +1,5 @@
-import org.junit.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class HelloWorldTest {
     @Test
