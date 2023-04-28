@@ -53,7 +53,7 @@ print_horizontal_line() {
 check_command_availability() {
   command_name="$1"
   if type "${command_name}" >/dev/null 2>/dev/null; then
-    print_info "Found command ${command_name} at $(get_command_path "${command_name}")"
+    print_info "Found ${command_name} at $(get_command_path "${command_name}")"
     return 0
   else
     print_warning "Command ${command_name} not found"
@@ -61,12 +61,27 @@ check_command_availability() {
   fi
 }
 
+# ------------------------------------------------------------------------------
+# Check if a command runs as expected
+# ------------------------------------------------------------------------------
+
+check_command_execution() {
+  command_name="$1"
+  if "${command_name}" --version >/dev/null 2>/dev/null; then
+    print_info "Checking ${command_name} ==> ok"
+    return 0
+  else
+    print_warning "Checking ${command_name} ==> failed"
+    return 1
+  fi
+}
+
 is_python3_command_available() {
-  check_command_availability python3
+  check_command_availability python3 && check_command_execution python3
 }
 
 is_python_command_available() {
-  check_command_availability python
+  check_command_availability python && check_command_execution python
 }
 
 get_command_path() {
@@ -94,7 +109,7 @@ locate_python() {
     PYTHON_PATH=$(get_python_path)
   else
     python_url="https://www.python.org/downloads/"
-    print_error "No Python executable found in path"
+    print_error "No usable Python executable found in path"
     print_error "You may update your path if Python is already installed on your machine"
     print_error "For a new installation, please refer to ${python_url}"
     exit 1
