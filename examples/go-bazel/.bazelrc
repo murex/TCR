@@ -1,0 +1,1 @@
+test --test_output=errors --test_arg=-test.v
