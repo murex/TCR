@@ -23,6 +23,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [maven](java-maven/README.md)
 - With [maven wrapper](java-maven-wrapper/README.md)
 - With [make](java-make/README.md)
+- With [bazel](java-bazel/README.md)
 
 ## Kotlin
 
