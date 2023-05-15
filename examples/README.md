@@ -15,6 +15,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [go tools](go-go-tools/README.md)
 - With [gotestsum](go-gotestsum/README.md)
 - With [make](go-make/README.md)
+- With [bazel](go-bazel/README.md)
 
 ## Java
 
