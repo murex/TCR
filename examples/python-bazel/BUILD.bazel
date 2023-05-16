@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_python_pytest//python_pytest:defs.bzl", "py_pytest_test")
+
+py_library(
+    name = "hello_world",
+    srcs = glob(["src/**/*.py"]),
+    visibility = ["//visibility:public"],
+)
+
+py_pytest_test(
+    name = "hello_world_test",
+    size = "small",
+    srcs = glob(["tests/*.py"]),
+    imports = ["src"],
+    deps = [
+        ":hello_world",
+    ],
+)
