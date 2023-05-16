@@ -8,4 +8,4 @@ test:
     arch: [ "386", amd64, arm64 ]
     command: bazel
     arguments: [ test, "..." ]
-test-result-dir: bazel-testlogs
+test-result-dir: bazel-testlogs/hello-world-tests
