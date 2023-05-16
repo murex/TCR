@@ -1,0 +1,9 @@
+toolchains:
+  default: bazel
+  compatible-with: [ bazel ]
+source-files:
+  directories: [ src, include ]
+  patterns: [ '(?i)^.*\.c(c|pp)?$', '(?i)^.*\.h(h|pp)?$' ]
+test-files:
+  directories: [ test ]
+  patterns: [ '(?i)^.*\.c(c|pp)?$', '(?i)^.*\.h(h|pp)?$' ]

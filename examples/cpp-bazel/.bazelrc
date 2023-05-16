@@ -1,0 +1,2 @@
+build --action_env=BAZEL_CXXOPTS="-std=c++17"
+test --test_output=errors
