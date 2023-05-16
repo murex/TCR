@@ -1,0 +1,38 @@
+load("//bazel:windows_dll_library.bzl", "windows_dll_library")
+
+windows_dll_library(
+    name = "hello-world-win-lib",
+    srcs = glob(["src/**/*.cpp"]),
+    hdrs = glob(["include/**/*.hpp"]),
+    copts = ["-DHELLO_WORLD_EXPORTS"],
+    includes = ["include"],
+    target_compatible_with = ["@platforms//os:windows"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "hello-world-unix-lib",
+    srcs = glob(["src/**/*.cpp"]),
+    hdrs = glob(["include/**/*.hpp"]),
+    copts = ["-DHELLO_WORLD_EXPORTS"],
+    includes = ["include"],
+    target_compatible_with = select({
+        "@platforms//os:osx": [],
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "hello-world-tests",
+    srcs = glob(["test/**/*.cpp"]),
+    includes = ["include"],
+    deps = select({
+        "@platforms//os:linux": [":hello-world-unix-lib"],
+        "@platforms//os:osx": [":hello-world-unix-lib"],
+        "@platforms//os:windows": [":hello-world-win-lib"],
+    }) + [
+        "@gtest//:gtest_main",
+    ],
+)
