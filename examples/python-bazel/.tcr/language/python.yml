@@ -1,0 +1,9 @@
+toolchains:
+  default: bazel
+  compatible-with: [ bazel ]
+source-files:
+  directories: [ src ]
+  patterns: [ '(?i)^.*\.py$' ]
+test-files:
+  directories: [ tests ]
+  patterns: [ '(?i)^.*\.py$' ]
