@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/afero"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -48,23 +49,49 @@ func init() {
 func ingestDir(directory string) ([]junit.Suite, error) {
 	var filenames []string
 
-	err := afero.Walk(appFs, directory, func(path string, info os.FileInfo, err error) error {
+	d, errSymLink := evalSymLink(directory)
+	if errSymLink != nil {
+		return nil, errSymLink
+	}
+
+	errWalk := afero.Walk(appFs, d, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-
 		// Add all regular files that end with ".xml"
 		if info.Mode().IsRegular() && strings.HasSuffix(info.Name(), ".xml") {
 			filenames = append(filenames, path)
 		}
 		return nil
 	})
-
-	if err != nil {
-		return nil, err
+	if errWalk != nil {
+		return nil, errWalk
 	}
 
 	return ingestFiles(filenames)
+}
+
+// evalSymLink tries to convert a symbolic link path to the path it points to.
+// Warning: afero.MemMapFs does not support symbolic links. For this reason,
+// symbolic-link related tests need to be run with real OS filesystem.
+// Cf. https://github.com/spf13/afero/issues/258
+// If the provided path is a regular path, the function returns it unchanged
+func evalSymLink(directory string) (string, error) {
+	// afero.MemMapFs does not support symbolic links
+	_, symLinkSupported, errLstat := appFs.(afero.Lstater).LstatIfPossible(directory)
+	if errLstat != nil {
+		return "", errLstat
+	}
+	if !symLinkSupported {
+		return directory, nil
+	}
+	// afero.Walk does not follow symbolic links.
+	// So we make sure to resolve the parent directory before calling afero.Walk()
+	d, errSymLink := filepath.EvalSymlinks(directory)
+	if errSymLink != nil {
+		return "", errSymLink
+	}
+	return d, nil
 }
 
 // ingestFiles will parse the given XML files and return a slice of all
