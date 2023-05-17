@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
@@ -55,6 +56,7 @@ var (
 )
 
 func assertXunitSampleData(t *testing.T, suites []junit.Suite, nbSamples int) {
+	t.Helper()
 	assert.Equal(t, 2*nbSamples, len(suites))
 
 	for i := 0; i < nbSamples; i++ {
@@ -73,8 +75,9 @@ func assertXunitSampleData(t *testing.T, suites []junit.Suite, nbSamples int) {
 
 func Test_ingest_wrapper(t *testing.T) {
 	suites, err := ingest(xunitSample)
-	assert.NoError(t, err)
-	assertXunitSampleData(t, suites, 1)
+	if assert.NoError(t, err) {
+		assertXunitSampleData(t, suites, 1)
+	}
 }
 
 func Test_ingest_file_wrapper(t *testing.T) {
@@ -82,8 +85,9 @@ func Test_ingest_file_wrapper(t *testing.T) {
 	_ = appFs.Mkdir("build", os.ModeDir)
 	_ = afero.WriteFile(appFs, "build/sample.xml", xunitSample, 0644)
 	suites, err := ingestFile("build/sample.xml")
-	assert.NoError(t, err)
-	assertXunitSampleData(t, suites, 1)
+	if assert.NoError(t, err) {
+		assertXunitSampleData(t, suites, 1)
+	}
 }
 
 func Test_ingest_file_wrapper_on_error(t *testing.T) {
@@ -98,8 +102,9 @@ func Test_ingest_files_wrapper(t *testing.T) {
 	_ = afero.WriteFile(appFs, "build/sample1.xml", xunitSample, 0644)
 	_ = afero.WriteFile(appFs, "build/sample2.xml", xunitSample, 0644)
 	suites, err := ingestFiles([]string{"build/sample1.xml", "build/sample2.xml"})
-	assert.NoError(t, err)
-	assertXunitSampleData(t, suites, 2)
+	if assert.NoError(t, err) {
+		assertXunitSampleData(t, suites, 2)
+	}
 }
 
 func Test_ingest_files_wrapper_on_error(t *testing.T) {
@@ -118,8 +123,9 @@ func Test_ingest_dir_wrapper(t *testing.T) {
 	_ = afero.WriteFile(appFs, "build/sample2.xml", xunitSample, 0644)
 	_ = afero.WriteFile(appFs, "build/sample3.xml", xunitSample, 0644)
 	suites, err := ingestDir("build")
-	assert.NoError(t, err)
-	assertXunitSampleData(t, suites, 3)
+	if assert.NoError(t, err) {
+		assertXunitSampleData(t, suites, 3)
+	}
 }
 
 func Test_ingest_dir_wrapper_on_error(t *testing.T) {
@@ -127,4 +133,29 @@ func Test_ingest_dir_wrapper_on_error(t *testing.T) {
 	suites, err := ingestDir("build")
 	assert.Error(t, err)
 	assert.Zero(t, suites)
+}
+
+func Test_ingest_dir_wrapper_with_symbolic_link(t *testing.T) {
+	appFs = afero.NewOsFs()
+	tempDir, errTempDir := afero.TempDir(appFs, "", "tcr-xunit-test")
+	if errTempDir != nil {
+		t.Fatal(errTempDir)
+	}
+	t.Cleanup(func() {
+		_ = appFs.RemoveAll(tempDir)
+	})
+	realDir := filepath.Join(tempDir, "build")
+	linkDir := filepath.Join(tempDir, "link")
+	_ = appFs.Mkdir(realDir, 0755)
+	_ = afero.WriteFile(appFs, filepath.Join(realDir, "sample1.xml"), xunitSample, 0644)
+	errSymLink := appFs.(afero.Linker).SymlinkIfPossible(realDir, linkDir)
+	if errSymLink != nil {
+		// Note: this test is skipped on windows due to its crappy handling of symlinks
+		// (requires elevated privileges to create a symbolic link)
+		t.Skip("symbolic links not supported: ", errSymLink)
+	}
+	suites, err := ingestDir(linkDir)
+	if assert.NoError(t, err) {
+		assertXunitSampleData(t, suites, 1)
+	}
 }
