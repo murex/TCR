@@ -30,7 +30,7 @@ const (
 
 var (
 	pythonLanguageExtensions   = []string{".py"}
-	pythonCompatibleToolchains = []string{"pytest", "make"}
+	pythonCompatibleToolchains = []string{"bazel", "pytest", "make"}
 )
 
 func init() {

@@ -32,7 +32,7 @@ const (
 
 var (
 	cppLanguageExtensions   = []string{".c", ".cc", ".cpp", ".cxx", ".h", ".hpp", ".hh", ".hxx"}
-	cppCompatibleToolchains = []string{"cmake", "make"}
+	cppCompatibleToolchains = []string{"bazel", "cmake", "make"}
 )
 
 func init() {

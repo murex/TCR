@@ -28,7 +28,7 @@ func init() {
 			name: "csharp",
 			toolchains: Toolchains{
 				Default:    "dotnet",
-				Compatible: []string{"dotnet", "make"},
+				Compatible: []string{"bazel", "dotnet", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories:  []string{"src"},
