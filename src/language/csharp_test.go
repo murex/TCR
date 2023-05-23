@@ -30,7 +30,7 @@ const (
 
 var (
 	csharpLanguageExtensions   = []string{".cs", ".csx"}
-	csharpCompatibleToolchains = []string{"dotnet", "make"}
+	csharpCompatibleToolchains = []string{"bazel", "dotnet", "make"}
 )
 
 func init() {

@@ -28,7 +28,7 @@ func init() {
 			name: "cpp",
 			toolchains: Toolchains{
 				Default:    "cmake",
-				Compatible: []string{"cmake", "make"},
+				Compatible: []string{"bazel", "cmake", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories:  []string{"src", "include"},

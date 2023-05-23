@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package language
+package toolchain
 
 func init() {
 	_ = addBuiltIn(
-		&Language{
-			name: "go",
-			toolchains: Toolchains{
-				Default:    "go-tools",
-				Compatible: []string{"bazel", "go-tools", "gotestsum", "make"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories: []string{"."},
-				FilePatterns: []string{
-					buildRegex(".*\\.go"),
-				},
-			},
-			testFileFilter: FileTreeFilter{
-				Directories: []string{"."},
-				FilePatterns: []string{
-					buildRegex(".*_test\\.go"),
-				},
-			},
+		Toolchain{
+			name: "bazel",
+			buildCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "bazel",
+				Arguments: []string{"build", "..."},
+			}},
+			testCommands: []Command{{
+				Os:        GetAllOsNames(),
+				Arch:      GetAllArchNames(),
+				Path:      "bazel",
+				Arguments: []string{"test", "..."},
+			}},
+			testResultDir: "bazel-testlogs",
 		},
 	)
 }

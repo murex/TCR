@@ -28,7 +28,7 @@ func init() {
 			name: "python",
 			toolchains: Toolchains{
 				Default:    "pytest",
-				Compatible: []string{"pytest", "make"},
+				Compatible: []string{"bazel", "pytest", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories: []string{"src"},

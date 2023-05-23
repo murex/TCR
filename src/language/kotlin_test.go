@@ -30,7 +30,7 @@ const (
 
 var (
 	kotlinLanguageExtensions   = []string{".kt"}
-	kotlinCompatibleToolchains = []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
+	kotlinCompatibleToolchains = []string{"bazel", "gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
 )
 
 func init() {

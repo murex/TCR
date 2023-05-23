@@ -30,7 +30,7 @@ const (
 
 var (
 	javaLanguageExtensions   = []string{".java"}
-	javaCompatibleToolchains = []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
+	javaCompatibleToolchains = []string{"bazel", "gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"}
 )
 
 func init() {

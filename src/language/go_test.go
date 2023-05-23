@@ -30,7 +30,7 @@ const (
 
 var (
 	goLanguageExtensions   = []string{".go"}
-	goCompatibleToolchains = []string{"gotestsum", "go-tools", "make"}
+	goCompatibleToolchains = []string{"bazel", "gotestsum", "go-tools", "make"}
 )
 
 func init() {

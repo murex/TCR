@@ -28,7 +28,7 @@ func init() {
 			name: "java",
 			toolchains: Toolchains{
 				Default:    "gradle-wrapper",
-				Compatible: []string{"gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"},
+				Compatible: []string{"bazel", "gradle", "gradle-wrapper", "maven", "maven-wrapper", "make"},
 			},
 			srcFileFilter: FileTreeFilter{
 				Directories:  []string{"src/main"},
