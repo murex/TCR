@@ -23,9 +23,10 @@ SOFTWARE.
 package config
 
 import (
-	"fmt"
+	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/settings"
+	"github.com/murex/tcr/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"io"
@@ -73,18 +74,17 @@ const (
 )
 
 var (
-	configDirPath     string
-	configTraceWriter io.Writer
+	configDirPath string
 )
 
 // StandardInit initializes TCR configuration
 func StandardInit() {
-	// With standard initialization, configuration trace is sent to stderr
+	// With standard initialization, configuration Trace is sent to stderr
 	initConfig(os.Stderr)
 }
 
 func initConfig(writer io.Writer) {
-	setConfigTrace(writer)
+	utils.SetSimpleTrace(writer)
 	// Initialize configuration directory path
 	initConfigDirPath()
 	// Make sure configuration directory exists
@@ -92,7 +92,7 @@ func initConfig(writer io.Writer) {
 
 	initTCRConfig()
 	initToolchainConfig()
-	initLanguageConfig()
+	language.InitLanguageConfig(configDirPath)
 }
 
 func initTCRConfig() {
@@ -107,15 +107,9 @@ func initTCRConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		trace("Loading configuration: ", viper.ConfigFileUsed())
+		utils.Trace("Loading configuration: ", viper.ConfigFileUsed())
 	} else {
-		trace("No configuration file found")
-	}
-}
-
-func setConfigTrace(w io.Writer) {
-	if w != nil {
-		configTraceWriter = w
+		utils.Trace("No configuration file found")
 	}
 }
 
@@ -136,10 +130,10 @@ func GetConfigDirPath() string {
 func createConfigDir() {
 	_, err := os.Stat(configDirPath)
 	if os.IsNotExist(err) {
-		trace("Creating TCR configuration directory: ", configDirPath)
+		utils.Trace("Creating TCR configuration directory: ", configDirPath)
 		err := os.MkdirAll(configDirPath, os.ModePerm)
 		if err != nil {
-			trace("Error creating TCR configuration directory: ", err)
+			utils.Trace("Error creating TCR configuration directory: ", err)
 		}
 	}
 }
@@ -149,26 +143,26 @@ func Save() {
 	createConfigDir()
 	saveTCRConfig()
 	saveToolchainConfigs()
-	saveLanguageConfigs()
+	language.SaveLanguageConfigs()
 }
 
 func saveTCRConfig() {
-	trace("Saving configuration: ", viper.ConfigFileUsed())
+	utils.Trace("Saving configuration: ", viper.ConfigFileUsed())
 	if err := viper.WriteConfig(); err != nil {
 		if os.IsNotExist(err) {
 			_ = viper.WriteConfigAs(viper.ConfigFileUsed())
 		} else {
-			trace("Error while saving configuration file: ", err)
+			utils.Trace("Error while saving configuration file: ", err)
 		}
 	}
 }
 
 // Reset resets TCR configuration to default value
 func Reset() {
-	trace("Resetting configuration to default values")
+	utils.Trace("Resetting configuration to default values")
 	resetTCRConfig()
 	resetToolchainConfigs()
-	resetLanguageConfigs()
+	language.ResetLanguageConfigs()
 	Save()
 }
 
@@ -178,28 +172,18 @@ func resetTCRConfig() {
 
 // Show displays current TCR configuration
 func Show() {
-	trace()
+	utils.Trace()
 	showTCRConfig()
 	showToolchainConfigs()
-	showLanguageConfigs()
+	language.ShowLanguageConfigs()
 }
 
 func showTCRConfig() {
 	keys := viper.AllKeys()
 	sort.Strings(keys)
-	trace("TCR configuration:")
+	utils.Trace("TCR configuration:")
 	for _, key := range keys {
-		showConfigValue(key, viper.Get(key))
-	}
-}
-
-func showConfigValue(key string, value any) {
-	trace("- ", key, ": ", value)
-}
-
-func trace(a ...any) {
-	if configTraceWriter != nil {
-		_, _ = fmt.Fprintln(configTraceWriter, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
+		utils.TraceConfigValue(key, viper.Get(key))
 	}
 }
 

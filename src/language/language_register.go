@@ -99,6 +99,7 @@ func isBuiltIn(name string) bool {
 	return found
 }
 
+// addBuiltIn adds the provided language to the list of built-in supported languages
 func addBuiltIn(lang LangInterface) error {
 	if lang.GetName() == "" {
 		return errors.New("language name cannot be an empty string")

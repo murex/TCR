@@ -1,7 +1,5 @@
-//go:build test_helper
-
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2021 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,27 +23,30 @@ SOFTWARE.
 package utils
 
 import (
-	"bytes"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 )
 
-// SlowTestTag is a test utility function for marking tests that take a long time to be executed.
-// When added at the beginning of a test, the corresponding test is skipped when running tests with -short flag
-func SlowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
+const (
+	baseName  = "a-name"
+	extension = ".yml"
+)
+
+func Test_can_retrieve_name_from_yaml_filename(t *testing.T) {
+	assert.Equal(t, baseName, ExtractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToLower(extension)))
 }
 
-// AssertSimpleTrace is a utility function to assert simple trace messages
-func AssertSimpleTrace(t *testing.T, expected []string, operation func()) {
-	var output bytes.Buffer
-	SetSimpleTrace(&output)
-	operation()
-	var expectedWithWrapping string
-	for _, line := range expected {
-		expectedWithWrapping += "[TCR] " + line + "\n"
-	}
-	assert.Equal(t, expectedWithWrapping, output.String())
+func Test_name_from_yaml_filename_is_always_lowercase(t *testing.T) {
+	assert.Equal(t, baseName, ExtractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToLower(extension)))
+	assert.Equal(t, baseName, ExtractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToUpper(extension)))
+	assert.Equal(t, baseName, ExtractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToUpper(extension)))
+}
+
+func Test_can_retrieve_yaml_filename_from_name(t *testing.T) {
+	assert.Equal(t, baseName+extension, buildYAMLFilename(baseName))
+}
+
+func Test_yaml_filename_is_always_lowercase(t *testing.T) {
+	assert.Equal(t, baseName+extension, buildYAMLFilename(strings.ToUpper(baseName)))
 }

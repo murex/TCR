@@ -1,5 +1,3 @@
-//go:build test_helper
-
 /*
 Copyright (c) 2023 Murex
 
@@ -25,27 +23,29 @@ SOFTWARE.
 package utils
 
 import (
-	"bytes"
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"fmt"
+	"github.com/murex/tcr/settings"
+	"io"
 )
 
-// SlowTestTag is a test utility function for marking tests that take a long time to be executed.
-// When added at the beginning of a test, the corresponding test is skipped when running tests with -short flag
-func SlowTestTag(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
+// simpleTraceWriter is the writer used by Trace() to write trace messages to io.Writer
+var simpleTraceWriter io.Writer
+
+// SetSimpleTrace sets the writer used by Trace()
+func SetSimpleTrace(w io.Writer) {
+	if w != nil {
+		simpleTraceWriter = w
 	}
 }
 
-// AssertSimpleTrace is a utility function to assert simple trace messages
-func AssertSimpleTrace(t *testing.T, expected []string, operation func()) {
-	var output bytes.Buffer
-	SetSimpleTrace(&output)
-	operation()
-	var expectedWithWrapping string
-	for _, line := range expected {
-		expectedWithWrapping += "[TCR] " + line + "\n"
+// Trace writes simple trace messages
+func Trace(a ...any) {
+	if simpleTraceWriter != nil {
+		_, _ = fmt.Fprintln(simpleTraceWriter, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
 	}
-	assert.Equal(t, expectedWithWrapping, output.String())
+}
+
+// TraceConfigValue writes simple trace messages for a configuration key/value pair
+func TraceConfigValue(key string, value any) {
+	Trace("- ", key, ": ", value)
 }

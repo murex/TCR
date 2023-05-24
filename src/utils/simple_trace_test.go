@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package utils
 
 import (
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
-const (
-	baseName  = "a-name"
-	extension = ".yml"
-)
-
-func Test_can_retrieve_name_from_yaml_filename(t *testing.T) {
-	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToLower(extension)))
+func Test_config_trace_format(t *testing.T) {
+	msg := "Some dummy message"
+	AssertSimpleTrace(t, []string{msg},
+		func() {
+			Trace(msg)
+		},
+	)
 }
 
-func Test_name_from_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToLower(extension)))
-	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToLower(baseName)+strings.ToUpper(extension)))
-	assert.Equal(t, baseName, extractNameFromYAMLFilename(strings.ToUpper(baseName)+strings.ToUpper(extension)))
-}
-
-func Test_can_retrieve_yaml_filename_from_name(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYAMLFilename(baseName))
-}
-
-func Test_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYAMLFilename(strings.ToUpper(baseName)))
+func Test_config_trace_when_writer_is_not_set(t *testing.T) {
+	assert.NotPanics(t, func() {
+		SetSimpleTrace(nil)
+		Trace("Some dummy message")
+	})
 }

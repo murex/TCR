@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package language
 
 import (
-	"github.com/murex/tcr/language"
+	"github.com/murex/tcr/utils"
 	"path/filepath"
 )
 
@@ -57,51 +57,53 @@ type (
 	}
 )
 
-func initLanguageConfig() {
-	initLanguageConfigDirPath()
+// InitLanguageConfig initializes the language configuration
+func InitLanguageConfig(configDirPath string) {
+	initLanguageConfigDirPath(configDirPath)
 	loadLanguageConfigs()
 }
 
-func saveLanguageConfigs() {
+// SaveLanguageConfigs saves the language configuration
+func SaveLanguageConfigs() {
 	createLanguageConfigDir()
-	trace("Saving languages configuration")
+	utils.Trace("Saving languages configuration")
 	// Loop on all existing languages
-	for _, name := range language.Names() {
-		trace("- ", name)
+	for _, name := range Names() {
+		utils.Trace("- ", name)
 		saveLanguageConfig(name)
 	}
 }
 
 func saveLanguageConfig(name string) {
-	lang, _ := language.Get(name)
-	saveToYAML(asLanguageConfig(lang), buildYAMLFilePath(languageDirPath, name))
+	lang, _ := Get(name)
+	utils.SaveToYAML(asLanguageConfig(lang), utils.BuildYAMLFilePath(languageDirPath, name))
 }
 
 // GetLanguageConfigFileList returns the list of language configuration files found in language directory
 func GetLanguageConfigFileList() (list []string) {
-	return listYAMLFilesIn(languageDirPath)
+	return utils.ListYAMLFilesIn(languageDirPath)
 }
 
 func loadLanguageConfigs() {
-	trace("Loading languages configuration")
+	utils.Trace("Loading languages configuration")
 	// Loop on all YAML files in language directory
 	for _, entry := range GetLanguageConfigFileList() {
-		err := language.Register(asLanguage(*loadLanguageConfig(entry)))
+		err := Register(asLanguage(*loadLanguageConfig(entry)))
 		if err != nil {
-			trace("Error in ", entry, ": ", err)
+			utils.Trace("Error in ", entry, ": ", err)
 		}
 	}
 }
 
 func loadLanguageConfig(yamlFilename string) *LanguageConfig {
 	var languageCfg LanguageConfig
-	loadFromYAML(filepath.Join(languageDirPath, yamlFilename), &languageCfg)
-	languageCfg.Name = extractNameFromYAMLFilename(yamlFilename)
+	utils.LoadFromYAML(filepath.Join(languageDirPath, yamlFilename), &languageCfg)
+	languageCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
 	return &languageCfg
 }
 
-func asLanguage(languageCfg LanguageConfig) *language.Language {
-	return language.New(
+func asLanguage(languageCfg LanguageConfig) *Language {
+	return New(
 		languageCfg.Name,
 		asLanguageToolchains(languageCfg.Toolchains),
 		asLanguageFileTreeFilter(languageCfg.SourceFiles),
@@ -109,15 +111,15 @@ func asLanguage(languageCfg LanguageConfig) *language.Language {
 	)
 }
 
-func asLanguageFileTreeFilter(filesCfg LanguageFileTreeFilterConfig) language.FileTreeFilter {
-	return language.FileTreeFilter{
+func asLanguageFileTreeFilter(filesCfg LanguageFileTreeFilterConfig) FileTreeFilter {
+	return FileTreeFilter{
 		Directories:  asLanguageDirectoryTable(filesCfg.Directories),
 		FilePatterns: asLanguageFilePatternTable(filesCfg.FilePatterns),
 	}
 }
 
-func asLanguageToolchains(toolchainsCfg LanguageToolchainConfig) language.Toolchains {
-	return language.Toolchains{
+func asLanguageToolchains(toolchainsCfg LanguageToolchainConfig) Toolchains {
+	return Toolchains{
 		Default:    toolchainsCfg.Default,
 		Compatible: asLanguageToolchainTable(toolchainsCfg.Compatible),
 	}
@@ -135,16 +137,17 @@ func asLanguageFilePatternTable(filePatternTableCfg []string) []string {
 	return append([]string(nil), filePatternTableCfg...)
 }
 
-func resetLanguageConfigs() {
-	trace("Resetting languages configuration")
+// ResetLanguageConfigs resets the language configuration
+func ResetLanguageConfigs() {
+	utils.Trace("Resetting languages configuration")
 	// Loop on all existing languages
-	for _, name := range language.Names() {
-		trace("- ", name)
-		language.Reset(name)
+	for _, name := range Names() {
+		utils.Trace("- ", name)
+		Reset(name)
 	}
 }
 
-func asLanguageConfig(lang language.LangInterface) LanguageConfig {
+func asLanguageConfig(lang LangInterface) LanguageConfig {
 	return LanguageConfig{
 		Name:        lang.GetName(),
 		Toolchains:  asLanguageToolchainsConfig(lang.GetToolchains()),
@@ -153,7 +156,7 @@ func asLanguageConfig(lang language.LangInterface) LanguageConfig {
 	}
 }
 
-func asLanguageFileTreeFilterConfig(files language.FileTreeFilter) LanguageFileTreeFilterConfig {
+func asLanguageFileTreeFilterConfig(files FileTreeFilter) LanguageFileTreeFilterConfig {
 	return LanguageFileTreeFilterConfig{
 		Directories:  asLanguageDirectoryTableConfig(files.Directories),
 		FilePatterns: asLanguageFilePatternTableConfig(files.FilePatterns),
@@ -164,7 +167,7 @@ func asLanguageToolchainsTableConfig(toolchains []string) []string {
 	return append([]string(nil), toolchains...)
 }
 
-func asLanguageToolchainsConfig(toolchains language.Toolchains) LanguageToolchainConfig {
+func asLanguageToolchainsConfig(toolchains Toolchains) LanguageToolchainConfig {
 	return LanguageToolchainConfig{
 		Default:    toolchains.Default,
 		Compatible: asLanguageToolchainsTableConfig(toolchains.Compatible),
@@ -179,12 +182,12 @@ func asLanguageFilePatternTableConfig(filePatternTable []string) []string {
 	return append([]string(nil), filePatternTable...)
 }
 
-func initLanguageConfigDirPath() {
+func initLanguageConfigDirPath(configDirPath string) {
 	languageDirPath = filepath.Join(configDirPath, languageDir)
 }
 
 func createLanguageConfigDir() {
-	createConfigSubDir(languageDirPath, "TCR language configuration directory")
+	utils.CreateConfigSubDir(languageDirPath, "TCR language configuration directory")
 }
 
 // GetLanguageConfigDirPath returns the path to the language configuration directory
@@ -192,11 +195,12 @@ func GetLanguageConfigDirPath() string {
 	return languageDirPath
 }
 
-func showLanguageConfigs() {
-	trace("Configured languages:")
+// ShowLanguageConfigs shows the language configuration
+func ShowLanguageConfigs() {
+	utils.Trace("Configured languages:")
 	entries := GetLanguageConfigFileList()
 	if len(entries) == 0 {
-		trace("- none (will use built-in languages)")
+		utils.Trace("- none (will use built-in languages)")
 	}
 	for _, entry := range entries {
 		loadLanguageConfig(entry).show()
@@ -211,11 +215,11 @@ func (l LanguageConfig) show() {
 }
 
 func (lt LanguageToolchainConfig) show(prefix string) {
-	showConfigValue(prefix+".default", lt.Default)
-	showConfigValue(prefix+".compatible-with", lt.Compatible)
+	utils.TraceConfigValue(prefix+".default", lt.Default)
+	utils.TraceConfigValue(prefix+".compatible-with", lt.Compatible)
 }
 
 func (ftf LanguageFileTreeFilterConfig) show(prefix string) {
-	showConfigValue(prefix+".directories", ftf.Directories)
-	showConfigValue(prefix+".patterns", ftf.FilePatterns)
+	utils.TraceConfigValue(prefix+".directories", ftf.Directories)
+	utils.TraceConfigValue(prefix+".patterns", ftf.FilePatterns)
 }
