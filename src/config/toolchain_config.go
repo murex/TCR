@@ -24,6 +24,7 @@ package config
 
 import (
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/utils"
 	"path/filepath"
 )
 
@@ -60,39 +61,39 @@ func initToolchainConfig() {
 
 func saveToolchainConfigs() {
 	createToolchainConfigDir()
-	trace("Saving toolchains configuration")
+	utils.Trace("Saving toolchains configuration")
 	// Loop on all existing toolchains
 	for _, name := range toolchain.Names() {
-		trace("- ", name)
+		utils.Trace("- ", name)
 		saveToolchainConfig(name)
 	}
 }
 
 func saveToolchainConfig(name string) {
 	tchn, _ := toolchain.GetToolchain(name)
-	saveToYAML(asToolchainConfig(tchn), buildYAMLFilePath(toolchainDirPath, name))
+	utils.SaveToYAML(asToolchainConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
 }
 
 // GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
 func GetToolchainConfigFileList() (list []string) {
-	return listYAMLFilesIn(toolchainDirPath)
+	return utils.ListYAMLFilesIn(toolchainDirPath)
 }
 
 func loadToolchainConfigs() {
-	trace("Loading toolchains configuration")
+	utils.Trace("Loading toolchains configuration")
 	// Loop on all YAML files in toolchain directory
 	for _, entry := range GetToolchainConfigFileList() {
 		err := toolchain.Register(asToolchain(*loadToolchainConfig(entry)))
 		if err != nil {
-			trace("Error in ", entry, ": ", err)
+			utils.Trace("Error in ", entry, ": ", err)
 		}
 	}
 }
 
 func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
 	var toolchainCfg ToolchainConfig
-	loadFromYAML(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
-	toolchainCfg.Name = extractNameFromYAMLFilename(yamlFilename)
+	utils.LoadFromYAML(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
+	toolchainCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
 	return &toolchainCfg
 }
 
@@ -139,10 +140,10 @@ func asArchTable(names []string) []toolchain.ArchName {
 }
 
 func resetToolchainConfigs() {
-	trace("Resetting toolchains configuration")
+	utils.Trace("Resetting toolchains configuration")
 	// Loop on all existing toolchains
 	for _, name := range toolchain.Names() {
-		trace("- ", name)
+		utils.Trace("- ", name)
 		toolchain.Reset(name)
 	}
 }
@@ -199,14 +200,14 @@ func GetToolchainConfigDirPath() string {
 }
 
 func createToolchainConfigDir() {
-	createConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
+	utils.CreateConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
 }
 
 func showToolchainConfigs() {
-	trace("Configured toolchains:")
+	utils.Trace("Configured toolchains:")
 	entries := GetToolchainConfigFileList()
 	if len(entries) == 0 {
-		trace("- none (will use built-in toolchains)")
+		utils.Trace("- none (will use built-in toolchains)")
 	}
 	for _, entry := range entries {
 		loadToolchainConfig(entry).show()
@@ -221,12 +222,12 @@ func (t ToolchainConfig) show() {
 	for _, cmd := range t.TestCommand {
 		cmd.show(prefix + ".test")
 	}
-	showConfigValue(prefix+".test-result-dir", t.TestResultDir)
+	utils.TraceConfigValue(prefix+".test-result-dir", t.TestResultDir)
 }
 
 func (c ToolchainCommandConfig) show(prefix string) {
-	showConfigValue(prefix+".os", c.Os)
-	showConfigValue(prefix+".arch", c.Arch)
-	showConfigValue(prefix+".command", c.Command)
-	showConfigValue(prefix+".args", c.Arguments)
+	utils.TraceConfigValue(prefix+".os", c.Os)
+	utils.TraceConfigValue(prefix+".arch", c.Arch)
+	utils.TraceConfigValue(prefix+".command", c.Command)
+	utils.TraceConfigValue(prefix+".args", c.Arguments)
 }

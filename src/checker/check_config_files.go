@@ -25,6 +25,7 @@ package checker
 import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/config"
+	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"path/filepath"
 )
@@ -51,8 +52,8 @@ func init() {
 
 	languageConfigDir = configSubDir{
 		name:        "language",
-		getDirPath:  config.GetLanguageConfigDirPath,
-		getFileList: config.GetLanguageConfigFileList,
+		getDirPath:  language.GetLanguageConfigDirPath,
+		getFileList: language.GetLanguageConfigFileList,
 	}
 	toolchainConfigDir = configSubDir{
 		name:        "toolchain",

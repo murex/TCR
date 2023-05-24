@@ -23,11 +23,11 @@ SOFTWARE.
 package config
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/utils"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -43,17 +43,6 @@ const (
 var (
 	testDataDirJava = filepath.Join(testDataRootDir, "java")
 )
-
-func assertConfigTrace(t *testing.T, expected []string, operation func()) {
-	var output bytes.Buffer
-	setConfigTrace(&output)
-	operation()
-	var expectedWithWrapping string
-	for _, line := range expected {
-		expectedWithWrapping += "[TCR] " + line + "\n"
-	}
-	assert.Equal(t, expectedWithWrapping, output.String())
-}
 
 func Test_get_config_dir_path_when_not_set(t *testing.T) {
 	initConfigDirPath()
@@ -77,28 +66,12 @@ func Test_get_config_dir_path_when_set(t *testing.T) {
 	assert.Equal(t, filepath.Join(d, ".tcr"), GetConfigDirPath())
 }
 
-func Test_config_trace_format(t *testing.T) {
-	msg := "Some dummy message"
-	assertConfigTrace(t, []string{msg},
-		func() {
-			trace(msg)
-		},
-	)
-}
-
-func Test_config_trace_when_writer_is_not_set(t *testing.T) {
-	assert.NotPanics(t, func() {
-		setConfigTrace(nil)
-		trace("Some dummy message")
-	})
-}
-
 func Test_show_config_value(t *testing.T) {
 	key, value := "some-key", "some-value"
 	expected := []string{"- " + key + ": " + value}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
-			showConfigValue(key, value)
+			utils.TraceConfigValue(key, value)
 		},
 	)
 }
@@ -138,7 +111,7 @@ func Test_reset_tcr_config_with_no_saved_config(t *testing.T) {
 	for _, builtinLang := range language.Names() {
 		expected = append(expected, "- "+builtinLang)
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -176,7 +149,7 @@ func Test_save_tcr_config_with_no_saved_config(t *testing.T) {
 	for _, builtinLang := range language.Names() {
 		expected = append(expected, "- "+builtinLang)
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -192,7 +165,7 @@ func Test_save_tcr_config_with_no_saved_config(t *testing.T) {
 
 func Test_init_tcr_config_with_no_config_file(t *testing.T) {
 	expected := []string{"No configuration file found"}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			initTCRConfig()
 		},
@@ -210,7 +183,7 @@ func Test_cobra_command_init_with_no_saved_config(t *testing.T) {
 		"Loading toolchains configuration",
 		"Loading languages configuration",
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -231,7 +204,7 @@ func Test_cobra_command_init_with_saved_config(t *testing.T) {
 		"Loading toolchains configuration",
 		"Loading languages configuration",
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -273,7 +246,7 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.tcr.trace: %v", prefix, "none"),
 		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			showTCRConfig()
 		},

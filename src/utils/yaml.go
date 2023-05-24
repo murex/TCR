@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package utils
 
 import (
 	"bytes"
@@ -35,50 +35,52 @@ const (
 	yamlExtension = "yml"
 )
 
-// loadFromYAML loads a structure configuration from a YAML file
-func loadFromYAML(filename string, out any) {
+// LoadFromYAML loads a structure configuration from a YAML file
+func LoadFromYAML(filename string, out any) {
 	// In case we need to use variables in yaml configuration files:
 	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
 	// Cf. https://pkg.go.dev/os#Expand
 
 	data, err := os.ReadFile(filepath.Clean(filename))
 	if err != nil {
-		trace("Error while reading configuration file: ", err)
+		Trace("Error while reading configuration file: ", err)
 	}
 	if err := yaml.Unmarshal(data, out); err != nil {
-		trace("Error while unmarshalling configuration data: ", err)
+		Trace("Error while unmarshalling configuration data: ", err)
 	}
 }
 
-// saveToYAML saves a structure configuration into a YAML file
-func saveToYAML(in any, filename string) {
+// SaveToYAML saves a structure configuration into a YAML file
+func SaveToYAML(in any, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
 	yamlEncoder.SetIndent(yamlIndent)
 	err := yamlEncoder.Encode(&in)
 	if err != nil {
-		trace("Error while marshalling configuration data: ", err)
+		Trace("Error while marshalling configuration data: ", err)
 	}
 	// Then we save it
 	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec,revive // We want people to be able to share this
 	if err != nil {
-		trace("Error while saving configuration: ", err)
+		Trace("Error while saving configuration: ", err)
 	}
 }
 
-func createConfigSubDir(dirPath string, description string) {
+// CreateConfigSubDir creates a sub-directory in the configuration directory
+func CreateConfigSubDir(dirPath string, description string) {
 	_, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
-		trace("Creating ", description, ": ", dirPath)
+		Trace("Creating ", description, ": ", dirPath)
 		err := os.MkdirAll(dirPath, os.ModePerm)
 		if err != nil {
-			trace("Error creating ", description, ": ", err)
+			Trace("Error creating ", description, ": ", err)
 		}
 	}
 }
 
-func buildYAMLFilePath(dirPath string, name string) string {
+// BuildYAMLFilePath creates a YAML file path
+func BuildYAMLFilePath(dirPath string, name string) string {
 	return filepath.Join(dirPath, buildYAMLFilename(name))
 }
 
@@ -86,11 +88,13 @@ func buildYAMLFilename(name string) string {
 	return strings.ToLower(name + "." + yamlExtension)
 }
 
-func extractNameFromYAMLFilename(filename string) string {
+// ExtractNameFromYAMLFilename extracts the name from a YAML file (removing extension)
+func ExtractNameFromYAMLFilename(filename string) string {
 	return strings.TrimSuffix(strings.ToLower(filename), "."+yamlExtension)
 }
 
-func listYAMLFilesIn(dirPath string) (list []string) {
+// ListYAMLFilesIn lists all YAML files in the provided directory
+func ListYAMLFilesIn(dirPath string) (list []string) {
 	entries, err := os.ReadDir(dirPath)
 	if err != nil || len(entries) == 0 {
 		// If we cannot open the directory or if it's empty, we don't go any further

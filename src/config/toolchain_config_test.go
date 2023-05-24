@@ -25,13 +25,14 @@ package config
 import (
 	"fmt"
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func Test_can_save_toolchain_configuration(t *testing.T) {
 	// TODO bypass filesystem
-	//saveToYAML(tchn, "")
+	//SaveToYAML(tchn, "")
 }
 
 func Test_convert_toolchain_name_to_config(t *testing.T) {
@@ -74,7 +75,7 @@ func Test_show_toolchain_configs_with_no_saved_config(t *testing.T) {
 		"Configured toolchains:",
 		"- none (will use built-in toolchains)",
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			toolchainDirPath = ""
 			showToolchainConfigs()
@@ -89,7 +90,7 @@ func Test_reset_toolchain_configs_with_no_saved_config(t *testing.T) {
 	for _, builtin := range toolchain.Names() {
 		expected = append(expected, "- "+builtin)
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			resetToolchainConfigs()
 		},
@@ -113,7 +114,7 @@ func Test_show_toolchain_config(t *testing.T) {
 		fmt.Sprintf("%v.test.args: %v", prefix, testCmd.Arguments),
 		fmt.Sprintf("%v.test-result-dir: %v", prefix, tchn.GetTestResultDir()),
 	}
-	assertConfigTrace(t, expected,
+	utils.AssertSimpleTrace(t, expected,
 		func() {
 			cfg.show()
 		},
