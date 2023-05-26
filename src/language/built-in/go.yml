@@ -1,0 +1,9 @@
+toolchains:
+  default: go-tools
+  compatible-with: [ bazel, go-tools, gotestsum, make ]
+source-files:
+  directories: [ . ]
+  patterns: [ '(?i)^.*\.go$' ]
+test-files:
+  directories: [ . ]
+  patterns: [ '(?i)^.*_test\.go$' ]

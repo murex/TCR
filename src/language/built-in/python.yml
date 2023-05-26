@@ -1,0 +1,9 @@
+toolchains:
+  default: pytest
+  compatible-with: [ bazel, pytest, make ]
+source-files:
+  directories: [ src ]
+  patterns: [ '(?i)^.*\.py$' ]
+test-files:
+  directories: [ tests ]
+  patterns: [ '(?i)^.*_test\.py$' ]

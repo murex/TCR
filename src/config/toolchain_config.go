@@ -25,6 +25,7 @@ package config
 import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
+	"os"
 	"path/filepath"
 )
 
@@ -71,7 +72,7 @@ func saveToolchainConfigs() {
 
 func saveToolchainConfig(name string) {
 	tchn, _ := toolchain.GetToolchain(name)
-	utils.SaveToYAML(asToolchainConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
+	utils.SaveToYAMLFile(asToolchainConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
 }
 
 // GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
@@ -92,7 +93,11 @@ func loadToolchainConfigs() {
 
 func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
 	var toolchainCfg ToolchainConfig
-	utils.LoadFromYAML(filepath.Join(toolchainDirPath, yamlFilename), &toolchainCfg)
+	err := utils.LoadFromYAMLFile(os.DirFS(toolchainDirPath), yamlFilename, &toolchainCfg)
+	if err != nil {
+		utils.Trace("Error in ", yamlFilename, ": ", err)
+		return nil
+	}
 	toolchainCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
 	return &toolchainCfg
 }

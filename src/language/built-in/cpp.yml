@@ -1,0 +1,9 @@
+toolchains:
+  default: cmake
+  compatible-with: [ bazel, cmake, make ]
+source-files:
+  directories: [ src, include ]
+  patterns: [ '(?i)^.*\.c(c|pp|xx)?$', '(?i)^.*\.h(h|pp|xx)?$' ]
+test-files:
+  directories: [ test ]
+  patterns: [ '(?i)^.*\.c(c|pp|xx)?$', '(?i)^.*\.h(h|pp|xx)?$' ]

@@ -232,8 +232,11 @@ func Test_retrieve_language_files(t *testing.T) {
 
 func assertDefaultToolchain(t *testing.T, languageName string, toolchainName string) {
 	t.Helper()
-	lang, _ := Get(languageName)
-	assert.Equal(t, toolchainName, lang.GetToolchains().Default)
+	lang, err := Get(languageName)
+	assert.NoError(t, err)
+	if assert.NotNil(t, lang) {
+		assert.Equal(t, toolchainName, lang.GetToolchains().Default)
+	}
 }
 
 func assertListOfDirsToWatch(t *testing.T, languageName string, dirs ...string) {
@@ -303,11 +306,14 @@ func buildFilePathMatchers(matcher func(string) filePathMatcher, parentDir strin
 
 func assertFilePathsMatching(t *testing.T, languageName string, matchers ...filePathMatcher) {
 	t.Helper()
-	lang, _ := GetLanguage(languageName, "")
-	for _, matcher := range matchers {
-		assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
-			"Should %v be a source file?", matcher.filePath)
-		assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
-			"Should %v be a test file?", matcher.filePath)
+	lang, err := GetLanguage(languageName, "")
+	assert.NoError(t, err)
+	if assert.NotNil(t, lang) {
+		for _, matcher := range matchers {
+			assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
+				"Should %v be a source file?", matcher.filePath)
+			assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
+				"Should %v be a test file?", matcher.filePath)
+		}
 	}
 }

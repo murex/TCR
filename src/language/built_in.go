@@ -22,26 +22,47 @@ SOFTWARE.
 
 package language
 
+import (
+	"embed"
+	"github.com/murex/tcr/utils"
+	"path"
+)
+
+const builtInDir = "built-in"
+
+// builtInFS is the placeholder for the embedded language configuration filesystem
+//
+//go:embed "built-in"
+var builtInFS embed.FS
+
 func init() {
-	_ = addBuiltIn(
-		&Language{
-			name: "python",
-			toolchains: Toolchains{
-				Default:    "pytest",
-				Compatible: []string{"bazel", "pytest", "make"},
-			},
-			srcFileFilter: FileTreeFilter{
-				Directories: []string{"src"},
-				FilePatterns: []string{
-					buildRegex(".*\\.py"),
-				},
-			},
-			testFileFilter: FileTreeFilter{
-				Directories: []string{"tests"},
-				FilePatterns: []string{
-					buildRegex(".*_test\\.py"),
-				},
-			},
-		},
-	)
+	loadBuiltInLanguages()
+}
+
+func loadBuiltInLanguages() {
+	// utils.SetSimpleTrace(os.Stdout)
+	utils.Trace("Loading built-in languages")
+	entries, err := builtInFS.ReadDir(builtInDir)
+	if err != nil {
+		utils.Trace("Error loading built-in languages: ", err)
+	}
+	// Loop on all YAML files in built-in language directory
+	for _, entry := range entries {
+		err := addBuiltIn(asLanguage(*loadBuiltInLanguage(entry.Name())))
+		if err != nil {
+			utils.Trace("Error in ", entry.Name(), ": ", err)
+		}
+	}
+}
+
+func loadBuiltInLanguage(yamlFilename string) *configYAML {
+	var languageCfg configYAML
+
+	err := utils.LoadFromYAMLFile(builtInFS, path.Join(builtInDir, yamlFilename), &languageCfg)
+	if err != nil {
+		utils.Trace("Error in ", yamlFilename, ": ", err)
+		return nil
+	}
+	languageCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
+	return &languageCfg
 }
