@@ -22,23 +22,47 @@ SOFTWARE.
 
 package toolchain
 
+import (
+	"embed"
+	"github.com/murex/tcr/utils"
+	"path"
+)
+
+const builtInDir = "built-in"
+
+// builtInFS is the placeholder for the embedded toolchain configuration filesystem
+//
+//go:embed "built-in"
+var builtInFS embed.FS
+
 func init() {
-	_ = addBuiltIn(
-		Toolchain{
-			name: "pytest",
-			buildCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
-				Path:      "pytest",
-				Arguments: []string{"--collect-only"},
-			}},
-			testCommands: []Command{{
-				Os:        GetAllOsNames(),
-				Arch:      GetAllArchNames(),
-				Path:      "pytest",
-				Arguments: []string{},
-			}},
-			testResultDir: "pytest",
-		},
-	)
+	loadBuiltInToolchains()
+}
+
+func loadBuiltInToolchains() {
+	// utils.SetSimpleTrace(os.Stdout)
+	utils.Trace("Loading built-in toolchains")
+	entries, err := builtInFS.ReadDir(builtInDir)
+	if err != nil {
+		utils.Trace("Error loading built-in toolchains: ", err)
+	}
+	// Loop on all YAML files in built-in toolchain directory
+	for _, entry := range entries {
+		err := addBuiltIn(asToolchain(*loadBuiltInToolchain(entry.Name())))
+		if err != nil {
+			utils.Trace("Error in ", entry.Name(), ": ", err)
+		}
+	}
+}
+
+func loadBuiltInToolchain(yamlFilename string) *configYAML {
+	var toolchainCfg configYAML
+
+	err := utils.LoadFromYAMLFile(builtInFS, path.Join(builtInDir, yamlFilename), &toolchainCfg)
+	if err != nil {
+		utils.Trace("Error in ", yamlFilename, ": ", err)
+		return nil
+	}
+	toolchainCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
+	return &toolchainCfg
 }

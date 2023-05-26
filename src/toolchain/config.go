@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package toolchain
 
 import (
-	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
 	"os"
 	"path/filepath"
@@ -38,61 +37,63 @@ var (
 )
 
 type (
-	// ToolchainCommandConfig defines the structure of a toolchain configuration.
-	ToolchainCommandConfig struct {
+	// commandConfigYAML defines the structure of a toolchain configuration.
+	commandConfigYAML struct {
 		Os        []string `yaml:"os,flow"`
 		Arch      []string `yaml:"arch,flow"`
 		Command   string   `yaml:"command"`
 		Arguments []string `yaml:"arguments,flow"`
 	}
 
-	// ToolchainConfig defines the structure of a toolchain configuration.
-	ToolchainConfig struct {
-		Name          string                   `yaml:"-"`
-		BuildCommand  []ToolchainCommandConfig `yaml:"build"`
-		TestCommand   []ToolchainCommandConfig `yaml:"test"`
-		TestResultDir string                   `yaml:"test-result-dir"`
+	// configYAML defines the structure of a toolchain configuration.
+	configYAML struct {
+		Name          string              `yaml:"-"`
+		BuildCommand  []commandConfigYAML `yaml:"build"`
+		TestCommand   []commandConfigYAML `yaml:"test"`
+		TestResultDir string              `yaml:"test-result-dir"`
 	}
 )
 
-func initToolchainConfig() {
-	initToolchainConfigDirPath()
-	loadToolchainConfigs()
+// InitConfig initializes the toolchain configuration
+func InitConfig(configDirPath string) {
+	initConfigDirPath(configDirPath)
+	loadConfigs()
 }
 
-func saveToolchainConfigs() {
-	createToolchainConfigDir()
+// SaveConfigs saves the toolchain configurations
+func SaveConfigs() {
+	createConfigDir()
 	utils.Trace("Saving toolchains configuration")
 	// Loop on all existing toolchains
-	for _, name := range toolchain.Names() {
+	for _, name := range Names() {
 		utils.Trace("- ", name)
-		saveToolchainConfig(name)
+		saveConfig(name)
 	}
 }
 
-func saveToolchainConfig(name string) {
-	tchn, _ := toolchain.GetToolchain(name)
-	utils.SaveToYAMLFile(asToolchainConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
+func saveConfig(name string) {
+	tchn, _ := Get(name)
+	utils.SaveToYAMLFile(asConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
 }
 
-// GetToolchainConfigFileList returns the list of toolchain configuration files found in toolchain directory
-func GetToolchainConfigFileList() (list []string) {
+// GetConfigFileList returns the list of toolchain configuration files found in toolchain directory
+func GetConfigFileList() (list []string) {
 	return utils.ListYAMLFilesIn(toolchainDirPath)
 }
 
-func loadToolchainConfigs() {
+func loadConfigs() {
 	utils.Trace("Loading toolchains configuration")
 	// Loop on all YAML files in toolchain directory
-	for _, entry := range GetToolchainConfigFileList() {
-		err := toolchain.Register(asToolchain(*loadToolchainConfig(entry)))
+	for _, entry := range GetConfigFileList() {
+		err := Register(asToolchain(*loadConfig(entry)))
 		if err != nil {
 			utils.Trace("Error in ", entry, ": ", err)
 		}
 	}
 }
 
-func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
-	var toolchainCfg ToolchainConfig
+func loadConfig(yamlFilename string) *configYAML {
+	var toolchainCfg configYAML
 	err := utils.LoadFromYAMLFile(os.DirFS(toolchainDirPath), yamlFilename, &toolchainCfg)
 	if err != nil {
 		utils.Trace("Error in ", yamlFilename, ": ", err)
@@ -102,25 +103,25 @@ func loadToolchainConfig(yamlFilename string) *ToolchainConfig {
 	return &toolchainCfg
 }
 
-func asToolchain(toolchainCfg ToolchainConfig) *toolchain.Toolchain {
-	return toolchain.New(
+func asToolchain(toolchainCfg configYAML) *Toolchain {
+	return New(
 		toolchainCfg.Name,
-		asToolchainCommandTable(toolchainCfg.BuildCommand),
-		asToolchainCommandTable(toolchainCfg.TestCommand),
+		asCommandTable(toolchainCfg.BuildCommand),
+		asCommandTable(toolchainCfg.TestCommand),
 		toolchainCfg.TestResultDir,
 	)
 }
 
-func asToolchainCommandTable(commandsCfg []ToolchainCommandConfig) []toolchain.Command {
-	var res []toolchain.Command
+func asCommandTable(commandsCfg []commandConfigYAML) []Command {
+	var res []Command
 	for _, commandCfg := range commandsCfg {
-		res = append(res, asToolchainCommand(commandCfg))
+		res = append(res, asCommand(commandCfg))
 	}
 	return res
 }
 
-func asToolchainCommand(commandCfg ToolchainCommandConfig) toolchain.Command {
-	return toolchain.Command{
+func asCommand(commandCfg commandConfigYAML) Command {
+	return Command{
 		Os:        asOsTable(commandCfg.Os),
 		Arch:      asArchTable(commandCfg.Arch),
 		Path:      commandCfg.Command,
@@ -128,50 +129,51 @@ func asToolchainCommand(commandCfg ToolchainCommandConfig) toolchain.Command {
 	}
 }
 
-func asOsTable(names []string) []toolchain.OsName {
-	var res []toolchain.OsName
+func asOsTable(names []string) []OsName {
+	var res []OsName
 	for _, name := range names {
-		res = append(res, toolchain.OsName(name))
+		res = append(res, OsName(name))
 	}
 	return res
 }
 
-func asArchTable(names []string) []toolchain.ArchName {
-	var res []toolchain.ArchName
+func asArchTable(names []string) []ArchName {
+	var res []ArchName
 	for _, name := range names {
-		res = append(res, toolchain.ArchName(name))
+		res = append(res, ArchName(name))
 	}
 	return res
 }
 
-func resetToolchainConfigs() {
+// ResetConfigs resets the toolchains configuration
+func ResetConfigs() {
 	utils.Trace("Resetting toolchains configuration")
 	// Loop on all existing toolchains
-	for _, name := range toolchain.Names() {
+	for _, name := range Names() {
 		utils.Trace("- ", name)
-		toolchain.Reset(name)
+		Reset(name)
 	}
 }
 
-func asToolchainConfig(tchn toolchain.TchnInterface) ToolchainConfig {
-	return ToolchainConfig{
+func asConfig(tchn TchnInterface) configYAML {
+	return configYAML{
 		Name:          tchn.GetName(),
-		BuildCommand:  asToolchainCommandConfigTable(tchn.GetBuildCommands()),
-		TestCommand:   asToolchainCommandConfigTable(tchn.GetTestCommands()),
+		BuildCommand:  asCommandConfigTable(tchn.GetBuildCommands()),
+		TestCommand:   asCommandConfigTable(tchn.GetTestCommands()),
 		TestResultDir: tchn.GetTestResultDir(),
 	}
 }
 
-func asToolchainCommandConfigTable(commands []toolchain.Command) []ToolchainCommandConfig {
-	var res []ToolchainCommandConfig
+func asCommandConfigTable(commands []Command) []commandConfigYAML {
+	var res []commandConfigYAML
 	for _, command := range commands {
-		res = append(res, asToolchainCommandConfig(command))
+		res = append(res, asCommandConfig(command))
 	}
 	return res
 }
 
-func asToolchainCommandConfig(command toolchain.Command) ToolchainCommandConfig {
-	return ToolchainCommandConfig{
+func asCommandConfig(command Command) commandConfigYAML {
+	return commandConfigYAML{
 		Os:        asOsTableConfig(command.Os),
 		Arch:      asArchTableConfig(command.Arch),
 		Command:   command.Path,
@@ -179,7 +181,7 @@ func asToolchainCommandConfig(command toolchain.Command) ToolchainCommandConfig 
 	}
 }
 
-func asOsTableConfig(osNames []toolchain.OsName) []string {
+func asOsTableConfig(osNames []OsName) []string {
 	var res []string
 	for _, osName := range osNames {
 		res = append(res, string(osName))
@@ -187,7 +189,7 @@ func asOsTableConfig(osNames []toolchain.OsName) []string {
 	return res
 }
 
-func asArchTableConfig(archNames []toolchain.ArchName) []string {
+func asArchTableConfig(archNames []ArchName) []string {
 	var res []string
 	for _, archName := range archNames {
 		res = append(res, string(archName))
@@ -195,31 +197,32 @@ func asArchTableConfig(archNames []toolchain.ArchName) []string {
 	return res
 }
 
-func initToolchainConfigDirPath() {
+func initConfigDirPath(configDirPath string) {
 	toolchainDirPath = filepath.Join(configDirPath, toolchainDir)
 }
 
-// GetToolchainConfigDirPath returns the path to the toolchain configuration directory
-func GetToolchainConfigDirPath() string {
+// GetConfigDirPath returns the path to the toolchain configuration directory
+func GetConfigDirPath() string {
 	return toolchainDirPath
 }
 
-func createToolchainConfigDir() {
+func createConfigDir() {
 	utils.CreateConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
 }
 
-func showToolchainConfigs() {
+// ShowConfigs shows the toolchains configuration
+func ShowConfigs() {
 	utils.Trace("Configured toolchains:")
-	entries := GetToolchainConfigFileList()
+	entries := GetConfigFileList()
 	if len(entries) == 0 {
 		utils.Trace("- none (will use built-in toolchains)")
 	}
 	for _, entry := range entries {
-		loadToolchainConfig(entry).show()
+		loadConfig(entry).show()
 	}
 }
 
-func (t ToolchainConfig) show() {
+func (t configYAML) show() {
 	prefix := "toolchain." + t.Name
 	for _, cmd := range t.BuildCommand {
 		cmd.show(prefix + ".build")
@@ -230,7 +233,7 @@ func (t ToolchainConfig) show() {
 	utils.TraceConfigValue(prefix+".test-result-dir", t.TestResultDir)
 }
 
-func (c ToolchainCommandConfig) show(prefix string) {
+func (c commandConfigYAML) show(prefix string) {
 	utils.TraceConfigValue(prefix+".os", c.Os)
 	utils.TraceConfigValue(prefix+".arch", c.Arch)
 	utils.TraceConfigValue(prefix+".command", c.Command)

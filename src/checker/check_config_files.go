@@ -27,6 +27,7 @@ import (
 	"github.com/murex/tcr/config"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/toolchain"
 	"path/filepath"
 )
 
@@ -57,8 +58,8 @@ func init() {
 	}
 	toolchainConfigDir = configSubDir{
 		name:        "toolchain",
-		getDirPath:  config.GetToolchainConfigDirPath,
-		getFileList: config.GetToolchainConfigFileList,
+		getDirPath:  toolchain.GetConfigDirPath,
+		getFileList: toolchain.GetConfigFileList,
 	}
 }
 

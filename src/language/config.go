@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ func InitConfig(configDirPath string) {
 	loadConfigs()
 }
 
-// SaveConfigs saves the language configuration
+// SaveConfigs saves the language configurations
 func SaveConfigs() {
 	createConfigDir()
 	utils.Trace("Saving languages configuration")
@@ -142,7 +142,7 @@ func asFilePatternTable(filePatternTableCfg []string) []string {
 	return append([]string(nil), filePatternTableCfg...)
 }
 
-// ResetConfigs resets the language configuration
+// ResetConfigs resets the languages configuration
 func ResetConfigs() {
 	utils.Trace("Resetting languages configuration")
 	// Loop on all existing languages
@@ -191,16 +191,16 @@ func initConfigDirPath(configDirPath string) {
 	languageDirPath = filepath.Join(configDirPath, languageDir)
 }
 
-func createConfigDir() {
-	utils.CreateConfigSubDir(languageDirPath, "TCR language configuration directory")
-}
-
 // GetConfigDirPath returns the path to the language configuration directory
 func GetConfigDirPath() string {
 	return languageDirPath
 }
 
-// ShowConfigs shows the language configuration
+func createConfigDir() {
+	utils.CreateConfigSubDir(languageDirPath, "TCR language configuration directory")
+}
+
+// ShowConfigs shows the languages configuration
 func ShowConfigs() {
 	utils.Trace("Configured languages:")
 	entries := GetConfigFileList()
