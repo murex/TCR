@@ -169,12 +169,17 @@ func assertNameIsNotCaseSensitive(t *testing.T, name string) {
 func assertLanguageInitialization(t *testing.T, name string) {
 	lang, err := Get(name)
 	assert.NoError(t, err)
-	assert.Equal(t, name, lang.GetName())
+	if assert.NotNil(t, lang) {
+		assert.Equal(t, name, lang.GetName())
+	}
 }
 
 func assertLanguageName(t *testing.T, name string) {
-	lang, _ := Get(name)
-	assert.Equal(t, name, lang.GetName())
+	lang, err := Get(name)
+	assert.NoError(t, err)
+	if assert.NotNil(t, lang) {
+		assert.Equal(t, name, lang.GetName())
+	}
 }
 
 func assertFallbacksOnDirNameIfLanguageIsNotSpecified(t *testing.T, dirName string) {

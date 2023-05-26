@@ -31,26 +31,26 @@ import (
 
 func Test_can_save_language_configuration(t *testing.T) {
 	// TODO bypass filesystem
-	//SaveToYAML(lang, "")
+	//SaveToYAMLFile(lang, "")
 }
 
 func Test_convert_language_name_to_config(t *testing.T) {
 	lang := ALanguage()
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetName(), cfg.Name)
 	assert.Equal(t, cfg.Name, asLanguage(cfg).GetName())
 }
 
 func Test_convert_language_default_toolchain_to_config(t *testing.T) {
 	lang := ALanguage()
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetToolchains().Default, cfg.Toolchains.Default)
 	assert.Equal(t, cfg.Toolchains.Default, asLanguage(cfg).GetToolchains().Default)
 }
 
 func Test_convert_language_compatible_toolchains_to_config(t *testing.T) {
 	lang := ALanguage()
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetToolchains().Compatible, cfg.Toolchains.Compatible)
 	assert.Equal(t, cfg.Toolchains.Compatible, asLanguage(cfg).GetToolchains().Compatible)
 }
@@ -61,7 +61,7 @@ func Test_convert_language_src_filter_directories_to_config(t *testing.T) {
 			AFileTreeFilter(WithDirectories("src-dir1", "src-dir2")),
 		),
 	)
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetSrcFileFilter().Directories, cfg.SourceFiles.Directories)
 	assert.Equal(t, cfg.SourceFiles.Directories, asLanguage(cfg).GetSrcFileFilter().Directories)
 }
@@ -72,7 +72,7 @@ func Test_convert_language_src_filter_patterns_to_config(t *testing.T) {
 			AFileTreeFilter(WithPatterns("src-pattern1", "src-pattern2")),
 		),
 	)
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetSrcFileFilter().FilePatterns, cfg.SourceFiles.FilePatterns)
 	assert.Equal(t, cfg.SourceFiles.FilePatterns, asLanguage(cfg).GetSrcFileFilter().FilePatterns)
 }
@@ -83,7 +83,7 @@ func Test_convert_language_test_filter_directories_to_config(t *testing.T) {
 			AFileTreeFilter(WithDirectories("test-dir1", "test-dir2")),
 		),
 	)
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetTestFileFilter().Directories, cfg.TestFiles.Directories)
 	assert.Equal(t, cfg.TestFiles.Directories, asLanguage(cfg).GetTestFileFilter().Directories)
 }
@@ -94,7 +94,7 @@ func Test_convert_language_test_filter_patterns_to_config(t *testing.T) {
 			AFileTreeFilter(WithPatterns("test-pattern1", "test-pattern2")),
 		),
 	)
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	assert.Equal(t, lang.GetTestFileFilter().FilePatterns, cfg.TestFiles.FilePatterns)
 	assert.Equal(t, cfg.TestFiles.FilePatterns, asLanguage(cfg).GetTestFileFilter().FilePatterns)
 }
@@ -107,7 +107,7 @@ func Test_show_language_configs_with_no_saved_config(t *testing.T) {
 	utils.AssertSimpleTrace(t, expected,
 		func() {
 			languageDirPath = ""
-			ShowLanguageConfigs()
+			ShowConfigs()
 		},
 	)
 }
@@ -121,14 +121,14 @@ func Test_reset_language_configs_with_no_saved_config(t *testing.T) {
 	}
 	utils.AssertSimpleTrace(t, expected,
 		func() {
-			ResetLanguageConfigs()
+			ResetConfigs()
 		},
 	)
 }
 
 func Test_show_language_config(t *testing.T) {
 	lang := ALanguage()
-	cfg := asLanguageConfig(lang)
+	cfg := asConfig(lang)
 	prefix := "- language." + cfg.Name
 	expected := []string{
 		fmt.Sprintf("%v.toolchains.default: %v", prefix, cfg.Toolchains.Default),

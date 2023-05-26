@@ -52,8 +52,8 @@ func init() {
 
 	languageConfigDir = configSubDir{
 		name:        "language",
-		getDirPath:  language.GetLanguageConfigDirPath,
-		getFileList: language.GetLanguageConfigFileList,
+		getDirPath:  language.GetConfigDirPath,
+		getFileList: language.GetConfigFileList,
 	}
 	toolchainConfigDir = configSubDir{
 		name:        "toolchain",

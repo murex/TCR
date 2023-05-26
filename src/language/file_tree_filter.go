@@ -94,17 +94,6 @@ func (treeFilter FileTreeFilter) matches(p string, baseDir string) bool {
 	return false
 }
 
-// buildRegex is a utility function adding flags and markers to a regex pattern
-// so that it ignores character case and has the beginning and end of text markers
-func buildRegex(corePattern string) string {
-	const (
-		ignoreCaseFlag  = "(?i)"
-		beginningMarker = "^"
-		endMarker       = "$"
-	)
-	return ignoreCaseFlag + beginningMarker + corePattern + endMarker
-}
-
 func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
 	for _, dir := range treeFilter.Directories {
 		err := afero.Walk(appFs, filepath.Join(baseDir, dir), func(path string, fi os.FileInfo, err error) error {

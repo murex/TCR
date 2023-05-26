@@ -92,7 +92,7 @@ func initConfig(writer io.Writer) {
 
 	initTCRConfig()
 	initToolchainConfig()
-	language.InitLanguageConfig(configDirPath)
+	language.InitConfig(configDirPath)
 }
 
 func initTCRConfig() {
@@ -143,7 +143,7 @@ func Save() {
 	createConfigDir()
 	saveTCRConfig()
 	saveToolchainConfigs()
-	language.SaveLanguageConfigs()
+	language.SaveConfigs()
 }
 
 func saveTCRConfig() {
@@ -162,7 +162,7 @@ func Reset() {
 	utils.Trace("Resetting configuration to default values")
 	resetTCRConfig()
 	resetToolchainConfigs()
-	language.ResetLanguageConfigs()
+	language.ResetConfigs()
 	Save()
 }
 
@@ -175,7 +175,7 @@ func Show() {
 	utils.Trace()
 	showTCRConfig()
 	showToolchainConfigs()
-	language.ShowLanguageConfigs()
+	language.ShowConfigs()
 }
 
 func showTCRConfig() {

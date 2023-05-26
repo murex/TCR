@@ -25,33 +25,46 @@ package utils
 import (
 	"bytes"
 	"gopkg.in/yaml.v3"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 const (
-	yamlIndent    = 2
-	yamlExtension = "yml"
+	yamlIndent        = 2
+	yamlExtension     = "yml"
+	yamlFileMaxLength = 1024 // Sufficient for language and toolchain config files
 )
 
-// LoadFromYAML loads a structure configuration from a YAML file
-func LoadFromYAML(filename string, out any) {
+// LoadFromYAMLFile loads a structure configuration from a YAML file
+// The filesystem parameter is required so that we can use this function either with
+// a regular OS file or with an embedded filesystem.
+func LoadFromYAMLFile(filesystem fs.FS, filename string, out any) error {
 	// In case we need to use variables in yaml configuration files:
 	// Cf. https://anil.io/blog/symfony/yaml/using-variables-in-yaml-files/
 	// Cf. https://pkg.go.dev/os#Expand
 
-	data, err := os.ReadFile(filepath.Clean(filename))
-	if err != nil {
-		Trace("Error while reading configuration file: ", err)
+	f, errOpen := filesystem.Open(filename)
+	if errOpen != nil {
+		Trace("Error while opening file: ", errOpen)
+		return errOpen
 	}
-	if err := yaml.Unmarshal(data, out); err != nil {
-		Trace("Error while unmarshalling configuration data: ", err)
+	data := make([]byte, yamlFileMaxLength)
+	l, errRead := f.Read(data)
+	if errRead != nil {
+		Trace("Error while reading file: ", errRead)
+		return errRead
 	}
+	if errUnmarshal := yaml.Unmarshal(data[:l], out); errUnmarshal != nil {
+		Trace("Error while unmarshalling data: ", errUnmarshal)
+		return errUnmarshal
+	}
+	return nil
 }
 
-// SaveToYAML saves a structure configuration into a YAML file
-func SaveToYAML(in any, filename string) {
+// SaveToYAMLFile saves a structure configuration into a YAML file
+func SaveToYAMLFile(in any, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
@@ -59,11 +72,13 @@ func SaveToYAML(in any, filename string) {
 	err := yamlEncoder.Encode(&in)
 	if err != nil {
 		Trace("Error while marshalling configuration data: ", err)
+		return
 	}
 	// Then we save it
 	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec,revive // We want people to be able to share this
 	if err != nil {
 		Trace("Error while saving configuration: ", err)
+		return
 	}
 }
 
