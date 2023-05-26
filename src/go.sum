@@ -2229,8 +2229,8 @@ github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeV
 github.com/shurcooL/vfsgen v0.0.0-20200824052919-0d455de96546/go.mod h1:TrYk7fJVaAttu97ZZKrO9UbRa8izdowaMIZcxYMbVaw=
 github.com/sigstore/cosign/v2 v2.0.2 h1:Ttaj/OkJAy+ummhnHG2F+JSFeZQj8i0P6o8j2RY9NG4=
 github.com/sigstore/cosign/v2 v2.0.2/go.mod h1:yJXtRmWrumyQA/XPjTTjOufnNckI87mmmVxv9rtEqgE=
-github.com/sigstore/rekor v1.1.1 h1:JCeSss+qUHnCATmwAZh4zT9k0Frdyq0BjmRwewSfEy4=
-github.com/sigstore/rekor v1.1.1/go.mod h1:x/xK+HK08MiuJv+v4OxY/Oo3bhuz1DtJXNJrV7hrzvs=
+github.com/sigstore/rekor v1.2.0 h1:ahlnoEY3zo8Vc+eZLPobamw6YfBTAbI0lthzUQd6qe4=
+github.com/sigstore/rekor v1.2.0/go.mod h1:zcFO54qIg2G1/i0sE/nvmELUOng/n0MPjTszRYByVPo=
 github.com/sigstore/sigstore v1.6.4 h1:jH4AzR7qlEH/EWzm+opSpxCfuUcjHL+LJPuQE7h40WE=
 github.com/sigstore/sigstore v1.6.4/go.mod h1:pjR64lBxnjoSrAr+Ydye/FV73IfrgtoYlAI11a8xMfA=
 github.com/sirupsen/logrus v1.0.4-0.20170822132746-89742aefa4b2/go.mod h1:pMByvHTf9Beacp5x1UXfOR9xyW/9antXMhjMPG0dEzc=
