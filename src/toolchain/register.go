@@ -54,9 +54,9 @@ func isSupported(name string) bool {
 	return found
 }
 
-// GetToolchain returns the toolchain instance with the provided name
+// Get returns the toolchain instance with the provided name
 // The toolchain name is case insensitive.
-func GetToolchain(name string) (TchnInterface, error) {
+func Get(name string) (TchnInterface, error) {
 	if name == "" {
 		return nil, errors.New("toolchain name not provided")
 	}

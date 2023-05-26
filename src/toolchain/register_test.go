@@ -39,7 +39,7 @@ func Test_does_not_support_unregistered_toolchain_name(t *testing.T) {
 }
 
 func Test_unrecognized_toolchain_name(t *testing.T) {
-	toolchain, err := GetToolchain("dummy-toolchain")
+	toolchain, err := Get("dummy-toolchain")
 	assert.Error(t, err)
 	assert.Zero(t, toolchain)
 }
@@ -85,7 +85,7 @@ func Test_cannot_register_a_toolchain_with_no_test_command(t *testing.T) {
 }
 
 func Test_get_registered_toolchain_with_empty_name(t *testing.T) {
-	tchn, err := GetToolchain("")
+	tchn, err := Get("")
 	assert.Zero(t, tchn)
 	assert.Equal(t, errors.New("toolchain name not provided"), err)
 }
@@ -98,7 +98,7 @@ func Test_update_then_reset_a_built_in_toolchain(t *testing.T) {
 	// 1 - Add a built-in toolchain
 	builtIn := AToolchain(WithName("built-in"))
 	assert.NoError(t, addBuiltIn(builtIn))
-	t1, err1 := GetToolchain("built-in")
+	t1, err1 := Get("built-in")
 	assert.Equal(t, builtIn, t1)
 	assert.NoError(t, err1)
 
@@ -106,13 +106,13 @@ func Test_update_then_reset_a_built_in_toolchain(t *testing.T) {
 	updated := AToolchain(WithName("built-in"),
 		WithBuildCommand(ACommand(WithPath("other-path"))))
 	assert.NoError(t, Register(updated))
-	t2, err2 := GetToolchain("built-in")
+	t2, err2 := Get("built-in")
 	assert.Equal(t, updated, t2)
 	assert.NoError(t, err2)
 
 	// 3 - Reset the toolchain to built-in configuration
 	Reset("built-in")
-	t3, err3 := GetToolchain("built-in")
+	t3, err3 := Get("built-in")
 	assert.Equal(t, builtIn, t3)
 	assert.NoError(t, err3)
 }
@@ -121,13 +121,13 @@ func Test_register_then_unregister_a_toolchain(t *testing.T) {
 	// 1 - Register a toolchain
 	tchn := AToolchain(WithName("a-toolchain"))
 	assert.NoError(t, Register(tchn))
-	t1, err1 := GetToolchain("a-toolchain")
+	t1, err1 := Get("a-toolchain")
 	assert.Equal(t, tchn, t1)
 	assert.NoError(t, err1)
 
 	// 2 - Unregister the toolchain
 	Unregister("a-toolchain")
-	t2, err2 := GetToolchain("a-toolchain")
+	t2, err2 := Get("a-toolchain")
 	assert.Zero(t, t2)
 	assert.Equal(t, errors.New("toolchain not supported: a-toolchain"), err2)
 }
@@ -152,7 +152,7 @@ func assertNameIsNotCaseSensitive(t *testing.T, name string) {
 }
 
 func assertToolchainInitialization(t *testing.T, name string) {
-	toolchain, err := GetToolchain(name)
+	toolchain, err := Get(name)
 	assert.NoError(t, err)
 	assert.Equal(t, name, toolchain.GetName())
 }

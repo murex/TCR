@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ import (
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/settings"
+	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -91,7 +92,7 @@ func initConfig(writer io.Writer) {
 	createConfigDir()
 
 	initTCRConfig()
-	initToolchainConfig()
+	toolchain.InitConfig(configDirPath)
 	language.InitConfig(configDirPath)
 }
 
@@ -142,7 +143,7 @@ func createConfigDir() {
 func Save() {
 	createConfigDir()
 	saveTCRConfig()
-	saveToolchainConfigs()
+	toolchain.SaveConfigs()
 	language.SaveConfigs()
 }
 
@@ -161,7 +162,7 @@ func saveTCRConfig() {
 func Reset() {
 	utils.Trace("Resetting configuration to default values")
 	resetTCRConfig()
-	resetToolchainConfigs()
+	toolchain.ResetConfigs()
 	language.ResetConfigs()
 	Save()
 }
@@ -174,7 +175,7 @@ func resetTCRConfig() {
 func Show() {
 	utils.Trace()
 	showTCRConfig()
-	showToolchainConfigs()
+	toolchain.ShowConfigs()
 	language.ShowConfigs()
 }
 

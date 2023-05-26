@@ -92,7 +92,7 @@ func initCheckEnv(p params.Params) {
 	if checkEnv.langErr == nil {
 		checkEnv.tchn, checkEnv.tchnErr = checkEnv.lang.GetToolchain(p.Toolchain)
 	} else {
-		checkEnv.tchn, checkEnv.tchnErr = toolchain.GetToolchain(p.Toolchain)
+		checkEnv.tchn, checkEnv.tchnErr = toolchain.Get(p.Toolchain)
 	}
 
 	checkEnv.workDirErr = toolchain.SetWorkDir(p.WorkDir)

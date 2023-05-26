@@ -20,11 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package toolchain
 
 import (
 	"fmt"
-	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -36,38 +35,38 @@ func Test_can_save_toolchain_configuration(t *testing.T) {
 }
 
 func Test_convert_toolchain_name_to_config(t *testing.T) {
-	tchn := toolchain.AToolchain()
-	cfg := asToolchainConfig(tchn)
+	tchn := AToolchain()
+	cfg := asConfig(tchn)
 	assert.Equal(t, tchn.GetName(), cfg.Name)
 	assert.Equal(t, cfg.Name, asToolchain(cfg).GetName())
 }
 
 func Test_convert_toolchain_command_os_name_to_config(t *testing.T) {
-	cmd := toolchain.ACommand()
-	cfg := asToolchainCommandConfig(*cmd)
+	cmd := ACommand()
+	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Os), fmt.Sprint(cfg.Os))
-	assert.Equal(t, fmt.Sprint(cfg.Os), fmt.Sprint(asToolchainCommand(cfg).Os))
+	assert.Equal(t, fmt.Sprint(cfg.Os), fmt.Sprint(asCommand(cfg).Os))
 }
 
 func Test_convert_toolchain_command_arch_name_to_config(t *testing.T) {
-	cmd := toolchain.ACommand()
-	cfg := asToolchainCommandConfig(*cmd)
+	cmd := ACommand()
+	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Arch), fmt.Sprint(cfg.Arch))
-	assert.Equal(t, fmt.Sprint(cfg.Arch), fmt.Sprint(asToolchainCommand(cfg).Arch))
+	assert.Equal(t, fmt.Sprint(cfg.Arch), fmt.Sprint(asCommand(cfg).Arch))
 }
 
 func Test_convert_toolchain_command_path_to_config(t *testing.T) {
-	cmd := toolchain.ACommand(toolchain.WithPath("some-command-path"))
-	cfg := asToolchainCommandConfig(*cmd)
+	cmd := ACommand(WithPath("some-command-path"))
+	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, cmd.Path, cfg.Command)
-	assert.Equal(t, cfg.Command, asToolchainCommand(cfg).Path)
+	assert.Equal(t, cfg.Command, asCommand(cfg).Path)
 }
 
 func Test_convert_toolchain_command_arguments_to_config(t *testing.T) {
-	cmd := toolchain.ACommand(toolchain.WithArgs([]string{"arg1", "arg2"}))
-	cfg := asToolchainCommandConfig(*cmd)
+	cmd := ACommand(WithArgs([]string{"arg1", "arg2"}))
+	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Arguments), fmt.Sprint(cfg.Arguments))
-	assert.Equal(t, fmt.Sprint(cfg.Arguments), fmt.Sprint(asToolchainCommand(cfg).Arguments))
+	assert.Equal(t, fmt.Sprint(cfg.Arguments), fmt.Sprint(asCommand(cfg).Arguments))
 }
 
 func Test_show_toolchain_configs_with_no_saved_config(t *testing.T) {
@@ -78,7 +77,7 @@ func Test_show_toolchain_configs_with_no_saved_config(t *testing.T) {
 	utils.AssertSimpleTrace(t, expected,
 		func() {
 			toolchainDirPath = ""
-			showToolchainConfigs()
+			ShowConfigs()
 		},
 	)
 }
@@ -87,19 +86,19 @@ func Test_reset_toolchain_configs_with_no_saved_config(t *testing.T) {
 	expected := []string{
 		"Resetting toolchains configuration",
 	}
-	for _, builtin := range toolchain.Names() {
+	for _, builtin := range Names() {
 		expected = append(expected, "- "+builtin)
 	}
 	utils.AssertSimpleTrace(t, expected,
 		func() {
-			resetToolchainConfigs()
+			ResetConfigs()
 		},
 	)
 }
 
 func Test_show_toolchain_config(t *testing.T) {
-	tchn := toolchain.AToolchain()
-	cfg := asToolchainConfig(tchn)
+	tchn := AToolchain()
+	cfg := asConfig(tchn)
 	prefix := "- toolchain." + cfg.Name
 	buildCmd := cfg.BuildCommand[0]
 	testCmd := cfg.TestCommand[0]
