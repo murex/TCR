@@ -71,7 +71,7 @@ func Test_show_config_value(t *testing.T) {
 	expected := []string{"- " + key + ": " + value}
 	utils.AssertSimpleTrace(t, expected,
 		func() {
-			utils.TraceConfigValue(key, value)
+			utils.TraceKeyValue(key, value)
 		},
 	)
 }

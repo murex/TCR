@@ -20,32 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils
+package toolchain
 
-import (
-	"fmt"
-	"github.com/murex/tcr/settings"
-	"io"
-)
+import "github.com/spf13/afero"
 
-// simpleTraceWriter is the writer used by Trace() to write trace messages to io.Writer
-var simpleTraceWriter io.Writer
+// appFS is the singleton referring to the filesystem being used
+var appFS afero.Fs
 
-// SetSimpleTrace sets the writer used by Trace()
-func SetSimpleTrace(w io.Writer) {
-	if w != nil {
-		simpleTraceWriter = w
-	}
-}
-
-// Trace writes simple trace messages
-func Trace(a ...any) {
-	if simpleTraceWriter != nil {
-		_, _ = fmt.Fprintln(simpleTraceWriter, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
-	}
-}
-
-// TraceKeyValue writes simple trace messages for a key/value pair
-func TraceKeyValue(key string, value any) {
-	Trace("- ", key, ": ", value)
+func init() {
+	appFS = afero.NewOsFs()
 }

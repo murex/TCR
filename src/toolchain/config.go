@@ -73,12 +73,12 @@ func SaveConfigs() {
 
 func saveConfig(name string) {
 	tchn, _ := Get(name)
-	utils.SaveToYAMLFile(asConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
+	utils.SaveToYAMLFile(appFS, asConfig(tchn), utils.BuildYAMLFilePath(toolchainDirPath, name))
 }
 
 // GetConfigFileList returns the list of toolchain configuration files found in toolchain directory
 func GetConfigFileList() (list []string) {
-	return utils.ListYAMLFilesIn(toolchainDirPath)
+	return utils.ListYAMLFilesIn(appFS, toolchainDirPath)
 }
 
 func loadConfigs() {
@@ -207,7 +207,7 @@ func GetConfigDirPath() string {
 }
 
 func createConfigDir() {
-	utils.CreateConfigSubDir(toolchainDirPath, "TCR toolchain configuration directory")
+	utils.CreateSubDir(appFS, toolchainDirPath, "TCR toolchain configuration directory")
 }
 
 // ShowConfigs shows the toolchains configuration
@@ -230,12 +230,12 @@ func (t configYAML) show() {
 	for _, cmd := range t.TestCommand {
 		cmd.show(prefix + ".test")
 	}
-	utils.TraceConfigValue(prefix+".test-result-dir", t.TestResultDir)
+	utils.TraceKeyValue(prefix+".test-result-dir", t.TestResultDir)
 }
 
 func (c commandConfigYAML) show(prefix string) {
-	utils.TraceConfigValue(prefix+".os", c.Os)
-	utils.TraceConfigValue(prefix+".arch", c.Arch)
-	utils.TraceConfigValue(prefix+".command", c.Command)
-	utils.TraceConfigValue(prefix+".args", c.Arguments)
+	utils.TraceKeyValue(prefix+".os", c.Os)
+	utils.TraceKeyValue(prefix+".arch", c.Arch)
+	utils.TraceKeyValue(prefix+".command", c.Command)
+	utils.TraceKeyValue(prefix+".args", c.Arguments)
 }

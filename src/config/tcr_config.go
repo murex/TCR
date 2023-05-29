@@ -184,7 +184,7 @@ func showTCRConfig() {
 	sort.Strings(keys)
 	utils.Trace("TCR configuration:")
 	for _, key := range keys {
-		utils.TraceConfigValue(key, viper.Get(key))
+		utils.TraceKeyValue(key, viper.Get(key))
 	}
 }
 

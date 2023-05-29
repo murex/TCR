@@ -23,11 +23,19 @@ SOFTWARE.
 package utils
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_config_trace_format(t *testing.T) {
+func Test_simple_trace_when_writer_is_not_set(t *testing.T) {
+	assert.NotPanics(t, func() {
+		SetSimpleTrace(nil)
+		Trace("Some dummy message")
+	})
+}
+
+func Test_simple_trace_format(t *testing.T) {
 	msg := "Some dummy message"
 	AssertSimpleTrace(t, []string{msg},
 		func() {
@@ -36,9 +44,12 @@ func Test_config_trace_format(t *testing.T) {
 	)
 }
 
-func Test_config_trace_when_writer_is_not_set(t *testing.T) {
-	assert.NotPanics(t, func() {
-		SetSimpleTrace(nil)
-		Trace("Some dummy message")
-	})
+func Test_simple_trace_key_value_format(t *testing.T) {
+	k, v := "some-key", "some-value"
+	expected := []string{fmt.Sprintf("- %s: %s", k, v)}
+	AssertSimpleTrace(t, expected,
+		func() {
+			TraceKeyValue(k, v)
+		},
+	)
 }

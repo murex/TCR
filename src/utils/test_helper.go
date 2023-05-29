@@ -40,6 +40,7 @@ func SlowTestTag(t *testing.T) {
 
 // AssertSimpleTrace is a utility function to assert simple trace messages
 func AssertSimpleTrace(t *testing.T, expected []string, operation func()) {
+	t.Helper()
 	var output bytes.Buffer
 	SetSimpleTrace(&output)
 	operation()
