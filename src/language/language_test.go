@@ -193,20 +193,20 @@ func Test_get_toolchain_with_non_compatible_toolchain(t *testing.T) {
 }
 
 func Test_retrieve_language_files(t *testing.T) {
-	appFs = afero.NewMemMapFs()
+	appFS = afero.NewMemMapFs()
 	baseDir := filepath.Join("base-dir")
 	srcDir := filepath.Join(baseDir, "src")
-	_ = appFs.MkdirAll(srcDir, os.ModeDir)
+	_ = appFS.MkdirAll(srcDir, os.ModeDir)
 	srcFile1 := filepath.Join(srcDir, "file1.ext")
-	_ = afero.WriteFile(appFs, srcFile1, []byte("some contents"), 0644)
+	_ = afero.WriteFile(appFS, srcFile1, []byte("some contents"), 0644)
 	srcFile2 := filepath.Join(srcDir, "file2.ext")
-	_ = afero.WriteFile(appFs, srcFile2, []byte("some contents"), 0644)
+	_ = afero.WriteFile(appFS, srcFile2, []byte("some contents"), 0644)
 	testDir := filepath.Join(baseDir, "test")
-	_ = appFs.MkdirAll(testDir, os.ModeDir)
+	_ = appFS.MkdirAll(testDir, os.ModeDir)
 	testFile1 := filepath.Join(testDir, "file1.ext")
-	_ = afero.WriteFile(appFs, testFile1, []byte("some contents"), 0644)
+	_ = afero.WriteFile(appFS, testFile1, []byte("some contents"), 0644)
 	testFile2 := filepath.Join(testDir, "file2.ext")
-	_ = afero.WriteFile(appFs, testFile2, []byte("some contents"), 0644)
+	_ = afero.WriteFile(appFS, testFile2, []byte("some contents"), 0644)
 
 	lang := ALanguage(
 		WithBaseDir(baseDir),

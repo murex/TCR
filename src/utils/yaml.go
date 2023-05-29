@@ -24,6 +24,7 @@ package utils
 
 import (
 	"bytes"
+	"github.com/spf13/afero"
 	"gopkg.in/yaml.v3"
 	"io/fs"
 	"os"
@@ -64,7 +65,7 @@ func LoadFromYAMLFile(filesystem fs.FS, filename string, out any) error {
 }
 
 // SaveToYAMLFile saves a structure configuration into a YAML file
-func SaveToYAMLFile(in any, filename string) {
+func SaveToYAMLFile(filesystem afero.Fs, in any, filename string) {
 	// First we marshall the data
 	var b bytes.Buffer
 	yamlEncoder := yaml.NewEncoder(&b)
@@ -75,22 +76,25 @@ func SaveToYAMLFile(in any, filename string) {
 		return
 	}
 	// Then we save it
-	err = os.WriteFile(filename, b.Bytes(), 0644) //nolint:gosec,revive // We want people to be able to share this
+	err = afero.WriteFile(filesystem, filename, b.Bytes(), 0644) //nolint:gosec,revive // We want people to be able to share this
 	if err != nil {
 		Trace("Error while saving configuration: ", err)
 		return
 	}
 }
 
-// CreateConfigSubDir creates a sub-directory in the configuration directory
-func CreateConfigSubDir(dirPath string, description string) {
-	_, err := os.Stat(dirPath)
+// CreateSubDir creates a sub-directory in the configuration directory
+func CreateSubDir(filesystem afero.Fs, dirPath string, description string) {
+	info, err := filesystem.Stat(dirPath)
 	if os.IsNotExist(err) {
 		Trace("Creating ", description, ": ", dirPath)
-		err := os.MkdirAll(dirPath, os.ModePerm)
+		err := filesystem.MkdirAll(dirPath, 0755)
 		if err != nil {
 			Trace("Error creating ", description, ": ", err)
 		}
+	}
+	if info != nil && !info.IsDir() {
+		Trace("Error creating ", description, ": ", "a file with this name already exists")
 	}
 }
 
@@ -109,8 +113,8 @@ func ExtractNameFromYAMLFilename(filename string) string {
 }
 
 // ListYAMLFilesIn lists all YAML files in the provided directory
-func ListYAMLFilesIn(dirPath string) (list []string) {
-	entries, err := os.ReadDir(dirPath)
+func ListYAMLFilesIn(filesystem afero.Fs, dirPath string) (list []string) {
+	entries, err := afero.ReadDir(filesystem, dirPath)
 	if err != nil || len(entries) == 0 {
 		// If we cannot open the directory or if it's empty, we don't go any further
 		return nil

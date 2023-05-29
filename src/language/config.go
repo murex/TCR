@@ -77,12 +77,12 @@ func SaveConfigs() {
 
 func saveConfig(name string) {
 	lang, _ := Get(name)
-	utils.SaveToYAMLFile(asConfig(lang), utils.BuildYAMLFilePath(languageDirPath, name))
+	utils.SaveToYAMLFile(appFS, asConfig(lang), utils.BuildYAMLFilePath(languageDirPath, name))
 }
 
 // GetConfigFileList returns the list of language configuration files found in language directory
 func GetConfigFileList() (list []string) {
-	return utils.ListYAMLFilesIn(languageDirPath)
+	return utils.ListYAMLFilesIn(appFS, languageDirPath)
 }
 
 func loadConfigs() {
@@ -197,7 +197,7 @@ func GetConfigDirPath() string {
 }
 
 func createConfigDir() {
-	utils.CreateConfigSubDir(languageDirPath, "TCR language configuration directory")
+	utils.CreateSubDir(appFS, languageDirPath, "TCR language configuration directory")
 }
 
 // ShowConfigs shows the languages configuration
@@ -220,11 +220,11 @@ func (l configYAML) show() {
 }
 
 func (lt toolchainConfigYAML) show(prefix string) {
-	utils.TraceConfigValue(prefix+".default", lt.Default)
-	utils.TraceConfigValue(prefix+".compatible-with", lt.Compatible)
+	utils.TraceKeyValue(prefix+".default", lt.Default)
+	utils.TraceKeyValue(prefix+".compatible-with", lt.Compatible)
 }
 
 func (ftf fileTreeFilterConfigYAML) show(prefix string) {
-	utils.TraceConfigValue(prefix+".directories", ftf.Directories)
-	utils.TraceConfigValue(prefix+".patterns", ftf.FilePatterns)
+	utils.TraceKeyValue(prefix+".directories", ftf.Directories)
+	utils.TraceKeyValue(prefix+".patterns", ftf.FilePatterns)
 }
