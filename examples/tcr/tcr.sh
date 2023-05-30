@@ -93,7 +93,7 @@ download_tcr_go() {
 
   # Move extracted files to doc directory
   rm -rf "${TCR_DOC_DIR}"
-  src_extracted_path="${TCR_DOWNLOAD_DIR}/tcr-${version}"
+  src_extracted_path="${TCR_DOWNLOAD_DIR}/TCR-${version}"
   mv -f "${src_extracted_path}/doc" "${TCR_DOC_DIR}"
 
   # Clean up after download
