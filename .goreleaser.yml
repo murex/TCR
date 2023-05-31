@@ -9,6 +9,7 @@ builds:
     dir: src
     binary: tcr
     env:
+      - CGO_ENABLED=0
       - CONFIG_PKG=github.com/murex/tcr/settings
     ldflags:
       - -s -w
