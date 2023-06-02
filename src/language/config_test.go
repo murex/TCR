@@ -25,14 +25,11 @@ package language
 import (
 	"fmt"
 	"github.com/murex/tcr/utils"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
-
-func Test_can_save_language_configuration(t *testing.T) {
-	// TODO bypass filesystem
-	//SaveToYAMLFile(lang, "")
-}
 
 func Test_convert_language_name_to_config(t *testing.T) {
 	lang := ALanguage()
@@ -143,4 +140,37 @@ func Test_show_language_config(t *testing.T) {
 			cfg.show()
 		},
 	)
+}
+
+func Test_save_and_load_a_language_config(t *testing.T) {
+	const name = "my-language"
+	lang := ALanguage(WithName(name))
+	errRegister := Register(lang)
+	if errRegister != nil {
+		t.Fatal(errRegister)
+	}
+
+	// Set up a temporary directory
+	appFS = afero.NewOsFs()
+	dir, errTempDir := os.MkdirTemp("", "tcr-language")
+	if errTempDir != nil {
+		t.Fatal(errTempDir)
+	}
+	defer t.Cleanup(func() {
+		_ = os.RemoveAll(dir)
+	})
+	// Prepare language configuration directory
+	initConfigDirPath(dir)
+	createConfigDir()
+
+	// Save the language configuration file
+	saveConfig(name)
+
+	// Load the language configuration file
+	yamlConfig := loadConfig(utils.BuildYAMLFilename(name))
+
+	// Check that we get back the same language data
+	if assert.NotNil(t, yamlConfig) {
+		assert.Equal(t, lang, asLanguage(*yamlConfig))
+	}
 }

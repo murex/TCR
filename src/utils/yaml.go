@@ -100,10 +100,11 @@ func CreateSubDir(filesystem afero.Fs, dirPath string, description string) {
 
 // BuildYAMLFilePath creates a YAML file path
 func BuildYAMLFilePath(dirPath string, name string) string {
-	return filepath.Join(dirPath, buildYAMLFilename(name))
+	return filepath.Join(dirPath, BuildYAMLFilename(name))
 }
 
-func buildYAMLFilename(name string) string {
+// BuildYAMLFilename creates a YAML file name
+func BuildYAMLFilename(name string) string {
 	return strings.ToLower(name + "." + yamlExtension)
 }
 
