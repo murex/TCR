@@ -25,14 +25,11 @@ package toolchain
 import (
 	"fmt"
 	"github.com/murex/tcr/utils"
+	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
-
-func Test_can_save_toolchain_configuration(t *testing.T) {
-	// TODO bypass filesystem
-	//SaveToYAMLFile(tchn, "")
-}
 
 func Test_convert_toolchain_name_to_config(t *testing.T) {
 	tchn := AToolchain()
@@ -118,4 +115,37 @@ func Test_show_toolchain_config(t *testing.T) {
 			cfg.show()
 		},
 	)
+}
+
+func Test_save_and_load_a_toolchain_config(t *testing.T) {
+	const name = "my-toolchain"
+	tchn := AToolchain(WithName(name))
+	errRegister := Register(tchn)
+	if errRegister != nil {
+		t.Fatal(errRegister)
+	}
+
+	// Set up a temporary directory
+	appFS = afero.NewOsFs()
+	dir, errTempDir := os.MkdirTemp("", "tcr-toolchain")
+	if errTempDir != nil {
+		t.Fatal(errTempDir)
+	}
+	defer t.Cleanup(func() {
+		_ = os.RemoveAll(dir)
+	})
+	// Prepare toolchain configuration directory
+	initConfigDirPath(dir)
+	createConfigDir()
+
+	// Save the toolchain configuration file
+	saveConfig(name)
+
+	// Load the toolchain configuration file
+	yamlConfig := loadConfig(utils.BuildYAMLFilename(name))
+
+	// Check that we get back the same toolchain data
+	if assert.NotNil(t, yamlConfig) {
+		assert.Equal(t, tchn, asToolchain(*yamlConfig))
+	}
 }

@@ -131,15 +131,15 @@ func asToolchains(toolchainsCfg toolchainConfigYAML) Toolchains {
 }
 
 func asToolchainTable(toolchainsCfg []string) []string {
-	return append([]string(nil), toolchainsCfg...)
+	return append([]string{}, toolchainsCfg...)
 }
 
 func asDirectoryTable(directoryTableCfg []string) []string {
-	return append([]string(nil), directoryTableCfg...)
+	return append([]string{}, directoryTableCfg...)
 }
 
 func asFilePatternTable(filePatternTableCfg []string) []string {
-	return append([]string(nil), filePatternTableCfg...)
+	return append([]string{}, filePatternTableCfg...)
 }
 
 // ResetConfigs resets the languages configuration

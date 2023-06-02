@@ -89,11 +89,11 @@ func Test_build_yaml_filepath(t *testing.T) {
 }
 
 func Test_can_retrieve_yaml_filename_from_name(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYAMLFilename(baseName))
+	assert.Equal(t, baseName+extension, BuildYAMLFilename(baseName))
 }
 
 func Test_yaml_filename_is_always_lowercase(t *testing.T) {
-	assert.Equal(t, baseName+extension, buildYAMLFilename(strings.ToUpper(baseName)))
+	assert.Equal(t, baseName+extension, BuildYAMLFilename(strings.ToUpper(baseName)))
 }
 
 func Test_can_retrieve_name_from_yaml_filename(t *testing.T) {
