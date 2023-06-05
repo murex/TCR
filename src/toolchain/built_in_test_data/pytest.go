@@ -1,5 +1,7 @@
+//go:build test_helper
+
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package built_in_test_data //nolint:revive
 
-const mavenWrapperCommandPath = ".\\mvnw.cmd"
+func init() {
+	BuiltInTests = append(BuiltInTests,
+		BuiltInTestData{
+			Name:             "pytest",
+			BuildCommandPath: "pytest",
+			BuildCommandArgs: []string{"--collect-only"},
+			TestCommandPath:  "pytest",
+			TestCommandArgs:  []string{},
+			TestResultDir:    "pytest",
+		},
+	)
+}
