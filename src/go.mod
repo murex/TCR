@@ -9,7 +9,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20230602101333-f384c29b62dd
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.7.0
-	github.com/golangci/golangci-lint v1.53.1
+	github.com/golangci/golangci-lint v1.53.2
 	github.com/goreleaser/goreleaser v1.18.2
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
@@ -69,6 +69,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/Masterminds/sprig v2.22.0+incompatible // indirect
 	github.com/Microsoft/go-winio v0.6.1 // indirect
+	github.com/OpenPeeDeeP/depguard/v2 v2.1.0 // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/alexkohler/nakedret/v2 v2.0.1 // indirect
@@ -187,7 +188,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golangci/check v0.0.0-20180506172741-cfe4005ccda2 // indirect
-	github.com/golangci/depguard/v2 v2.0.2-0.20230601235138-ed68d3771f48 // indirect
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
 	github.com/golangci/go-misc v0.0.0-20220329215616-d24fe342adfe // indirect
 	github.com/golangci/gofmt v0.0.0-20220901101216-f2edd75033f2 // indirect
