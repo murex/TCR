@@ -1,3 +1,5 @@
+//go:build test_helper
+
 /*
 Copyright (c) 2023 Murex
 
@@ -20,30 +22,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package built_in_test_data //nolint:revive
 
-import "time"
-
-type (
-	// TestStats is the structure containing information of the test run
-	TestStats struct {
-		TotalRun   int
-		Passed     int
-		Failed     int
-		Skipped    int
-		WithErrors int
-		Duration   time.Duration
-	}
-)
-
-// NewTestStats create a new instance of the TestStats class
-func NewTestStats(totalRun, passed, failed, skipped, withErrors int, duration time.Duration) TestStats { //nolint:revive
-	return TestStats{
-		TotalRun:   totalRun,
-		Failed:     failed,
-		Passed:     passed,
-		Skipped:    skipped,
-		WithErrors: withErrors,
-		Duration:   duration,
-	}
+func init() {
+	BuiltInTests = append(BuiltInTests,
+		BuiltInTestData{
+			Name:             "gotestsum",
+			BuildCommandPath: "go",
+			BuildCommandArgs: []string{"test", "-count=0", "./..."},
+			TestCommandPath:  "gotestsum",
+			TestCommandArgs: []string{
+				"--format", "pkgname",
+				"--junitfile", "_test_results/output.xml",
+				"--",
+				"-short", "./...",
+			},
+			TestResultDir: "_test_results",
+		},
+	)
 }

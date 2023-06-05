@@ -1,7 +1,5 @@
-//go:build !windows
-
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,4 +22,29 @@ SOFTWARE.
 
 package toolchain
 
-const gradleWrapperCommandPath = "./gradlew"
+import (
+	"github.com/murex/tcr/utils"
+	"testing"
+)
+
+const (
+	toolchainName = "gradle-wrapper"
+)
+
+func Test_toolchain_returns_error_when_build_fails(t *testing.T) {
+	assertErrorWhenBuildFails(t, toolchainName, testDataRootDir)
+}
+
+func Test_toolchain_returns_ok_when_build_passes(t *testing.T) {
+	utils.SlowTestTag(t)
+	assertNoErrorWhenBuildPasses(t, toolchainName, testDataDirJava)
+}
+
+func Test_toolchain_returns_error_when_tests_fail(t *testing.T) {
+	assertErrorWhenTestFails(t, toolchainName, testDataRootDir)
+}
+
+func Test_toolchain_returns_ok_when_tests_pass(t *testing.T) {
+	utils.SlowTestTag(t)
+	assertNoErrorWhenTestPasses(t, toolchainName, testDataDirJava)
+}
