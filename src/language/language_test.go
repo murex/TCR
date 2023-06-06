@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,50 +29,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
-
-var languageFileExtensions []string
-
-func registerLanguageFileExtensionsForTests(ext ...string) {
-	languageFileExtensions = append(languageFileExtensions, ext...)
-}
-
-func allLanguageFileExtensionsBut(ext ...string) (out []string) {
-	for _, e := range languageFileExtensions {
-		if !contains(ext, e) {
-			out = append(out, e)
-		}
-	}
-	return out
-}
-
-func contains(items []string, searched string) bool {
-	for _, item := range items {
-		if searched == item {
-			return true
-		}
-	}
-	return false
-}
-
-var knownToolchains = make(map[string]bool)
-
-func registerToolchainsForTests(toolchainNames ...string) {
-	for _, t := range toolchainNames {
-		knownToolchains[t] = true
-	}
-}
-
-func allKnownToolchainsBut(toolchainNames ...string) (out []string) {
-	for k := range knownToolchains {
-		if !contains(toolchainNames, k) {
-			out = append(out, k)
-		}
-	}
-	return out
-}
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {
 	const srcDir, testDir = "src-dir", "test-dir"
@@ -226,94 +184,4 @@ func Test_retrieve_language_files(t *testing.T) {
 	assert.NotContains(t, testFiles, srcFile2)
 	assert.Contains(t, testFiles, testFile1)
 	assert.Contains(t, testFiles, testFile2)
-}
-
-// Assert utility functions for language type
-
-func assertDefaultToolchain(t *testing.T, languageName string, toolchainName string) {
-	t.Helper()
-	lang, err := Get(languageName)
-	assert.NoError(t, err)
-	if assert.NotNil(t, lang) {
-		assert.Equal(t, toolchainName, lang.GetToolchains().Default)
-	}
-}
-
-func assertListOfDirsToWatch(t *testing.T, languageName string, dirs ...string) {
-	t.Helper()
-	dirList := getBuiltIn(languageName).DirsToWatch("")
-	for _, dir := range dirs {
-		t.Run(dir, func(t *testing.T) {
-			assert.Contains(t, dirList, toLocalPath(dir))
-		})
-	}
-}
-
-func assertCompatibleToolchains(t *testing.T, languageName string, toolchainNames ...string) {
-	t.Helper()
-	lang := getBuiltIn(languageName)
-	for _, tchn := range toolchainNames {
-		t.Run(tchn, func(t *testing.T) {
-			assert.True(t, lang.worksWithToolchain(tchn))
-		})
-	}
-}
-
-func assertIncompatibleToolchains(t *testing.T, languageName string, toolchainNames ...string) {
-	t.Helper()
-	lang := getBuiltIn(languageName)
-	for _, tchn := range toolchainNames {
-		t.Run(tchn, func(t *testing.T) {
-			assert.False(t, lang.worksWithToolchain(tchn))
-		})
-	}
-}
-
-type filePathMatcher struct {
-	filePath   string
-	isSrcFile  bool
-	isTestFile bool
-}
-
-func shouldMatchSrc(filePath string) filePathMatcher {
-	return filePathMatcher{filePath: filePath, isSrcFile: true, isTestFile: false}
-}
-func shouldMatchTest(filePath string) filePathMatcher {
-	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: true}
-}
-
-func shouldNotMatch(filePath string) filePathMatcher {
-	return filePathMatcher{filePath: filePath, isSrcFile: false, isTestFile: false}
-}
-
-// buildFilePathMatchers is a convenience method building a set of matching tests with the provided
-// dir, fileBaseName and fileExt.
-// Among other things, it checks that extension matching is case-insensitive, that temporary files with
-// "~" or ".swp" are excluded, and that matching should pass with files in subdirectories from parentDir
-func buildFilePathMatchers(matcher func(string) filePathMatcher, parentDir string, fileBase string, fileExt string) []filePathMatcher {
-	var fileBasePath = filepath.Join(parentDir, fileBase)
-	var subDirPath = filepath.Join(parentDir, "subDir", fileBase)
-	return []filePathMatcher{
-		shouldNotMatch(fileBasePath),
-		matcher(fileBasePath + strings.ToLower(fileExt)),
-		matcher(fileBasePath + strings.ToUpper(fileExt)),
-		shouldNotMatch(subDirPath),
-		matcher(subDirPath + fileExt),
-		shouldNotMatch(fileBasePath + fileExt + "~"),
-		shouldNotMatch(fileBasePath + fileExt + ".swp"),
-	}
-}
-
-func assertFilePathsMatching(t *testing.T, languageName string, matchers ...filePathMatcher) {
-	t.Helper()
-	lang, err := GetLanguage(languageName, "")
-	assert.NoError(t, err)
-	if assert.NotNil(t, lang) {
-		for _, matcher := range matchers {
-			assert.Equal(t, matcher.isSrcFile, lang.IsSrcFile(matcher.filePath),
-				"Should %v be a source file?", matcher.filePath)
-			assert.Equal(t, matcher.isTestFile, lang.IsTestFile(matcher.filePath),
-				"Should %v be a test file?", matcher.filePath)
-		}
-	}
 }
