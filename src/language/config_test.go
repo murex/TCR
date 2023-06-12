@@ -158,6 +158,7 @@ func Test_save_and_load_a_language_config(t *testing.T) {
 	}
 	defer t.Cleanup(func() {
 		_ = os.RemoveAll(dir)
+		delete(registered, name)
 	})
 	// Prepare language configuration directory
 	initConfigDirPath(dir)
@@ -172,5 +173,51 @@ func Test_save_and_load_a_language_config(t *testing.T) {
 	// Check that we get back the same language data
 	if assert.NotNil(t, yamlConfig) {
 		assert.Equal(t, lang, asLanguage(*yamlConfig))
+	}
+}
+
+func Test_save_and_load_all_language_configs(t *testing.T) {
+	// Set up a temporary directory
+	appFS = afero.NewOsFs()
+	dir, errTempDir := os.MkdirTemp("", "tcr-language")
+	if errTempDir != nil {
+		t.Fatal(errTempDir)
+	}
+	defer t.Cleanup(func() {
+		_ = os.RemoveAll(dir)
+	})
+	// Prepare language configuration directory
+	initConfigDirPath(dir)
+	createConfigDir()
+
+	// Make a copy of the registered languages to be used as a reference
+	expected := make(map[string]LangInterface)
+	for name, lang := range registered {
+		expected[name] = lang
+	}
+
+	// Save all languages configuration files. By default these are all built-in languages
+	SaveConfigs()
+
+	// Empty the map of registered languages
+	for name := range registered {
+		delete(registered, name)
+	}
+
+	// Load all languages configuration files
+	loadConfigs()
+
+	// Check that the languages are back in the registered map
+	if assert.Equal(t, len(expected), len(registered)) {
+		for name, expectedLang := range expected {
+			registeredLang, found := registered[name]
+			if assert.True(t, found) {
+				// The base dir for the 2 languages can be different.
+				// We force them to the same value to prevent false positive results
+				expectedLang.setBaseDir("")
+				registeredLang.setBaseDir("")
+				assert.Equal(t, expectedLang, registeredLang)
+			}
+		}
 	}
 }

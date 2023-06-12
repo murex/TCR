@@ -133,6 +133,7 @@ func Test_save_and_load_a_toolchain_config(t *testing.T) {
 	}
 	defer t.Cleanup(func() {
 		_ = os.RemoveAll(dir)
+		delete(registered, name)
 	})
 	// Prepare toolchain configuration directory
 	initConfigDirPath(dir)
@@ -147,5 +148,47 @@ func Test_save_and_load_a_toolchain_config(t *testing.T) {
 	// Check that we get back the same toolchain data
 	if assert.NotNil(t, yamlConfig) {
 		assert.Equal(t, tchn, asToolchain(*yamlConfig))
+	}
+}
+
+func Test_save_and_load_all_toolchain_configs(t *testing.T) {
+	// Set up a temporary directory
+	appFS = afero.NewOsFs()
+	dir, errTempDir := os.MkdirTemp("", "tcr-toolchain")
+	if errTempDir != nil {
+		t.Fatal(errTempDir)
+	}
+	defer t.Cleanup(func() {
+		_ = os.RemoveAll(dir)
+	})
+	// Prepare toolchain configuration directory
+	initConfigDirPath(dir)
+	createConfigDir()
+
+	// Make a copy of the registered toolchains to be used as a reference
+	expected := make(map[string]TchnInterface)
+	for name, tchn := range registered {
+		expected[name] = tchn
+	}
+
+	// Save all toolchains configuration files. By default these are all built-in toolchains
+	SaveConfigs()
+
+	// Empty the map of registered toolchains
+	for name := range registered {
+		delete(registered, name)
+	}
+
+	// Load all toolchains configuration files
+	loadConfigs()
+
+	// Check that the toolchains are back in the registered map
+	if assert.Equal(t, len(expected), len(registered)) {
+		for name, expectedTchn := range expected {
+			registeredTchn, found := registered[name]
+			if assert.True(t, found) {
+				assert.Equal(t, expectedTchn, registeredTchn)
+			}
+		}
 	}
 }
