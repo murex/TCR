@@ -18,12 +18,12 @@ jobs:
       run:
         shell: bash
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
           check-latest: true
           cache-dependency-path: src/go.sum
-      - uses: actions/checkout@v3
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
