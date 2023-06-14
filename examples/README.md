@@ -43,3 +43,8 @@ Here are some simple examples for using TCR with various languages & toolchains 
 
 - With [pytest](python-pytest/README.md)
 - With [bazel](python-bazel/README.md)
+
+
+## TypeScript
+
+- With [yarn](typescript-yarn/README.md)

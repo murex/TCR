@@ -1,0 +1,20 @@
+{
+  "name": "hello-world",
+  "version": "1.0.0",
+  "description": "Typescript + Yarn example for TCR",
+  "author": "Murex",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "*",
+    "jest": "*",
+    "ts-jest": "*",
+    "jest-junit": "*",
+    "typescript": "*"
+  },
+  "scripts": {
+    "test": "jest --watchAll"
+  },
+  "jest-junit": {
+    "outputDirectory": "./test_results"
+  }
+}
