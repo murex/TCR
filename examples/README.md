@@ -27,6 +27,10 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [make](java-make/README.md)
 - With [bazel](java-bazel/README.md)
 
+## JavaScript
+
+- With [yarn](javascript-yarn/README.md)
+
 ## Kotlin
 
 - With [gradle](kotlin-gradle/README.md)
