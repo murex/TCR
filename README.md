@@ -73,14 +73,16 @@ provided as built-in.
 
 #### Built-in languages and toolchains
 
-| Language | Toolchains                                                | Default        |
-|----------|-----------------------------------------------------------|----------------|
-| cpp      | cmake, bazel, make                                        | cmake          |
-| csharp   | dotnet, bazel, make                                       | dotnet         |
-| go       | go-tools, gotestsum, bazel, make                          | go-tools       |
-| java     | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
-| kotlin   | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
-| python   | pytest, bazel, make                                       | pytest         |
+| Language   | Toolchains                                                | Default        |
+|------------|-----------------------------------------------------------|----------------|
+| cpp        | cmake, bazel, make                                        | cmake          |
+| csharp     | dotnet, bazel, make                                       | dotnet         |
+| go         | go-tools, gotestsum, bazel, make                          | go-tools       |
+| java       | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
+| javascript | yarn, bazel, make                                         | yarn           |
+| kotlin     | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
+| python     | pytest, bazel, make                                       | pytest         |
+| typescript | yarn, bazel, make                                         | yarn           |
 
 ### Base directory
 
