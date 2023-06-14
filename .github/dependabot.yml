@@ -97,3 +97,17 @@ updates:
     directory: "/examples/python-pytest"
     schedule:
       interval: "weekly"
+
+  # Maintain dependencies for Javascript examples
+
+  - package-ecosystem: "npm"
+    directory: "/examples/javascript-yarn"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Typescript examples
+
+  - package-ecosystem: "npm"
+    directory: "/examples/typescript-yarn"
+    schedule:
+      interval: "weekly"
