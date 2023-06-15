@@ -33,9 +33,8 @@ import (
 )
 
 const (
-	yamlIndent        = 2
-	yamlExtension     = "yml"
-	yamlFileMaxLength = 1024 // Sufficient for language and toolchain config files
+	yamlIndent    = 2
+	yamlExtension = "yml"
 )
 
 // LoadFromYAMLFile loads a structure configuration from a YAML file
@@ -51,7 +50,19 @@ func LoadFromYAMLFile(filesystem fs.FS, filename string, out any) error {
 		Trace("Error while opening file: ", errOpen)
 		return errOpen
 	}
-	data := make([]byte, yamlFileMaxLength)
+	defer func() {
+		_ = f.Close()
+	}()
+
+	// Retrieve file size
+	info, errStat := f.Stat()
+	if errStat != nil {
+		Trace("Error while retrieving file info: ", errStat)
+		return errStat
+	}
+	size := info.Size() + 1 // one byte for final read at EOF
+
+	data := make([]byte, size)
 	l, errRead := f.Read(data)
 	if errRead != nil {
 		Trace("Error while reading file: ", errRead)
