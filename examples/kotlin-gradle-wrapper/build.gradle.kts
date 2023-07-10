@@ -3,7 +3,7 @@ import com.adarshr.gradle.testlogger.TestLoggerPlugin
 import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.0"
     id("com.adarshr.test-logger") version "3.2.0"
 }
 
