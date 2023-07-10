@@ -26,7 +26,7 @@ require (
 	golang.org/x/text v0.11.0
 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637
 	gopkg.in/yaml.v3 v3.0.1
-	gotest.tools/gotestsum v1.10.0
+	gotest.tools/gotestsum v1.10.1
 )
 
 require (
