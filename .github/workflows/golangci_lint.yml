@@ -10,7 +10,7 @@ jobs:
   golangci:
     strategy:
       matrix:
-        go: [ 1.19 ]
+        go: [ '1.20' ]
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     name: lint
     runs-on: ${{ matrix.os }}
@@ -29,7 +29,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
-          version: v1.51
+          version: v1.53
           # Optional: working directory, useful for mono-repos
           working-directory: src
 
