@@ -48,6 +48,11 @@ updates:
   # Maintain dependencies for Go examples
 
   - package-ecosystem: "gomod"
+    directory: "/examples/go-bazel"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gomod"
     directory: "/examples/go-go-tools"
     schedule:
       interval: "weekly"
@@ -92,6 +97,11 @@ updates:
       interval: "weekly"
 
   # Maintain dependencies for Python examples
+
+  - package-ecosystem: "pip"
+    directory: "/examples/python-bazel"
+    schedule:
+      interval: "weekly"
 
   - package-ecosystem: "pip"
     directory: "/examples/python-pytest"
