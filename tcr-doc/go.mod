@@ -5,7 +5,7 @@ go 1.20
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v0.26.0
+	github.com/murex/tcr v0.27.0
 	github.com/spf13/cobra v1.7.0
 )
 
@@ -23,7 +23,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20230602101333-f384c29b62dd // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.4.1 // indirect
-	github.com/go-git/go-git/v5 v5.7.0 // indirect
+	github.com/go-git/go-git/v5 v5.8.0 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
