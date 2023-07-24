@@ -36,7 +36,7 @@ type ReminderState int
 const (
 	NotStarted ReminderState = iota
 	Running
-	StoppedAfterTimeOut
+	AfterTimeOut
 	StoppedAfterInterruption
 )
 
@@ -114,15 +114,16 @@ func (r *PeriodicReminder) Start() {
 		for {
 			select {
 			case <-r.done:
-				if r.state == StoppedAfterTimeOut {
-					r.onEventAction(r.buildEventContext(TimeoutEvent, time.Now()))
-				}
 				if r.state == StoppedAfterInterruption {
 					r.onEventAction(r.buildEventContext(InterruptEvent, time.Now()))
 				}
 				return
 			case timestamp := <-r.ticker.C:
-				r.onEventAction(r.buildEventContext(PeriodicEvent, timestamp))
+				if r.state == AfterTimeOut {
+					r.onEventAction(r.buildEventContext(TimeoutEvent, timestamp))
+				} else {
+					r.onEventAction(r.buildEventContext(PeriodicEvent, timestamp))
+				}
 				r.tickCounter++
 			}
 		}
@@ -130,7 +131,9 @@ func (r *PeriodicReminder) Start() {
 
 	go func() {
 		time.Sleep(r.timeout)
-		r.stopTicking(StoppedAfterTimeOut)
+		if r.state == Running {
+			r.state = AfterTimeOut
+		}
 	}()
 }
 
@@ -166,12 +169,13 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			remaining: 0,
 		}
 	case TimeoutEvent:
+		elapsed := time.Duration(r.tickCounter+1) * r.tickPeriod
 		ctx = ReminderContext{
 			eventType: eventType,
-			index:     -1,
+			index:     r.tickCounter,
 			indexMax:  r.lastTickIndex,
 			timestamp: timestamp,
-			elapsed:   r.timeout,
+			elapsed:   elapsed,
 			remaining: 0,
 		}
 	}
@@ -179,7 +183,7 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 }
 
 func (r *PeriodicReminder) stopTicking(s ReminderState) {
-	if r.state == Running {
+	if r.state == Running || r.state == AfterTimeOut {
 		r.ticker.Stop()
 		r.state = s
 		r.stopTime = time.Now()
@@ -197,7 +201,7 @@ func (r *PeriodicReminder) GetElapsedTime() time.Duration {
 	switch r.state {
 	case NotStarted:
 		return 0
-	case Running:
+	case Running, AfterTimeOut:
 		return time.Since(r.startTime)
 	default:
 		return r.stopTime.Sub(r.startTime)

@@ -67,12 +67,12 @@ func Test_init_with_non_default_timeout(t *testing.T) {
 	assert.Equal(t, testTimeout, r.timeout)
 }
 
-func Test_ticking_stops_after_timeout(t *testing.T) {
+func Test_ticking_not_stops_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
-	assert.Equal(t, 2, r.tickCounter)
-	assert.Equal(t, StoppedAfterTimeOut, r.state)
+	assert.Equal(t, 4, r.tickCounter)
+	assert.Equal(t, AfterTimeOut, r.state)
 }
 
 // Tick Period
@@ -135,19 +135,19 @@ func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
 	assert.Equal(t, StoppedAfterInterruption, r.state)
 }
 
-func Test_stop_reminder_after_timeout(t *testing.T) {
+func Test_continue_reminder_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
 	r.Stop()
 
-	assert.Equal(t, 2, r.tickCounter)
-	assert.Equal(t, StoppedAfterTimeOut, r.state)
+	assert.Equal(t, 5, r.tickCounter)
+	assert.Equal(t, StoppedAfterInterruption, r.state)
 }
 
 // PeriodicReminder tick counter
 
-func Test_can_track_number_of_ticks_fired(t *testing.T) {
+func Test_can_track_number_of_ticks_fired_continue_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	assert.Equal(t, 0, r.tickCounter)
@@ -158,8 +158,8 @@ func Test_can_track_number_of_ticks_fired(t *testing.T) {
 	time.Sleep(testTickPeriod)
 	assert.Equal(t, 2, r.tickCounter)
 	time.Sleep(testTickPeriod)
-	assert.Equal(t, 2, r.tickCounter)
-	assert.Equal(t, StoppedAfterTimeOut, r.state)
+	assert.Equal(t, 3, r.tickCounter)
+	assert.Equal(t, AfterTimeOut, r.state)
 }
 
 // PeriodicReminder callback function
@@ -210,10 +210,8 @@ func Test_callback_function_can_know_elapsed_time_since_start(t *testing.T) {
 		switch ctx.eventType {
 		case StartEvent:
 			expected = 0
-		case PeriodicEvent:
+		case PeriodicEvent, TimeoutEvent:
 			expected = testTickPeriod * time.Duration(ctx.index+1)
-		case TimeoutEvent:
-			expected = testTimeout
 		}
 		assert.Equal(t, expected, ctx.elapsed)
 	})
@@ -245,6 +243,7 @@ func Test_callback_function_can_know_max_index_value(t *testing.T) {
 	})
 	r.Start()
 	time.Sleep(testTimeout)
+	r.Stop()
 }
 
 // Time elapsed since timer started
@@ -258,8 +257,8 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 	// While timer is running, total time elapsed is time spent since Start()
 	assert.InEpsilon(t, testTimeout/2, r.GetElapsedTime(), 0.3)
 	time.Sleep(testTimeout)
-	// When timer is done, time elapsed should stopTicking increasing
-	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.3)
+	// After timeout, the timer should continue running
+	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.7)
 }
 
 // Time remaining until timer ends
