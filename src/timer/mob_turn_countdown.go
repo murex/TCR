@@ -50,7 +50,7 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 				case InterruptEvent:
 					report.PostTimerWithEmphasis(messagePrefix, "Stopping countdown after ", fmtDuration(ctx.elapsed))
 				case TimeoutEvent:
-					report.PostTimerWithEmphasis(messagePrefix, "Time's up. Time to rotate!")
+					report.PostWarning(messagePrefix, "Time's up. Time to rotate! You have ", fmtDuration(ctx.remaining.Abs()), " over!")
 				}
 			},
 		)
@@ -96,8 +96,8 @@ func ReportCountDownStatus(t *PeriodicReminder) {
 			report.PostInfo("Mob Timer: ",
 				fmtDuration(t.GetElapsedTime()), " done, ",
 				fmtDuration(t.GetRemainingTime()), " to go")
-		case StoppedAfterTimeOut:
-			report.PostInfo("Mob Timer has timed out")
+		case AfterTimeOut:
+			report.PostWarning("Mob Timer has timed out ", fmtDuration(t.GetRemainingTime().Abs()), " over!")
 		case StoppedAfterInterruption:
 			report.PostInfo("Mob Timer was interrupted")
 		}
