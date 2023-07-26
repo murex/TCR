@@ -51,7 +51,7 @@ func Test_existing_dirs_in(t *testing.T) {
 		{
 			"one missing dir",
 			[]string{missing},
-			[]string{},
+			nil,
 			nil,
 		},
 		{
@@ -63,7 +63,7 @@ func Test_existing_dirs_in(t *testing.T) {
 		{
 			"one existing file",
 			[]string{existingFile},
-			[]string{},
+			nil,
 			nil,
 		},
 	}
@@ -74,7 +74,7 @@ func Test_existing_dirs_in(t *testing.T) {
 			_ = appFS.MkdirAll(existing, os.ModeDir)
 			_ = afero.WriteFile(appFS, existingFile, []byte("some contents"), 0644)
 
-			result, err := existingDirsIn(test.input)
+			result, err := ExistingDirsIn(test.input)
 			assert.Equal(t, test.expectedErr, err)
 			assert.Equal(t, test.expected, result)
 		})

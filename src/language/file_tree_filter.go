@@ -89,20 +89,21 @@ func (treeFilter FileTreeFilter) matches(p string, baseDir string) bool {
 
 func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
 	for _, dir := range treeFilter.Directories {
-		err := afero.Walk(appFS, filepath.Join(baseDir, dir), func(path string, fi os.FileInfo, err error) error {
-			if err != nil {
-				return errors.New("something wrong with " + path)
-			}
-			if fi.IsDir() {
+		err := afero.Walk(appFS, filepath.Join(baseDir, dir),
+			func(path string, fi os.FileInfo, err error) error {
+				if err != nil {
+					return errors.New("something wrong with " + path + err.Error())
+				}
+				if fi.IsDir() {
+					return nil
+				}
+				// If the filename matches the file pattern, we add it to the list of files
+				if treeFilter.matches(path, baseDir) {
+					files = append(files, path)
+					return err
+				}
 				return nil
-			}
-			// If the filename matches the file pattern, we add it to the list of files
-			if treeFilter.matches(path, baseDir) {
-				files = append(files, path)
-				return err
-			}
-			return nil
-		})
+			})
 		if err != nil {
 			return nil, err
 		}
