@@ -22,11 +22,27 @@ SOFTWARE.
 
 package language
 
-import "github.com/spf13/afero"
+import (
+	"github.com/spf13/afero"
+)
 
 // appFS is the singleton referring to the filesystem being used
 var appFS afero.Fs
 
 func init() {
 	appFS = afero.NewOsFs()
+}
+
+func existingDirsIn(dirs []string) ([]string, error) {
+	kept := make([]string, 0)
+	for _, dir := range dirs {
+		exists, err := afero.DirExists(appFS, dir)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			kept = append(kept, dir)
+		}
+	}
+	return kept, nil
 }
