@@ -427,12 +427,18 @@ func (tcr *TCREngine) fromBirthTillDeath(
 }
 
 func (tcr *TCREngine) waitForChange(interrupt <-chan bool) bool {
+	languageDirs := tcr.language.DirsToWatch(tcr.sourceTree.GetBaseDir())
+	existingDirs, err := language.ExistingDirsIn(languageDirs)
+	if err != nil {
+		tcr.handleError(err, true, status.OtherError)
+	}
 	report.PostInfo("Going to sleep until something interesting happens")
 	// We need to wait a bit to make sure the file watcher
 	// does not get triggered again following a revert operation
 	time.Sleep(tcr.fsWatchRearmDelay)
+
 	return tcr.sourceTree.Watch(
-		tcr.language.DirsToWatch(tcr.sourceTree.GetBaseDir()),
+		existingDirs,
 		tcr.language.IsLanguageFile,
 		interrupt)
 }

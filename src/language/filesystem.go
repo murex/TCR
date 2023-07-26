@@ -33,16 +33,17 @@ func init() {
 	appFS = afero.NewOsFs()
 }
 
-func existingDirsIn(dirs []string) ([]string, error) {
-	kept := make([]string, 0)
+// ExistingDirsIn returns the list of directories that actually exist on the filesystem
+// out of a list of candidate directories
+func ExistingDirsIn(dirs []string) (existing []string, err error) {
 	for _, dir := range dirs {
 		exists, err := afero.DirExists(appFS, dir)
 		if err != nil {
 			return nil, err
 		}
 		if exists {
-			kept = append(kept, dir)
+			existing = append(existing, dir)
 		}
 	}
-	return kept, nil
+	return existing, nil
 }
