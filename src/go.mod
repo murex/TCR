@@ -8,7 +8,7 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gen2brain/beeep v0.0.0-20230602101333-f384c29b62dd
 	github.com/go-git/go-billy/v5 v5.4.1
-	github.com/go-git/go-git/v5 v5.8.0
+	github.com/go-git/go-git/v5 v5.8.1
 	github.com/golangci/golangci-lint v1.53.3
 	github.com/goreleaser/goreleaser v1.19.2
 	github.com/imkira/go-observer v1.0.3
@@ -39,6 +39,7 @@ require (
 	cloud.google.com/go/kms v1.14.0 // indirect
 	cloud.google.com/go/storage v1.31.0 // indirect
 	code.gitea.io/sdk/gitea v0.15.1 // indirect
+	dario.cat/mergo v1.0.0 // indirect
 	github.com/4meepo/tagalign v1.2.2 // indirect
 	github.com/Abirdcfly/dupword v0.0.12 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
