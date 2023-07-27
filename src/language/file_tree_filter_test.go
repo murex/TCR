@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -121,4 +121,38 @@ func Test_find_all_matching_files_with_wrong_base_dir(t *testing.T) {
 	filter := AFileTreeFilter(WithDirectory("src"), WithPattern(".*\\.ext"))
 	_, err := filter.findAllMatchingFiles("wrong-dir")
 	assert.Error(t, err)
+	assert.Equal(t, &UnreachableDirectoryError{dirs: []string{filepath.Join("wrong-dir", "src")}}, err)
+}
+
+func Test_unreachable_directory_error(t *testing.T) {
+	tests := []struct {
+		desc     string
+		dirs     []string
+		expected string
+	}{
+		{
+			"no directory",
+			nil,
+			""},
+		{
+			"one directory",
+			[]string{"dir1"},
+			"cannot access directory: dir1\n",
+		},
+		{
+			"multiple directories",
+			[]string{"dir1", "dir2"},
+			"cannot access directory: dir1\n" +
+				"cannot access directory: dir2\n",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			e := UnreachableDirectoryError{}
+			e.add(test.dirs...)
+			assert.Equal(t, test.dirs, e.DirList())
+			assert.Equal(t, test.expected, e.Error())
+		})
+	}
 }

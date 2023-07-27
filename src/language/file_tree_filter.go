@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ SOFTWARE.
 package language
 
 import (
-	"errors"
 	"github.com/murex/tcr/utils"
 	"github.com/spf13/afero"
 	"os"
@@ -32,6 +31,37 @@ import (
 	"regexp"
 	"strings"
 )
+
+// UnreachableDirectoryError is used to indicate that one or more directories cannot be accessed.
+type UnreachableDirectoryError struct {
+	dirs []string
+}
+
+// Error returns the error description
+func (e *UnreachableDirectoryError) Error() string {
+	var sb strings.Builder
+	for _, dir := range e.DirList() {
+		_, _ = sb.WriteString("cannot access directory: ")
+		_, _ = sb.WriteString(dir)
+		_, _ = sb.WriteRune('\n')
+	}
+	return sb.String()
+}
+
+// DirList returns the list of missing directories
+func (e *UnreachableDirectoryError) DirList() []string {
+	return e.dirs
+}
+
+// add adds directories to the list of unreachable directories
+func (e *UnreachableDirectoryError) add(dir ...string) {
+	e.dirs = append(e.dirs, dir...)
+}
+
+// IsEmpty indicates if the list of unreachable directories is empty
+func (e *UnreachableDirectoryError) IsEmpty() bool {
+	return len(e.dirs) == 0
+}
 
 type (
 	// FileTreeFilter provides filtering mechanisms allowing to determine if a file or directory
@@ -50,16 +80,16 @@ func toSlashedPath(input string) string {
 	return path.Join(strings.Split(input, "\\")...)
 }
 
-func (treeFilter FileTreeFilter) isInFileTree(aPath string, baseDir string) bool {
+func (ftf FileTreeFilter) isInFileTree(aPath string, baseDir string) bool {
 	absPath, _ := filepath.Abs(aPath)
 	// If no directory is configured, any path that is under baseDir path is ok
-	if treeFilter.Directories == nil || len(treeFilter.Directories) == 0 {
+	if ftf.Directories == nil || len(ftf.Directories) == 0 {
 		if utils.IsSubPathOf(absPath, baseDir) {
 			return true
 		}
 	}
 
-	for _, dir := range treeFilter.Directories {
+	for _, dir := range ftf.Directories {
 		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
 		if utils.IsSubPathOf(absPath, filterAbsPath) {
 			return true
@@ -68,16 +98,16 @@ func (treeFilter FileTreeFilter) isInFileTree(aPath string, baseDir string) bool
 	return false
 }
 
-func (treeFilter FileTreeFilter) matches(p string, baseDir string) bool {
+func (ftf FileTreeFilter) matches(p string, baseDir string) bool {
 	if p == "" {
 		return false
 	}
-	if treeFilter.isInFileTree(p, baseDir) {
+	if ftf.isInFileTree(p, baseDir) {
 		// If no pattern is set, any file matches as long as it's in the file tree
-		if treeFilter.FilePatterns == nil || len(treeFilter.FilePatterns) == 0 {
+		if ftf.FilePatterns == nil || len(ftf.FilePatterns) == 0 {
 			return true
 		}
-		for _, filter := range treeFilter.FilePatterns {
+		for _, filter := range ftf.FilePatterns {
 			re := regexp.MustCompile(filter)
 			if re.MatchString(p) {
 				return true
@@ -87,26 +117,37 @@ func (treeFilter FileTreeFilter) matches(p string, baseDir string) bool {
 	return false
 }
 
-func (treeFilter FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
-	for _, dir := range treeFilter.Directories {
-		err := afero.Walk(appFS, filepath.Join(baseDir, dir),
-			func(path string, fi os.FileInfo, err error) error {
-				if err != nil {
-					return errors.New("something wrong with " + path + err.Error())
-				}
-				if fi.IsDir() {
-					return nil
-				}
-				// If the filename matches the file pattern, we add it to the list of files
-				if treeFilter.matches(path, baseDir) {
-					files = append(files, path)
-					return err
-				}
-				return nil
-			})
+func (ftf FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, err error) {
+	dirErr := UnreachableDirectoryError{}
+
+	for _, dir := range ftf.Directories {
+		matchingFiles, err := ftf.findMatchingFilesInDir(baseDir, dir)
 		if err != nil {
-			return nil, err
+			dirErr.add(filepath.Join(baseDir, dir))
+			continue
 		}
+		files = append(files, matchingFiles...)
+	}
+
+	if !dirErr.IsEmpty() {
+		return files, &dirErr
 	}
 	return files, nil
+}
+
+func (ftf FileTreeFilter) findMatchingFilesInDir(baseDir string, dir string) (files []string, err error) {
+	return files, afero.Walk(appFS, filepath.Join(baseDir, dir),
+		func(path string, fi os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if fi.IsDir() {
+				return nil
+			}
+			if ftf.matches(path, baseDir) {
+				files = append(files, path)
+				return err
+			}
+			return nil
+		})
 }

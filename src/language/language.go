@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -141,17 +141,16 @@ func (lang *Language) DirsToWatch(baseDir string) (dirs []string) {
 	// First we concatenate the 2 lists
 	concat := append(lang.GetSrcFileFilter().Directories, lang.GetTestFileFilter().Directories...)
 
-	// Then we use a map to remove duplicates
-	unique := make(map[string]int)
+	// Then we remove duplicates
+	unique := make(map[string]bool)
 	for _, dir := range concat {
-		unique[dir] = 1
+		unique[dir] = true
 	}
 
 	// Finally, we prefix each item with baseDir
 	for dir := range unique {
 		dirs = append(dirs, filepath.Join(baseDir, toLocalPath(dir)))
 	}
-	// report.PostInfo(dirs)
 	return dirs
 }
 
@@ -214,27 +213,19 @@ func (lang *Language) worksWithToolchain(toolchainName string) bool {
 // If there is an overlap between source and test files patterns, test files
 // are excluded from the returned list
 func (lang *Language) AllSrcFiles() (result []string, err error) {
-	var srcFiles, testFiles []string
-
+	testFiles, _ := lang.allMatchingTestFiles()
 	testFilesMap := make(map[string]bool)
-	testFiles, err = lang.allMatchingTestFiles()
-	if err != nil {
-		return nil, err
-	}
 	for _, path := range testFiles {
 		testFilesMap[path] = true
 	}
 
-	srcFiles, err = lang.allMatchingSrcFiles()
-	if err != nil {
-		return nil, err
-	}
+	srcFiles, errSrc := lang.allMatchingSrcFiles()
 	for _, path := range srcFiles {
 		if !testFilesMap[path] {
 			result = append(result, path)
 		}
 	}
-	return result, nil
+	return result, errSrc
 }
 
 // AllTestFiles returns the list of test files for this language.
