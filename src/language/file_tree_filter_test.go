@@ -150,7 +150,7 @@ func Test_unreachable_directory_error(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			e := UnreachableDirectoryError{}
-			e.add(test.dirs...)
+			e.Add(test.dirs...)
 			assert.Equal(t, test.dirs, e.DirList())
 			assert.Equal(t, test.expected, e.Error())
 		})

@@ -53,8 +53,8 @@ func (e *UnreachableDirectoryError) DirList() []string {
 	return e.dirs
 }
 
-// add adds directories to the list of unreachable directories
-func (e *UnreachableDirectoryError) add(dir ...string) {
+// Add adds directories to the list of unreachable directories
+func (e *UnreachableDirectoryError) Add(dir ...string) {
 	e.dirs = append(e.dirs, dir...)
 }
 
@@ -123,7 +123,7 @@ func (ftf FileTreeFilter) findAllMatchingFiles(baseDir string) (files []string, 
 	for _, dir := range ftf.Directories {
 		matchingFiles, err := ftf.findMatchingFilesInDir(baseDir, dir)
 		if err != nil {
-			dirErr.add(filepath.Join(baseDir, dir))
+			dirErr.Add(filepath.Join(baseDir, dir))
 			continue
 		}
 		files = append(files, matchingFiles...)
