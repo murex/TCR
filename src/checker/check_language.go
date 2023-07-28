@@ -24,6 +24,7 @@ package checker
 
 import (
 	"github.com/murex/tcr/checker/model"
+	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 )
 
@@ -112,15 +113,7 @@ func checkLanguageSrcFiles(_ params.Params) (cp []model.CheckPoint) {
 	if checkEnv.lang == nil {
 		return cp
 	}
-	srcFiles, err := checkEnv.lang.AllSrcFiles()
-	if err != nil {
-		cp = append(cp, model.ErrorCheckPoint(err))
-		return cp
-	}
-	return model.CheckpointsForList(
-		"matching source files found:",
-		"no matching source file found",
-		srcFiles...)
+	return checkLanguageFiles("source", checkEnv.lang.AllSrcFiles)
 }
 
 func checkLanguageTestDirectories(_ params.Params) (cp []model.CheckPoint) {
@@ -147,15 +140,31 @@ func checkLanguageTestFiles(_ params.Params) (cp []model.CheckPoint) {
 	if checkEnv.lang == nil {
 		return cp
 	}
-	testFiles, err := checkEnv.lang.AllTestFiles()
-	if err != nil {
+	return checkLanguageFiles("test", checkEnv.lang.AllTestFiles)
+}
+
+func checkLanguageFiles(desc string, fileSearcher func() ([]string, error)) (cp []model.CheckPoint) {
+	languageFiles, err := fileSearcher()
+	switch err := err.(type) {
+	case nil:
+		// do nothing
+	case *language.UnreachableDirectoryError:
+		// unreachable directories: we display a warning for each, then continue
+		for _, dir := range err.DirList() {
+			cp = append(cp, model.WarningCheckPoint(
+				"cannot access "+desc+" directory ", dir))
+		}
+	default:
+		// unhandled errors
 		cp = append(cp, model.ErrorCheckPoint(err))
 		return cp
 	}
-	return model.CheckpointsForList(
-		"matching test files found:",
-		"no matching test file found",
-		testFiles...)
+
+	cp = append(cp, model.CheckpointsForList(
+		"matching "+desc+" files found:",
+		"no matching "+desc+" file found",
+		languageFiles...)...)
+	return cp
 }
 
 func languageAsText() string {

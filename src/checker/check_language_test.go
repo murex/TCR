@@ -273,6 +273,33 @@ func Test_check_language_src_files(t *testing.T) {
 				model.ErrorCheckPoint("some error"),
 			},
 		},
+		{
+			"unreachable directory error and no matching file", "xxx",
+			language.NewFakeLanguage("").WithAllSrcFiles(
+				func() ([]string, error) {
+					err := language.UnreachableDirectoryError{}
+					err.Add("dir1")
+					return nil, &err
+				}),
+			[]model.CheckPoint{
+				model.WarningCheckPoint("cannot access source directory dir1"),
+				model.WarningCheckPoint("no matching source file found"),
+			},
+		},
+		{
+			"unreachable directory error and one matching file", "xxx",
+			language.NewFakeLanguage("").WithAllSrcFiles(
+				func() ([]string, error) {
+					err := language.UnreachableDirectoryError{}
+					err.Add("dir1")
+					return []string{"src-file1"}, &err
+				}),
+			[]model.CheckPoint{
+				model.WarningCheckPoint("cannot access source directory dir1"),
+				model.OkCheckPoint("matching source files found:"),
+				model.OkCheckPoint("- src-file1"),
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
@@ -428,6 +455,33 @@ func Test_check_language_test_files(t *testing.T) {
 				}),
 			[]model.CheckPoint{
 				model.ErrorCheckPoint("some error"),
+			},
+		},
+		{
+			"unreachable directory error and no matching file", "xxx",
+			language.NewFakeLanguage("").WithAllTestFiles(
+				func() ([]string, error) {
+					err := language.UnreachableDirectoryError{}
+					err.Add("dir1")
+					return nil, &err
+				}),
+			[]model.CheckPoint{
+				model.WarningCheckPoint("cannot access test directory dir1"),
+				model.WarningCheckPoint("no matching test file found"),
+			},
+		},
+		{
+			"unreachable directory error and one matching file", "xxx",
+			language.NewFakeLanguage("").WithAllTestFiles(
+				func() ([]string, error) {
+					err := language.UnreachableDirectoryError{}
+					err.Add("dir1")
+					return []string{"test-file1"}, &err
+				}),
+			[]model.CheckPoint{
+				model.WarningCheckPoint("cannot access test directory dir1"),
+				model.OkCheckPoint("matching test files found:"),
+				model.OkCheckPoint("- test-file1"),
 			},
 		},
 	}
