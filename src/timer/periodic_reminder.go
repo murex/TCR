@@ -147,7 +147,7 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			elapsed:   0,
 			remaining: r.timeout,
 		}
-	case PeriodicEvent:
+	case PeriodicEvent, TimeoutEvent:
 		elapsed := time.Duration(r.tickCounter+1) * r.tickPeriod
 		ctx = ReminderContext{
 			eventType: eventType,
@@ -165,16 +165,6 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			timestamp: timestamp,
 			elapsed:   time.Since(r.startTime),
 			remaining: 0,
-		}
-	case TimeoutEvent:
-		elapsed := time.Duration(r.tickCounter+1) * r.tickPeriod
-		ctx = ReminderContext{
-			eventType: eventType,
-			index:     r.tickCounter,
-			indexMax:  r.lastTickIndex,
-			timestamp: timestamp,
-			elapsed:   elapsed,
-			remaining: r.timeout - elapsed,
 		}
 	}
 	return ctx
