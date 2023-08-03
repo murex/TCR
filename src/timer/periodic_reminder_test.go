@@ -197,6 +197,7 @@ func Test_callback_function_can_know_timestamp(t *testing.T) {
 	r.Start()
 	time.Sleep(testTimeout * 2)
 	r.Stop()
+	time.Sleep(testTickPeriod)
 	tsEnd := time.Now()
 
 	assert.True(t, tsStart.Before(tsPeriodic[0]))
