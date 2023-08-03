@@ -50,7 +50,8 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 				case InterruptEvent:
 					report.PostTimerWithEmphasis(messagePrefix, "Stopping countdown after ", fmtDuration(ctx.elapsed))
 				case TimeoutEvent:
-					report.PostWarning(messagePrefix, "Time's up. Time to rotate! You are ", fmtDuration(ctx.remaining.Abs()), " over!")
+					report.PostWarning(messagePrefix, "Time's up. Time to rotate! You are ",
+						fmtDuration(ctx.remaining.Abs()), " over!")
 				}
 			},
 		)
