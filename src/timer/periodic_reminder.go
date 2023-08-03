@@ -114,9 +114,7 @@ func (r *PeriodicReminder) Start() {
 		for {
 			select {
 			case <-r.done:
-				if r.state == StoppedAfterInterruption {
-					r.onEventAction(r.buildEventContext(InterruptEvent, time.Now()))
-				}
+				r.onEventAction(r.buildEventContext(InterruptEvent, time.Now()))
 				return
 			case timestamp := <-r.ticker.C:
 				if r.state == AfterTimeOut {
