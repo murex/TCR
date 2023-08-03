@@ -97,7 +97,7 @@ func ReportCountDownStatus(t *PeriodicReminder) {
 				fmtDuration(t.GetElapsedTime()), " done, ",
 				fmtDuration(t.GetRemainingTime()), " to go")
 		case AfterTimeOut:
-			report.PostWarning("Mob Timer has timed out ", fmtDuration(t.GetRemainingTime().Abs()), " over!")
+			report.PostWarning("Mob Timer has timed out: ", fmtDuration(t.GetRemainingTime().Abs()), " over!")
 		case StoppedAfterInterruption:
 			report.PostInfo("Mob Timer was interrupted")
 		}

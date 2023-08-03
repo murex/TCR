@@ -261,19 +261,22 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 	time.Sleep(testTimeout)
 	// After timeout, the timer should continue running
 	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.7)
+	r.Stop()
 }
 
 // Time remaining until timer ends
 
-func Test_retrieving_time_remaining_until_timer_ends(t *testing.T) {
+func Test_retrieving_time_remaining_while_timer_running(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	// Before calling Start(), time remaining should stick to timeout
 	assert.Equal(t, testTimeout, r.GetRemainingTime())
 	r.Start()
-	time.Sleep(testTimeout / 2)
 	// While timer is running, total time remaining is timeout - time spent since Start()
+	time.Sleep(testTimeout / 2)
 	assert.InEpsilon(t, testTimeout/2, r.GetRemainingTime(), 0.3)
+
+	// After timeout, time remaining should be negative
 	time.Sleep(testTimeout)
-	// When timer is done, time remaining should be 0
-	assert.Zero(t, r.GetRemainingTime())
+	assert.InEpsilon(t, -testTimeout/2, r.GetRemainingTime(), 0.3)
+	r.Stop()
 }

@@ -213,7 +213,7 @@ func (r *PeriodicReminder) GetRemainingTime() time.Duration {
 	switch r.state {
 	case NotStarted:
 		return r.timeout
-	case Running:
+	case Running, AfterTimeOut:
 		return r.timeout - time.Since(r.startTime)
 	default:
 		return 0
