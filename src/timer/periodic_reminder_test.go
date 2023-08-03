@@ -256,13 +256,16 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 	// Before calling Start(), time elapsed should stick to 0
 	assert.Zero(t, r.GetElapsedTime())
 	r.Start()
-	time.Sleep(testTimeout / 2)
 	// While timer is running, total time elapsed is time spent since Start()
+	time.Sleep(testTimeout / 2)
 	assert.InEpsilon(t, testTimeout/2, r.GetElapsedTime(), 0.3)
-	time.Sleep(testTimeout)
 	// After timeout, the timer should continue running
+	time.Sleep(testTimeout)
 	assert.InEpsilon(t, testTimeout, r.GetElapsedTime(), 0.7)
+	// After stop, we should get the total time spend
+	time.Sleep(testTimeout / 2)
 	r.Stop()
+	assert.InEpsilon(t, testTimeout*2, r.GetElapsedTime(), 0.3)
 }
 
 // Time remaining until timer ends
@@ -275,9 +278,10 @@ func Test_retrieving_time_remaining_while_timer_running(t *testing.T) {
 	// While timer is running, total time remaining is timeout - time spent since Start()
 	time.Sleep(testTimeout / 2)
 	assert.InEpsilon(t, testTimeout/2, r.GetRemainingTime(), 0.3)
-
 	// After timeout, time remaining should be negative
 	time.Sleep(testTimeout)
 	assert.InEpsilon(t, -testTimeout/2, r.GetRemainingTime(), 0.3)
+	// After stop, time remaining should be zero
 	r.Stop()
+	assert.Zero(t, r.GetRemainingTime())
 }
