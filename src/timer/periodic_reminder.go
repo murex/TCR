@@ -176,7 +176,7 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			indexMax:  r.lastTickIndex,
 			timestamp: timestamp,
 			elapsed:   elapsed,
-			remaining: 0,
+			remaining: r.timeout - elapsed,
 		}
 	}
 	return ctx
