@@ -126,6 +126,7 @@ func NewTCREngine() (engine *TCREngine) {
 
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
+// nolint:revive
 func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	var err error
 	status.RecordState(status.Ok)
@@ -145,6 +146,7 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 
 	tcr.language, err = language.GetLanguage(p.Language, tcr.sourceTree.GetBaseDir())
 	tcr.handleError(err, true, status.ConfigError)
+	tcr.reportFileStats()
 
 	tcr.toolchain, err = tcr.language.GetToolchain(p.Toolchain)
 	tcr.handleError(err, true, status.ConfigError)
@@ -158,7 +160,6 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.vcs.EnablePush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
-
 	tcr.setMobTimerDuration(p.MobTurnDuration)
 
 	tcr.ui.ShowRunningMode(tcr.mode)
@@ -678,4 +679,32 @@ func (tcr *TCREngine) VCSPush() {
 	if tcr.vcs.Push() != nil {
 		report.PostError("VCS push command failed!")
 	}
+}
+
+// reportFileStats traces summary information obout the source and test files and directories
+func (tcr *TCREngine) reportFileStats() {
+	srcFileCount := countFiles("source", tcr.language.AllSrcFiles)
+	testFileCount := countFiles("test", tcr.language.AllTestFiles)
+	if srcFileCount+testFileCount == 0 {
+		report.PostWarning("No matching ", tcr.language.GetName(), " file found")
+	} else {
+		report.PostInfo("Found ", srcFileCount, " source and ",
+			testFileCount, " test file(s) for ", tcr.language.GetName(), " language")
+	}
+}
+
+func countFiles(desc string, matcher func() ([]string, error)) int {
+	matches, err := matcher()
+	switch err := err.(type) {
+	case nil:
+		// do nothing
+	case *language.UnreachableDirectoryError:
+		// unreachable directories: we display a warning for each, then continue
+		for _, dir := range err.DirList() {
+			report.PostWarning("Unreachable ", desc, " directory: ", dir)
+		}
+	default:
+		report.PostError(err)
+	}
+	return len(matches)
 }
