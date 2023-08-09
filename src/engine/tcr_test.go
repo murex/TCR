@@ -809,3 +809,70 @@ func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
 		})
 	}
 }
+
+func Test_count_files(t *testing.T) {
+	tests := []struct {
+		desc              string
+		matchingFiles     []string
+		unreachableDirs   []string
+		expectedFileCount int
+		expectedWarnings  int
+	}{
+		{
+			"0 file",
+			[]string{},
+			nil,
+			0,
+			0,
+		},
+		{
+			"1 file",
+			[]string{"file1"},
+			nil,
+			1,
+			0,
+		},
+		{
+			"multiple files",
+			[]string{"file1", "file2", "file3"},
+			nil,
+			3,
+			0,
+		},
+		{
+			"1 unreachable directory",
+			[]string{},
+			[]string{"dir1"},
+			0,
+			1,
+		},
+		{
+			"multiple unreachable directories",
+			[]string{},
+			[]string{"dir1", "dir2", "dir3"},
+			0,
+			3,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer(func(msg report.Message) bool {
+				return msg.Type.Severity == report.Warning
+			})
+			count := countFiles("desc",
+				func() ([]string, error) {
+					if len(test.unreachableDirs) > 0 {
+						dirErr := language.UnreachableDirectoryError{}
+						dirErr.Add(test.unreachableDirs...)
+						return test.matchingFiles, &dirErr
+					}
+					return test.matchingFiles, nil
+				})
+			sniffer.Stop()
+
+			assert.Equal(t, test.expectedFileCount, count)
+			assert.Equal(t, test.expectedWarnings, sniffer.GetMatchCount())
+		})
+	}
+}
