@@ -10,7 +10,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.8.1
 	github.com/golangci/golangci-lint v1.53.3
-	github.com/goreleaser/goreleaser v1.19.2
+	github.com/goreleaser/goreleaser v1.20.0
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mengdaming/go-junit v0.1.3
@@ -373,7 +373,7 @@ require (
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/term v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.11.1 // indirect
+	golang.org/x/tools v0.12.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.134.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
