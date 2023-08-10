@@ -23,6 +23,7 @@ SOFTWARE.
 package timer
 
 import (
+	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/runmode"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -83,4 +84,14 @@ func Test_mob_turn_countdown_creation_in_check_runmode(t *testing.T) {
 
 func Test_mob_turn_countdown_creation_in_one_shot_runmode(t *testing.T) {
 	assert.Zero(t, NewMobTurnCountdown(runmode.OneShot{}, defaultTimeout))
+}
+
+func Test_report_count_down_status_when_mob_is_not_started(t *testing.T) {
+
+	sniffer := report.NewSniffer()
+	ReportCountDownStatus(nil)
+	sniffer.Stop()
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "Mob Timer is off", sniffer.GetAllMatches()[0].Text)
+
 }
