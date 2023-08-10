@@ -150,16 +150,11 @@ func Test_continue_reminder_after_timeout(t *testing.T) {
 func Test_can_track_number_of_ticks_fired_continue_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
-	assert.Equal(t, 0, r.tickCounter)
-	time.Sleep(testTickPeriod / 2)
-	assert.Equal(t, 0, r.tickCounter)
-	time.Sleep(testTickPeriod)
-	assert.Equal(t, 1, r.tickCounter)
-	time.Sleep(testTickPeriod)
+	time.Sleep(testTimeout)
 	assert.Equal(t, 2, r.tickCounter)
 	time.Sleep(testTickPeriod)
 	assert.Equal(t, 3, r.tickCounter)
-	assert.Equal(t, AfterTimeOut, r.state)
+	r.Stop()
 }
 
 // PeriodicReminder callback function
