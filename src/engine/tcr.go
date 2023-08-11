@@ -681,7 +681,7 @@ func (tcr *TCREngine) VCSPush() {
 	}
 }
 
-// reportFileStats traces summary information obout the source and test files and directories
+// reportFileStats traces summary information about the source and test files and directories
 func (tcr *TCREngine) reportFileStats() {
 	srcFileCount := countFiles("source", tcr.language.AllSrcFiles)
 	testFileCount := countFiles("test", tcr.language.AllTestFiles)
