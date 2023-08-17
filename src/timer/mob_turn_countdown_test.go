@@ -135,15 +135,18 @@ func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 	}
 }
 
-func Test_Mob_Turn_Count_down(t *testing.T) {
+func Test_mob_turn_count_down(t *testing.T) {
 	sniffer := report.NewSniffer()
-	reminder := NewMobTurnCountdown(runmode.Mob{}, 0)
-	t.Cleanup(func() {
-		reminder.Stop()
-	})
-	reminder.Start()
-	sniffer.Stop()
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "(Mob Timer) Starting 0s countdown", sniffer.GetAllMatches()[0].Text)
+	reminder := NewMobTurnCountdown(runmode.Mob{}, 2*time.Second)
 
+	reminder.Start()
+	time.Sleep(3200 * time.Millisecond)
+	reminder.Stop()
+
+	sniffer.Stop()
+	assert.Equal(t, "(Mob Timer) Starting 2s countdown", sniffer.GetAllMatches()[0].Text)
+	assert.Equal(t, "(Mob Timer) Your turn ends in 1s", sniffer.GetAllMatches()[1].Text)
+	assert.Equal(t, "(Mob Timer) Time's up. Time to rotate! You are 0s over!", sniffer.GetAllMatches()[2].Text)
+	assert.Equal(t, "(Mob Timer) Time's up. Time to rotate! You are 1s over!", sniffer.GetAllMatches()[3].Text)
+	assert.Equal(t, "(Mob Timer) Stopping countdown after 3s", sniffer.GetAllMatches()[4].Text)
 }
