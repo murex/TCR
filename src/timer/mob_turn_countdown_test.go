@@ -134,3 +134,16 @@ func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 		})
 	}
 }
+
+func Test_Mob_Turn_Count_down(t *testing.T) {
+	sniffer := report.NewSniffer()
+	reminder := NewMobTurnCountdown(runmode.Mob{}, 0)
+	t.Cleanup(func() {
+		reminder.Stop()
+	})
+	reminder.Start()
+	sniffer.Stop()
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, "(Mob Timer) Starting 0s countdown", sniffer.GetAllMatches()[0].Text)
+
+}
