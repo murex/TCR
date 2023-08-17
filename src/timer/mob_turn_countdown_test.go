@@ -87,11 +87,34 @@ func Test_mob_turn_countdown_creation_in_one_shot_runmode(t *testing.T) {
 }
 
 func Test_report_count_down_status_when_mob_is_not_started(t *testing.T) {
-
 	sniffer := report.NewSniffer()
 	ReportCountDownStatus(nil)
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 	assert.Equal(t, "Mob Timer is off", sniffer.GetAllMatches()[0].Text)
+}
 
+func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
+	tests := []struct {
+		desc          string
+		state         ReminderState
+		expectedTrace string
+	}{
+		{
+			"timer not started",
+			NotStarted,
+			"Mob Timer is not started",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			sniffer := report.NewSniffer()
+			reminder := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
+			reminder.state = test.state
+			ReportCountDownStatus(reminder)
+			sniffer.Stop()
+			assert.Equal(t, 1, sniffer.GetMatchCount())
+			assert.Equal(t, test.expectedTrace, sniffer.GetAllMatches()[0].Text)
+		})
+	}
 }
