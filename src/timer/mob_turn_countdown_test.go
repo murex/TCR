@@ -105,12 +105,28 @@ func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 			NotStarted,
 			"Mob Timer is not started",
 		},
+		{
+			"timer running",
+			Running,
+			"Mob Timer: 0s done, 5m to go",
+		},
+		{
+			"after timeout",
+			AfterTimeOut,
+			"Mob Timer has timed out: 5m over!",
+		},
+		{
+			"timer stopped after interruption",
+			StoppedAfterInterruption,
+			"Mob Timer was interrupted",
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			sniffer := report.NewSniffer()
-			reminder := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
+			reminder := NewPeriodicReminder(0, 0, func(ctx ReminderContext) {})
 			reminder.state = test.state
+			reminder.startTime = time.Now()
 			ReportCountDownStatus(reminder)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
