@@ -9,7 +9,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20230812223410-3e1549ef0811
 	github.com/go-git/go-billy/v5 v5.4.1
 	github.com/go-git/go-git/v5 v5.8.1
-	github.com/golangci/golangci-lint v1.54.1
+	github.com/golangci/golangci-lint v1.54.2
 	github.com/goreleaser/goreleaser v1.20.0
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
