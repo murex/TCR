@@ -218,8 +218,9 @@ func Test_events_sorting(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sort.Sort(&tt.input)
-			assert.Equal(t, tt.expected, tt.input)
+			sorted := tt.input
+			sort.Sort(&sorted)
+			assert.Equal(t, tt.expected, sorted)
 		})
 	}
 }
