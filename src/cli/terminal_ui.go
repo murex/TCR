@@ -427,6 +427,11 @@ func (term *TerminalUI) Start() {
 		// we directly ask TCR engine to print the stats and quit when done
 		term.tcr.PrintStats(term.params)
 		term.tcr.Quit()
+	case runmode.Retro{}:
+		// When running TCR in retro mode, there's no selection menu:
+		// we directly ask TCR engine to generate the retrospective file and quit when done
+		term.tcr.GenerateRetro(term.params)
+		term.tcr.Quit()
 	default:
 		term.printError("Unknown run mode: ", term.params.Mode)
 	}

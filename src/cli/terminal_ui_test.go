@@ -945,6 +945,13 @@ func Test_start_terminal(t *testing.T) {
 				engine.TCRCallQuit,
 			},
 		},
+		{
+			"retro mode", runmode.Retro{}, []byte{},
+			[]engine.TCRCall{
+				engine.TCRCallGenerateRetro,
+				engine.TCRCallQuit,
+			},
+		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {

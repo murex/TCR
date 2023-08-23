@@ -74,6 +74,7 @@ type (
 		VCSPull()
 		VCSPush()
 		Quit()
+		GenerateRetro(p params.Params)
 	}
 
 	// TCREngine is the engine running all TCR operations
@@ -225,6 +226,12 @@ func (tcr *TCREngine) PrintLog(p params.Params) {
 func (tcr *TCREngine) PrintStats(p params.Params) {
 	tcrLogs := tcr.queryVCSLogs(p)
 	stats.Print(tcr.vcs.SessionSummary(), tcrLogsToEvents(tcrLogs))
+}
+
+// GenerateRetro generates a retrospective markdown file template using stats
+func (tcr *TCREngine) GenerateRetro(_p params.Params) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {

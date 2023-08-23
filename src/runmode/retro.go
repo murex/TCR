@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,31 @@ SOFTWARE.
 
 package runmode
 
-// RunMode is the interface that any run mode needs to satisfy to bee used by the TCR engine
-type RunMode interface {
-	Name() string
-	AutoPushDefault() bool
-	IsMultiRole() bool
-	IsInteractive() bool
-	IsActive() bool
+// Retro is a type of run mode allowing to generate a retrospective template
+type Retro struct {
 }
 
-var (
-	allModes = []RunMode{Mob{}, Solo{}, OneShot{}, Check{}, Log{}, Stats{}, Retro{}}
-)
-
-// InteractiveModes returns the list of names of available interactive run modes
-func InteractiveModes() []string {
-	var names []string
-	for _, mode := range allModes {
-		if mode.IsInteractive() {
-			names = append(names, mode.Name())
-		}
-	}
-	return names
+// Name returns the name of this run mode
+func (Retro) Name() string {
+	return "retro"
 }
 
-// Map returns the list of available run modes as a map of strings
-func Map() map[string]RunMode {
-	var m = make(map[string]RunMode)
-	for _, mode := range allModes {
-		m[mode.Name()] = mode
-	}
-	return m
+// AutoPushDefault returns the default value of VCS auto-push option with this run mode
+func (Retro) AutoPushDefault() bool {
+	return false
+}
+
+// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
+func (Retro) NeedsCountdownTimer() bool {
+	return false
+}
+
+// IsInteractive indicates if this run mode allows user interaction
+func (Retro) IsInteractive() bool {
+	return false
+}
+
+// IsActive indicates if this run mode is actively running TCR
+func (Retro) IsActive() bool {
+	return false
 }

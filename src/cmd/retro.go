@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,37 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package runmode
+package cmd
 
-// RunMode is the interface that any run mode needs to satisfy to bee used by the TCR engine
-type RunMode interface {
-	Name() string
-	AutoPushDefault() bool
-	IsMultiRole() bool
-	IsInteractive() bool
-	IsActive() bool
-}
-
-var (
-	allModes = []RunMode{Mob{}, Solo{}, OneShot{}, Check{}, Log{}, Stats{}, Retro{}}
+import (
+	"github.com/murex/tcr/cli"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/runmode"
+	"github.com/spf13/cobra"
 )
 
-// InteractiveModes returns the list of names of available interactive run modes
-func InteractiveModes() []string {
-	var names []string
-	for _, mode := range allModes {
-		if mode.IsInteractive() {
-			names = append(names, mode.Name())
-		}
-	}
-	return names
+// retroCmd represents the retro command
+var retroCmd = &cobra.Command{
+	Use:   "retro",
+	Short: "Generates a retrospective template using stats",
+	Long:  `TODO`,
+	Run: func(cmd *cobra.Command, args []string) {
+		parameters.Mode = runmode.Retro{}
+		u := cli.New(parameters, engine.NewTCREngine())
+		u.Start()
+	},
 }
 
-// Map returns the list of available run modes as a map of strings
-func Map() map[string]RunMode {
-	var m = make(map[string]RunMode)
-	for _, mode := range allModes {
-		m[mode.Name()] = mode
-	}
-	return m
+func init() {
+	rootCmd.AddCommand(retroCmd)
 }

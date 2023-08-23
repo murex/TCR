@@ -52,6 +52,7 @@ const (
 	TCRCallPrintStats        TCRCall = "print-stats"
 	TCRCallVCSPull           TCRCall = "vcs-pull"
 	TCRCallVCSPush           TCRCall = "vcs-push"
+	TCRCallGenerateRetro     TCRCall = "generate-retro"
 )
 
 var NoTCRCall []TCRCall
@@ -184,4 +185,9 @@ func (fake *FakeTCREngine) VCSPull() {
 // VCSPush runs a fake VCS push command
 func (fake *FakeTCREngine) VCSPush() {
 	fake.recordCall(TCRCallVCSPush)
+}
+
+// GenerateRetro Generates a retrospective file using stats
+func (fake *FakeTCREngine) GenerateRetro(_ params.Params) {
+	fake.recordCall(TCRCallGenerateRetro)
 }
