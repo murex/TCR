@@ -137,16 +137,29 @@ func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 
 func Test_mob_turn_count_down(t *testing.T) {
 	sniffer := report.NewSniffer()
-	reminder := NewMobTurnCountdown(runmode.Mob{}, 2*time.Second)
 
+	reminder := NewMobTurnCountdown(runmode.Mob{}, 2*time.Second)
 	reminder.Start()
 	time.Sleep(3200 * time.Millisecond)
 	reminder.Stop()
 
 	sniffer.Stop()
-	assert.Equal(t, "(Mob Timer) Starting 2s countdown", sniffer.GetAllMatches()[0].Text)
-	assert.Equal(t, "(Mob Timer) Your turn ends in 1s", sniffer.GetAllMatches()[1].Text)
-	assert.Equal(t, "(Mob Timer) Time's up. Time to rotate! You are 0s over!", sniffer.GetAllMatches()[2].Text)
-	assert.Equal(t, "(Mob Timer) Time's up. Time to rotate! You are 1s over!", sniffer.GetAllMatches()[3].Text)
-	assert.Equal(t, "(Mob Timer) Stopping countdown after 3s", sniffer.GetAllMatches()[4].Text)
+
+	expected := []struct {
+		text     string
+		severity report.Severity
+		emphasis bool
+	}{
+		{"(Mob Timer) Starting 2s countdown", report.Timer, true},
+		{"(Mob Timer) Your turn ends in 1s", report.Timer, true},
+		{"(Mob Timer) Time's up. Time to rotate! You are 0s over!", report.Warning, false},
+		{"(Mob Timer) Time's up. Time to rotate! You are 1s over!", report.Warning, false},
+		{"(Mob Timer) Stopping countdown after 3s", report.Timer, true},
+	}
+	assert.Equal(t, len(expected), sniffer.GetMatchCount())
+	for i, e := range expected {
+		msg := sniffer.GetAllMatches()[i]
+		assert.Equal(t, report.MessageType{Severity: e.severity, Emphasis: e.emphasis}, msg.Type)
+		assert.Equal(t, e.text, msg.Text)
+	}
 }

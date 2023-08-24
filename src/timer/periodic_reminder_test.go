@@ -67,7 +67,7 @@ func Test_init_with_non_default_timeout(t *testing.T) {
 	assert.Equal(t, testTimeout, r.timeout)
 }
 
-func Test_ticking_not_stops_after_timeout(t *testing.T) {
+func Test_ticking_does_not_stop_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
@@ -135,7 +135,7 @@ func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
 	assert.Equal(t, StoppedAfterInterruption, r.state)
 }
 
-func Test_continue_reminder_after_timeout(t *testing.T) {
+func Test_keep_posting_reminders_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
@@ -147,7 +147,7 @@ func Test_continue_reminder_after_timeout(t *testing.T) {
 
 // PeriodicReminder tick counter
 
-func Test_can_track_number_of_ticks_fired_continue_after_timeout(t *testing.T) {
+func Test_can_track_number_of_ticks_fired_before_and_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout)
@@ -265,7 +265,7 @@ func Test_retrieving_time_elapsed_since_timer_started(t *testing.T) {
 
 // Time remaining until timer ends
 
-func Test_retrieving_time_remaining_while_timer_running(t *testing.T) {
+func Test_retrieving_time_remaining_while_timer_is_running(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	// Before calling Start(), time remaining should stick to timeout
 	assert.Equal(t, testTimeout, r.GetRemainingTime())
