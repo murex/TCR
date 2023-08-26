@@ -431,6 +431,13 @@ which accompanies this distribution, and is available at the
             <sub style="font-size:14px"><b>Philippe Bourgau</b></sub>
         </a>
     </td>
+    <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
+        <a href=https://github.com/YifangDONG>
+            <img src=https://avatars.githubusercontent.com/u/15253963?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Yifang DONG/>
+            <br />
+            <sub style="font-size:14px"><b>Yifang DONG</b></sub>
+        </a>
+    </td>
 </tr>
 </table>
 
