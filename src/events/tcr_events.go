@@ -199,18 +199,25 @@ func (events *TcrEvents) AllLineChangesPerCommit() IntAggregates {
 // AllLineChangesPerGreenCommit returns the minimum, average, and maximum number of
 // changed lines per green commit (source and test)
 func (events *TcrEvents) AllLineChangesPerGreenCommit() IntAggregates {
-	passingEvents := eventsWithGreenStatus(events)
+	passingEvents := events.withStatus(StatusPass)
 	return passingEvents.lineChangesPerCommit(allLineChanges)
+}
+
+// AllLineChangesPerRedCommit returns the minimum, average, and maximum number of
+// changed lines per red commit (source and test)
+func (events *TcrEvents) AllLineChangesPerRedCommit() IntAggregates {
+	failingEvents := events.withStatus(StatusFail)
+	return failingEvents.lineChangesPerCommit(allLineChanges)
+}
+
+func (events *TcrEvents) withStatus(status CommandStatus) TcrEvents {
+	return filter(*events, func(event DatedTcrEvent) bool {
+		return event.Event.Status == status
+	})
 }
 
 func allLineChanges(e DatedTcrEvent) int {
 	return e.Event.Changes.All()
-}
-
-func eventsWithGreenStatus(events *TcrEvents) TcrEvents {
-	return filter(*events, func(event DatedTcrEvent) bool {
-		return event.Event.Status == StatusPass
-	})
 }
 
 func filter[T any](slice []T, f func(T) bool) []T {
