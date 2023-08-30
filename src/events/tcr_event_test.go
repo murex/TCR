@@ -54,3 +54,9 @@ func Test_yaml_conversion_on_sample_tcr_event(t *testing.T) {
 	assert.Equal(t, expected, yaml)
 	assert.Equal(t, *event, FromYAML(yaml))
 }
+
+func Test_ChangedLines_can_sum_its_total_line_changes(t *testing.T) {
+	changedLines := ChangedLines{1, 2}
+
+	assert.Equal(t, 1+2, changedLines.All())
+}
