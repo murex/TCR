@@ -54,6 +54,11 @@ type (
 	}
 )
 
+// All returns the sum of all line changes, from both test and source
+func (l ChangedLines) All() int {
+	return l.Src + l.Test
+}
+
 // Possible values for CommandStatus
 const (
 	StatusPass    CommandStatus = "pass"
