@@ -201,6 +201,7 @@ func Test_print_all_stats(t *testing.T) {
 		"- Time between commits:      26m37s (min) / 38m59s (avg) / 51m21s (max)",
 		"- Changes per commit (src):  1 (min) / 5 (avg) / 10 (max)",
 		"- Changes per commit (test): 0 (min) / 1.3 (avg) / 3 (max)",
+		"- Changes per green commit:  13 (min) / 13 (avg) / 13 (max)",
 		"- Passing tests count:       2 --> 8",
 		"- Failing tests count:       1 --> 2",
 		"- Skipped tests count:       5 --> 1",

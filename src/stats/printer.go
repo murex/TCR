@@ -43,6 +43,7 @@ func Print(branch string, tcrEvents events.TcrEvents) {
 	printStatMinMaxAvg("Time between commits", tcrEvents.TimeBetweenCommits())
 	printStatMinMaxAvg("Changes per commit (src)", tcrEvents.SrcLineChangesPerCommit())
 	printStatMinMaxAvg("Changes per commit (test)", tcrEvents.TestLineChangesPerCommit())
+	printStatMinMaxAvg("Changes per green commit", tcrEvents.AllLineChangesPerGreenCommit())
 	printStatEvolution("Passing tests count", tcrEvents.PassingTestsEvolution())
 	printStatEvolution("Failing tests count", tcrEvents.FailingTestsEvolution())
 	printStatEvolution("Skipped tests count", tcrEvents.SkippedTestsEvolution())
