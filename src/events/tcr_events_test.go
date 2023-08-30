@@ -442,6 +442,49 @@ func Test_events_time_between_commits(t *testing.T) {
 	}
 }
 
+func Test_average_size_of_green_commits(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		events   TcrEvents
+		expected IntAggregates
+	}{
+		{
+			"1 passing event",
+			TcrEvents{*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+				WithCommandStatus(StatusPass),
+				WithModifiedSrcLines(3),
+				WithModifiedTestLines(0))))},
+			IntAggregates{min: 3, avg: 3, max: 3},
+		},
+		{
+			"summing all tests and source line changes",
+			TcrEvents{*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+				WithCommandStatus(StatusPass),
+				WithModifiedSrcLines(3),
+				WithModifiedTestLines(2))))},
+			IntAggregates{min: 5, avg: 5, max: 5},
+		},
+		{
+			"1 passing and 1 failing event",
+			TcrEvents{
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithCommandStatus(StatusPass),
+					WithModifiedSrcLines(4),
+					WithModifiedTestLines(0)))),
+				*ADatedTcrEvent(WithTcrEvent(*ATcrEvent(
+					WithCommandStatus(StatusFail),
+					WithModifiedSrcLines(5),
+					WithModifiedTestLines(0))))},
+			IntAggregates{min: 4, avg: 4, max: 4},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.events.AllLineChangesPerGreenCommit())
+		})
+	}
+}
+
 func Test_events_line_changes_per_commit(t *testing.T) {
 	testFlags := []struct {
 		desc         string
