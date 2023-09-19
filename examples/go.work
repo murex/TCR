@@ -1,0 +1,8 @@
+go 1.21
+
+use (
+	go-bazel
+	go-go-tools
+	go-gotestsum
+	go-make
+)
