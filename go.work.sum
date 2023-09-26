@@ -865,6 +865,8 @@ google.golang.org/genproto/googleapis/bytestream v0.0.0-20230911183012-2d3300fd4
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20230911183012-2d3300fd4832/go.mod h1:NjCQG/D8JandXxM57PZbAJL1DCNL6EypA0vPPwfsc7c=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20230913181813-007df8e322eb h1:pdtJ5zsLbgj70rn904TMpEuPAkNBdDoUIXdQ8hFZaW0=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20230913181813-007df8e322eb/go.mod h1:NjCQG/D8JandXxM57PZbAJL1DCNL6EypA0vPPwfsc7c=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20230920204549-e6e6cdab5c13 h1:AzcXcS6RbpBm65S0+/F78J9hFCL0/GZWp8oCRZod780=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20230920204549-e6e6cdab5c13/go.mod h1:qDbnxtViX5J6CvFbxeNUSzKgVlDLJ/6L+caxye9+Flo=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 h1:M1YKkFIboKNieVO5DLUEVzQfGwJD30Nv2jfUgzb5UcE=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0 h1:Rc2Z3tspHI+PsspsfO4wZsSqL8l658yAUo7lFUSnPD0=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0/go.mod h1:m0tVxCbhcuHsiHhhaw749KeQcVjRZOWBPMa6wHL6LBQ=
