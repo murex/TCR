@@ -84,7 +84,7 @@ func Reset() {
 func Subscribe(reporter MessageReporter) chan bool {
 	stream := msgProperty.Observe()
 
-	msg := stream.Value().(Message)
+	msg, _ := stream.Value().(Message) //nolint:revive
 	// fmt.Printf("initial value: %v\n", msg)
 
 	unsubscribe := make(chan bool)
@@ -98,7 +98,7 @@ func Subscribe(reporter MessageReporter) chan bool {
 			case <-s.Changes():
 				// advance to next value
 				s.Next()
-				msg = s.Value().(Message)
+				msg, _ = s.Value().(Message) //nolint:revive
 				// fmt.Printf("got new value: %v\n", msg)
 				reportMessage(reporter, msg)
 			case <-unsubscribe:

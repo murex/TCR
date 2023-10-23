@@ -16,14 +16,14 @@ require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230923063757-afb1ddc0824c // indirect
 	github.com/acomagu/bufpipe v1.0.4 // indirect
-	github.com/cloudflare/circl v1.3.3 // indirect
+	github.com/cloudflare/circl v1.3.5 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gen2brain/beeep v0.0.0-20230907135156-1a38885a97fc // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
