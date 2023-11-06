@@ -77,6 +77,7 @@ provided as built-in.
 |------------|-----------------------------------------------------------|----------------|
 | cpp        | cmake, bazel, make                                        | cmake          |
 | csharp     | dotnet, bazel, make                                       | dotnet         |
+| elixir     | mix                                                       | mix            |
 | go         | go-tools, gotestsum, bazel, make                          | go-tools       |
 | java       | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
 | javascript | yarn, bazel, make                                         | yarn           |
@@ -147,7 +148,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.25.0_Darwin_x86_64.tar.gz
+    tar zxf tcr_0.28.0_Darwin_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -166,7 +167,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.25.0_Linux_x86_64.tar.gz
+    tar zxf tcr_0.28.0_Linux_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -185,7 +186,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.25.0_Windows_x86_64.tar.gz
+    tar zxf tcr_0.28.0_Windows_x86_64.tar.gz
     ```
 
 3. Launch TCR
