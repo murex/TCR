@@ -121,3 +121,10 @@ updates:
     directory: "/examples/typescript-yarn"
     schedule:
       interval: "weekly"
+
+  # Maintain dependencies for Elixir examples
+
+  - package-ecosystem: "mix"
+    directory: "/examples/elixir-mix"
+    schedule:
+      interval: "weekly"
