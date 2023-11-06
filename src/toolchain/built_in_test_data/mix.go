@@ -1,3 +1,5 @@
+//go:build test_helper
+
 /*
 Copyright (c) 2023 Murex
 
