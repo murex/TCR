@@ -11,6 +11,10 @@ Here are some simple examples for using TCR with various languages & toolchains 
 
 - With [dotnet](csharp-dotnet/README.md)
 
+## Elixir
+
+- With [mix](elixir-mix/README.md)
+
 ## Go
 
 - With [go tools](go-go-tools/README.md)
