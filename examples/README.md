@@ -43,6 +43,10 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [maven wrapper](kotlin-maven-wrapper/README.md)
 - With [make](kotlin-make/README.md)
 
+## PHP
+
+- With [phpunit](php-phpunit/README.md)
+
 ## Python
 
 - With [pytest](python-pytest/README.md)
