@@ -5,43 +5,30 @@
 
 version: 2
 updates:
+
   # Maintain dependencies for GitHub Actions
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr
+  # Maintain dependencies for TCR Go Modules
+
   - package-ecosystem: "gomod"
     directory: "/src"
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Go Module tcr-doc
   - package-ecosystem: "gomod"
     directory: "/tcr-doc"
     schedule:
       interval: "daily"
 
-  # Maintain dependencies for Java examples
+  # Maintain dependencies for C# examples
 
-  - package-ecosystem: "maven"
-    directory: "/examples/java-maven"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "maven"
-    directory: "/examples/java-maven-wrapper"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gradle"
-    directory: "/examples/java-gradle"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gradle"
-    directory: "/examples/java-gradle-wrapper"
+  - package-ecosystem: "nuget"
+    directory: "/examples/csharp-dotnet"
     schedule:
       interval: "weekly"
 
@@ -67,10 +54,32 @@ updates:
     schedule:
       interval: "weekly"
 
-  # Maintain dependencies for C# examples
+  # Maintain dependencies for Java examples
 
-  - package-ecosystem: "nuget"
-    directory: "/examples/csharp-dotnet"
+  - package-ecosystem: "maven"
+    directory: "/examples/java-maven"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "maven"
+    directory: "/examples/java-maven-wrapper"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/java-gradle"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "gradle"
+    directory: "/examples/java-gradle-wrapper"
+    schedule:
+      interval: "weekly"
+
+  # Maintain dependencies for Javascript examples
+
+  - package-ecosystem: "npm"
+    directory: "/examples/javascript-yarn"
     schedule:
       interval: "weekly"
 
@@ -96,6 +105,13 @@ updates:
     schedule:
       interval: "weekly"
 
+  # Maintain dependencies for PHP examples
+
+  - package-ecosystem: "composer"
+    directory: "/examples/php-phpunit"
+    schedule:
+      interval: "weekly"
+
   # Maintain dependencies for Python examples
 
   - package-ecosystem: "pip"
@@ -105,13 +121,6 @@ updates:
 
   - package-ecosystem: "pip"
     directory: "/examples/python-pytest"
-    schedule:
-      interval: "weekly"
-
-  # Maintain dependencies for Javascript examples
-
-  - package-ecosystem: "npm"
-    directory: "/examples/javascript-yarn"
     schedule:
       interval: "weekly"
 
