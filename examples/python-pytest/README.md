@@ -16,7 +16,7 @@
 > Use a **git bash** terminal for running the commands below.
 > _Windows CMD and PowerShell are not supported_
 
-### 3 - Start python virtual environment
+### 2 - Start python virtual environment
 
 > ***Reminder***: the command below should be run from
 > [examples/python-pytest](.)
@@ -34,7 +34,7 @@ From the built-in terminal:
 ***Note:*** This command starts the python virtual environment in a sub-shell. You can end it
 at any time by typing `exit`.
 
-### 2 - Launch TCR
+### 3 - Launch TCR
 
 > ***Reminder***: the command below should be run from
 > [examples/python-pytest](.)
