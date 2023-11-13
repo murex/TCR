@@ -81,6 +81,7 @@ provided as built-in.
 | java       | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
 | javascript | yarn, bazel, make                                         | yarn           |
 | kotlin     | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
+| php        | phpunit                                                   | phpunit        |
 | python     | pytest, bazel, make                                       | pytest         |
 | typescript | yarn, bazel, make                                         | yarn           |
 
