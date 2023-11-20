@@ -7,7 +7,7 @@ toolchain go1.21.1
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v0.28.0
+	github.com/murex/tcr v0.29.0
 	github.com/spf13/cobra v1.8.0
 )
 
