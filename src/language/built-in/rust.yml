@@ -1,0 +1,9 @@
+toolchains:
+  default: cargo
+  compatible-with: [ cargo, nextest ]
+source-files:
+  directories: [ src ]
+  patterns: [ '(?i)^.*\.rs$' ]
+test-files:
+  directories: [ tests ]
+  patterns: [ '(?i)^.*\.rs$' ]
