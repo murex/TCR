@@ -52,6 +52,9 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [pytest](python-pytest/README.md)
 - With [bazel](python-bazel/README.md)
 
+# Rust
+
+- With [cargo](rust-cargo/README.md)
 
 ## TypeScript
 
