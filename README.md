@@ -73,18 +73,19 @@ provided as built-in.
 
 #### Built-in languages and toolchains
 
-| Language   | Toolchains                                                | Default        |
-|------------|-----------------------------------------------------------|----------------|
-| cpp        | cmake, bazel, make                                        | cmake          |
-| csharp     | dotnet, bazel, make                                       | dotnet         |
-| elixir     | mix                                                       | mix            |
-| go         | go-tools, gotestsum, bazel, make                          | go-tools       |
-| java       | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
-| javascript | yarn, bazel, make                                         | yarn           |
-| kotlin     | gradle, gradle-wrapper, maven, maven-wrapper, bazel, make | gradle-wrapper |
-| php        | phpunit                                                   | phpunit        |
-| python     | pytest, bazel, make                                       | pytest         |
-| typescript | yarn, bazel, make                                         | yarn           |
+| Language   | Default Toolchain | Compatible Toolchains                                 |
+|------------|-------------------|-------------------------------------------------------|
+| cpp        | cmake             | cmake bazel make                                      |
+| csharp     | dotnet            | dotnet bazel make                                     |
+| elixir     | mix               | mix                                                   |
+| go         | go-tools          | go-tools gotestsum bazel make                         |
+| java       | gradle-wrapper    | gradle gradle-wrapper maven maven-wrapper bazel make  |
+| javascript | yarn              | yarn bazel make                                       |
+| kotlin     | gradle-wrapper    | gradle gradle-wrapper maven, maven-wrapper bazel make |
+| php        | phpunit           | phpunit                                               |
+| python     | pytest            | pytest bazel make                                     |
+| rust       | cargo             | cargo nextest                                         |
+| typescript | yarn              | yarn bazel make                                       |
 
 ### Base directory
 
