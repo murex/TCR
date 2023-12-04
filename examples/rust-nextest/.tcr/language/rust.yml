@@ -1,0 +1,9 @@
+toolchains:
+  default: nextest
+  compatible-with: [ nextest ]
+source-files:
+  directories: [ src ]
+  patterns: [ '(?i)^.*\.rs$' ]
+test-files:
+  directories: [ tests ]
+  patterns: [ '(?i)^.*\.rs$' ]
