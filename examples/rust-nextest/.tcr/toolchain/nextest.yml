@@ -1,0 +1,11 @@
+build:
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
+    command: cargo
+    arguments: [ test, --test, lib_test, --no-run ]
+test:
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
+    command: cargo
+    arguments: [ nextest, run, --test, lib_test ]
+test-result-dir: target/nextest

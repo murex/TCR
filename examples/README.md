@@ -55,6 +55,7 @@ Here are some simple examples for using TCR with various languages & toolchains 
 # Rust
 
 - With [cargo](rust-cargo/README.md)
+- With [nextest](rust-nextest/README.md)
 
 ## TypeScript
 
