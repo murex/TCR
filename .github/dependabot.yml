@@ -32,6 +32,13 @@ updates:
     schedule:
       interval: "weekly"
 
+  # Maintain dependencies for Elixir examples
+
+  - package-ecosystem: "mix"
+    directory: "/examples/elixir-mix"
+    schedule:
+      interval: "weekly"
+
   # Maintain dependencies for Go examples
 
   - package-ecosystem: "gomod"
@@ -124,16 +131,21 @@ updates:
     schedule:
       interval: "weekly"
 
+  # Maintain dependencies for Rust examples
+
+  - package-ecosystem: "cargo"
+    directory: "/examples/rust-cargo"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "cargo"
+    directory: "/examples/rust-nextest"
+    schedule:
+      interval: "weekly"
+
   # Maintain dependencies for Typescript examples
 
   - package-ecosystem: "npm"
     directory: "/examples/typescript-yarn"
-    schedule:
-      interval: "weekly"
-
-  # Maintain dependencies for Elixir examples
-
-  - package-ecosystem: "mix"
-    directory: "/examples/elixir-mix"
     schedule:
       interval: "weekly"
