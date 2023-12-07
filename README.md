@@ -5,13 +5,13 @@
 [![goreleaser](https://github.com/murex/tcr/actions/workflows/go_releaser.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go_releaser.yml)
 [![Add contributors](https://github.com/murex/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/add_contributors.yml)
 
-# TCR - Test && (Commit || Revert) application
+# TCR - (Test && Commit || Revert) application
 
 _A Go implementation of TCR, for practicing baby-steps development, and much more!_
 
 ## What is this?
 
-TCR is a programming workflow, standing for **Test && (Commit || Revert)**.
+TCR is a programming workflow, standing for **(Test && Commit || Revert)**.
 
 Kent Beck and Oddmund Strømme came up with this concept
 in [this post](https://medium.com/@kentbeck_7670/test-commit-revert-870bbd756864).
