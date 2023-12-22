@@ -5,16 +5,16 @@
 [![goreleaser](https://github.com/murex/tcr/actions/workflows/go_releaser.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go_releaser.yml)
 [![Add contributors](https://github.com/murex/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/add_contributors.yml)
 
-# TCR - Test && (Commit || Revert) application
+# TCR - Test && Commit || Revert
 
 _A Go implementation of TCR, for practicing baby-steps development, and much more!_
 
 ## What is this?
 
-TCR is a programming workflow, standing for **Test && (Commit || Revert)**.
+TCR is a programming workflow, standing for **Test && Commit || Revert**.
 
-Kent Beck and Oddmund Strømme came up with this concept
-in [this post](https://medium.com/@kentbeck_7670/test-commit-revert-870bbd756864).
+Kent Beck, Oddmund Strømme, Lars Barlindhaug and Ole Johannessen came up with this concept
+as described in [this post](https://medium.com/@kentbeck_7670/test-commit-revert-870bbd756864).
 
 Since then several people experimented with this idea.
 
@@ -49,7 +49,7 @@ If you are a technical coach, you can advise participants to your coaching sessi
 1. Have [git](https://git-scm.com/) or [Perforce client](https://www.perforce.com/downloads/helix-visual-client-p4v)
    installed on your machine
 2. Have a clone of the git repository or a client view of the Perforce depot containing the code you intend to work on
-3. Supported platforms: macOS, Linux and Windows. Refer to [TCR releases page](https://github.com/murex/TCR/releases)
+3. TCR can run on macOS, Linux and Windows. Refer to [TCR releases page](https://github.com/murex/TCR/releases)
    for a complete list of supported platforms/architectures
 
 ### Languages and toolchains
