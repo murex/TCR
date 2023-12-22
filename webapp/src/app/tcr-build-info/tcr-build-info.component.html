@@ -1,0 +1,9 @@
+<div *ngIf="buildInfo">
+  <h2>TCR Build Information</h2>
+  <div>Version: {{ buildInfo.version }}</div>
+  <div>Operating System: {{ buildInfo.os }}</div>
+  <div>Architecture: {{ buildInfo.arch }}</div>
+  <div>Git Commit: {{ buildInfo.commit }}</div>
+  <div>Date: {{ buildInfo.date }}</div>
+  <div>Author: {{ buildInfo.author }}</div>
+</div>

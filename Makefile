@@ -2,7 +2,7 @@
 default: build doc ;
 
 # Modules that can be built into an executable
-BUILD_MODULES = src
+BUILD_MODULES = webapp src
 .PHONY: $(BUILD_MODULES)
 
 # Documentation modules
@@ -15,6 +15,7 @@ MAIN_MODULES = $(BUILD_MODULES) $(DOC_MODULES)
 PROD_MODULES = $(BUILD_MODULES)
 
 # Module dependencies
+src: webapp
 tcr-doc: src
 
 # Convenience target for automating release preparation
