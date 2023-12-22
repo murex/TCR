@@ -1,6 +1,10 @@
 .PHONY: default
 default: build ;
 
+.PHONY: setup
+setup:
+	@npm install
+
 .PHONY: deps
 deps:
 	@npm update
@@ -18,7 +22,7 @@ cov:
 	@echo "TODO - investigate how to run angular/typescript coverage"
 
 .PHONY: build
-build:
+build: setup
 	@ng build --output-path ../src/http/static/webapp --configuration production --extract-licenses false 
 
 .PHONY: run
