@@ -27,13 +27,83 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/settings"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/http/api"
+	"github.com/murex/tcr/role"
+	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/ui"
 	"net/http"
 	"time"
 )
 
-// StartHttpServer runs TCR's HTTP server, listening on the provided port number
-func StartHttpServer(port int) {
+// Server is the user interface implementation when using the HTTP server
+type Server struct {
+	//reportingChannel chan bool
+	tcr  engine.TCRInterface
+	port int
+	//params           params.Params
+}
+
+// Start starts TCR HTTP server
+func (s Server) Start() {
+	startHttpServer(s.tcr, s.port)
+}
+
+func (s Server) ShowRunningMode(mode runmode.RunMode) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) NotifyRoleStarting(r role.Role) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) NotifyRoleEnding(r role.Role) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) ShowSessionInfo() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) Confirm(message string, def bool) bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) StartReporting() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) StopReporting() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s Server) MuteDesktopNotifications(muted bool) {
+	//TODO implement me
+	panic("implement me")
+}
+
+// New creates a new instance of terminal
+func New(port int, tcr engine.TCRInterface) ui.UserInterface {
+	return Server{
+		//reportingChannel: nil,
+		tcr:  tcr,
+		port: port,
+		//params:           params.Params{},
+	}
+}
+
+// startHttpServer runs TCR HTTP server, listening on the provided port number
+// and attaching it to the provided TCR instance
+func startHttpServer(tcr engine.TCRInterface, port int) {
+	api.SetTCRInstance(tcr)
+
 	router := gin.Default()
 
 	if gin.Mode() != gin.ReleaseMode {
@@ -60,9 +130,10 @@ func StartHttpServer(port int) {
 	})
 
 	// Setup route group for the API
-	api := router.Group("/api")
+	apiRoutes := router.Group("/api")
 	{
-		api.GET("/build-info", apiGetBuildInfo)
+		apiRoutes.GET("/build-info", api.GetBuildInfo)
+		apiRoutes.GET("/session-info", api.GetSessionInfo)
 	}
 
 	// Start HTTP server
@@ -96,27 +167,4 @@ func corsMiddleware() gin.HandlerFunc {
 		AllowWebSockets:  false,
 		MaxAge:           12 * time.Hour,
 	})
-}
-
-// TODO - Move to a separate file
-
-type apiBuildInfo struct {
-	BuildVersion string `json:"version"`
-	BuildOs      string `json:"os"`
-	BuildArch    string `json:"arch"`
-	BuildCommit  string `json:"commit"`
-	BuildDate    string `json:"date"`
-	BuildAuthor  string `json:"author"`
-}
-
-func apiGetBuildInfo(c *gin.Context) {
-	buildInfo := apiBuildInfo{
-		BuildVersion: settings.BuildVersion,
-		BuildOs:      settings.BuildOs,
-		BuildArch:    settings.BuildArch,
-		BuildCommit:  settings.BuildCommit,
-		BuildDate:    settings.BuildDate,
-		BuildAuthor:  settings.BuildAuthor,
-	}
-	c.IndentedJSON(http.StatusOK, buildInfo)
 }

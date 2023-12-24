@@ -26,6 +26,7 @@ import (
 	"github.com/murex/tcr/cli"
 	"github.com/murex/tcr/config"
 	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/http"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
@@ -47,9 +48,16 @@ It can be used either in solo, or as a group within a mob or pair session.
 			config.UpdateEngineParams(&parameters)
 		},
 		Run: func(_ *cobra.Command, _ []string) {
+			// Default running mode is mob
 			parameters.Mode = runmode.Mob{}
 			parameters.AutoPush = parameters.Mode.AutoPushDefault()
-			u := cli.New(parameters, engine.NewTCREngine())
+			// Create TCR engine instance
+			tcr := engine.NewTCREngine()
+			// Start HTTP UI
+			h := http.New(8080, tcr)
+			h.Start()
+			// Start terminal UI
+			u := cli.New(parameters, tcr)
 			u.Start()
 		},
 	}

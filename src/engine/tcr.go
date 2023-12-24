@@ -26,7 +26,6 @@ import (
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
-	"github.com/murex/tcr/http"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
@@ -166,9 +165,6 @@ func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
 	tcr.ui.ShowRunningMode(tcr.mode)
 	tcr.ui.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.mode.IsInteractive())
-
-	// TODO see where to put this function
-	http.StartHttpServer(8080)
 }
 
 // SetCommitOnFail sets VCS commit-on-fail option to the provided value
@@ -300,7 +296,7 @@ func (tcr *TCREngine) initVCS(vcsName string, trace string) {
 	if tcr.vcs != nil {
 		return // VCS should be initialized only once
 	}
-	// Set VCS trace trace flag
+	// Set VCS trace flag
 	vcs.SetTrace(trace == "vcs")
 	var err error
 	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir())
