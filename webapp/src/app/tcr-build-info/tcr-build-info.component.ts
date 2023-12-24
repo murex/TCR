@@ -1,13 +1,14 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TcrBuildInfo} from "../tcr-build-info";
 import {TcrBuildInfoService} from "../tcr-build-info.service";
-import {NgIf} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-tcr-build-info',
   standalone: true,
   imports: [
-    NgIf
+    NgIf,
+    DatePipe
   ],
   templateUrl: './tcr-build-info.component.html',
   styleUrl: './tcr-build-info.component.css'

@@ -1,5 +1,23 @@
 /* TcrBuildInfoComponent's private CSS styles */
 
+:host {
+  display: block;
+  background-color: lightgray;
+  padding: .5em;
+  color: black;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+}
+
+:host caption {
+  text-align: left;
+  font-style: italic;
+}
+
+:host th {
+  text-align: left;
+}
+
 label {
   color: #435960;
   font-weight: bold;
