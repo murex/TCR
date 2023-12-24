@@ -1,30 +1,30 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, Observable, of, tap} from "rxjs";
-import {TcrBuildInfo} from "./tcr-build-info";
+import {TcrSessionInfo} from "./tcr-session-info";
 
 @Injectable({
   providedIn: 'root'
 })
-export class TcrBuildInfoService {
+export class TcrSessionInfoService {
   private apiUrl = `/api`// URL to web api
 
   constructor(
     private http: HttpClient) {
   }
 
-  getBuildInfo(): Observable<TcrBuildInfo> {
-    const url = `${this.apiUrl}/build-info`;
+  getSessionInfo(): Observable<TcrSessionInfo> {
+    const url = `${this.apiUrl}/session-info`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',
       })
     };
 
-    return this.http.get<TcrBuildInfo>(url, httpOptions)
+    return this.http.get<TcrSessionInfo>(url, httpOptions)
       .pipe(
-        tap(_ => this.log('fetched TCR build info')),
-        catchError(this.handleError<TcrBuildInfo>('getBuildInfo'))
+        tap(_ => this.log('fetched TCR session info')),
+        catchError(this.handleError<TcrSessionInfo>('getSessionInfo'))
       );
   }
 

@@ -1,0 +1,41 @@
+<div *ngIf="sessionInfo">
+  <table>
+    <caption>TCR Session Information</caption>
+    <tr>
+      <th>Base Directory</th>
+      <td>{{ sessionInfo.baseDir }}</td>
+    </tr>
+    <tr>
+      <th>Work Directory</th>
+      <td>{{ sessionInfo.workDir }}</td>
+    </tr>
+    <tr>
+      <th>Language</th>
+      <td>{{ sessionInfo.language }}</td>
+    </tr>
+    <tr>
+      <th>Toolchain</th>
+      <td>{{ sessionInfo.toolchain }}</td>
+    </tr>
+    <tr>
+      <th>VCS</th>
+      <td>{{ sessionInfo.vcsName }}</td>
+    </tr>
+    <tr>
+      <th>VCS Session Summary</th>
+      <td>{{ sessionInfo.vcsSession }}</td>
+    </tr>
+    <tr>
+      <th>VCS Commit Message Suffix</th>
+      <td>{{ sessionInfo.messageSuffix | showEmpty }}</td>
+    </tr>
+    <tr>
+      <th>VCS Commit-On-Fail flag</th>
+      <td>{{ sessionInfo.commitOnFail | onOff }}</td>
+    </tr>
+    <tr>
+      <th>Git Auto-Push flag</th>
+      <td>{{ sessionInfo.gitAutoPush | onOff }}</td>
+    </tr>
+  </table>
+</div>

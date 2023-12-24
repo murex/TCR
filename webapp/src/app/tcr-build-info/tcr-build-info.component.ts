@@ -24,7 +24,7 @@ export class TcrBuildInfoComponent implements OnInit {
     this.getBuildInfo();
   }
 
-  private getBuildInfo() {
+  private getBuildInfo(): void {
     this.buildInfoService.getBuildInfo()
       .subscribe(buildInfo => this.buildInfo = buildInfo);
   }
