@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, Observable, of, tap} from "rxjs";
-import {TcrSessionInfo} from "./tcr-session-info";
+import {TcrSessionInfo} from "../interfaces/tcr-session-info";
 
 @Injectable({
   providedIn: 'root'

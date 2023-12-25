@@ -1,0 +1,52 @@
+<section>
+  <div class="container" *ngIf="buildInfo">
+
+    <div class="row mbr-justify-content-center">
+
+      <div class="col-lg-6 mbr-col-md-10">
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-cogs fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Running TCR Version</h2>
+            <table class="mbr-fonts-style text1 mbr-text display-6">
+              <caption>TCR Build Information</caption>
+              <tr>
+                <th>Version</th>
+                <td>{{ buildInfo.version }}</td>
+              </tr>
+              <tr>
+                <th>Platform</th>
+                <td>{{ buildInfo.os }}-{{ buildInfo.arch }}</td>
+              </tr>
+              <tr>
+                <th>Built on</th>
+                <td>{{ buildInfo.date | date: 'MMM dd yyyy' }} by {{ buildInfo.author }}</td>
+              </tr>
+              <tr>
+                <th>Tag</th>
+                <td>{{ buildInfo.commit }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mbr-col-md-10">
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-github fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">TCR on GitHub</h2>
+            <p>Willing to contribute?
+              <br>TCR is available as open-source on GitHub at
+              <br><a href="https://github.com/murex/TCR">github.com/murex/TCR</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

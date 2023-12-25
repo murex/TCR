@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TcrBuildInfoComponent } from './tcr-build-info.component';
+import { FooterComponent } from './footer.component';
 
-describe('TcrBuildInfoComponent', () => {
-  let component: TcrBuildInfoComponent;
-  let fixture: ComponentFixture<TcrBuildInfoComponent>;
+describe('FooterComponent', () => {
+  let component: FooterComponent;
+  let fixture: ComponentFixture<FooterComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrBuildInfoComponent]
+      imports: [FooterComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(TcrBuildInfoComponent);
+    fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

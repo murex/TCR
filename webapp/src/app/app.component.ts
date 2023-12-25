@@ -1,9 +1,11 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {RouterLink, RouterOutlet} from '@angular/router';
+import {RouterLink, RouterModule, RouterOutlet} from '@angular/router';
 import {HttpClientModule} from "@angular/common/http";
-import {TcrBuildInfoComponent} from "./tcr-build-info/tcr-build-info.component";
-import {TcrSessionInfoComponent} from "./tcr-session-info/tcr-session-info.component";
+import {TcrAboutComponent} from "./components/tcr-about/tcr-about.component";
+import {TcrSessionInfoComponent} from "./components/tcr-session-info/tcr-session-info.component";
+import {HeaderComponent} from "./components/header/header.component";
+import {FooterComponent} from "./components/footer/footer.component";
 
 @Component({
   selector: 'app-root',
@@ -11,10 +13,13 @@ import {TcrSessionInfoComponent} from "./tcr-session-info/tcr-session-info.compo
   imports: [
     CommonModule,
     RouterOutlet,
-    TcrBuildInfoComponent,
+    TcrAboutComponent,
     TcrSessionInfoComponent,
     RouterLink,
+    RouterModule,
     HttpClientModule,
+    HeaderComponent,
+    FooterComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

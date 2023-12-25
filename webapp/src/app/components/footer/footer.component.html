@@ -1,0 +1,9 @@
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+
+  <div *ngIf="buildInfo" class="footer-copyright text-center py-3">
+    TCR version {{ buildInfo.version }} ({{ buildInfo.date | date: 'MMM yyyy' }})
+  </div>
+
+</footer>
+<!-- Footer -->

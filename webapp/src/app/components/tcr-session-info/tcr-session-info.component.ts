@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TcrSessionInfo} from "../tcr-session-info";
-import {TcrSessionInfoService} from "../tcr-session-info.service";
+import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
+import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
 import {DatePipe, NgIf} from "@angular/common";
-import {OnOffPipe} from "../shared/pipes/on-off.pipe";
-import {ShowEmptyPipe} from "../shared/pipes/show-empty.pipe";
+import {OnOffPipe} from "../../pipes/on-off.pipe";
+import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
 
 @Component({
   selector: 'app-tcr-session-info',

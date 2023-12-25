@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, Observable, of, tap} from "rxjs";
-import {TcrBuildInfo} from "./tcr-build-info";
+import {TcrBuildInfo} from "../interfaces/tcr-build-info";
 
 @Injectable({
   providedIn: 'root'

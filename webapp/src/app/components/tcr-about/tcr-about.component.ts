@@ -1,19 +1,19 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TcrBuildInfo} from "../tcr-build-info";
-import {TcrBuildInfoService} from "../tcr-build-info.service";
+import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
+import {TcrBuildInfoService} from "../../services/tcr-build-info.service";
 import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-tcr-build-info',
+  selector: 'app-tcr-about',
   standalone: true,
   imports: [
     NgIf,
     DatePipe
   ],
-  templateUrl: './tcr-build-info.component.html',
-  styleUrl: './tcr-build-info.component.css'
+  templateUrl: './tcr-about.component.html',
+  styleUrl: './tcr-about.component.css'
 })
-export class TcrBuildInfoComponent implements OnInit {
+export class TcrAboutComponent implements OnInit {
   @Input() buildInfo?: TcrBuildInfo;
 
   constructor(

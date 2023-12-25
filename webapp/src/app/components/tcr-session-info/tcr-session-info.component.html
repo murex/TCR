@@ -1,0 +1,77 @@
+<section>
+  <div class="container" *ngIf="sessionInfo">
+
+    <div class="row mbr-justify-content-center">
+
+      <div class="col-lg-6 mbr-col-md-10">
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-folder-open fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Directories</h2>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Base Directory</h3>
+            <ul>
+              <li>{{ sessionInfo.baseDir }}</li>
+            </ul>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Work Directory</h3>
+            <ul>
+              <li>{{ sessionInfo.workDir }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-file-code-o fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Language and Toolchain</h2>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Language</h3>
+            <ul>
+              <li>{{ sessionInfo.language }}</li>
+            </ul>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Toolchain</h3>
+            <ul>
+              <li>{{ sessionInfo.toolchain }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-code-fork fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Version Control System</h2>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Used VCS</h3>
+            <ul>
+              <li>{{ sessionInfo.vcsName }}</li>
+            </ul>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Session Summary</h3>
+            <ul>
+              <li>{{ sessionInfo.vcsSession }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-check-square-o fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Options and Flags</h2>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">VCS Commit Message Suffix</h3>
+            <ul>
+              <li>{{ sessionInfo.messageSuffix | showEmpty }}</li>
+            </ul>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">VCS
+              Commit-On-Fail {{ sessionInfo.commitOnFail | onOff }}</h3>
+            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Git
+              Auto-Push {{ sessionInfo.gitAutoPush | onOff }}</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
