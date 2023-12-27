@@ -27,12 +27,15 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/http/api"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/utils"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -44,9 +47,68 @@ type Server struct {
 	//params           params.Params
 }
 
+// New creates a new instance of terminal
+func New(port int, tcr engine.TCRInterface) ui.UserInterface {
+	return Server{
+		//reportingChannel: nil,
+		tcr:  tcr,
+		port: port,
+		//params:           params.Params{},
+	}
+}
+
 // Start starts TCR HTTP server
 func (s Server) Start() {
-	startHttpServer(s.tcr, s.port)
+	utils.Trace("Starting HTTP server on port ", s.port)
+	router := gin.Default()
+
+	if gin.Mode() != gin.ReleaseMode {
+		// Add CORS Middleware in development mode to allow running
+		// backend and frontend on separate ports
+		router.Use(corsMiddleware())
+	}
+
+	// TODO: improvements: 2 modes - development vs production
+	// When in production:
+	// - using env:   export GIN_MODE=release
+	// - or using code:  gin.SetMode(gin.ReleaseMode)
+	// When in development:
+	// - use the real static FileSystem instead of the embedded one
+
+	// Serve frontend static files from embedded filesystem
+	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
+	router.NoRoute(func(c *gin.Context) {
+		utils.Trace(c.Request.URL.Path, " doesn't exists, redirecting to /")
+		c.Redirect(http.StatusMovedPermanently, "/")
+	})
+
+	// Setup route group for the API
+	api.SetTCRInstance(s.tcr)
+	apiRoutes := router.Group("/api")
+	{
+		apiRoutes.GET("/build-info", api.GetBuildInfo)
+		apiRoutes.GET("/session-info", api.GetSessionInfo)
+	}
+
+	// Setup websocket route
+	router.GET("/ws", webSocket)
+
+	// Start HTTP server
+	go func() {
+		// TODO handle error
+		_ = router.Run(fmt.Sprintf("127.0.0.1:%d", s.port))
+	}()
+
+	// TODO - deal with opening of webapp page in a browser
+	// Open application page in browser
+	// err := browser.OpenURL("http://" + addr)
+	// if err != nil {
+	//	 fmt.Printf("Failed to open browser: %v\n", err.Error())
+	// }
+	//
+	// for {
+	//	 time.Sleep(1 * time.Second)
+	// }
 }
 
 func (s Server) ShowRunningMode(mode runmode.RunMode) {
@@ -89,74 +151,8 @@ func (s Server) MuteDesktopNotifications(muted bool) {
 	panic("implement me")
 }
 
-// New creates a new instance of terminal
-func New(port int, tcr engine.TCRInterface) ui.UserInterface {
-	return Server{
-		//reportingChannel: nil,
-		tcr:  tcr,
-		port: port,
-		//params:           params.Params{},
-	}
-}
-
-// startHttpServer runs TCR HTTP server, listening on the provided port number
-// and attaching it to the provided TCR instance
-func startHttpServer(tcr engine.TCRInterface, port int) {
-	api.SetTCRInstance(tcr)
-
-	router := gin.Default()
-
-	if gin.Mode() != gin.ReleaseMode {
-		// Add CORS Middleware in development mode to allow running
-		// backend and frontend on separate ports
-		router.Use(corsMiddleware())
-	}
-
-	// TODO: improvements: 2 modes - development vs production
-	// When in production:
-	// - using env:   export GIN_MODE=release
-	// - or using code:  gin.SetMode(gin.ReleaseMode)
-	// - provide a way to configure HTTP port number externally
-	// - turn off CORS middleware (should not be necessary)
-	// When in development:
-	// - use the real static FileSystem instead of the embedded one
-
-	// Serve frontend static files from embedded filesystem
-	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
-	router.NoRoute(func(c *gin.Context) {
-		// TODO replace fmt.Printf
-		fmt.Printf("%s doesn't exists, redirecting to /\n", c.Request.URL.Path)
-		c.Redirect(http.StatusMovedPermanently, "/")
-	})
-
-	// Setup route group for the API
-	apiRoutes := router.Group("/api")
-	{
-		apiRoutes.GET("/build-info", api.GetBuildInfo)
-		apiRoutes.GET("/session-info", api.GetSessionInfo)
-	}
-
-	// Start HTTP server
-	go func() {
-		// TODO handle error
-		_ = router.Run(fmt.Sprintf("127.0.0.1:%d", port))
-	}()
-
-	// TODO - deal with opening of webapp page in a browser
-	// Open application page in browser
-	// err := browser.OpenURL("http://" + addr)
-	// if err != nil {
-	//	 fmt.Printf("Failed to open browser: %v\n", err.Error())
-	// }
-	//
-	// for {
-	//	 time.Sleep(1 * time.Second)
-	// }
-}
-
 func corsMiddleware() gin.HandlerFunc {
-	// TODO replace fmt.Printf
-	fmt.Printf("- Plugging CORS middleware\n")
+	utils.Trace("Enabling CORS middleware")
 	return cors.New(cors.Config{
 		AllowWildcard:    true,
 		AllowAllOrigins:  true,
@@ -167,4 +163,28 @@ func corsMiddleware() gin.HandlerFunc {
 		AllowWebSockets:  false,
 		MaxAge:           12 * time.Hour,
 	})
+}
+
+// Websocket
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func webSocket(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+	i := 0
+	for {
+		i++
+		err := conn.WriteMessage(websocket.TextMessage, []byte("New message (#"+strconv.Itoa(i)+")"))
+		if err != nil {
+			return
+		}
+		time.Sleep(time.Second)
+	}
 }
