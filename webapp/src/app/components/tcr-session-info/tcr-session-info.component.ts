@@ -18,6 +18,7 @@ import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
   styleUrl: './tcr-session-info.component.css'
 })
 export class TcrSessionInfoComponent implements OnInit {
+  title = "TCR Session Information"
   @Input() sessionInfo?: TcrSessionInfo;
 
   constructor(

@@ -1,7 +1,7 @@
 <section>
   <div class="container" *ngIf="buildInfo">
     <div class="row mb-3 mbr-justify-content-center">
-      <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">About TCR</h1>
+      <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
     </div>
 
     <div class="row mbr-justify-content-center">
@@ -25,7 +25,7 @@
               </tr>
               <tr>
                 <th>Built on</th>
-                <td>{{ buildInfo.date | date: 'MMM dd yyyy' }} by {{ buildInfo.author }}</td>
+                <td>{{ buildInfo.date | date: 'mediumDate' }} by {{ buildInfo.author }}</td>
               </tr>
               <tr>
                 <th>Tag</th>

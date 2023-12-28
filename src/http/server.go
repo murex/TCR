@@ -35,15 +35,15 @@ import (
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/utils"
 	"net/http"
-	"strconv"
 	"time"
 )
 
 // Server is the user interface implementation when using the HTTP server
 type Server struct {
 	//reportingChannel chan bool
-	tcr  engine.TCRInterface
-	port int
+	tcr     engine.TCRInterface
+	port    int
+	devMode bool
 	//params           params.Params
 }
 
@@ -51,8 +51,9 @@ type Server struct {
 func New(port int, tcr engine.TCRInterface) ui.UserInterface {
 	return Server{
 		//reportingChannel: nil,
-		tcr:  tcr,
-		port: port,
+		tcr:     tcr,
+		port:    port,
+		devMode: true,
 		//params:           params.Params{},
 	}
 }
@@ -60,9 +61,15 @@ func New(port int, tcr engine.TCRInterface) ui.UserInterface {
 // Start starts TCR HTTP server
 func (s Server) Start() {
 	utils.Trace("Starting HTTP server on port ", s.port)
-	router := gin.Default()
+	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
+	router := gin.New()
+	router.Use(gin.Recovery())
 
-	if gin.Mode() != gin.ReleaseMode {
+	gin.SetMode(gin.ReleaseMode)
+	if s.devMode {
+		gin.SetMode(gin.DebugMode)
+		// In development mode we want to see incoming HTTP requests
+		router.Use(gin.Logger())
 		// Add CORS Middleware in development mode to allow running
 		// backend and frontend on separate ports
 		router.Use(corsMiddleware())
@@ -96,7 +103,8 @@ func (s Server) Start() {
 	// Start HTTP server
 	go func() {
 		// TODO handle error
-		_ = router.Run(fmt.Sprintf("127.0.0.1:%d", s.port))
+		_ = router.Run(fmt.Sprintf("0.0.0.0:%d", s.port))
+		//_ = router.Run(fmt.Sprintf("127.0.0.1:%d", s.port))
 	}()
 
 	// TODO - deal with opening of webapp page in a browser
@@ -160,7 +168,7 @@ func corsMiddleware() gin.HandlerFunc {
 		AllowHeaders:     []string{"Content-Type", "Origin"},
 		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: false,
-		AllowWebSockets:  false,
+		AllowWebSockets:  true,
 		MaxAge:           12 * time.Hour,
 	})
 }
@@ -170,19 +178,26 @@ func corsMiddleware() gin.HandlerFunc {
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		//fmt.Println(r)
+		// TODO enforce origin in production mode?
+		return true
+	},
 }
 
 func webSocket(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		//utils.Trace(err)
 		return
 	}
 	defer conn.Close()
 	i := 0
 	for {
 		i++
-		err := conn.WriteMessage(websocket.TextMessage, []byte("New message (#"+strconv.Itoa(i)+")"))
+		err := conn.WriteJSON(fmt.Sprintf("New message (#%d)", i))
 		if err != nil {
+			//utils.Trace(err)
 			return
 		}
 		time.Sleep(time.Second)

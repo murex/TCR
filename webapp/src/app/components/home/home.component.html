@@ -1,7 +1,7 @@
 <section>
   <div class="container">
     <div class="row mb-3 mbr-justify-content-center">
-      <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">TCR - Test && Commit || Revert</h1>
+      <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
     </div>
 
     <div class="row mbr-justify-content-center">
@@ -9,11 +9,24 @@
       <div class="col-lg-6 mbr-col-md-10" (click)="navigateTo('/session')">
         <div class="wrap">
           <div class="ico-wrap">
-            <span class="mbr-iconfont fa-laptop fa"></span>
+            <span class="mbr-iconfont fa-id-card-o fa"></span>
           </div>
           <div class="text-wrap vcenter">
             <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Session</h2>
             <p class="mbr-fonts-style text1 mbr-text display-6">Show information about current TCR session</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mbr-col-md-10" (click)="navigateTo('/console')">
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-desktop fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Console</h2>
+            <p class="mbr-fonts-style text1 mbr-text display-6">Click here if you would like to browse TCR trace in
+              console</p>
           </div>
         </div>
       </div>
@@ -30,26 +43,13 @@
         </div>
       </div>
 
-      <div class="col-lg-6 mbr-col-md-10" (click)="navigateTo('/todo1')">
+      <div class="col-lg-6 mbr-col-md-10" (click)="navigateTo('/todo')">
         <div class="wrap">
           <div class="ico-wrap">
             <span class="mbr-iconfont fa-puzzle-piece fa"></span>
           </div>
           <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Free Spot 1</h2>
-            <p class="mbr-fonts-style text1 mbr-text display-6">Lorem Ipsum is simply dummy text of the printing and
-              typesetting industry. Lorem Ipsum</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-6 mbr-col-md-10" (click)="navigateTo('/todo2')">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-puzzle-piece fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Free Spot 2</h2>
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Free Spot</h2>
             <p class="mbr-fonts-style text1 mbr-text display-6">Lorem Ipsum is simply dummy text of the printing and
               typesetting industry. Lorem Ipsum</p>
           </div>

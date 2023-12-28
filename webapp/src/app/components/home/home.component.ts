@@ -9,6 +9,8 @@ import {Router} from "@angular/router";
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+  title = 'TCR - Test && Commit || Revert';
+
   ngOnInit() {
   }
 
