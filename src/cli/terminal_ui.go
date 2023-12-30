@@ -31,7 +31,6 @@ import (
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
-	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"os"
@@ -66,7 +65,7 @@ const (
 )
 
 // New creates a new instance of terminal
-func New(p params.Params, tcr engine.TCRInterface) ui.UserInterface {
+func New(p params.Params, tcr engine.TCRInterface) *TerminalUI {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	term.mainMenu = term.initMainMenu()
