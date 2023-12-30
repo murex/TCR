@@ -68,6 +68,7 @@ const (
 func New(p params.Params, tcr engine.TCRInterface) *TerminalUI {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
+	tcr.AttachUI(&term, true)
 	term.mainMenu = term.initMainMenu()
 	term.roleMenu = term.initRoleMenu()
 	term.MuteDesktopNotifications(false)
@@ -346,7 +347,7 @@ func (term *TerminalUI) Start() {
 }
 
 func (term *TerminalUI) initTCREngine() {
-	term.tcr.Init(term, term.params)
+	term.tcr.Init(term.params)
 }
 
 func (term *TerminalUI) listMenuOptions(m *menu, title string) {

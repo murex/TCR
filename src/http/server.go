@@ -39,29 +39,51 @@ import (
 // Server provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
 type Server struct {
-	// reportingChannel chan bool
-	tcr     engine.TCRInterface
-	port    int
-	host    string
-	devMode bool
+	tcr        engine.TCRInterface
+	port       int
+	host       string
+	devMode    bool
+	websockets []*websocketMessageReporter
 	// params           params.Params
 }
 
 // New creates a new instance of Server
-func New(port int, tcr engine.TCRInterface) Server {
-	return Server{
-		// reportingChannel: nil,
+func New(port int, tcr engine.TCRInterface) *Server {
+	server := Server{
 		tcr:  tcr,
 		host: "0.0.0.0", // To enable connections from a remote host
 		// host: "127.0.0.1", // To restrict connections to local host only
-		port:    port,
-		devMode: true,
+		port:       port,
+		devMode:    true,
+		websockets: []*websocketMessageReporter{},
 		// params:           params.Params{},
+	}
+	tcr.AttachUI(&server, false)
+	ServerInstance = &server
+	return &server
+}
+
+var (
+	// ServerInstance is HTTP Server singleton instance
+	ServerInstance *Server
+)
+
+func (s *Server) registerWebSocket(ws *websocketMessageReporter) {
+	s.websockets = append(s.websockets, ws)
+	// report.PostInfo("websockets: ", len(s.websockets))
+}
+
+func (s *Server) unregisterWebSocket(ws *websocketMessageReporter) {
+	for i, registered := range s.websockets {
+		if ws == registered {
+			s.websockets = append(s.websockets[:i], s.websockets[i+1:]...)
+			return
+		}
 	}
 }
 
 // Start starts TCR HTTP server
-func (s Server) Start() {
+func (s *Server) Start() {
 	utils.Trace("Starting HTTP server on port ", s.port)
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
 	router := gin.New()
@@ -76,13 +98,6 @@ func (s Server) Start() {
 		// backend and frontend on separate ports
 		router.Use(corsMiddleware())
 	}
-
-	// TODO: improvements: 2 modes - development vs production
-	// When in production:
-	// - using env:   export GIN_MODE=release
-	// - or using code:  gin.SetMode(gin.ReleaseMode)
-	// When in development:
-	// - use the real static FileSystem instead of the embedded one
 
 	// Serve frontend static files from embedded filesystem
 	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
@@ -121,55 +136,56 @@ func (s Server) Start() {
 }
 
 // getServerAddress returns the TCP server address that the server is listening to.
-func (s Server) getServerAddress() string {
+func (s *Server) getServerAddress() string {
 	return fmt.Sprintf("%s:%d", s.host, s.port)
 }
 
 // ShowRunningMode shows the current running mode
-func (Server) ShowRunningMode(_ runmode.RunMode) {
-	// TODO implement me
-	panic("implement me")
+func (s *Server) ShowRunningMode(mode runmode.RunMode) {
+	for _, ws := range s.websockets {
+		ws.ReportTitle(false, "Running in ", mode.Name(), " mode")
+	}
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (Server) NotifyRoleStarting(_ role.Role) {
-	// TODO implement me
-	panic("implement me")
+func (s *Server) NotifyRoleStarting(r role.Role) {
+	for _, ws := range s.websockets {
+		ws.ReportTitle(false, "Starting with ", r.LongName())
+	}
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (Server) NotifyRoleEnding(_ role.Role) {
-	// TODO implement me
-	panic("implement me")
+func (s *Server) NotifyRoleEnding(r role.Role) {
+	for _, ws := range s.websockets {
+		ws.ReportInfo(false, "Ending ", r.LongName())
+	}
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
-func (Server) ShowSessionInfo() {
-	// With HTTP server this operation is triggered by the client though
+func (*Server) ShowSessionInfo() {
+	// With HTTP server this operation is triggered by the client through
 	// a GET request. There is nothing to do here
 }
 
 // Confirm asks the user for confirmation
-func (Server) Confirm(_ string, _ bool) bool {
+func (*Server) Confirm(_ string, _ bool) bool {
 	// Always return true until there is a need for this function
 	return true
 }
 
 // StartReporting tells HTTP server to start reporting information
-func (Server) StartReporting() {
-	// TODO implement me
-	panic("implement me")
+func (*Server) StartReporting() {
+	// Not needed: subscription is managed by each websocket handler instance
 }
 
 // StopReporting tells HTTP server to stop reporting information
-func (Server) StopReporting() {
-	// TODO implement me
-	panic("implement me")
+func (*Server) StopReporting() {
+	// Not needed: subscription is managed by each websocket handler instance
 }
 
 // MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
-func (Server) MuteDesktopNotifications(_ bool) {
+func (*Server) MuteDesktopNotifications(_ bool) {
 	// With HTTP server this operation should be triggered by the client though
 	// a GET request. There is nothing to do here
 }

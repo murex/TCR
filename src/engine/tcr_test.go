@@ -381,7 +381,8 @@ func initTCREngineWithFakes(
 		vcsFake = fake.NewVCSFake(fakeSettings)
 		return vcsFake, nil
 	}
-	tcr.Init(ui.NewFakeUI(), parameters)
+	tcr.Init(parameters)
+	tcr.AttachUI(ui.NewFakeUI(), true)
 	// overwrite the default waiting times when running tests
 	tcr.fsWatchRearmDelay = 0
 	tcr.traceReporterWaitingTime = 0

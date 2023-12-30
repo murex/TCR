@@ -88,8 +88,15 @@ func (fake *FakeTCREngine) GetCallHistory() []TCRCall {
 	return fake.callRecord
 }
 
-// Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
-func (fake *FakeTCREngine) Init(_ ui.UserInterface, _ params.Params) {}
+// AttachUI plugs a user interface to TCR
+func (fake *FakeTCREngine) AttachUI(_ ui.UserInterface, _ bool) {
+	// nothing to do in fake context
+}
+
+// Init initializes the TCR engine with the provided parameters
+func (fake *FakeTCREngine) Init(_ params.Params) {
+	// nothing to do in fake context
+}
 
 // GetSessionInfo returns a SessionInfo struct filled with "fake" values
 func (fake *FakeTCREngine) GetSessionInfo() SessionInfo {

@@ -3,6 +3,7 @@ import {WebsocketService} from "../../services/websocket.service";
 import {catchError, retry, throwError} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
+import {TcrMessage} from "../../interfaces/tcr-message";
 
 @Component({
   selector: 'app-tcr-console',
@@ -25,13 +26,16 @@ export class TcrConsoleComponent {
         }),
         retry({delay: 5_000}),
         takeUntilDestroyed())
-      .subscribe((value) => {
-        this.write(value);
+      .subscribe((message: TcrMessage) => {
+        // TODO add formatting depending on message metadata
+        this.write("[" + message.type + "] " + message.text);
       });
   }
 
   private write(input: string) {
-    this.child.write(input + "\r\n");
+    // ng-console handles EOL in Windows style, e.g. it needs CRLF to properly
+    // go back to beginning of next line in the console
+    this.child.write(input.replace(/\n/g, "\r\n") + "\r\n");
   };
 
 }

@@ -53,7 +53,7 @@ It can be used either in solo, or as a group within a mob or pair session.
 			parameters.AutoPush = parameters.Mode.AutoPushDefault()
 			// Create TCR engine instance
 			tcr := engine.NewTCREngine()
-			// Start HTTP UI
+			// Start HTTP UI Proxy
 			h := http.New(8080, tcr)
 			h.Start()
 			// Start terminal UI

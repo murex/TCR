@@ -48,7 +48,8 @@ import (
 type (
 	// TCRInterface provides the API for interacting with TCR engine
 	TCRInterface interface {
-		Init(u ui.UserInterface, p params.Params)
+		AttachUI(u ui.UserInterface, primary bool)
+		Init(p params.Params)
 		setVCS(vcsInterface vcs.Interface)
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
@@ -72,7 +73,7 @@ type (
 	// TCREngine is the engine running all TCR operations
 	TCREngine struct {
 		mode            runmode.RunMode
-		ui              ui.UserInterface
+		ui              ui.Multicaster
 		vcs             vcs.Interface
 		language        language.LangInterface
 		toolchain       toolchain.TchnInterface
@@ -117,6 +118,7 @@ var (
 // NewTCREngine instantiates TCR engine instance
 func NewTCREngine() (engine *TCREngine) {
 	engine = &TCREngine{
+		ui:                       *ui.NewMulticaster(),
 		fsWatchRearmDelay:        fsWatchRearmDelay,
 		traceReporterWaitingTime: traceReporterWaitingTime,
 	}
@@ -124,13 +126,17 @@ func NewTCREngine() (engine *TCREngine) {
 	return engine
 }
 
+// AttachUI plugs a user interface to TCR
+func (tcr *TCREngine) AttachUI(u ui.UserInterface, primary bool) {
+	tcr.ui.Register(u, primary)
+}
+
 // Init initializes the TCR engine with the provided parameters, and wires it to the user interface.
 // This function should be called only once during the lifespan of the application
 // nolint:revive
-func (tcr *TCREngine) Init(u ui.UserInterface, p params.Params) {
+func (tcr *TCREngine) Init(p params.Params) {
 	var err error
 	status.RecordState(status.Ok)
-	tcr.ui = u
 
 	report.PostInfo("Starting ", settings.ApplicationName, " version ", settings.BuildVersion, "...")
 
