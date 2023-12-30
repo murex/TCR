@@ -30,11 +30,11 @@ import (
 )
 
 var defaultBuildInfo = []BuildInfo{
-	{"Version", "dev"},
+	{"Version", "v0.0.0-dev"},
 	{"OS Family", "unknown"},
 	{"Architecture", "unknown"},
 	{"Commit", "none"},
-	{"Build Date", "unknown"},
+	{"Build Date", "0001-01-01T00:00:00Z"},
 	{"Built By", "unknown"},
 }
 

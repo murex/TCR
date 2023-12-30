@@ -24,15 +24,16 @@ package settings
 
 import (
 	"fmt"
+	"time"
 )
 
 // Below variables are set at build time through -ldflags
 var (
-	BuildVersion = "dev"
+	BuildVersion = "v0.0.0-dev"
 	BuildOs      = "unknown"
 	BuildArch    = "unknown"
 	BuildCommit  = "none"
-	BuildDate    = "unknown"
+	BuildDate    = time.Time{}.Format(time.RFC3339)
 	BuildAuthor  = "unknown"
 )
 
