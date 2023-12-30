@@ -37,7 +37,8 @@ type buildInfo struct {
 	BuildAuthor  string `json:"author"`
 }
 
-func GetBuildInfo(c *gin.Context) {
+// BuildInfoGetHandler handles HTTP GET requests on TCR build information
+func BuildInfoGetHandler(c *gin.Context) {
 	data := buildInfo{
 		BuildVersion: settings.BuildVersion,
 		BuildOs:      settings.BuildOs,

@@ -35,13 +35,13 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		//fmt.Println(r)
+		// fmt.Println(r)
 		// TODO enforce origin in production mode?
 		return true
 	},
 }
 
-func webSocket(c *gin.Context) {
+func webSocketHandler(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		utils.Trace(err)
@@ -56,7 +56,7 @@ func webSocket(c *gin.Context) {
 		i++
 		err := conn.WriteJSON(fmt.Sprintf("New message (#%d)", i))
 		if err != nil {
-			//utils.Trace(err)
+			// utils.Trace(err)
 			return
 		}
 		time.Sleep(time.Second)

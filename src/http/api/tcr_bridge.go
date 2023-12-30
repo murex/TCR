@@ -26,6 +26,7 @@ import "github.com/murex/tcr/engine"
 
 var tcr engine.TCRInterface
 
+// SetTCRInstance sets the TCR engine instance for API functions will interact with
 func SetTCRInstance(instance engine.TCRInterface) {
 	tcr = instance
 }

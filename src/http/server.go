@@ -39,21 +39,24 @@ import (
 // Server provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
 type Server struct {
-	//reportingChannel chan bool
+	// reportingChannel chan bool
 	tcr     engine.TCRInterface
 	port    int
+	host    string
 	devMode bool
-	//params           params.Params
+	// params           params.Params
 }
 
 // New creates a new instance of Server
 func New(port int, tcr engine.TCRInterface) Server {
 	return Server{
-		//reportingChannel: nil,
-		tcr:     tcr,
+		// reportingChannel: nil,
+		tcr:  tcr,
+		host: "0.0.0.0", // To enable connections from a remote host
+		// host: "127.0.0.1", // To restrict connections to local host only
 		port:    port,
 		devMode: true,
-		//params:           params.Params{},
+		// params:           params.Params{},
 	}
 }
 
@@ -92,18 +95,17 @@ func (s Server) Start() {
 	api.SetTCRInstance(s.tcr)
 	apiRoutes := router.Group("/api")
 	{
-		apiRoutes.GET("/build-info", api.GetBuildInfo)
-		apiRoutes.GET("/session-info", api.GetSessionInfo)
+		apiRoutes.GET("/build-info", api.BuildInfoGetHandler)
+		apiRoutes.GET("/session-info", api.SessionInfoGetHandler)
 	}
 
 	// Setup websocket route
-	router.GET("/ws", webSocket)
+	router.GET("/ws", webSocketHandler)
 
 	// Start HTTP server
 	go func() {
 		// TODO handle error
-		_ = router.Run(fmt.Sprintf("0.0.0.0:%d", s.port))
-		//_ = router.Run(fmt.Sprintf("127.0.0.1:%d", s.port))
+		_ = router.Run(s.getServerAddress())
 	}()
 
 	// TODO - deal with opening of webapp page in a browser
@@ -118,46 +120,65 @@ func (s Server) Start() {
 	// }
 }
 
-func (s Server) ShowRunningMode(mode runmode.RunMode) {
-	//TODO implement me
+// getServerAddress returns the TCP server address that the server is listening to.
+func (s Server) getServerAddress() string {
+	return fmt.Sprintf("%s:%d", s.host, s.port)
+}
+
+// ShowRunningMode shows the current running mode
+func (Server) ShowRunningMode(_ runmode.RunMode) {
+	// TODO implement me
 	panic("implement me")
 }
 
-func (s Server) NotifyRoleStarting(r role.Role) {
-	//TODO implement me
+// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
+func (Server) NotifyRoleStarting(_ role.Role) {
+	// TODO implement me
 	panic("implement me")
 }
 
-func (s Server) NotifyRoleEnding(r role.Role) {
-	//TODO implement me
+// NotifyRoleEnding tells the user that TCR engine is ending the provided role
+func (Server) NotifyRoleEnding(_ role.Role) {
+	// TODO implement me
 	panic("implement me")
 }
 
-func (s Server) ShowSessionInfo() {
-	//TODO implement me
+// ShowSessionInfo shows main information related to the current TCR session
+func (Server) ShowSessionInfo() {
+	// With HTTP server this operation is triggered by the client though
+	// a GET request. There is nothing to do here
+}
+
+// Confirm asks the user for confirmation
+func (Server) Confirm(_ string, _ bool) bool {
+	// Always return true until there is a need for this function
+	return true
+}
+
+// StartReporting tells HTTP server to start reporting information
+func (Server) StartReporting() {
+	// TODO implement me
 	panic("implement me")
 }
 
-func (s Server) Confirm(message string, def bool) bool {
-	//TODO implement me
+// StopReporting tells HTTP server to stop reporting information
+func (Server) StopReporting() {
+	// TODO implement me
 	panic("implement me")
 }
 
-func (s Server) StartReporting() {
-	//TODO implement me
-	panic("implement me")
+// MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
+// Used for test automation at the moment. Could be turned into a feature later if there is need for it.
+func (Server) MuteDesktopNotifications(_ bool) {
+	// With HTTP server this operation should be triggered by the client though
+	// a GET request. There is nothing to do here
 }
 
-func (s Server) StopReporting() {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (s Server) MuteDesktopNotifications(muted bool) {
-	//TODO implement me
-	panic("implement me")
-}
-
+// corsMiddleware opens CORS connections to HTTP server instance.
+// So far this is required only during development (mainly during frontend development
+// where frontend application is running on its own HTTP server instance)
+// Depending on future evolutions there could be a need to open CORS in production
+// too (may require finer tuning in this case to limit CORS to what is needed only)
 func corsMiddleware() gin.HandlerFunc {
 	utils.Trace("Enabling CORS middleware")
 	return cors.New(cors.Config{

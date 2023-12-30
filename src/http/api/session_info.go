@@ -39,7 +39,8 @@ type sessionInfo struct {
 	MessageSuffix     string `json:"messageSuffix"`
 }
 
-func GetSessionInfo(c *gin.Context) {
+// SessionInfoGetHandler handles HTTP GET requests on TCR settings information
+func SessionInfoGetHandler(c *gin.Context) {
 	info := tcr.GetSessionInfo()
 	data := sessionInfo{
 		BaseDir:           info.BaseDir,
