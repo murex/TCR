@@ -20,31 +20,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package api
+package http
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/settings"
+	"github.com/gorilla/websocket"
+	"github.com/murex/tcr/utils"
 	"net/http"
+	"time"
 )
 
-type buildInfo struct {
-	BuildVersion string `json:"version"`
-	BuildOs      string `json:"os"`
-	BuildArch    string `json:"arch"`
-	BuildCommit  string `json:"commit"`
-	BuildDate    string `json:"date"`
-	BuildAuthor  string `json:"author"`
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		//fmt.Println(r)
+		// TODO enforce origin in production mode?
+		return true
+	},
 }
 
-func GetBuildInfo(c *gin.Context) {
-	data := buildInfo{
-		BuildVersion: settings.BuildVersion,
-		BuildOs:      settings.BuildOs,
-		BuildArch:    settings.BuildArch,
-		BuildCommit:  settings.BuildCommit,
-		BuildDate:    settings.BuildDate,
-		BuildAuthor:  settings.BuildAuthor,
+func webSocket(c *gin.Context) {
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		utils.Trace(err)
+		return
 	}
-	c.IndentedJSON(http.StatusOK, data)
+	defer func(conn *websocket.Conn) {
+		_ = conn.Close()
+	}(conn)
+
+	i := 0
+	for {
+		i++
+		err := conn.WriteJSON(fmt.Sprintf("New message (#%d)", i))
+		if err != nil {
+			//utils.Trace(err)
+			return
+		}
+		time.Sleep(time.Second)
+	}
 }

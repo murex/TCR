@@ -27,18 +27,17 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/http/api"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
-	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/utils"
 	"net/http"
 	"time"
 )
 
-// Server is the user interface implementation when using the HTTP server
+// Server provides a TCR interface implementation over HTTP. It acts
+// as a proxy between the TCR engine and HTTP clients
 type Server struct {
 	//reportingChannel chan bool
 	tcr     engine.TCRInterface
@@ -47,8 +46,8 @@ type Server struct {
 	//params           params.Params
 }
 
-// New creates a new instance of terminal
-func New(port int, tcr engine.TCRInterface) ui.UserInterface {
+// New creates a new instance of Server
+func New(port int, tcr engine.TCRInterface) Server {
 	return Server{
 		//reportingChannel: nil,
 		tcr:     tcr,
@@ -171,35 +170,4 @@ func corsMiddleware() gin.HandlerFunc {
 		AllowWebSockets:  true,
 		MaxAge:           12 * time.Hour,
 	})
-}
-
-// Websocket
-
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		//fmt.Println(r)
-		// TODO enforce origin in production mode?
-		return true
-	},
-}
-
-func webSocket(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		//utils.Trace(err)
-		return
-	}
-	defer conn.Close()
-	i := 0
-	for {
-		i++
-		err := conn.WriteJSON(fmt.Sprintf("New message (#%d)", i))
-		if err != nil {
-			//utils.Trace(err)
-			return
-		}
-		time.Sleep(time.Second)
-	}
 }
