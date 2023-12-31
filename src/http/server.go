@@ -29,9 +29,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/http/api"
+	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
-	"github.com/murex/tcr/utils"
 	"net/http"
 	"time"
 )
@@ -84,7 +84,7 @@ func (s *Server) unregisterWebSocket(ws *websocketMessageReporter) {
 
 // Start starts TCR HTTP server
 func (s *Server) Start() {
-	utils.Trace("Starting HTTP server on port ", s.port)
+	report.PostInfo("Starting HTTP server on port ", s.port)
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
 	router := gin.New()
 	router.Use(gin.Recovery())
@@ -102,7 +102,7 @@ func (s *Server) Start() {
 	// Serve frontend static files from embedded filesystem
 	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
 	router.NoRoute(func(c *gin.Context) {
-		utils.Trace(c.Request.URL.Path, " doesn't exists, redirecting to /")
+		report.PostInfo(c.Request.URL.Path, " doesn't exists, redirecting to /")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 
@@ -196,7 +196,7 @@ func (*Server) MuteDesktopNotifications(_ bool) {
 // Depending on future evolutions there could be a need to open CORS in production
 // too (may require finer tuning in this case to limit CORS to what is needed only)
 func corsMiddleware() gin.HandlerFunc {
-	utils.Trace("Enabling CORS middleware")
+	report.PostInfo("Using CORS middleware")
 	return cors.New(cors.Config{
 		AllowWildcard:    true,
 		AllowAllOrigins:  true,

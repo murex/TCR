@@ -302,8 +302,6 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 
 // Start runs the terminal session
 func (term *TerminalUI) Start() {
-	term.initTCREngine()
-
 	if term.params.Mode.IsInteractive() {
 		_ = SetRaw()
 		defer Restore()
@@ -344,10 +342,6 @@ func (term *TerminalUI) Start() {
 	default:
 		term.ReportError(false, "Unknown run mode: ", term.params.Mode)
 	}
-}
-
-func (term *TerminalUI) initTCREngine() {
-	term.tcr.Init(term.params)
 }
 
 func (term *TerminalUI) listMenuOptions(m *menu, title string) {

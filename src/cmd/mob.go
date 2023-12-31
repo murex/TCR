@@ -25,6 +25,7 @@ package cmd
 import (
 	"github.com/murex/tcr/cli"
 	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/http"
 	"github.com/murex/tcr/runmode"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +41,15 @@ is shared with other participants through calling VCS push-pull.
 	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Mob{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
-		u := cli.New(parameters, engine.NewTCREngine())
+
+		// Create TCR engine and UI instances
+		tcr := engine.NewTCREngine()
+		h := http.New(8080, tcr)
+		u := cli.New(parameters, tcr)
+
+		// Initialize TCR engine and start UIs
+		tcr.Init(parameters)
+		h.Start()
 		u.Start()
 	},
 }

@@ -51,13 +51,15 @@ It can be used either in solo, or as a group within a mob or pair session.
 			// Default running mode is mob
 			parameters.Mode = runmode.Mob{}
 			parameters.AutoPush = parameters.Mode.AutoPushDefault()
-			// Create TCR engine instance
+
+			// Create TCR engine and UI instances
 			tcr := engine.NewTCREngine()
-			// Start HTTP UI Proxy
 			h := http.New(8080, tcr)
-			h.Start()
-			// Start terminal UI
 			u := cli.New(parameters, tcr)
+
+			// Initialize TCR engine and start UIs
+			tcr.Init(parameters)
+			h.Start()
 			u.Start()
 		},
 	}
