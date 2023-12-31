@@ -44,6 +44,16 @@ type webSocketMessage struct {
 	Timestamp string `json:"timestamp"`
 }
 
+func newWebSocketMessage(msgType string, severity string, emphasis bool, a ...any) webSocketMessage {
+	return webSocketMessage{
+		Type:      msgType,
+		Severity:  severity,
+		Text:      fmt.Sprint(a...),
+		Emphasis:  emphasis,
+		Timestamp: time.Now().Format(time.RFC3339),
+	}
+}
+
 type websocketMessageReporter struct {
 	reportingChannel chan bool
 	conn             *websocket.Conn
@@ -70,86 +80,37 @@ func (r *websocketMessageReporter) stopReporting() {
 
 // ReportSimple reports simple messages
 func (r *websocketMessageReporter) ReportSimple(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "simple",
-		Severity:  "0",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("simple", "0", emphasis, a...))
 }
 
 // ReportInfo reports info messages
 func (r *websocketMessageReporter) ReportInfo(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "info",
-		Severity:  "0",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("info", "0", emphasis, a...))
 }
 
 // ReportTitle reports title messages
 func (r *websocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "title",
-		Severity:  "0",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("title", "0", emphasis, a...))
 }
 
 // ReportTimer reports timer messages
 func (r *websocketMessageReporter) ReportTimer(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "timer",
-		Severity:  "0",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("timer", "0", emphasis, a...))
 }
 
 // ReportSuccess reports success messages
 func (r *websocketMessageReporter) ReportSuccess(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "success",
-		Severity:  "0",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("success", "0", emphasis, a...))
 }
 
 // ReportWarning reports warning messages
 func (r *websocketMessageReporter) ReportWarning(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "warning",
-		Severity:  "1",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("warning", "1", emphasis, a...))
 }
 
 // ReportError reports error messages
 func (r *websocketMessageReporter) ReportError(emphasis bool, a ...any) {
-	msg := webSocketMessage{
-		Type:      "error",
-		Severity:  "2",
-		Text:      fmt.Sprint(a...),
-		Emphasis:  emphasis,
-		Timestamp: time.Now().Format(time.RFC3339),
-	}
-	r.write(msg)
+	r.write(newWebSocketMessage("error", "2", emphasis, a...))
 }
 
 func (r *websocketMessageReporter) write(msg webSocketMessage) {
