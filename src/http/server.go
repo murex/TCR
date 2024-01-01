@@ -40,9 +40,8 @@ import (
 // Server provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
 type Server struct {
-	tcr    engine.TCRInterface
-	params params.Params
-	//port       int
+	tcr        engine.TCRInterface
+	params     params.Params
 	host       string
 	devMode    bool
 	websockets []*websocketMessageReporter
