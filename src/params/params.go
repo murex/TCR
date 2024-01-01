@@ -42,4 +42,5 @@ type Params struct {
 	VCS             string
 	MessageSuffix   string
 	Trace           string
+	PortNumber      int
 }

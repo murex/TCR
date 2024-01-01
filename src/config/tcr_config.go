@@ -50,6 +50,7 @@ type TcrConfig struct {
 	VCS              *StringParam
 	MessageSuffix    *StringParam
 	Trace            *StringParam
+	PortNumber       *IntParam
 }
 
 func (c TcrConfig) reset() {
@@ -62,6 +63,7 @@ func (c TcrConfig) reset() {
 	c.VCS.reset()
 	c.MessageSuffix.reset()
 	c.Trace.reset()
+	c.PortNumber.reset()
 }
 
 // Config is the placeholder for all TCR configuration parameters
@@ -202,6 +204,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.VCS = AddVCSParam(cmd)
 	Config.MessageSuffix = AddMessageSuffixParam(cmd)
 	Config.Trace = AddTraceParam(cmd)
+	Config.PortNumber = AddPortNumberParam(cmd)
 }
 
 // UpdateEngineParams updates TCR engine parameters based on configuration values
@@ -218,4 +221,5 @@ func UpdateEngineParams(p *params.Params) {
 	p.VCS = Config.VCS.GetValue()
 	p.MessageSuffix = Config.MessageSuffix.GetValue()
 	p.Trace = Config.Trace.GetValue()
+	p.PortNumber = Config.PortNumber.GetValue()
 }

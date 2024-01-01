@@ -29,6 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/http/api"
+	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
@@ -39,24 +40,23 @@ import (
 // Server provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
 type Server struct {
-	tcr        engine.TCRInterface
-	port       int
+	tcr    engine.TCRInterface
+	params params.Params
+	//port       int
 	host       string
 	devMode    bool
 	websockets []*websocketMessageReporter
-	// params           params.Params
 }
 
 // New creates a new instance of Server
-func New(port int, tcr engine.TCRInterface) *Server {
+func New(p params.Params, tcr engine.TCRInterface) *Server {
 	server := Server{
 		tcr:  tcr,
 		host: "0.0.0.0", // To enable connections from a remote host
 		// host: "127.0.0.1", // To restrict connections to local host only
-		port:       port,
 		devMode:    true,
 		websockets: []*websocketMessageReporter{},
-		// params:           params.Params{},
+		params:     p,
 	}
 	tcr.AttachUI(&server, false)
 	ServerInstance = &server
@@ -84,7 +84,7 @@ func (s *Server) unregisterWebSocket(ws *websocketMessageReporter) {
 
 // Start starts TCR HTTP server
 func (s *Server) Start() {
-	report.PostInfo("Starting HTTP server on port ", s.port)
+	report.PostInfo("Starting HTTP server on port ", s.params.PortNumber)
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
 	router := gin.New()
 	router.Use(gin.Recovery())
@@ -137,7 +137,7 @@ func (s *Server) Start() {
 
 // getServerAddress returns the TCP server address that the server is listening to.
 func (s *Server) getServerAddress() string {
-	return fmt.Sprintf("%s:%d", s.host, s.port)
+	return fmt.Sprintf("%s:%d", s.host, s.params.PortNumber)
 }
 
 // ShowRunningMode shows the current running mode

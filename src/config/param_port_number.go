@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package config
 
 import (
-	"github.com/murex/tcr/cli"
-	"github.com/murex/tcr/engine"
-	"github.com/murex/tcr/http"
-	"github.com/murex/tcr/runmode"
 	"github.com/spf13/cobra"
 )
 
-var soloCmd = &cobra.Command{
-	Use:   "solo",
-	Short: "Run TCR in solo mode",
-	Long: `
-When used in "solo" mode, TCR only commits changes locally.
-It never pushes or pulls to a remote repository.
-`,
-	Run: func(_ *cobra.Command, _ []string) {
-		parameters.Mode = runmode.Solo{}
-		parameters.AutoPush = parameters.Mode.AutoPushDefault()
-
-		// Create TCR engine and UI instances
-		tcr := engine.NewTCREngine()
-		h := http.New(parameters, tcr)
-		u := cli.New(parameters, tcr)
-
-		// Initialize TCR engine and start UIs
-		tcr.Init(parameters)
-		h.Start()
-		u.Start()
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(soloCmd)
+// AddPortNumberParam adds port number parameter to the provided command
+func AddPortNumberParam(cmd *cobra.Command) *IntParam {
+	param := IntParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "port-number",
+				shorthand:  "P",
+				usage:      "indicate port number used by TCR HTTP server (default: 8483)",
+				persistent: true,
+			},
+		},
+		v: paramValueInt{
+			value:        0,
+			defaultValue: 8483, // Why 8483? TCR = T&C|R = "84" + "67 | 82" = "84" + "83"
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }

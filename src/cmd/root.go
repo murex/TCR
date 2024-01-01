@@ -54,7 +54,7 @@ It can be used either in solo, or as a group within a mob or pair session.
 
 			// Create TCR engine and UI instances
 			tcr := engine.NewTCREngine()
-			h := http.New(8080, tcr)
+			h := http.New(parameters, tcr)
 			u := cli.New(parameters, tcr)
 
 			// Initialize TCR engine and start UIs
