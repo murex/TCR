@@ -121,17 +121,6 @@ func (s *Server) Start() {
 		// TODO handle error
 		_ = router.Run(s.getServerAddress())
 	}()
-
-	// TODO - deal with opening of webapp page in a browser
-	// Open application page in browser
-	// err := browser.OpenURL("http://" + addr)
-	// if err != nil {
-	//	 fmt.Printf("Failed to open browser: %v\n", err.Error())
-	// }
-	//
-	// for {
-	//	 time.Sleep(1 * time.Second)
-	// }
 }
 
 // getServerAddress returns the TCP server address that the server is listening to.

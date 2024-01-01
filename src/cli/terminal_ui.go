@@ -56,6 +56,7 @@ const (
 	syncMenuHelper               = "Synchronize with depot"
 	enterDriverRoleMenuHelper    = "Driver role"
 	enterNavigatorRoleMenuHelper = "Navigator role"
+	openBrowserMenuHelper        = "Open in browser"
 	gitAutoPushMenuHelper        = "Turn on/off git auto-push"
 	quitMenuHelper               = "Quit"
 	optionsMenuHelper            = "List available options"
@@ -358,6 +359,8 @@ func (term *TerminalUI) initMainMenu() *menu {
 			term.enterRoleMenuAction(role.Driver{}), false),
 		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
 			term.enterRoleMenuAction(role.Navigator{}), false),
+		newMenuOption('O', openBrowserMenuHelper, nil,
+			term.openBrowser(), false),
 		newMenuOption('P', gitAutoPushMenuHelper,
 			term.gitMenuEnabler(),
 			term.autoPushMenuAction(), false),
@@ -400,6 +403,12 @@ func (term *TerminalUI) enterRoleMenuAction(r role.Role) menuAction {
 	return func() {
 		term.enterRole(r)
 		term.whatShallWeDo()
+	}
+}
+
+func (term *TerminalUI) openBrowser() menuAction {
+	return func() {
+		desktop.OpenBrowser(term.params.PortNumber)
 	}
 }
 
