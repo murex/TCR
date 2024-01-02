@@ -23,9 +23,9 @@ cov:
 
 .PHONY: build
 build: setup
-	@ng build --output-path ../src/http/static/webapp --configuration production --extract-licenses false 
+	@npm run build-prod
 
 .PHONY: run
 run:
-	@ng serve -o
+	@npm start
 

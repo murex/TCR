@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build-prod": "ng build --output-path ../src/http/static/webapp --configuration production --extract-licenses false",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
