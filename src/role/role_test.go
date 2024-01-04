@@ -21,3 +21,22 @@ SOFTWARE.
 */
 
 package role
+
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_get_all_roles(t *testing.T) {
+	tests := []struct {
+		r Role
+	}{
+		{Driver{}},
+		{Navigator{}},
+	}
+	for _, test := range tests {
+		t.Run(test.r.Name(), func(t *testing.T) {
+			assert.Contains(t, All(), test.r)
+		})
+	}
+}

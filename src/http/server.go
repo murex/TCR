@@ -50,9 +50,9 @@ type Server struct {
 // New creates a new instance of Server
 func New(p params.Params, tcr engine.TCRInterface) *Server {
 	server := Server{
-		tcr:  tcr,
-		host: "0.0.0.0", // To enable connections from a remote host
-		// host: "127.0.0.1", // To restrict connections to local host only
+		tcr: tcr,
+		// host: "0.0.0.0", // To enable connections from a remote host
+		host:       "127.0.0.1", // To restrict connections to local host only
 		devMode:    true,
 		websockets: []*websocketMessageReporter{},
 		params:     p,
@@ -111,6 +111,9 @@ func (s *Server) Start() {
 	{
 		apiRoutes.GET("/build-info", api.BuildInfoGetHandler)
 		apiRoutes.GET("/session-info", api.SessionInfoGetHandler)
+		apiRoutes.GET("/roles", api.RolesGetHandler)
+		apiRoutes.GET("/roles/:name", api.RoleGetHandler)
+		apiRoutes.POST("/roles/:name/:action", api.RolesPostHandler)
 	}
 
 	// Setup websocket route
@@ -138,6 +141,7 @@ func (s *Server) ShowRunningMode(mode runmode.RunMode) {
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (s *Server) NotifyRoleStarting(r role.Role) {
 	for _, ws := range s.websockets {
+		ws.ReportRole(false, r.Name(), ":", "start")
 		ws.ReportTitle(false, "Starting with ", r.LongName())
 	}
 }
@@ -145,6 +149,7 @@ func (s *Server) NotifyRoleStarting(r role.Role) {
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (s *Server) NotifyRoleEnding(r role.Role) {
 	for _, ws := range s.websockets {
+		ws.ReportRole(false, r.Name(), ":", "end")
 		ws.ReportInfo(false, "Ending ", r.LongName())
 	}
 }

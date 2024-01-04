@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,7 @@ import (
 	"gopkg.in/tomb.v2"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -82,8 +83,12 @@ type (
 		mobTurnDuration time.Duration
 		mobTimer        *timer.PeriodicReminder
 		currentRole     role.Role
-		commitOnFail    bool
-		messageSuffix   string
+		// roleMutex is used to prevent the engine from starting 2 different
+		// roles simultaneously: we wait for the it to leave the previous role
+		// before starting a new one
+		roleMutex     sync.Mutex
+		commitOnFail  bool
+		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
 		// traceReporterWaitingTime is used to prevent trace reporter overflow when
@@ -349,6 +354,26 @@ func (tcr *TCREngine) SetAutoPush(ap bool) {
 	tcr.vcs.EnablePush(ap)
 }
 
+// resetCurrentRole sets the current role to nil (TCR engine in standby).
+// This is a mandatory step prior to starting a new role.
+func (tcr *TCREngine) resetCurrentRole() {
+	tcr.currentRole = nil
+	tcr.roleMutex.Unlock()
+}
+
+// setCurrentRole sets the current role.
+// Setting it to nil is the same as calling resetCurrentRole().
+// This operation is mutex-protected, e.g. it will wait until
+// the currentRole is reset before setting the new role.
+func (tcr *TCREngine) setCurrentRole(r role.Role) {
+	if r == nil {
+		tcr.resetCurrentRole()
+		return
+	}
+	tcr.roleMutex.Lock()
+	tcr.currentRole = r
+}
+
 // GetCurrentRole returns the role currently used for running TCR.
 // Returns nil when TCR engine is in standby
 func (tcr *TCREngine) GetCurrentRole() role.Role {
@@ -357,12 +382,19 @@ func (tcr *TCREngine) GetCurrentRole() role.Role {
 
 // RunAsDriver tells TCR engine to start running with driver role
 func (tcr *TCREngine) RunAsDriver() {
+	// Force previous role to quit if needed
+	if tcr.GetCurrentRole() != nil {
+		tcr.Stop()
+	}
+	// Prepare the timer
 	tcr.initTimer()
 
 	go tcr.fromBirthTillDeath(
 		func() {
-			tcr.currentRole = role.Driver{}
-			tcr.ui.NotifyRoleStarting(tcr.currentRole)
+			// the goroutine waits until currenRole is reset
+			// prior to starting driver role
+			tcr.setCurrentRole(role.Driver{})
+			tcr.ui.NotifyRoleStarting(tcr.GetCurrentRole())
 			tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
 			tcr.startTimer()
 		},
@@ -378,18 +410,25 @@ func (tcr *TCREngine) RunAsDriver() {
 		},
 		func() {
 			tcr.stopTimer()
-			tcr.ui.NotifyRoleEnding(tcr.currentRole)
-			tcr.currentRole = nil
+			tcr.ui.NotifyRoleEnding(tcr.GetCurrentRole())
+			tcr.resetCurrentRole()
 		},
 	)
 }
 
 // RunAsNavigator tells TCR engine to start running with navigator role
 func (tcr *TCREngine) RunAsNavigator() {
+	// Force previous role to quit if needed
+	if tcr.GetCurrentRole() != nil {
+		tcr.Stop()
+	}
+
 	go tcr.fromBirthTillDeath(
 		func() {
-			tcr.currentRole = role.Navigator{}
-			tcr.ui.NotifyRoleStarting(tcr.currentRole)
+			// the goroutine waits until currenRole is reset
+			// prior to starting navigator role
+			tcr.setCurrentRole(role.Navigator{})
+			tcr.ui.NotifyRoleStarting(tcr.GetCurrentRole())
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -402,8 +441,8 @@ func (tcr *TCREngine) RunAsNavigator() {
 			}
 		},
 		func() {
-			tcr.ui.NotifyRoleEnding(tcr.currentRole)
-			tcr.currentRole = nil
+			tcr.ui.NotifyRoleEnding(tcr.GetCurrentRole())
+			tcr.resetCurrentRole()
 		},
 	)
 }

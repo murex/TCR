@@ -93,6 +93,12 @@ func (r *websocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("title", "0", emphasis, a...))
 }
 
+// ReportRole reports role event messages
+// Note: this function is not part of the reporter interface (should be added)
+func (r *websocketMessageReporter) ReportRole(emphasis bool, a ...any) {
+	r.write(newWebSocketMessage("role", "0", emphasis, a...))
+}
+
 // ReportTimer reports timer messages
 func (r *websocketMessageReporter) ReportTimer(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("timer", "0", emphasis, a...))

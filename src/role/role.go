@@ -37,3 +37,10 @@ type Role interface {
 func longName(r Role) string {
 	return cases.Title(language.English).String(r.Name()) + " role"
 }
+
+var allRoles = []Role{Driver{}, Navigator{}}
+
+// All returns the list of existing roles in TCR
+func All() []Role {
+	return allRoles
+}

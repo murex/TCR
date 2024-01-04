@@ -4,13 +4,15 @@ import {catchError, retry, throwError} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {TcrMessage} from "../../interfaces/tcr-message";
-import {bgWhite, cyan, green, lightCyan, red, yellow} from "ansicolor";
+import {bgDarkGray, cyan, green, lightCyan, red, yellow} from "ansicolor";
+import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 
 @Component({
   selector: 'app-tcr-console',
   standalone: true,
   imports: [
-    NgTerminalModule
+    NgTerminalModule,
+    TcrRolesComponent
   ],
   templateUrl: './tcr-console.component.html',
   styleUrl: './tcr-console.component.css'
@@ -42,6 +44,9 @@ export class TcrConsoleComponent {
         this.write(lightCyan("─".repeat(80)));
         this.write(lightCyan(message.text));
         break;
+      case "role":
+        // ignore: handled by roles service
+        break;
       case "timer":
         this.write("⏳ " + green(message.text));
         break;
@@ -55,7 +60,7 @@ export class TcrConsoleComponent {
         this.write("🟥 " + red(message.text));
         break;
       default:
-        this.write(bgWhite("[" + message.type + "]") + " " + message.text);
+        this.write(bgDarkGray("[" + message.type + "]") + " " + message.text);
     }
   }
 

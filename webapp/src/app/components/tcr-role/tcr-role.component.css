@@ -1,25 +1,36 @@
-section {
-  padding-top: 4rem;
-  padding-bottom: 5rem;
-  background-color: #f1f4fa;
-}
-
-.container {
-  display: flex; /* or inline-flex */
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: stretch;
-  align-content: flex-start;
-}
 
 .wrap {
-  display: flow;
-  background: white;
-  padding: 1rem 1rem 1rem 1rem;
+  display: flex;
+  /*background: blue;*/
   border-radius: 0.5rem;
   box-shadow: 7px 7px 30px -5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+}
+
+.navigator-on {
+  background: lightblue;
+}
+
+.navigator-on:hover {
+  background: #0d6efd;
+  color: white;
+}
+
+.driver-on {
+  background: lightgreen;
+}
+
+.driver-on:hover {
+  background: #20c997;
+  color: white;
+}
+
+.role-off {
+  background: white;
+}
+
+.role-off:hover {
+  background: lightgray;
+  color: white;
 }
 
 .ico-wrap {
