@@ -212,11 +212,11 @@ retrieve_tcr_go_exe() {
   version_mismatch=0
   if [ ${file_missing} -eq 0 ]; then
     current_version=$(retrieve_current_tcr_version "${tcr_bin_path}")
-    version_mismatch="$( [ "${current_version}" == "${expected_version}" ]; echo $? )"
+    version_mismatch="$( [ "${current_version}" = "${expected_version}" ]; echo $? )"
   fi
 
   # If the file does not exist or if versions do not match, download it from TCR GitHub repository
-  if [ ${file_missing} -ne 0 -o ${version_mismatch} -ne 0 ]; then
+  if [ ${file_missing} -ne 0 ] || [ ${version_mismatch} -ne 0 ]; then
     download_tcr_go "${expected_version}" "${os_family}" "${os_arch}" "${tcr_bin_path}"
     [ $? -ne 0 ] && return 1
   fi
