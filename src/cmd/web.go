@@ -25,31 +25,51 @@ package cmd
 import (
 	"github.com/murex/tcr/cli"
 	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/http"
 	"github.com/murex/tcr/runmode"
 	"github.com/spf13/cobra"
 )
 
-var soloCmd = &cobra.Command{
-	Use:   "solo",
-	Short: "Run TCR in solo mode",
+// webCmd represents the web command
+var webCmd = &cobra.Command{
+	Use:   "web",
+	Short: "Run TCR with web user interface (experimental)",
 	Long: `
-When used in "solo" mode, TCR only commits changes locally.
-It never pushes or pulls to a remote repository.
+When used in "web" mode, TCR starts an HTTP server
+allowing to interact with it through a web browser in
+addition to the command line interface.
+
+TCR is listening by default to port 8483. The port number
+can be changed through the port-number option.
+
+IMPORTANT: This feature is still at an experimental stage!
 `,
-	Run: func(_ *cobra.Command, _ []string) {
-		parameters.Mode = runmode.Solo{}
+	Run: func(cmd *cobra.Command, args []string) {
+		// Default running mode is mob
+		parameters.Mode = runmode.Mob{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
 
-		// Create TCR engine and UI instance
+		// Forcing port number to 8483 if not set for now (so that HTTP server and webapp options
+		// are available only when port number set to a non-0 value
+		// Later on if we decide to run HTTP server by default, this value
+		// can be set directly in config/param_port_number.go
+		// Why 8483? TCR = T&C|R = "84" + "67 | 82" = "84" + "83"
+		if parameters.PortNumber == 0 {
+			parameters.PortNumber = 8483
+		}
+
+		// Create TCR engine and UI instances
 		tcr := engine.NewTCREngine()
+		h := http.New(parameters, tcr)
 		u := cli.New(parameters, tcr)
 
-		// Initialize TCR engine and start UI
+		// Initialize TCR engine and start UIs
 		tcr.Init(parameters)
+		h.Start()
 		u.Start()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(soloCmd)
+	rootCmd.AddCommand(webCmd)
 }

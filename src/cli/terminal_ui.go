@@ -355,12 +355,13 @@ func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 func (term *TerminalUI) initMainMenu() *menu {
 	m := newMenu("Main menu")
 	m.addOptions(
+		newMenuOption('O', openBrowserMenuHelper,
+			term.webMenuEnabler(),
+			term.openBrowserMenuAction(), false),
 		newMenuOption('D', enterDriverRoleMenuHelper, nil,
 			term.enterRoleMenuAction(role.Driver{}), false),
 		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
 			term.enterRoleMenuAction(role.Navigator{}), false),
-		newMenuOption('O', openBrowserMenuHelper, nil,
-			term.openBrowser(), false),
 		newMenuOption('P', gitAutoPushMenuHelper,
 			term.gitMenuEnabler(),
 			term.autoPushMenuAction(), false),
@@ -406,7 +407,7 @@ func (term *TerminalUI) enterRoleMenuAction(r role.Role) menuAction {
 	}
 }
 
-func (term *TerminalUI) openBrowser() menuAction {
+func (term *TerminalUI) openBrowserMenuAction() menuAction {
 	return func() {
 		desktop.OpenBrowser(term.params.PortNumber)
 	}
@@ -421,6 +422,13 @@ func (term *TerminalUI) gitMenuEnabler() menuEnabler {
 func (term *TerminalUI) p4MenuEnabler() menuEnabler {
 	return func() bool {
 		return term.params.VCS == p4.Name
+	}
+}
+
+func (term *TerminalUI) webMenuEnabler() menuEnabler {
+	return func() bool {
+		// When port number is set to 0, HTTP server is not running
+		return term.params.PortNumber != 0
 	}
 }
 

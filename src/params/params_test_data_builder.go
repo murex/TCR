@@ -42,6 +42,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		PollingPeriod:   0,
 		Mode:            runmode.Check{},
 		VCS:             "git",
+		PortNumber:      0,
 	}
 
 	for _, build := range builders {
@@ -131,5 +132,12 @@ func WithVCS(vcs string) func(params *Params) {
 func WithMessageSuffix(suffix string) func(params *Params) {
 	return func(params *Params) {
 		params.MessageSuffix = suffix
+	}
+}
+
+// WithPortNumber sets the provided value as the Port Number to be used
+func WithPortNumber(port int) func(params *Params) {
+	return func(params *Params) {
+		params.PortNumber = port
 	}
 }

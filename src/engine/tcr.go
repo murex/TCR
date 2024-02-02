@@ -23,6 +23,7 @@ SOFTWARE.
 package engine
 
 import (
+	"errors"
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -311,8 +312,9 @@ func (tcr *TCREngine) initVCS(vcsName string, trace string) {
 	vcs.SetTrace(trace == "vcs")
 	var err error
 	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir())
-	switch err.(type) {
-	case *factory.UnsupportedVCSError:
+	var unsupportedVCSError *factory.UnsupportedVCSError
+	switch {
+	case errors.As(err, &unsupportedVCSError):
 		tcr.handleError(err, true, status.ConfigError)
 	default:
 		tcr.handleError(err, true, status.VCSError)

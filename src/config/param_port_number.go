@@ -38,13 +38,13 @@ func AddPortNumberParam(cmd *cobra.Command) *IntParam {
 			cobraSettings: cobraSettings{
 				name:       "port-number",
 				shorthand:  "P",
-				usage:      "indicate port number used by TCR HTTP server (default: 8483)",
+				usage:      "indicate port number used by TCR HTTP server in web mode (experimental) (default: 8483)",
 				persistent: true,
 			},
 		},
 		v: paramValueInt{
 			value:        0,
-			defaultValue: 8483, // Why 8483? TCR = T&C|R = "84" + "67 | 82" = "84" + "83"
+			defaultValue: 0, // 0 means HTTP server (and thus web UI) is turned off
 		},
 	}
 	param.addToCommand(cmd)

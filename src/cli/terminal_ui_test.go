@@ -307,7 +307,6 @@ func Test_simple_message_methods(t *testing.T) {
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
 				asCyanTrace("\tD "+menuArrow+" "+enterDriverRoleMenuHelper) +
 				asCyanTrace("\tN "+menuArrow+" "+enterNavigatorRoleMenuHelper) +
-				asCyanTrace("\tO "+menuArrow+" "+openBrowserMenuHelper) +
 				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
 				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
 				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
