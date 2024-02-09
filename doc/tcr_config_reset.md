@@ -30,7 +30,7 @@ tcr config reset [flags]
   -l, --language string         indicate the programming language to be used by TCR
   -m, --message-suffix string   indicate text to append at the end of TCR commit messages (ex: "[#1234]")
   -o, --polling duration        set VCS polling period when running as navigator
-  -P, --port-number int         indicate port number used by TCR HTTP server (default: 8483)
+  -P, --port-number int         indicate port number used by TCR HTTP server in web mode (experimental) (default: 8483)
   -t, --toolchain string        indicate the toolchain to be used by TCR
   -T, --trace string            indicate trace options. Recognized values: none or vcs
   -V, --vcs string              indicate the VCS (version control system) to be used by TCR: git (default) or p4

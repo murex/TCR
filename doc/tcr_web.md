@@ -1,30 +1,28 @@
-## tcr log
+## tcr web
 
-Print the TCR commit history
+Run TCR with web user interface (experimental)
 
 ### Synopsis
 
 
-TCR log subcommand prints out the TCR commit history.
+When used in "web" mode, TCR starts an HTTP server
+allowing to interact with it through a web browser in
+addition to the command line interface.
 
-The output format is similar to "git log" command's output format.
+TCR is listening by default to port 8483. The port number
+can be changed through the port-number option.
 
-The commit history is retrieved for the repository containing
-TCR base directory (cf. -b option). The branch is the current working
-branch set for this repository.
+IMPORTANT: This feature is still at an experimental stage!
 
-Only TCR commits are printed. All other commits are filtered out.
-
-This subcommand does not start TCR engine.
 
 ```
-tcr log [flags]
+tcr web [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for log
+  -h, --help   help for web
 ```
 
 ### Options inherited from parent commands

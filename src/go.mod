@@ -284,7 +284,7 @@ require (
 	github.com/kyoh86/exportloopref v0.1.11 // indirect
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.5.0 // indirect
-	github.com/leodido/go-urn v1.3.0 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.1 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20240216001521-6c9d41f0d99d // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
