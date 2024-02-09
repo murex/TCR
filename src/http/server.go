@@ -121,8 +121,10 @@ func (s *Server) Start() {
 
 	// Start HTTP server
 	go func() {
-		// TODO handle error
-		_ = router.Run(s.getServerAddress())
+		err := router.Run(s.getServerAddress())
+		if err != nil {
+			report.PostError("could not start HTTP server: ", err.Error())
+		}
 	}()
 }
 

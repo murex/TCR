@@ -29,6 +29,7 @@ import (
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/utils"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 )
@@ -124,13 +125,7 @@ func (r *websocketMessageReporter) write(msg webSocketMessage) {
 	err := r.conn.WriteJSON(msg)
 	r.connMutex.Unlock()
 	if err != nil {
-		// utils.Trace(err)
-		// TODO handle case when client is gone
-		// if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-		//	var req *http.Request
-		//	report.PostWarning("error: %v, user-agent: %v", err, req.Header.Get("User-Agent"))
-		// }
-		return
+		report.PostWarning("websocket message sending failure - ", err.Error())
 	}
 }
 
@@ -138,8 +133,25 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		// fmt.Println(r)
-		// TODO enforce origin in production mode?
+		if ServerInstance.devMode {
+			// server and client ports are different when running in devMode,
+			// so we bypass any CORS restriction in this mode
+			return true
+		}
+		origin := r.Header.Get("Origin")
+		url, err := url.Parse(origin)
+		if err != nil {
+			report.PostWarning("invalid origin: \"", origin, "\" - ", err.Error())
+			return false
+		}
+		if url.Host != ServerInstance.getServerAddress() {
+			// Note: This policy is quite restrictive:
+			// - can't use "localhost" in browser URL as server is listening on "127.0.0.1".
+			// - will not work if we allow connections from any HTTP client (eg. listening on "0.0.0.0")
+			// We may need to soften a bit depending on intended usage
+			report.PostWarning("client host not authorized: ", url.Host)
+			return false
+		}
 		return true
 	},
 }
