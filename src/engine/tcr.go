@@ -85,7 +85,7 @@ type (
 		mobTimer        *timer.PeriodicReminder
 		currentRole     role.Role
 		// roleMutex is used to prevent the engine from starting 2 different
-		// roles simultaneously: we wait for the it to leave the previous role
+		// roles simultaneously: we wait for it to leave the previous role
 		// before starting a new one
 		roleMutex     sync.Mutex
 		commitOnFail  bool

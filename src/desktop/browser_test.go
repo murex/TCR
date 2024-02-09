@@ -23,28 +23,11 @@ SOFTWARE.
 package desktop
 
 import (
-	"fmt"
-	"github.com/murex/tcr/report"
-	"github.com/pkg/browser"
-	"net/url"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-const hostname = "127.0.0.1"
-
-// OpenBrowser opens a browser on localhost on the provided port number
-func OpenBrowser(portNumber int) {
-	u := browserURL(portNumber)
-	err := browser.OpenURL(u)
-	if err != nil {
-		report.PostWarning("Could not open ", u, ": ", err.Error())
-	}
-}
-
-func browserURL(portNumber int) string {
-	u := url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%d", hostname, portNumber),
-		Path:   "/",
-	}
-	return u.String()
+func Test_build_browser_url(t *testing.T) {
+	assert.Equal(t, "http://127.0.0.1:8483/", browserURL(8483))
+	assert.Equal(t, "http://127.0.0.1:80/", browserURL(80))
 }
