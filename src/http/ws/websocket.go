@@ -34,9 +34,6 @@ import (
 	"time"
 )
 
-// webSocketConnectionTimeout is the delay after which we close a websocket connection
-const webSocketConnectionTimeout = 1 * time.Minute
-
 // webSocketMessage is used to JSON-encode TCR report messages
 type webSocketMessage struct {
 	Type      string `json:"type"`
@@ -160,16 +157,20 @@ var upgrader = websocket.Upgrader{
 
 // WebSocketHandler is the entry point for handling websocket requests sent to the HTTP server
 func WebSocketHandler(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	handleWebSocket(c.Writer, c.Request)
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		utils.Trace(err)
 		return
 	}
 
-	r := newWebSocketMessageReporter(conn)
+	reporter := newWebSocketMessageReporter(conn)
 
 	defer func() {
-		r.stopReporting()
+		reporter.stopReporting()
 		_ = conn.Close()
 	}()
 
@@ -177,5 +178,5 @@ func WebSocketHandler(c *gin.Context) {
 	// messages to clients that are no longer there.
 	// This should not be an issue for clients that are still connected
 	// as the webapp client will automatically open a new connection after this one is gone.
-	time.Sleep(webSocketConnectionTimeout)
+	time.Sleep(server.GetWebSocketTimeout())
 }

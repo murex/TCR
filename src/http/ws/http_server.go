@@ -22,9 +22,12 @@ SOFTWARE.
 
 package ws
 
+import "time"
+
 type httpServer = interface {
 	InDevMode() bool
 	GetServerAddress() string
+	GetWebSocketTimeout() time.Duration
 	RegisterWebSocket(r *WebsocketMessageReporter)
 	UnregisterWebSocket(r *WebsocketMessageReporter)
 }

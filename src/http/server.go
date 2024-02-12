@@ -41,11 +41,12 @@ import (
 // Server provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
 type Server struct {
-	tcr        engine.TCRInterface
-	params     params.Params
-	host       string
-	devMode    bool
-	websockets []*ws.WebsocketMessageReporter
+	tcr              engine.TCRInterface
+	params           params.Params
+	host             string
+	devMode          bool
+	websocketTimeout time.Duration
+	websockets       []*ws.WebsocketMessageReporter
 }
 
 // New creates a new instance of Server
@@ -53,10 +54,11 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 	server := Server{
 		tcr: tcr,
 		// host: "0.0.0.0", // To enable connections from a remote host
-		host:       "127.0.0.1", // To restrict connections to local host only
-		devMode:    true,
-		websockets: []*ws.WebsocketMessageReporter{},
-		params:     p,
+		host:             "127.0.0.1", // To restrict connections to local host only
+		devMode:          true,
+		websocketTimeout: 1 * time.Minute, // default timeout value
+		websockets:       []*ws.WebsocketMessageReporter{},
+		params:           p,
 	}
 	tcr.AttachUI(&server, false)
 	return &server
@@ -118,6 +120,12 @@ func (s *Server) InDevMode() bool {
 // GetServerAddress returns the TCP server address that the server is listening to.
 func (s *Server) GetServerAddress() string {
 	return fmt.Sprintf("%s:%d", s.host, s.params.PortNumber)
+}
+
+// GetWebSocketTimeout returns the timeout after which inactive websocket connections
+// should be closed
+func (s *Server) GetWebSocketTimeout() time.Duration {
+	return s.websocketTimeout
 }
 
 // RegisterWebSocket register a new websocket connection to the server
