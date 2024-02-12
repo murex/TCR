@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package http
+package ws
 
 import (
 	"fmt"
@@ -37,6 +37,7 @@ import (
 // webSocketConnectionTimeout is the delay after which we close a websocket connection
 const webSocketConnectionTimeout = 1 * time.Minute
 
+// webSocketMessage is used to JSON-encode TCR report messages
 type webSocketMessage struct {
 	Type      string `json:"type"`
 	Severity  string `json:"severity"`
@@ -55,72 +56,73 @@ func newWebSocketMessage(msgType string, severity string, emphasis bool, a ...an
 	}
 }
 
-type websocketMessageReporter struct {
+// WebsocketMessageReporter is in charge of sending TCR report messages over a websocket
+type WebsocketMessageReporter struct {
 	reportingChannel chan bool
 	conn             *websocket.Conn
 	connMutex        sync.Mutex
 }
 
-func newWebSocketMessageReporter(conn *websocket.Conn) *websocketMessageReporter {
-	var reporter = &websocketMessageReporter{conn: conn}
+func newWebSocketMessageReporter(conn *websocket.Conn) *WebsocketMessageReporter {
+	var reporter = &WebsocketMessageReporter{conn: conn}
 	reporter.startReporting()
 	return reporter
 }
 
-func (r *websocketMessageReporter) startReporting() {
-	ServerInstance.registerWebSocket(r)
+func (r *WebsocketMessageReporter) startReporting() {
+	server.RegisterWebSocket(r)
 	r.reportingChannel = report.Subscribe(r)
 }
 
-func (r *websocketMessageReporter) stopReporting() {
-	ServerInstance.unregisterWebSocket(r)
+func (r *WebsocketMessageReporter) stopReporting() {
+	server.UnregisterWebSocket(r)
 	if r.reportingChannel != nil {
 		report.Unsubscribe(r.reportingChannel)
 	}
 }
 
 // ReportSimple reports simple messages
-func (r *websocketMessageReporter) ReportSimple(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportSimple(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("simple", "0", emphasis, a...))
 }
 
 // ReportInfo reports info messages
-func (r *websocketMessageReporter) ReportInfo(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportInfo(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("info", "0", emphasis, a...))
 }
 
 // ReportTitle reports title messages
-func (r *websocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("title", "0", emphasis, a...))
 }
 
 // ReportRole reports role event messages
 // Note: this function is not part of the reporter interface (should be added)
-func (r *websocketMessageReporter) ReportRole(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportRole(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("role", "0", emphasis, a...))
 }
 
 // ReportTimer reports timer messages
-func (r *websocketMessageReporter) ReportTimer(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportTimer(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("timer", "0", emphasis, a...))
 }
 
 // ReportSuccess reports success messages
-func (r *websocketMessageReporter) ReportSuccess(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportSuccess(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("success", "0", emphasis, a...))
 }
 
 // ReportWarning reports warning messages
-func (r *websocketMessageReporter) ReportWarning(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportWarning(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("warning", "1", emphasis, a...))
 }
 
 // ReportError reports error messages
-func (r *websocketMessageReporter) ReportError(emphasis bool, a ...any) {
+func (r *WebsocketMessageReporter) ReportError(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("error", "2", emphasis, a...))
 }
 
-func (r *websocketMessageReporter) write(msg webSocketMessage) {
+func (r *WebsocketMessageReporter) write(msg webSocketMessage) {
 	r.connMutex.Lock()
 	err := r.conn.WriteJSON(msg)
 	r.connMutex.Unlock()
@@ -133,7 +135,7 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
-		if ServerInstance.devMode {
+		if server.InDevMode() {
 			// server and client ports are different when running in devMode,
 			// so we bypass any CORS restriction in this mode
 			return true
@@ -144,11 +146,11 @@ var upgrader = websocket.Upgrader{
 			report.PostWarning("invalid origin: \"", origin, "\" - ", err.Error())
 			return false
 		}
-		if url.Host != ServerInstance.getServerAddress() {
+		if url.Host != server.GetServerAddress() {
 			// Note: This policy is quite restrictive:
 			// - can't use "localhost" in browser URL as server is listening on "127.0.0.1".
 			// - will not work if we allow connections from any HTTP client (eg. listening on "0.0.0.0")
-			// We may need to soften a bit depending on intended usage
+			// We may need to soften it a bit depending on intended usage
 			report.PostWarning("client host not authorized: ", url.Host)
 			return false
 		}
@@ -156,7 +158,8 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func webSocketHandler(c *gin.Context) {
+// WebSocketHandler is the entry point for handling websocket requests sent to the HTTP server
+func WebSocketHandler(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		utils.Trace(err)

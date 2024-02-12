@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/http/api"
+	"github.com/murex/tcr/http/ws"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/role"
@@ -44,7 +45,7 @@ type Server struct {
 	params     params.Params
 	host       string
 	devMode    bool
-	websockets []*websocketMessageReporter
+	websockets []*ws.WebsocketMessageReporter
 }
 
 // New creates a new instance of Server
@@ -54,31 +55,11 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 		// host: "0.0.0.0", // To enable connections from a remote host
 		host:       "127.0.0.1", // To restrict connections to local host only
 		devMode:    true,
-		websockets: []*websocketMessageReporter{},
+		websockets: []*ws.WebsocketMessageReporter{},
 		params:     p,
 	}
 	tcr.AttachUI(&server, false)
-	ServerInstance = &server
 	return &server
-}
-
-var (
-	// ServerInstance is HTTP Server singleton instance
-	ServerInstance *Server
-)
-
-func (s *Server) registerWebSocket(ws *websocketMessageReporter) {
-	s.websockets = append(s.websockets, ws)
-	// report.PostInfo("websockets: ", len(s.websockets))
-}
-
-func (s *Server) unregisterWebSocket(ws *websocketMessageReporter) {
-	for i, registered := range s.websockets {
-		if ws == registered {
-			s.websockets = append(s.websockets[:i], s.websockets[i+1:]...)
-			return
-		}
-	}
 }
 
 // Start starts TCR HTTP server
@@ -89,7 +70,7 @@ func (s *Server) Start() {
 	router.Use(gin.Recovery())
 
 	gin.SetMode(gin.ReleaseMode)
-	if s.devMode {
+	if s.InDevMode() {
 		gin.SetMode(gin.DebugMode)
 		// In development mode we want to see incoming HTTP requests
 		router.Use(gin.Logger())
@@ -117,42 +98,63 @@ func (s *Server) Start() {
 	}
 
 	// Setup websocket route
-	router.GET("/ws", webSocketHandler)
+	ws.SetHTTPServerInstance(s)
+	router.GET("/ws", ws.WebSocketHandler)
 
 	// Start HTTP server
 	go func() {
-		err := router.Run(s.getServerAddress())
+		err := router.Run(s.GetServerAddress())
 		if err != nil {
 			report.PostError("could not start HTTP server: ", err.Error())
 		}
 	}()
 }
 
-// getServerAddress returns the TCP server address that the server is listening to.
-func (s *Server) getServerAddress() string {
+// InDevMode indicates if the server is running in dev (development) mode
+func (s *Server) InDevMode() bool {
+	return s.devMode
+}
+
+// GetServerAddress returns the TCP server address that the server is listening to.
+func (s *Server) GetServerAddress() string {
 	return fmt.Sprintf("%s:%d", s.host, s.params.PortNumber)
+}
+
+// RegisterWebSocket register a new websocket connection to the server
+func (s *Server) RegisterWebSocket(websocket *ws.WebsocketMessageReporter) {
+	s.websockets = append(s.websockets, websocket)
+}
+
+// UnregisterWebSocket unregister a new websocket connection from the server
+func (s *Server) UnregisterWebSocket(websocket *ws.WebsocketMessageReporter) {
+	for i, registered := range s.websockets {
+		if websocket == registered {
+			s.websockets = append(s.websockets[:i], s.websockets[i+1:]...)
+			return
+		}
+	}
 }
 
 // ShowRunningMode shows the current running mode
 func (s *Server) ShowRunningMode(mode runmode.RunMode) {
-	for _, ws := range s.websockets {
-		ws.ReportTitle(false, "Running in ", mode.Name(), " mode")
+	for _, websocket := range s.websockets {
+		websocket.ReportTitle(false, "Running in ", mode.Name(), " mode")
 	}
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (s *Server) NotifyRoleStarting(r role.Role) {
-	for _, ws := range s.websockets {
-		ws.ReportRole(false, r.Name(), ":", "start")
-		ws.ReportTitle(false, "Starting with ", r.LongName())
+	for _, websocket := range s.websockets {
+		websocket.ReportRole(false, r.Name(), ":", "start")
+		websocket.ReportTitle(false, "Starting with ", r.LongName())
 	}
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (s *Server) NotifyRoleEnding(r role.Role) {
-	for _, ws := range s.websockets {
-		ws.ReportRole(false, r.Name(), ":", "end")
-		ws.ReportInfo(false, "Ending ", r.LongName())
+	for _, websocket := range s.websockets {
+		websocket.ReportRole(false, r.Name(), ":", "end")
+		websocket.ReportInfo(false, "Ending ", r.LongName())
 	}
 }
 
