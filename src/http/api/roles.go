@@ -35,6 +35,11 @@ type roleData struct {
 	Active      bool   `json:"active"`
 }
 
+const (
+	startAction string = "start"
+	stopAction  string = "stop"
+)
+
 // RolesGetHandler handles HTTP GET requests on all TCR roles
 func RolesGetHandler(c *gin.Context) {
 	var data []roleData
@@ -89,11 +94,11 @@ func RolesPostHandler(c *gin.Context) {
 func rolePostHandler(c *gin.Context, r role.Role, starter func(), stopper func()) {
 	action := c.Param("action")
 	switch action {
-	case "start":
+	case startAction:
 		starter()
 		data := roleData{Name: r.Name(), Description: r.LongName(), Active: true}
 		c.IndentedJSON(http.StatusAccepted, data)
-	case "stop":
+	case stopAction:
 		stopper()
 		data := roleData{Name: r.Name(), Description: r.LongName(), Active: false}
 		c.IndentedJSON(http.StatusAccepted, data)
