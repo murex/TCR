@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 func Test_post_message_functions(t *testing.T) {
 	testCases := []struct {
 		text         string
-		postFunction func(a ...interface{})
+		postFunction func(a ...any)
 		expectedType MessageType
 	}{
 		{
@@ -108,6 +108,11 @@ func Test_post_message_functions(t *testing.T) {
 			"error message",
 			PostError,
 			MessageType{Error, false},
+		},
+		{
+			"role message",
+			PostRole,
+			MessageType{Role, false},
 		},
 		{
 			"timer message with emphasis",
@@ -168,42 +173,46 @@ func newMessageReporterStub(index int) *messageReporterStub {
 	}
 }
 
-func (stub *messageReporterStub) report(severity Severity, emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) report(severity Severity, emphasis bool, a ...any) {
 	stub.message = NewMessage(MessageType{severity, emphasis}, a...)
 	stub.received <- stub.index
 }
 
 // ReportSimple reports simple messages
-func (stub *messageReporterStub) ReportSimple(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportSimple(emphasis bool, a ...any) {
 	stub.report(Normal, emphasis, a...)
 }
 
 // ReportInfo reports info messages
-func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...any) {
 	stub.report(Info, emphasis, a...)
 }
 
 // ReportTitle reports title messages
-func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...any) {
 	stub.report(Title, emphasis, a...)
 }
 
+func (stub *messageReporterStub) ReportRole(emphasis bool, a ...any) {
+	stub.report(Role, emphasis, a...)
+}
+
 // ReportTimer reports timer messages
-func (stub *messageReporterStub) ReportTimer(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportTimer(emphasis bool, a ...any) {
 	stub.report(Timer, emphasis, a...)
 }
 
 // ReportSuccess reports success messages
-func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...any) {
 	stub.report(Success, emphasis, a...)
 }
 
 // ReportWarning reports warning messages
-func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...any) {
 	stub.report(Warning, emphasis, a...)
 }
 
 // ReportError reports error messages
-func (stub *messageReporterStub) ReportError(emphasis bool, a ...interface{}) {
+func (stub *messageReporterStub) ReportError(emphasis bool, a ...any) {
 	stub.report(Error, emphasis, a...)
 }

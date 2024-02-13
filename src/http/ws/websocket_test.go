@@ -109,6 +109,11 @@ func Test_websocket_report_messages(t *testing.T) {
 			expected: newWebSocketMessage("error", "2", false, messageText),
 		},
 		{
+			desc:     "report.PostRole",
+			action:   func() { report.PostRole(messageText) },
+			expected: newWebSocketMessage("role", "0", false, messageText),
+		},
+		{
 			desc:     "report.PostTimerWithEmphasis",
 			action:   func() { report.PostTimerWithEmphasis(messageText) },
 			expected: newWebSocketMessage("timer", "0", true, messageText),

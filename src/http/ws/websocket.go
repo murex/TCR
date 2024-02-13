@@ -27,7 +27,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/utils"
 	"net/http"
 	"net/url"
 	"sync"
@@ -61,9 +60,7 @@ type WebsocketMessageReporter struct {
 }
 
 func newWebSocketMessageReporter(conn *websocket.Conn) *WebsocketMessageReporter {
-	var reporter = &WebsocketMessageReporter{conn: conn}
-	reporter.startReporting()
-	return reporter
+	return &WebsocketMessageReporter{conn: conn}
 }
 
 func (r *WebsocketMessageReporter) startReporting() {
@@ -94,7 +91,6 @@ func (r *WebsocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
 }
 
 // ReportRole reports role event messages
-// Note: this function is not part of the reporter interface (should be added)
 func (r *WebsocketMessageReporter) ReportRole(emphasis bool, a ...any) {
 	r.write(newWebSocketMessage("role", "0", emphasis, a...))
 }
@@ -163,11 +159,12 @@ func WebSocketHandler(c *gin.Context) {
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		utils.Trace(err)
+		report.PostWarning("failed to upgrade to a websocket connection: ", err.Error())
 		return
 	}
 
 	reporter := newWebSocketMessageReporter(conn)
+	reporter.startReporting()
 
 	defer func() {
 		reporter.stopReporting()

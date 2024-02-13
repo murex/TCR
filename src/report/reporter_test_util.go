@@ -1,7 +1,7 @@
 //go:build test_helper
 
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -76,37 +76,42 @@ func (sniffer *Sniffer) sniff(msg Message) {
 }
 
 // ReportSimple reports simple messages
-func (sniffer *Sniffer) ReportSimple(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportSimple(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Normal, emphasis}, a...))
 }
 
 // ReportInfo reports info messages
-func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, a...))
 }
 
 // ReportTitle reports title messages
-func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, a...))
 }
 
+// ReportRole reports role messages
+func (sniffer *Sniffer) ReportRole(emphasis bool, a ...any) {
+	sniffer.sniff(NewMessage(MessageType{Role, emphasis}, a...))
+}
+
 // ReportTimer reports timer messages
-func (sniffer *Sniffer) ReportTimer(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportTimer(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Timer, emphasis}, a...))
 }
 
 // ReportSuccess reports warning messages
-func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, a...))
 }
 
 // ReportWarning reports warning messages
-func (sniffer *Sniffer) ReportWarning(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportWarning(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Warning, emphasis}, a...))
 }
 
 // ReportError reports error messages
-func (sniffer *Sniffer) ReportError(emphasis bool, a ...interface{}) {
+func (sniffer *Sniffer) ReportError(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, a...))
 }
 

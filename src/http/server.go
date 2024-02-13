@@ -153,7 +153,9 @@ func (s *Server) ShowRunningMode(mode runmode.RunMode) {
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (s *Server) NotifyRoleStarting(r role.Role) {
 	for _, websocket := range s.websockets {
+		// ReportRole call is used for role changing trigger message
 		websocket.ReportRole(false, r.Name(), ":", "start")
+		// ReportTitle is used for console trace
 		websocket.ReportTitle(false, "Starting with ", r.LongName())
 	}
 }
@@ -161,8 +163,10 @@ func (s *Server) NotifyRoleStarting(r role.Role) {
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (s *Server) NotifyRoleEnding(r role.Role) {
 	for _, websocket := range s.websockets {
+		// ReportRole call is used for role changing trigger message
 		websocket.ReportRole(false, r.Name(), ":", "end")
-		websocket.ReportInfo(false, "Ending ", r.LongName())
+		// ReportTitle is used for console trace
+		websocket.ReportTitle(false, "Ending ", r.LongName())
 	}
 }
 

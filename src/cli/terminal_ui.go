@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -102,12 +102,12 @@ func (term *TerminalUI) StopReporting() {
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (term *TerminalUI) NotifyRoleStarting(r role.Role) {
-	term.ReportTitle(false, "Starting with ", r.LongName(), ". Press ? for options")
+	term.ReportRole(false, "Starting with ", r.LongName(), ". Press ? for options")
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
-	term.ReportInfo(false, "Ending ", r.LongName())
+	term.ReportRole(false, "Ending ", r.LongName())
 }
 
 // ReportSimple reports simple messages
@@ -124,6 +124,11 @@ func (*TerminalUI) ReportInfo(_ bool, a ...any) {
 func (*TerminalUI) ReportTitle(_ bool, a ...any) {
 	printHorizontalLine()
 	printInCyan(a...)
+}
+
+// ReportRole reports role messages
+func (*TerminalUI) ReportRole(_ bool, a ...any) {
+	printInYellow(a...)
 }
 
 // ReportTimer reports timer messages

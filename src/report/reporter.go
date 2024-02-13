@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,7 @@ const (
 	Normal Severity = iota
 	Info
 	Title
+	Role
 	Timer
 	Success
 	Warning
@@ -48,6 +49,7 @@ type MessageReporter interface {
 	ReportSimple(emphasis bool, a ...any)
 	ReportInfo(emphasis bool, a ...any)
 	ReportTitle(emphasis bool, a ...any)
+	ReportRole(emphasis bool, a ...any)
 	ReportTimer(emphasis bool, a ...any)
 	ReportSuccess(emphasis bool, a ...any)
 	ReportWarning(emphasis bool, a ...any)
@@ -116,6 +118,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		Info:    MessageReporter.ReportInfo,
 		Normal:  MessageReporter.ReportSimple,
 		Title:   MessageReporter.ReportTitle,
+		Role:    MessageReporter.ReportRole,
 		Timer:   MessageReporter.ReportTimer,
 		Success: MessageReporter.ReportSuccess,
 		Warning: MessageReporter.ReportWarning,
@@ -158,6 +161,11 @@ func PostWarning(a ...any) {
 // PostError posts an error message for reporting
 func PostError(a ...any) {
 	postMessage(MessageType{Severity: Error}, a...)
+}
+
+// PostRole posts a role message
+func PostRole(a ...any) {
+	postMessage(MessageType{Severity: Role, Emphasis: false}, a...)
 }
 
 // PostTimerWithEmphasis posts a timer message with emphasis

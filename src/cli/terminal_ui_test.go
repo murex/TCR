@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -209,11 +209,11 @@ func Test_notify_role_starting(t *testing.T) {
 	}{
 		{
 			currentRole: role.Driver{},
-			expected:    asCyanTraceWithSeparatorLine("Starting with Driver role. Press ? for options"),
+			expected:    asYellowTrace("Starting with Driver role. Press ? for options"),
 		},
 		{
 			currentRole: role.Navigator{},
-			expected:    asCyanTraceWithSeparatorLine("Starting with Navigator role. Press ? for options"),
+			expected:    asYellowTrace("Starting with Navigator role. Press ? for options"),
 		},
 	}
 
@@ -235,11 +235,11 @@ func Test_notify_role_ending(t *testing.T) {
 	}{
 		{
 			currentRole: role.Driver{},
-			expected:    asCyanTrace("Ending Driver role"),
+			expected:    asYellowTrace("Ending Driver role"),
 		},
 		{
 			currentRole: role.Navigator{},
-			expected:    asCyanTrace("Ending Navigator role"),
+			expected:    asYellowTrace("Ending Navigator role"),
 		},
 	}
 
@@ -392,6 +392,11 @@ func Test_terminal_reporting(t *testing.T) {
 			"PostText method",
 			func() { report.PostText("Some text report") },
 			asNeutralTrace("Some text report"),
+		},
+		{
+			"PostRole method",
+			func() { report.PostRole("Some role report") },
+			asYellowTrace("Some role report"),
 		},
 		{
 			"PostTimerWithEmphasis method",
