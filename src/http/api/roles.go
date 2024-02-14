@@ -42,6 +42,7 @@ const (
 
 // RolesGetHandler handles HTTP GET requests on all TCR roles
 func RolesGetHandler(c *gin.Context) {
+	tcr := getTCRInstance(c)
 	var data []roleData
 	current := tcr.GetCurrentRole()
 	for _, r := range role.All() {
@@ -56,6 +57,7 @@ func RolesGetHandler(c *gin.Context) {
 
 // RoleGetHandler handles HTTP GET requests on a TCR role
 func RoleGetHandler(c *gin.Context) {
+	tcr := getTCRInstance(c)
 	var r role.Role
 	name := c.Param("name")
 	switch name {
@@ -79,6 +81,7 @@ func RoleGetHandler(c *gin.Context) {
 
 // RolesPostHandler handles HTTP POST requests on current TCR role
 func RolesPostHandler(c *gin.Context) {
+	tcr := getTCRInstance(c)
 	name := c.Param("name")
 	switch name {
 	case role.Navigator{}.Name():

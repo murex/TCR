@@ -41,6 +41,7 @@ type sessionInfo struct {
 
 // SessionInfoGetHandler handles HTTP GET requests on TCR settings information
 func SessionInfoGetHandler(c *gin.Context) {
+	tcr := getTCRInstance(c)
 	info := tcr.GetSessionInfo()
 	data := sessionInfo{
 		BaseDir:           info.BaseDir,

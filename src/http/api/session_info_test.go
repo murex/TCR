@@ -33,11 +33,11 @@ import (
 )
 
 func Test_session_info_get_handler(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/session-info"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.GET(rPath, SessionInfoGetHandler)
 
 	// Prepare the request, send it and capture the response

@@ -35,11 +35,11 @@ import (
 )
 
 func Test_roles_get_handler(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/roles"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.GET(rPath, RolesGetHandler)
 
 	// Prepare the request, send it and capture the response
@@ -65,11 +65,11 @@ func Test_roles_get_handler(t *testing.T) {
 }
 
 func Test_role_get_handler(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/roles/:name"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.GET(rPath, RoleGetHandler)
 
 	for _, r := range role.All() {
@@ -97,11 +97,11 @@ func Test_role_get_handler(t *testing.T) {
 }
 
 func Test_role_get_handler_with_invalid_params(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/roles/:name"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.GET(rPath, RoleGetHandler)
 
 	// Prepare the request, send it and capture the response
@@ -115,11 +115,11 @@ func Test_role_get_handler_with_invalid_params(t *testing.T) {
 }
 
 func Test_roles_post_handler(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/roles/:name/:action"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.POST(rPath, RolesPostHandler)
 
 	tests := []struct {
@@ -185,11 +185,11 @@ func Test_roles_post_handler(t *testing.T) {
 }
 
 func Test_roles_post_handler_with_invalid_params(t *testing.T) {
-	// Setup TCR instance using Fake TCR Engine
-	SetTCRInstance(engine.NewFakeTCREngine())
 	// Setup the router
 	rPath := "/api/roles/:name/:action"
 	router := gin.Default()
+	tcr := engine.NewFakeTCREngine()
+	router.Use(TCREngineMiddleware(tcr))
 	router.POST(rPath, RolesPostHandler)
 
 	tests := []struct {

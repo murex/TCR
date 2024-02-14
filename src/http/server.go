@@ -88,8 +88,9 @@ func (s *Server) Start() {
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 
+	// Add TCR engine to gin context so that it can be used by API handlers
+	router.Use(api.TCREngineMiddleware(s.tcr))
 	// Setup route group for the API
-	api.SetTCRInstance(s.tcr)
 	apiRoutes := router.Group("/api")
 	{
 		apiRoutes.GET("/build-info", api.BuildInfoGetHandler)

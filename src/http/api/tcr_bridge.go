@@ -22,11 +22,22 @@ SOFTWARE.
 
 package api
 
-import "github.com/murex/tcr/engine"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/murex/tcr/engine"
+)
 
-var tcr engine.TCRInterface
+const tcrContextKey = "tcr"
 
-// SetTCRInstance sets the TCR engine instance for API functions will interact with
-func SetTCRInstance(instance engine.TCRInterface) {
-	tcr = instance
+// TCREngineMiddleware adds the TCR engine instance for API functions to interact with.
+func TCREngineMiddleware(tcr engine.TCRInterface) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(tcrContextKey, tcr)
+		c.Next()
+	}
+}
+
+// getTCRInstance retrieves used TCR engine from gin context
+func getTCRInstance(c *gin.Context) engine.TCRInterface {
+	return c.MustGet(tcrContextKey).(engine.TCRInterface)
 }
