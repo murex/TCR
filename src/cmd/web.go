@@ -44,7 +44,7 @@ can be changed through the port-number option.
 
 IMPORTANT: This feature is still at an experimental stage!
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		// Default running mode is mob
 		parameters.Mode = runmode.Mob{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
