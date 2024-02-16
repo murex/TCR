@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ The return code of TCR "one-shot" is one of the following:
 | 4   | Error while interacting with the Version Control System                        |
 | 5   | Any other error                                                                |
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.OneShot{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
 		u := cli.New(parameters, engine.NewTCREngine())

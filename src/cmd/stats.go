@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -65,7 +65,7 @@ The following stats are reported:
 > - "Failing tests" will always be at 0
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Stats{}
 		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ var infoCmd = &cobra.Command{
 TCR info subcommand displays information related to TCR executable build.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		settings.PrintBuildInfo()
 	},
 }

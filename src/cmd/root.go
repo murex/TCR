@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,10 +43,10 @@ var (
 This application is a tool for practicing TCR (Test && Commit || Revert).
 It can be used either in solo, or as a group within a mob or pair session.
 `,
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		PersistentPreRun: func(_ *cobra.Command, _ []string) {
 			config.UpdateEngineParams(&parameters)
 		},
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(_ *cobra.Command, _ []string) {
 			parameters.Mode = runmode.Mob{}
 			parameters.AutoPush = parameters.Mode.AutoPushDefault()
 			u := cli.New(parameters, engine.NewTCREngine())

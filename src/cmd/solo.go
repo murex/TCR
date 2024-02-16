@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ var soloCmd = &cobra.Command{
 When used in "solo" mode, TCR only commits changes locally.
 It never pushes or pulls to a remote repository.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Solo{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
 		u := cli.New(parameters, engine.NewTCREngine())

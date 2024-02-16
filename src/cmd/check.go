@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,7 +59,7 @@ The return code of TCR "check" is one of the following:
 | 1   | One or more warnings were raised. This should not prevent TCR from running |
 | 2   | One or more errors were raised. TCR will not be able to run properly       |
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Check{}
 		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()

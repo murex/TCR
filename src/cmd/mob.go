@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ var mobCmd = &cobra.Command{
 When used in "mob" mode, TCR ensures that any commit
 is shared with other participants through calling VCS push-pull.
 `,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Mob{}
 		parameters.AutoPush = parameters.Mode.AutoPushDefault()
 		u := cli.New(parameters, engine.NewTCREngine())

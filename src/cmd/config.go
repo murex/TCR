@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ var configCmd = &cobra.Command{
 TCR config subcommand provides management of TCR configuration.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		_ = cmd.Usage()
 	},
 }
@@ -48,7 +48,7 @@ var showCmd = &cobra.Command{
 config show subcommand displays TCR configuration.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		config.Show()
 	},
 }
@@ -61,7 +61,7 @@ var saveCmd = &cobra.Command{
 config save subcommand saves TCR configuration into a file.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		config.Save()
 	},
 }
@@ -74,7 +74,7 @@ var resetCmd = &cobra.Command{
 config reset subcommand resets TCR configuration to default values.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		config.Reset()
 	},
 }

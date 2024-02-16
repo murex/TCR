@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ branch set for this repository.
 Only TCR commits are printed. All other commits are filtered out.
 
 This subcommand does not start TCR engine.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Log{}
 		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()
