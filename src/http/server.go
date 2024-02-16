@@ -88,7 +88,7 @@ func (s *Server) Start() {
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 
-	// Add TCR engine to gin context so that it can be used by API handlers
+	// Add TCR engine to gin context so that it can be accessed by API handlers
 	router.Use(api.TCREngineMiddleware(s.tcr))
 	// Setup route group for the API
 	apiRoutes := router.Group("/api")
@@ -100,8 +100,9 @@ func (s *Server) Start() {
 		apiRoutes.POST("/roles/:name/:action", api.RolesPostHandler)
 	}
 
+	// Add self to gin context so that it can be accessed by web socket handlers
+	router.Use(ws.HTTPServerMiddleware(s))
 	// Setup websocket route
-	ws.SetHTTPServerInstance(s)
 	router.GET("/ws", ws.WebSocketHandler)
 
 	// Start HTTP server

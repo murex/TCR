@@ -54,22 +54,26 @@ func newWebSocketMessage(msgType string, severity string, emphasis bool, a ...an
 
 // WebsocketMessageReporter is in charge of sending TCR report messages over a websocket
 type WebsocketMessageReporter struct {
+	server           tcrHTTPServer
 	reportingChannel chan bool
 	conn             *websocket.Conn
 	connMutex        sync.Mutex
 }
 
-func newWebSocketMessageReporter(conn *websocket.Conn) *WebsocketMessageReporter {
-	return &WebsocketMessageReporter{conn: conn}
+func newWebSocketMessageReporter(server tcrHTTPServer, conn *websocket.Conn) *WebsocketMessageReporter {
+	return &WebsocketMessageReporter{
+		server: server,
+		conn:   conn,
+	}
 }
 
 func (r *WebsocketMessageReporter) startReporting() {
-	server.RegisterWebSocket(r)
+	r.server.RegisterWebSocket(r)
 	r.reportingChannel = report.Subscribe(r)
 }
 
 func (r *WebsocketMessageReporter) stopReporting() {
-	server.UnregisterWebSocket(r)
+	r.server.UnregisterWebSocket(r)
 	if r.reportingChannel != nil {
 		report.Unsubscribe(r.reportingChannel)
 	}
@@ -128,6 +132,7 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
+		server := r.Context().Value(serverContextKey).(tcrHTTPServer)
 		if server.InDevMode() {
 			// server and client ports are different when running in devMode,
 			// so we bypass any CORS restriction in this mode
@@ -153,17 +158,21 @@ var upgrader = websocket.Upgrader{
 
 // WebSocketHandler is the entry point for handling websocket requests sent to the HTTP server
 func WebSocketHandler(c *gin.Context) {
-	handleWebSocket(c.Writer, c.Request)
+	// Converts the gin request into a "regular" http HandlerFunc
+	webSocketConnectionHandler(c.Writer, requestWithGinContext(c))
 }
 
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+// webSocketConnectionHandler is responsible for opening a new websocket connection request
+// and keeping it alive until we reach the connection timeout
+func webSocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		report.PostWarning("failed to upgrade to a websocket connection: ", err.Error())
 		return
 	}
 
-	reporter := newWebSocketMessageReporter(conn)
+	server := r.Context().Value(serverContextKey).(tcrHTTPServer)
+	reporter := newWebSocketMessageReporter(server, conn)
 	reporter.startReporting()
 
 	defer func() {

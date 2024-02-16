@@ -22,9 +22,14 @@ SOFTWARE.
 
 package ws
 
-import "time"
+import (
+	"context"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
+)
 
-type httpServer = interface {
+type tcrHTTPServer = interface {
 	InDevMode() bool
 	GetServerAddress() string
 	GetWebSocketTimeout() time.Duration
@@ -32,10 +37,23 @@ type httpServer = interface {
 	UnregisterWebSocket(r *WebsocketMessageReporter)
 }
 
-var server httpServer
+type serverContextKeyType string
 
-// SetHTTPServerInstance sets the TCR HTTP server instance that websocket functions
-// will interact with
-func SetHTTPServerInstance(s httpServer) {
-	server = s
+const serverContextKey serverContextKeyType = "tcr-http-server"
+
+// HTTPServerMiddleware adds the HTTP server instance to gin context
+// so that websocket handlers can interact with it.
+func HTTPServerMiddleware(s tcrHTTPServer) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Set(string(serverContextKey), s)
+		c.Next()
+	}
+}
+
+// requestWithGinContext inserts gin context value set for
+// HTTP server instance to the request context sent to websocket handler
+func requestWithGinContext(c *gin.Context) *http.Request {
+	ctx := context.WithValue(c.Request.Context(),
+		serverContextKey, c.MustGet(string(serverContextKey)).(tcrHTTPServer))
+	return c.Request.WithContext(ctx)
 }

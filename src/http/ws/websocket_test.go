@@ -23,9 +23,11 @@ SOFTWARE.
 package ws
 
 import (
+	"context"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -65,10 +67,6 @@ func (s *fakeHTTPServer) RegisterWebSocket(_ *WebsocketMessageReporter) {
 
 // UnregisterWebSocket unregister a new websocket connection from the server
 func (s *fakeHTTPServer) UnregisterWebSocket(_ *WebsocketMessageReporter) {
-}
-
-func setupHTTPServer(urlStr string) {
-	SetHTTPServerInstance(newFakeHTTPServer(urlStr))
 }
 
 func Test_websocket_report_messages(t *testing.T) {
@@ -135,18 +133,22 @@ func Test_websocket_report_messages(t *testing.T) {
 		},
 	}
 
-	// Create test server with the websocket handler.
-	s := httptest.NewServer(http.HandlerFunc(handleWebSocket))
+	// Create HTTP test server with the websocket connection handler.
+	s := httptest.NewUnstartedServer(http.HandlerFunc(webSocketConnectionHandler))
+	var fakeServer tcrHTTPServer
+	s.Config.BaseContext = func(l net.Listener) context.Context {
+		fakeServer = newFakeHTTPServer(s.URL)
+		return context.WithValue(context.Background(), serverContextKey, fakeServer)
+	}
+	s.Start()
 	defer s.Close()
-	setupHTTPServer(s.URL)
 
-	// Build URL for websocket connection request
+	// Build URL and header for websocket connection request
 	u, _ := url.Parse(s.URL)
 	u.Scheme = "ws"
-
-	// Connect to the server
 	hd := http.Header{}
 	hd.Add("Origin", s.URL)
+	// Create the websocket connection
 	var ws, _, err = websocket.DefaultDialer.Dial(u.String(), hd) //nolint:bodyclose
 	defer func(ws *websocket.Conn) {
 		_ = ws.Close()
@@ -169,11 +171,11 @@ func Test_websocket_report_messages(t *testing.T) {
 	}
 
 	// Wait for the websocket connection to time out
-	time.Sleep(server.GetWebSocketTimeout())
+	time.Sleep(fakeServer.GetWebSocketTimeout())
 }
 
 // assertMessagesMatch checks that 2 webSocketMessage instance messages match.
-// Used in place of assert.Equal() on struct to protect against potential timestamp variations.
+// Used in place of assert.Equal() to ignore potential timestamp variations.
 func assertMessagesMatch(t *testing.T, expected webSocketMessage, msg webSocketMessage) {
 	t.Helper()
 	assert.Equal(t, expected.Type, msg.Type)
