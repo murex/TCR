@@ -23,9 +23,12 @@ SOFTWARE.
 package http
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -79,5 +82,61 @@ func Test_create_http_server(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, test.asserter)
+	}
+}
+
+func Test_cors_middleware_handler(t *testing.T) {
+
+	tests := []struct {
+		desc     string
+		cors     bool
+		origin   string
+		expected string
+	}{
+		{
+			desc:     "with CORS and same origin",
+			cors:     true,
+			origin:   "",
+			expected: "",
+		},
+		{
+			desc:     "with CORS and different origin",
+			cors:     true,
+			origin:   "http://some.other.origin",
+			expected: "*",
+		},
+		{
+			desc:     "without CORS",
+			cors:     false,
+			origin:   "http://some.other.origin",
+			expected: "",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			// Setup the router
+			rPath := "/"
+			router := gin.Default()
+
+			// Add handlers
+			if test.cors {
+				router.Use(corsMiddleware())
+			}
+			router.GET(rPath, func(c *gin.Context) {
+				c.Status(http.StatusOK)
+			})
+
+			// Prepare the request, send it and capture the response
+			req, _ := http.NewRequest("GET", rPath, nil)
+			if test.origin != "" {
+				req.Header.Add("Origin", test.origin)
+			}
+			w := httptest.NewRecorder()
+
+			router.ServeHTTP(w, req)
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Equal(t, test.expected, w.Header().Get("Access-Control-Allow-Origin"))
+		})
 	}
 }
