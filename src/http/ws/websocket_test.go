@@ -54,19 +54,19 @@ func (s *fakeHTTPServer) GetServerAddress() string {
 	return s.url.Host
 }
 
-// GetWebSocketTimeout returns the timeout after which inactive websocket connections
+// GetWebsocketTimeout returns the timeout after which inactive websocket connections
 // should be closed
-func (s *fakeHTTPServer) GetWebSocketTimeout() time.Duration {
+func (s *fakeHTTPServer) GetWebsocketTimeout() time.Duration {
 	// To prevent waiting for 1 minute before websocket connection gets shut down
 	return 100 * time.Millisecond
 }
 
-// RegisterWebSocket register a new websocket connection to the server
-func (s *fakeHTTPServer) RegisterWebSocket(_ *WebsocketMessageReporter) {
+// RegisterWebsocket register a new websocket connection to the server
+func (s *fakeHTTPServer) RegisterWebsocket(_ WebsocketWriter) {
 }
 
-// UnregisterWebSocket unregister a new websocket connection from the server
-func (s *fakeHTTPServer) UnregisterWebSocket(_ *WebsocketMessageReporter) {
+// UnregisterWebsocket unregister a new websocket connection from the server
+func (s *fakeHTTPServer) UnregisterWebsocket(_ WebsocketWriter) {
 }
 
 func Test_websocket_report_messages(t *testing.T) {
@@ -74,67 +74,67 @@ func Test_websocket_report_messages(t *testing.T) {
 	tests := []struct {
 		desc     string
 		action   func()
-		expected webSocketMessage
+		expected message
 	}{
 		{
 			desc:     "report.Post",
 			action:   func() { report.Post(messageText) },
-			expected: newWebSocketMessage("simple", "0", false, messageText),
+			expected: newMessage("simple", "0", false, messageText),
 		},
 		{
 			desc:     "report.PostText",
 			action:   func() { report.PostText(messageText) },
-			expected: newWebSocketMessage("simple", "0", false, messageText),
+			expected: newMessage("simple", "0", false, messageText),
 		},
 		{
 			desc:     "report.PostInfo",
 			action:   func() { report.PostInfo(messageText) },
-			expected: newWebSocketMessage("info", "0", false, messageText),
+			expected: newMessage("info", "0", false, messageText),
 		},
 		{
 			desc:     "report.PostTitle",
 			action:   func() { report.PostTitle(messageText) },
-			expected: newWebSocketMessage("title", "0", false, messageText),
+			expected: newMessage("title", "0", false, messageText),
 		},
 		{
 			desc:     "report.PostWarning",
 			action:   func() { report.PostWarning(messageText) },
-			expected: newWebSocketMessage("warning", "1", false, messageText),
+			expected: newMessage("warning", "1", false, messageText),
 		},
 		{
 			desc:     "report.PostError",
 			action:   func() { report.PostError(messageText) },
-			expected: newWebSocketMessage("error", "2", false, messageText),
+			expected: newMessage("error", "2", false, messageText),
 		},
 		{
 			desc:     "report.PostRole",
 			action:   func() { report.PostRole(messageText) },
-			expected: newWebSocketMessage("role", "0", false, messageText),
+			expected: newMessage("role", "0", false, messageText),
 		},
 		{
 			desc:     "report.PostTimerWithEmphasis",
 			action:   func() { report.PostTimerWithEmphasis(messageText) },
-			expected: newWebSocketMessage("timer", "0", true, messageText),
+			expected: newMessage("timer", "0", true, messageText),
 		},
 		{
 			desc:     "report.PostSuccessWithEmphasis",
 			action:   func() { report.PostSuccessWithEmphasis(messageText) },
-			expected: newWebSocketMessage("success", "0", true, messageText),
+			expected: newMessage("success", "0", true, messageText),
 		},
 		{
 			desc:     "report.PostWarningWithEmphasis",
 			action:   func() { report.PostWarningWithEmphasis(messageText) },
-			expected: newWebSocketMessage("warning", "1", true, messageText),
+			expected: newMessage("warning", "1", true, messageText),
 		},
 		{
 			desc:     "report.PostErrorWithEmphasis",
 			action:   func() { report.PostErrorWithEmphasis(messageText) },
-			expected: newWebSocketMessage("error", "2", true, messageText),
+			expected: newMessage("error", "2", true, messageText),
 		},
 	}
 
 	// Create HTTP test server with the websocket connection handler.
-	s := httptest.NewUnstartedServer(http.HandlerFunc(webSocketConnectionHandler))
+	s := httptest.NewUnstartedServer(http.HandlerFunc(websocketConnectionHandler))
 	var fakeServer tcrHTTPServer
 	s.Config.BaseContext = func(l net.Listener) context.Context {
 		fakeServer = newFakeHTTPServer(s.URL)
@@ -163,7 +163,7 @@ func Test_websocket_report_messages(t *testing.T) {
 			test.action()
 
 			// Retrieve the message sent through the websocket and verify its contents
-			var msg webSocketMessage
+			var msg message
 			readErr := ws.ReadJSON(&msg)
 			assert.NoError(t, readErr)
 			assertMessagesMatch(t, test.expected, msg)
@@ -171,7 +171,7 @@ func Test_websocket_report_messages(t *testing.T) {
 	}
 
 	// Wait for the websocket connection to time out
-	time.Sleep(fakeServer.GetWebSocketTimeout())
+	time.Sleep(fakeServer.GetWebsocketTimeout())
 }
 
 func Test_websocket_upgrader_with_invalid_request_header(t *testing.T) {
@@ -212,7 +212,7 @@ func Test_websocket_upgrader_with_invalid_request_header(t *testing.T) {
 	}
 
 	// Create HTTP test server with the websocket connection handler.
-	s := httptest.NewUnstartedServer(http.HandlerFunc(webSocketConnectionHandler))
+	s := httptest.NewUnstartedServer(http.HandlerFunc(websocketConnectionHandler))
 	var fakeServer tcrHTTPServer
 	s.Config.BaseContext = func(l net.Listener) context.Context {
 		fakeServer = newFakeHTTPServer(s.URL)
@@ -234,9 +234,9 @@ func Test_websocket_upgrader_with_invalid_request_header(t *testing.T) {
 	}
 }
 
-// assertMessagesMatch checks that 2 webSocketMessage instance messages match.
+// assertMessagesMatch checks that 2 message instance messages match.
 // Used in place of assert.Equal() to ignore potential timestamp variations.
-func assertMessagesMatch(t *testing.T, expected webSocketMessage, msg webSocketMessage) {
+func assertMessagesMatch(t *testing.T, expected message, msg message) {
 	t.Helper()
 	assert.Equal(t, expected.Type, msg.Type)
 	assert.Equal(t, expected.Severity, msg.Severity)

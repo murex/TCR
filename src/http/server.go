@@ -46,7 +46,7 @@ type Server struct {
 	host             string
 	devMode          bool
 	websocketTimeout time.Duration
-	websockets       []*ws.WebsocketMessageReporter
+	websockets       *ws.ConnectionPool
 }
 
 // New creates a new instance of Server
@@ -57,7 +57,7 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 		host:             "127.0.0.1", // To restrict connections to local host only
 		devMode:          true,
 		websocketTimeout: 1 * time.Minute, // default timeout value
-		websockets:       []*ws.WebsocketMessageReporter{},
+		websockets:       ws.NewConnectionPool(),
 		params:           p,
 	}
 	tcr.AttachUI(&server, false)
@@ -67,6 +67,16 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 // Start starts TCR HTTP server
 func (s *Server) Start() {
 	report.PostInfo("Starting HTTP server on port ", s.params.PortNumber)
+	router := s.newGinEngine()
+
+	s.addStaticRoutes(router)
+	s.addAPIRoutes(router)
+	s.addWebsocketRoutes(router)
+
+	s.startGinEngine(router)
+}
+
+func (s *Server) newGinEngine() *gin.Engine {
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
 	router := gin.New()
 	router.Use(gin.Recovery())
@@ -80,14 +90,29 @@ func (s *Server) Start() {
 		// backend and frontend on separate ports
 		router.Use(corsMiddleware())
 	}
+	return router
+}
 
+func (s *Server) startGinEngine(router *gin.Engine) {
+	// Start HTTP server on its own goroutine
+	go func() {
+		err := router.Run(s.GetServerAddress())
+		if err != nil {
+			report.PostError("could not start HTTP server: ", err.Error())
+		}
+	}()
+}
+
+func (*Server) addStaticRoutes(router *gin.Engine) {
 	// Serve frontend static files from embedded filesystem
 	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
 	router.NoRoute(func(c *gin.Context) {
 		report.PostInfo(c.Request.URL.Path, " doesn't exists, redirecting to /")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
+}
 
+func (s *Server) addAPIRoutes(router *gin.Engine) {
 	// Add TCR engine to gin context so that it can be accessed by API handlers
 	router.Use(api.TCREngineMiddleware(s.tcr))
 	// Setup route group for the API
@@ -99,19 +124,13 @@ func (s *Server) Start() {
 		apiRoutes.GET("/roles/:name", api.RoleGetHandler)
 		apiRoutes.POST("/roles/:name/:action", api.RolesPostHandler)
 	}
+}
 
+func (s *Server) addWebsocketRoutes(router *gin.Engine) {
 	// Add self to gin context so that it can be accessed by web socket handlers
 	router.Use(ws.HTTPServerMiddleware(s))
 	// Setup websocket route
-	router.GET("/ws", ws.WebSocketHandler)
-
-	// Start HTTP server
-	go func() {
-		err := router.Run(s.GetServerAddress())
-		if err != nil {
-			report.PostError("could not start HTTP server: ", err.Error())
-		}
-	}()
+	router.GET("/ws", ws.WebsocketHandler)
 }
 
 // InDevMode indicates if the server is running in dev (development) mode
@@ -124,52 +143,47 @@ func (s *Server) GetServerAddress() string {
 	return fmt.Sprintf("%s:%d", s.host, s.params.PortNumber)
 }
 
-// GetWebSocketTimeout returns the timeout after which inactive websocket connections
+// GetWebsocketTimeout returns the timeout after which inactive websocket connections
 // should be closed
-func (s *Server) GetWebSocketTimeout() time.Duration {
+func (s *Server) GetWebsocketTimeout() time.Duration {
 	return s.websocketTimeout
 }
 
-// RegisterWebSocket register a new websocket connection to the server
-func (s *Server) RegisterWebSocket(websocket *ws.WebsocketMessageReporter) {
-	s.websockets = append(s.websockets, websocket)
+// RegisterWebsocket register a new websocket connection to the server
+func (s *Server) RegisterWebsocket(w ws.WebsocketWriter) {
+	s.websockets.Register(w)
 }
 
-// UnregisterWebSocket unregister a new websocket connection from the server
-func (s *Server) UnregisterWebSocket(websocket *ws.WebsocketMessageReporter) {
-	for i, registered := range s.websockets {
-		if websocket == registered {
-			s.websockets = append(s.websockets[:i], s.websockets[i+1:]...)
-			return
-		}
-	}
+// UnregisterWebsocket unregister a new websocket connection from the server
+func (s *Server) UnregisterWebsocket(w ws.WebsocketWriter) {
+	s.websockets.Unregister(w)
 }
 
 // ShowRunningMode shows the current running mode
 func (s *Server) ShowRunningMode(mode runmode.RunMode) {
-	for _, websocket := range s.websockets {
-		websocket.ReportTitle(false, "Running in ", mode.Name(), " mode")
-	}
+	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
+		w.ReportTitle(false, "Running in ", mode.Name(), " mode")
+	})
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
 func (s *Server) NotifyRoleStarting(r role.Role) {
-	for _, websocket := range s.websockets {
+	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		// ReportRole call is used for role changing trigger message
-		websocket.ReportRole(false, r.Name(), ":", "start")
+		w.ReportRole(false, r.Name(), ":", "start")
 		// ReportTitle is used for console trace
-		websocket.ReportTitle(false, "Starting with ", r.LongName())
-	}
+		w.ReportTitle(false, "Starting with ", r.LongName())
+	})
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
 func (s *Server) NotifyRoleEnding(r role.Role) {
-	for _, websocket := range s.websockets {
+	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		// ReportRole call is used for role changing trigger message
-		websocket.ReportRole(false, r.Name(), ":", "end")
+		w.ReportRole(false, r.Name(), ":", "end")
 		// ReportTitle is used for console trace
-		websocket.ReportTitle(false, "Ending ", r.LongName())
-	}
+		w.ReportTitle(false, "Ending ", r.LongName())
+	})
 }
 
 // ShowSessionInfo shows main information related to the current TCR session

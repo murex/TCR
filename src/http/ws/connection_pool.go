@@ -22,38 +22,32 @@ SOFTWARE.
 
 package ws
 
-import (
-	"context"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"time"
-)
+// ConnectionPool is in charge of managing websocket connections
+type ConnectionPool []WebsocketWriter
 
-type tcrHTTPServer = interface {
-	InDevMode() bool
-	GetServerAddress() string
-	GetWebsocketTimeout() time.Duration
-	RegisterWebsocket(r WebsocketWriter)
-	UnregisterWebsocket(r WebsocketWriter)
+// NewConnectionPool returns a new instance of websocket connection pool
+func NewConnectionPool() *ConnectionPool {
+	return &ConnectionPool{}
 }
 
-type serverContextKeyType string
+// Register registers a new websocket with the connection pool
+func (p *ConnectionPool) Register(w WebsocketWriter) {
+	*p = append(*p, w)
+}
 
-const serverContextKey serverContextKeyType = "tcr-http-server"
-
-// HTTPServerMiddleware adds the HTTP server instance to gin context
-// so that websocket handlers can interact with it.
-func HTTPServerMiddleware(s tcrHTTPServer) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set(string(serverContextKey), s)
-		c.Next()
+// Unregister unregisters a websocket from the connection pool
+func (p *ConnectionPool) Unregister(w WebsocketWriter) {
+	for i, registered := range *p {
+		if w == registered {
+			*p = append((*p)[:i], (*p)[i+1:]...)
+			return
+		}
 	}
 }
 
-// requestWithGinContext inserts gin context value set for
-// HTTP server instance to the request context sent to websocket handler
-func requestWithGinContext(c *gin.Context) *http.Request {
-	ctx := context.WithValue(c.Request.Context(),
-		serverContextKey, c.MustGet(string(serverContextKey)).(tcrHTTPServer))
-	return c.Request.WithContext(ctx)
+// Dispatch dispatches the provided operation to all registered websockets
+func (p *ConnectionPool) Dispatch(operation func(w WebsocketWriter)) {
+	for _, registered := range *p {
+		operation(registered)
+	}
 }

@@ -33,8 +33,15 @@ import (
 	"time"
 )
 
-// webSocketMessage is used to JSON-encode TCR report messages
-type webSocketMessage struct {
+// WebsocketWriter provides the interface allowing to send messages
+// through a websocket connection
+type WebsocketWriter interface {
+	ReportTitle(emphasis bool, a ...any)
+	ReportRole(emphasis bool, a ...any)
+}
+
+// message is used to JSON-encode TCR report messages
+type message struct {
 	Type      string `json:"type"`
 	Severity  string `json:"severity"`
 	Text      string `json:"text"`
@@ -42,8 +49,8 @@ type webSocketMessage struct {
 	Timestamp string `json:"timestamp"`
 }
 
-func newWebSocketMessage(msgType string, severity string, emphasis bool, a ...any) webSocketMessage {
-	return webSocketMessage{
+func newMessage(msgType string, severity string, emphasis bool, a ...any) message {
+	return message{
 		Type:      msgType,
 		Severity:  severity,
 		Text:      fmt.Sprint(a...),
@@ -52,80 +59,79 @@ func newWebSocketMessage(msgType string, severity string, emphasis bool, a ...an
 	}
 }
 
-// WebsocketMessageReporter is in charge of sending TCR report messages over a websocket
-type WebsocketMessageReporter struct {
+// MessageReporter is in charge of sending TCR report messages over a websocket
+type MessageReporter struct {
 	server           tcrHTTPServer
 	reportingChannel chan bool
 	conn             *websocket.Conn
 	connMutex        sync.Mutex
 }
 
-func newWebSocketMessageReporter(server tcrHTTPServer, conn *websocket.Conn) *WebsocketMessageReporter {
-	return &WebsocketMessageReporter{
+func newMessageReporter(server tcrHTTPServer, conn *websocket.Conn) *MessageReporter {
+	return &MessageReporter{
 		server: server,
 		conn:   conn,
 	}
 }
 
-func (r *WebsocketMessageReporter) startReporting() {
-	r.server.RegisterWebSocket(r)
+func (r *MessageReporter) startReporting() {
+	r.server.RegisterWebsocket(r)
 	r.reportingChannel = report.Subscribe(r)
 }
 
-func (r *WebsocketMessageReporter) stopReporting() {
-	r.server.UnregisterWebSocket(r)
+func (r *MessageReporter) stopReporting() {
+	r.server.UnregisterWebsocket(r)
 	if r.reportingChannel != nil {
 		report.Unsubscribe(r.reportingChannel)
 	}
 }
 
 // ReportSimple reports simple messages
-func (r *WebsocketMessageReporter) ReportSimple(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("simple", "0", emphasis, a...))
+func (r *MessageReporter) ReportSimple(emphasis bool, a ...any) {
+	r.write(newMessage("simple", "0", emphasis, a...))
 }
 
 // ReportInfo reports info messages
-func (r *WebsocketMessageReporter) ReportInfo(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("info", "0", emphasis, a...))
+func (r *MessageReporter) ReportInfo(emphasis bool, a ...any) {
+	r.write(newMessage("info", "0", emphasis, a...))
 }
 
 // ReportTitle reports title messages
-func (r *WebsocketMessageReporter) ReportTitle(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("title", "0", emphasis, a...))
+func (r *MessageReporter) ReportTitle(emphasis bool, a ...any) {
+	r.write(newMessage("title", "0", emphasis, a...))
 }
 
 // ReportRole reports role event messages
-func (r *WebsocketMessageReporter) ReportRole(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("role", "0", emphasis, a...))
+func (r *MessageReporter) ReportRole(emphasis bool, a ...any) {
+	r.write(newMessage("role", "0", emphasis, a...))
 }
 
 // ReportTimer reports timer messages
-func (r *WebsocketMessageReporter) ReportTimer(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("timer", "0", emphasis, a...))
+func (r *MessageReporter) ReportTimer(emphasis bool, a ...any) {
+	r.write(newMessage("timer", "0", emphasis, a...))
 }
 
 // ReportSuccess reports success messages
-func (r *WebsocketMessageReporter) ReportSuccess(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("success", "0", emphasis, a...))
+func (r *MessageReporter) ReportSuccess(emphasis bool, a ...any) {
+	r.write(newMessage("success", "0", emphasis, a...))
 }
 
 // ReportWarning reports warning messages
-func (r *WebsocketMessageReporter) ReportWarning(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("warning", "1", emphasis, a...))
+func (r *MessageReporter) ReportWarning(emphasis bool, a ...any) {
+	r.write(newMessage("warning", "1", emphasis, a...))
 }
 
 // ReportError reports error messages
-func (r *WebsocketMessageReporter) ReportError(emphasis bool, a ...any) {
-	r.write(newWebSocketMessage("error", "2", emphasis, a...))
+func (r *MessageReporter) ReportError(emphasis bool, a ...any) {
+	r.write(newMessage("error", "2", emphasis, a...))
 }
 
-func (r *WebsocketMessageReporter) write(msg webSocketMessage) {
+func (r *MessageReporter) write(msg message) {
 	r.connMutex.Lock()
-	err := r.conn.WriteJSON(msg)
+	// We deliberately ignore write errors, which could happen
+	// every time a client closes their console browser page
+	_ = r.conn.WriteJSON(msg)
 	r.connMutex.Unlock()
-	if err != nil {
-		report.PostWarning("websocket message sending failure - ", err.Error())
-	}
 }
 
 var upgrader = websocket.Upgrader{
@@ -156,15 +162,15 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// WebSocketHandler is the entry point for handling websocket requests sent to the HTTP server
-func WebSocketHandler(c *gin.Context) {
+// WebsocketHandler is the entry point for handling websocket requests sent to the HTTP server
+func WebsocketHandler(c *gin.Context) {
 	// Converts the gin request into a "regular" http HandlerFunc
-	webSocketConnectionHandler(c.Writer, requestWithGinContext(c))
+	websocketConnectionHandler(c.Writer, requestWithGinContext(c))
 }
 
-// webSocketConnectionHandler is responsible for opening a new websocket connection request
+// websocketConnectionHandler is responsible for opening a new websocket connection request
 // and keeping it alive until we reach the connection timeout
-func webSocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
+func websocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		report.PostWarning("failed to upgrade to a websocket connection: ", err.Error())
@@ -172,7 +178,7 @@ func webSocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	server := r.Context().Value(serverContextKey).(tcrHTTPServer)
-	reporter := newWebSocketMessageReporter(server, conn)
+	reporter := newMessageReporter(server, conn)
 	reporter.startReporting()
 
 	defer func() {
@@ -184,5 +190,5 @@ func webSocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	// messages to clients that are no longer there.
 	// This should not be an issue for clients that are still connected
 	// as the webapp client will automatically open a new connection after this one is gone.
-	time.Sleep(server.GetWebSocketTimeout())
+	time.Sleep(server.GetWebsocketTimeout())
 }
