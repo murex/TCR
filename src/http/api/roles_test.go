@@ -192,14 +192,16 @@ func Test_roles_post_handler_with_invalid_params(t *testing.T) {
 	router.Use(TCREngineMiddleware(tcr))
 	router.POST(rPath, RolesPostHandler)
 
+	const invalidRole = "unknown-role"
+	const invalidAction = "unknown-action"
 	tests := []struct {
 		role   string
 		action string
 	}{
-		{role: "unknown-role", action: startAction},
-		{role: "unknown-role", action: stopAction},
-		{role: role.Navigator{}.Name(), action: "unknown-action"},
-		{role: role.Driver{}.Name(), action: "unknown-action"},
+		{role: invalidRole, action: startAction},
+		{role: invalidRole, action: stopAction},
+		{role: role.Navigator{}.Name(), action: invalidAction},
+		{role: role.Driver{}.Name(), action: invalidAction},
 	}
 
 	for _, test := range tests {
