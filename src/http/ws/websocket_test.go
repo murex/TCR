@@ -174,6 +174,66 @@ func Test_websocket_report_messages(t *testing.T) {
 	time.Sleep(fakeServer.GetWebSocketTimeout())
 }
 
+func Test_websocket_upgrader_with_invalid_request_header(t *testing.T) {
+	tests := []struct {
+		desc      string
+		hdBuilder func() http.Header
+	}{
+		{
+			desc: "origin with no protocol",
+			hdBuilder: func() http.Header {
+				hd := http.Header{}
+				hd.Add("Origin", "://127.0.0.1")
+				return hd
+			},
+		},
+		{
+			desc: "origin with invalid hostname",
+			hdBuilder: func() http.Header {
+				hd := http.Header{}
+				hd.Add("Origin", "http://dummy.url")
+				return hd
+			},
+		},
+		{
+			desc: "origin with invalid port",
+			hdBuilder: func() http.Header {
+				hd := http.Header{}
+				hd.Add("Origin", "http://127.0.0.1:9999")
+				return hd
+			},
+		},
+		{
+			desc: "origin not set",
+			hdBuilder: func() http.Header {
+				return http.Header{}
+			},
+		},
+	}
+
+	// Create HTTP test server with the websocket connection handler.
+	s := httptest.NewUnstartedServer(http.HandlerFunc(webSocketConnectionHandler))
+	var fakeServer tcrHTTPServer
+	s.Config.BaseContext = func(l net.Listener) context.Context {
+		fakeServer = newFakeHTTPServer(s.URL)
+		return context.WithValue(context.Background(), serverContextKey, fakeServer)
+	}
+	s.Start()
+	defer s.Close()
+
+	u, _ := url.Parse(s.URL)
+	u.Scheme = "ws"
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			hd := test.hdBuilder()
+			// Try creating the websocket connection using this header
+			_, _, err := websocket.DefaultDialer.Dial(u.String(), hd) //nolint:bodyclose
+			// And verify that it gets rejected
+			assert.Error(t, err)
+		})
+	}
+}
+
 // assertMessagesMatch checks that 2 webSocketMessage instance messages match.
 // Used in place of assert.Equal() to ignore potential timestamp variations.
 func assertMessagesMatch(t *testing.T, expected webSocketMessage, msg webSocketMessage) {
