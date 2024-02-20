@@ -29,6 +29,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
+	"slices"
+	"strings"
 	"testing"
 	"time"
 )
@@ -139,4 +141,143 @@ func Test_cors_middleware_handler(t *testing.T) {
 			assert.Equal(t, test.expected, w.Header().Get("Access-Control-Allow-Origin"))
 		})
 	}
+}
+
+func Test_init_gin_engine(t *testing.T) {
+	tests := []struct {
+		desc     string
+		devMode  bool
+		expected int
+	}{
+		{
+			desc:     "development mode",
+			devMode:  true,
+			expected: 3, // gin.Recovery, gin.Logger and corsMiddleware
+		},
+		{
+			desc:     "production mode",
+			devMode:  false,
+			expected: 1, // gin.Recovery only
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
+			srv.devMode = test.devMode
+			router := srv.newGinEngine()
+			assert.NotNil(t, router)
+			assert.Equal(t, test.expected, len(router.Handlers))
+		})
+	}
+}
+
+func Test_add_static_routes(t *testing.T) {
+	// Setup the router
+	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	router := srv.newGinEngine()
+	srv.addStaticRoutes(router)
+
+	// Prepare the request, send it and capture the response
+	rPath := "/some_path"
+	req, _ := http.NewRequest("GET", rPath, nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	// Note: we don't test the regular case where rPath = "/" (returning a StatusOK)
+	// This is to avoid getting dangling test results depending whether
+	// frontend files have been generated under static/webapp/browser
+	assert.Equal(t, http.StatusMovedPermanently, w.Code)
+}
+
+type testRESTRouteParams struct {
+	path    string   // REST request path
+	methods []string // REST methods accepted for this path
+}
+
+func testRESTRoutes(t *testing.T, router *gin.Engine, tests []testRESTRouteParams) {
+	t.Helper()
+	var restMethods = []string{"GET", "PUT", "POST", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE"}
+	for _, test := range tests {
+		// Hierarchical test runner seems to get confused when there are "/" in description.
+		// Replacing them with "\" allows to workaround this issue
+		descPath := strings.Replace(test.path, "/", "\\", -1)
+		t.Run(descPath, func(t *testing.T) {
+			for _, method := range restMethods {
+				methodSupported := slices.Contains(test.methods, method)
+				descMethod := method
+				if methodSupported {
+					descMethod += "_(yes)"
+				} else {
+					descMethod += "_(no)"
+				}
+				t.Run(descMethod, func(t *testing.T) {
+					// Prepare the request, send it and capture the response
+					req, _ := http.NewRequest(method, test.path, nil)
+					w := httptest.NewRecorder()
+					router.ServeHTTP(w, req)
+					// We only check at router level if we get a 404 or not.
+					// Actual return codes should be tested at handlers levels
+					assert.Equal(t, methodSupported, w.Code != http.StatusNotFound)
+				})
+			}
+		})
+	}
+}
+
+func Test_add_api_routes(t *testing.T) {
+	tests := []testRESTRouteParams{
+		{
+			path:    "/api",
+			methods: []string{},
+		},
+		{
+			path:    "/api/build-info",
+			methods: []string{"GET"},
+		},
+		{
+			path:    "/api/session-info",
+			methods: []string{"GET"},
+		},
+		{
+			path:    "/api/roles",
+			methods: []string{"GET"},
+		},
+		{
+			path:    "/api/roles/name",
+			methods: []string{"GET"},
+		},
+		{
+			path:    "/api/roles/name/action",
+			methods: []string{"POST"},
+		},
+	}
+
+	// Setup the router
+	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	router := srv.newGinEngine()
+	srv.addAPIRoutes(router)
+
+	// check every route + REST method combination
+	testRESTRoutes(t, router, tests)
+}
+
+func Test_add_websocket_routes(t *testing.T) {
+	tests := []testRESTRouteParams{
+		{
+			path:    "/ws",
+			methods: []string{"GET"},
+		},
+		{
+			path:    "/ws/any",
+			methods: []string{""},
+		},
+	}
+
+	// Setup the router
+	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	router := srv.newGinEngine()
+	srv.addWebsocketRoutes(router)
+
+	// check every route + REST method combination
+	testRESTRoutes(t, router, tests)
 }
