@@ -23,6 +23,7 @@ SOFTWARE.
 package http
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
@@ -45,8 +46,10 @@ type Server struct {
 	params           params.Params
 	host             string
 	devMode          bool
+	router           *gin.Engine
 	websocketTimeout time.Duration
 	websockets       *ws.ConnectionPool
+	stopEngine       chan bool
 }
 
 // New creates a new instance of Server
@@ -56,6 +59,7 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 		// host: "0.0.0.0", // To enable connections from a remote host
 		host:             "127.0.0.1", // To restrict connections to local host only
 		devMode:          true,
+		router:           nil,
 		websocketTimeout: 1 * time.Minute, // default timeout value
 		websockets:       ws.NewConnectionPool(),
 		params:           p,
@@ -67,56 +71,75 @@ func New(p params.Params, tcr engine.TCRInterface) *Server {
 // Start starts TCR HTTP server
 func (s *Server) Start() {
 	report.PostInfo("Starting HTTP server on port ", s.params.PortNumber)
-	router := s.newGinEngine()
-
-	s.addStaticRoutes(router)
-	s.addAPIRoutes(router)
-	s.addWebsocketRoutes(router)
-
-	s.startGinEngine(router)
+	s.initGinEngine()
+	s.addStaticRoutes()
+	s.addAPIRoutes()
+	s.addWebsocketRoutes()
+	s.startGinEngine()
 }
 
-func (s *Server) newGinEngine() *gin.Engine {
+func (s *Server) initGinEngine() {
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
-	router := gin.New()
-	router.Use(gin.Recovery())
+	s.router = gin.New()
+	s.router.Use(gin.Recovery())
 
 	gin.SetMode(gin.ReleaseMode)
 	if s.InDevMode() {
 		gin.SetMode(gin.DebugMode)
 		// In development mode we want to see incoming HTTP requests
-		router.Use(gin.Logger())
+		s.router.Use(gin.Logger())
 		// Add CORS Middleware in development mode to allow running
 		// backend and frontend on separate ports
-		router.Use(corsMiddleware())
+		s.router.Use(corsMiddleware())
 	}
-	return router
 }
 
-func (s *Server) startGinEngine(router *gin.Engine) {
+func (s *Server) startGinEngine() {
+	srv := &http.Server{ //nolint:gosec
+		Addr:    s.GetServerAddress(),
+		Handler: s.router,
+	}
+
 	// Start HTTP server on its own goroutine
 	go func() {
-		err := router.Run(s.GetServerAddress())
+		err := srv.ListenAndServe()
 		if err != nil {
 			report.PostError("could not start HTTP server: ", err.Error())
 		}
 	}()
+
+	// Start a second goroutine in order to be able to shutdown the
+	// HTTP server when needed
+	s.stopEngine = make(chan bool)
+	go func() {
+		<-s.stopEngine
+		// We received an interrupt signal, shut down.
+		if err := srv.Shutdown(context.Background()); err != nil {
+			report.PostError("could not stop HTTP server: ", err.Error())
+		}
+	}()
 }
 
-func (*Server) addStaticRoutes(router *gin.Engine) {
+// stopGinEngine is provided for testing purpose, so that we can shutdown
+// the HTTP server when needed
+func (s *Server) stopGinEngine() {
+	s.stopEngine <- true
+}
+
+func (s *Server) addStaticRoutes() {
 	// Serve frontend static files from embedded filesystem
-	router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
-	router.NoRoute(func(c *gin.Context) {
+	s.router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
+	s.router.NoRoute(func(c *gin.Context) {
 		report.PostInfo(c.Request.URL.Path, " doesn't exists, redirecting to /")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 }
 
-func (s *Server) addAPIRoutes(router *gin.Engine) {
+func (s *Server) addAPIRoutes() {
 	// Add TCR engine to gin context so that it can be accessed by API handlers
-	router.Use(api.TCREngineMiddleware(s.tcr))
+	s.router.Use(api.TCREngineMiddleware(s.tcr))
 	// Setup route group for the API
-	apiRoutes := router.Group("/api")
+	apiRoutes := s.router.Group("/api")
 	{
 		apiRoutes.GET("/build-info", api.BuildInfoGetHandler)
 		apiRoutes.GET("/session-info", api.SessionInfoGetHandler)
@@ -126,11 +149,11 @@ func (s *Server) addAPIRoutes(router *gin.Engine) {
 	}
 }
 
-func (s *Server) addWebsocketRoutes(router *gin.Engine) {
+func (s *Server) addWebsocketRoutes() {
 	// Add self to gin context so that it can be accessed by web socket handlers
-	router.Use(ws.HTTPServerMiddleware(s))
+	s.router.Use(ws.HTTPServerMiddleware(s))
 	// Setup websocket route
-	router.GET("/ws", ws.WebsocketHandler)
+	s.router.GET("/ws", ws.WebsocketHandler)
 }
 
 // InDevMode indicates if the server is running in dev (development) mode

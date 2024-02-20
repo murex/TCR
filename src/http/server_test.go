@@ -145,28 +145,28 @@ func Test_cors_middleware_handler(t *testing.T) {
 
 func Test_init_gin_engine(t *testing.T) {
 	tests := []struct {
-		desc     string
-		devMode  bool
-		expected int
+		desc             string
+		devMode          bool
+		expectedHandlers int
 	}{
 		{
-			desc:     "development mode",
-			devMode:  true,
-			expected: 3, // gin.Recovery, gin.Logger and corsMiddleware
+			desc:             "development mode",
+			devMode:          true,
+			expectedHandlers: 3, // gin.Recovery, gin.Logger and corsMiddleware
 		},
 		{
-			desc:     "production mode",
-			devMode:  false,
-			expected: 1, // gin.Recovery only
+			desc:             "production mode",
+			devMode:          false,
+			expectedHandlers: 1, // gin.Recovery only
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
 			srv.devMode = test.devMode
-			router := srv.newGinEngine()
-			assert.NotNil(t, router)
-			assert.Equal(t, test.expected, len(router.Handlers))
+			srv.initGinEngine()
+			assert.NotNil(t, srv.router)
+			assert.Equal(t, test.expectedHandlers, len(srv.router.Handlers))
 		})
 	}
 }
@@ -174,14 +174,14 @@ func Test_init_gin_engine(t *testing.T) {
 func Test_add_static_routes(t *testing.T) {
 	// Setup the router
 	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	router := srv.newGinEngine()
-	srv.addStaticRoutes(router)
+	srv.initGinEngine()
+	srv.addStaticRoutes()
 
 	// Prepare the request, send it and capture the response
 	rPath := "/some_path"
 	req, _ := http.NewRequest("GET", rPath, nil)
 	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	srv.router.ServeHTTP(w, req)
 
 	// Note: we don't test the regular case where rPath = "/" (returning a StatusOK)
 	// This is to avoid getting dangling test results depending whether
@@ -254,11 +254,11 @@ func Test_add_api_routes(t *testing.T) {
 
 	// Setup the router
 	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	router := srv.newGinEngine()
-	srv.addAPIRoutes(router)
+	srv.initGinEngine()
+	srv.addAPIRoutes()
 
 	// check every route + REST method combination
-	testRESTRoutes(t, router, tests)
+	testRESTRoutes(t, srv.router, tests)
 }
 
 func Test_add_websocket_routes(t *testing.T) {
@@ -275,9 +275,20 @@ func Test_add_websocket_routes(t *testing.T) {
 
 	// Setup the router
 	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	router := srv.newGinEngine()
-	srv.addWebsocketRoutes(router)
+	srv.initGinEngine()
+	srv.addWebsocketRoutes()
 
 	// check every route + REST method combination
-	testRESTRoutes(t, router, tests)
+	testRESTRoutes(t, srv.router, tests)
+}
+
+func Test_start_server(t *testing.T) {
+	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	srv.Start()
+	t.Cleanup(func() {
+		srv.stopGinEngine()
+	})
+
+	// TODO improve assertion (send an HTTP request)
+	assert.NotNil(t, srv.router)
 }
