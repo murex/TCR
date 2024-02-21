@@ -39,70 +39,72 @@ import (
 	"time"
 )
 
-// Server provides a TCR interface implementation over HTTP. It acts
+// WebUIServer provides a TCR interface implementation over HTTP. It acts
 // as a proxy between the TCR engine and HTTP clients
-type Server struct {
+type WebUIServer struct {
 	tcr              engine.TCRInterface
 	params           params.Params
 	host             string
 	devMode          bool
 	router           *gin.Engine
+	httpServer       *http.Server
 	websocketTimeout time.Duration
 	websockets       *ws.ConnectionPool
 	stopEngine       chan bool
 }
 
-// New creates a new instance of Server
-func New(p params.Params, tcr engine.TCRInterface) *Server {
-	server := Server{
+// New creates a new instance of WebUIServer
+func New(p params.Params, tcr engine.TCRInterface) *WebUIServer {
+	webUIServer := WebUIServer{
 		tcr: tcr,
 		// host: "0.0.0.0", // To enable connections from a remote host
 		host:             "127.0.0.1", // To restrict connections to local host only
 		devMode:          true,
 		router:           nil,
+		httpServer:       nil,
 		websocketTimeout: 1 * time.Minute, // default timeout value
 		websockets:       ws.NewConnectionPool(),
 		params:           p,
 	}
-	tcr.AttachUI(&server, false)
-	return &server
+	tcr.AttachUI(&webUIServer, false)
+	return &webUIServer
 }
 
 // Start starts TCR HTTP server
-func (s *Server) Start() {
-	report.PostInfo("Starting HTTP server on port ", s.params.PortNumber)
-	s.initGinEngine()
-	s.addStaticRoutes()
-	s.addAPIRoutes()
-	s.addWebsocketRoutes()
-	s.startGinEngine()
+func (webUIServer *WebUIServer) Start() {
+	report.PostInfo("Starting HTTP server on port ", webUIServer.params.PortNumber)
+	webUIServer.initGinEngine()
+	webUIServer.addStaticRoutes()
+	webUIServer.addAPIRoutes()
+	webUIServer.addWebsocketRoutes()
+	webUIServer.startGinEngine()
 }
 
-func (s *Server) initGinEngine() {
+func (webUIServer *WebUIServer) initGinEngine() {
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
-	s.router = gin.New()
-	s.router.Use(gin.Recovery())
+	webUIServer.router = gin.New()
+	webUIServer.router.Use(gin.Recovery())
 
 	gin.SetMode(gin.ReleaseMode)
-	if s.InDevMode() {
+	if webUIServer.InDevMode() {
 		gin.SetMode(gin.DebugMode)
 		// In development mode we want to see incoming HTTP requests
-		s.router.Use(gin.Logger())
+		webUIServer.router.Use(gin.Logger())
 		// Add CORS Middleware in development mode to allow running
 		// backend and frontend on separate ports
-		s.router.Use(corsMiddleware())
+		webUIServer.router.Use(corsMiddleware())
 	}
 }
 
-func (s *Server) startGinEngine() {
-	srv := &http.Server{ //nolint:gosec
-		Addr:    s.GetServerAddress(),
-		Handler: s.router,
+func (webUIServer *WebUIServer) startGinEngine() {
+	webUIServer.httpServer = &http.Server{ //nolint:gosec
+		Addr:    webUIServer.GetServerAddress(),
+		Handler: webUIServer.router,
 	}
 
 	// Start HTTP server on its own goroutine
 	go func() {
-		err := srv.ListenAndServe()
+		err := webUIServer.httpServer.ListenAndServe()
 		if err != nil {
 			report.PostError("could not start HTTP server: ", err.Error())
 		}
@@ -110,11 +112,11 @@ func (s *Server) startGinEngine() {
 
 	// Start a second goroutine in order to be able to shutdown the
 	// HTTP server when needed
-	s.stopEngine = make(chan bool)
+	webUIServer.stopEngine = make(chan bool)
 	go func() {
-		<-s.stopEngine
+		<-webUIServer.stopEngine
 		// We received an interrupt signal, shut down.
-		if err := srv.Shutdown(context.Background()); err != nil {
+		if err := webUIServer.httpServer.Shutdown(context.Background()); err != nil {
 			report.PostError("could not stop HTTP server: ", err.Error())
 		}
 	}()
@@ -122,24 +124,24 @@ func (s *Server) startGinEngine() {
 
 // stopGinEngine is provided for testing purpose, so that we can shutdown
 // the HTTP server when needed
-func (s *Server) stopGinEngine() {
-	s.stopEngine <- true
+func (webUIServer *WebUIServer) stopGinEngine() {
+	webUIServer.stopEngine <- true
 }
 
-func (s *Server) addStaticRoutes() {
+func (webUIServer *WebUIServer) addStaticRoutes() {
 	// Serve frontend static files from embedded filesystem
-	s.router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
-	s.router.NoRoute(func(c *gin.Context) {
+	webUIServer.router.Use(static.Serve("/", embedFolder(staticFS, "static/webapp/browser")))
+	webUIServer.router.NoRoute(func(c *gin.Context) {
 		report.PostInfo(c.Request.URL.Path, " doesn't exists, redirecting to /")
 		c.Redirect(http.StatusMovedPermanently, "/")
 	})
 }
 
-func (s *Server) addAPIRoutes() {
+func (webUIServer *WebUIServer) addAPIRoutes() {
 	// Add TCR engine to gin context so that it can be accessed by API handlers
-	s.router.Use(api.TCREngineMiddleware(s.tcr))
+	webUIServer.router.Use(api.TCREngineMiddleware(webUIServer.tcr))
 	// Setup route group for the API
-	apiRoutes := s.router.Group("/api")
+	apiRoutes := webUIServer.router.Group("/api")
 	{
 		apiRoutes.GET("/build-info", api.BuildInfoGetHandler)
 		apiRoutes.GET("/session-info", api.SessionInfoGetHandler)
@@ -149,49 +151,49 @@ func (s *Server) addAPIRoutes() {
 	}
 }
 
-func (s *Server) addWebsocketRoutes() {
+func (webUIServer *WebUIServer) addWebsocketRoutes() {
 	// Add self to gin context so that it can be accessed by web socket handlers
-	s.router.Use(ws.HTTPServerMiddleware(s))
+	webUIServer.router.Use(ws.HTTPServerMiddleware(webUIServer))
 	// Setup websocket route
-	s.router.GET("/ws", ws.WebsocketHandler)
+	webUIServer.router.GET("/ws", ws.WebsocketHandler)
 }
 
 // InDevMode indicates if the server is running in dev (development) mode
-func (s *Server) InDevMode() bool {
-	return s.devMode
+func (webUIServer *WebUIServer) InDevMode() bool {
+	return webUIServer.devMode
 }
 
 // GetServerAddress returns the TCP server address that the server is listening to.
-func (s *Server) GetServerAddress() string {
-	return fmt.Sprintf("%s:%d", s.host, s.params.PortNumber)
+func (webUIServer *WebUIServer) GetServerAddress() string {
+	return fmt.Sprintf("%s:%d", webUIServer.host, webUIServer.params.PortNumber)
 }
 
 // GetWebsocketTimeout returns the timeout after which inactive websocket connections
 // should be closed
-func (s *Server) GetWebsocketTimeout() time.Duration {
-	return s.websocketTimeout
+func (webUIServer *WebUIServer) GetWebsocketTimeout() time.Duration {
+	return webUIServer.websocketTimeout
 }
 
 // RegisterWebsocket register a new websocket connection to the server
-func (s *Server) RegisterWebsocket(w ws.WebsocketWriter) {
-	s.websockets.Register(w)
+func (webUIServer *WebUIServer) RegisterWebsocket(w ws.WebsocketWriter) {
+	webUIServer.websockets.Register(w)
 }
 
 // UnregisterWebsocket unregister a new websocket connection from the server
-func (s *Server) UnregisterWebsocket(w ws.WebsocketWriter) {
-	s.websockets.Unregister(w)
+func (webUIServer *WebUIServer) UnregisterWebsocket(w ws.WebsocketWriter) {
+	webUIServer.websockets.Unregister(w)
 }
 
 // ShowRunningMode shows the current running mode
-func (s *Server) ShowRunningMode(mode runmode.RunMode) {
-	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
+func (webUIServer *WebUIServer) ShowRunningMode(mode runmode.RunMode) {
+	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		w.ReportTitle(false, "Running in ", mode.Name(), " mode")
 	})
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (s *Server) NotifyRoleStarting(r role.Role) {
-	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
+func (webUIServer *WebUIServer) NotifyRoleStarting(r role.Role) {
+	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		// ReportRole call is used for role changing trigger message
 		w.ReportRole(false, r.Name(), ":", "start")
 		// ReportTitle is used for console trace
@@ -200,8 +202,8 @@ func (s *Server) NotifyRoleStarting(r role.Role) {
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (s *Server) NotifyRoleEnding(r role.Role) {
-	s.websockets.Dispatch(func(w ws.WebsocketWriter) {
+func (webUIServer *WebUIServer) NotifyRoleEnding(r role.Role) {
+	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		// ReportRole call is used for role changing trigger message
 		w.ReportRole(false, r.Name(), ":", "end")
 		// ReportTitle is used for console trace
@@ -210,30 +212,30 @@ func (s *Server) NotifyRoleEnding(r role.Role) {
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
-func (*Server) ShowSessionInfo() {
+func (*WebUIServer) ShowSessionInfo() {
 	// With HTTP server this operation is triggered by the client through
 	// a GET request. There is nothing to do here
 }
 
 // Confirm asks the user for confirmation
-func (*Server) Confirm(_ string, _ bool) bool {
+func (*WebUIServer) Confirm(_ string, _ bool) bool {
 	// Always return true until there is a need for this function
 	return true
 }
 
 // StartReporting tells HTTP server to start reporting information
-func (*Server) StartReporting() {
+func (*WebUIServer) StartReporting() {
 	// Not needed: subscription is managed by each websocket handler instance
 }
 
 // StopReporting tells HTTP server to stop reporting information
-func (*Server) StopReporting() {
+func (*WebUIServer) StopReporting() {
 	// Not needed: subscription is managed by each websocket handler instance
 }
 
 // MuteDesktopNotifications allows preventing desktop Notification popups from being displayed.
 // Used for test automation at the moment. Could be turned into a feature later if there is need for it.
-func (*Server) MuteDesktopNotifications(_ bool) {
+func (*WebUIServer) MuteDesktopNotifications(_ bool) {
 	// With HTTP server this operation should be triggered by the client though
 	// a GET request. There is nothing to do here
 }

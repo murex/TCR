@@ -63,6 +63,12 @@ func Test_create_http_server(t *testing.T) {
 			},
 		},
 		{
+			desc: "http server instance",
+			asserter: func(t *testing.T) {
+				assert.Nil(t, srv.httpServer)
+			},
+		},
+		{
 			desc: "websocket connections timeout",
 			asserter: func(t *testing.T) {
 				assert.Equal(t, 1*time.Minute, srv.websocketTimeout)
