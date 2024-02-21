@@ -122,7 +122,7 @@ func Test_cors_middleware_handler(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			// Setup the router
+			// Set up the router
 			rPath := "/"
 			router := gin.Default()
 
@@ -177,7 +177,7 @@ func Test_init_gin_engine(t *testing.T) {
 }
 
 func Test_add_static_routes(t *testing.T) {
-	// Setup the router
+	// Set up the router
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	wuis.initGinEngine()
 	wuis.addStaticRoutes()
@@ -189,7 +189,7 @@ func Test_add_static_routes(t *testing.T) {
 	wuis.router.ServeHTTP(w, req)
 
 	// Note: we don't test the regular case where rPath = "/" (returning a StatusOK)
-	// This is to avoid getting dangling test results depending whether
+	// This is to avoid getting dangling test results depending on whether
 	// frontend files have been generated under static/webapp/browser
 	assert.Equal(t, http.StatusMovedPermanently, w.Code)
 }
@@ -216,7 +216,7 @@ func testRESTRoutes(t *testing.T, router *gin.Engine, tests []testRESTRouteParam
 	t.Helper()
 	for _, test := range tests {
 		// Hierarchical test runner seems to get confused when there are "/" in description.
-		// Replacing them with "\" allows to workaround this issue
+		// Replacing them with "\" allows to work around this issue
 		descPath := strings.Replace(test.path, "/", "\\", -1)
 		t.Run(descPath, func(t *testing.T) {
 			for _, method := range allRESTMethods() {
@@ -269,7 +269,7 @@ func Test_add_api_routes(t *testing.T) {
 		},
 	}
 
-	// Setup the router
+	// Set up the router
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	wuis.initGinEngine()
 	wuis.addAPIRoutes()
@@ -290,7 +290,7 @@ func Test_add_websocket_routes(t *testing.T) {
 		},
 	}
 
-	// Setup the router
+	// Set up the router
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	wuis.initGinEngine()
 	wuis.addWebsocketRoutes()
@@ -312,5 +312,8 @@ func Test_start_server(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 	wuis.httpServer.Handler.ServeHTTP(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
+	// return code depends on whether webapp files are present in static FS
+	// = 200 (Ok) when webapp files are present
+	// - 301 (MovedPermanently) when webapp files are missing
+	assert.Contains(t, []int{http.StatusOK, http.StatusMovedPermanently}, w.Code)
 }
