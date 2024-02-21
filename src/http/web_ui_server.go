@@ -50,7 +50,6 @@ type WebUIServer struct {
 	httpServer       *http.Server
 	websocketTimeout time.Duration
 	websockets       *ws.ConnectionPool
-	stopEngine       chan bool
 }
 
 // New creates a new instance of WebUIServer
@@ -97,6 +96,7 @@ func (webUIServer *WebUIServer) initGinEngine() {
 }
 
 func (webUIServer *WebUIServer) startGinEngine() {
+	// Create HTTP server instance
 	webUIServer.httpServer = &http.Server{ //nolint:gosec
 		Addr:    webUIServer.GetServerAddress(),
 		Handler: webUIServer.router,
@@ -109,23 +109,15 @@ func (webUIServer *WebUIServer) startGinEngine() {
 			report.PostError("could not start HTTP server: ", err.Error())
 		}
 	}()
-
-	// Start a second goroutine in order to be able to shutdown the
-	// HTTP server when needed
-	webUIServer.stopEngine = make(chan bool)
-	go func() {
-		<-webUIServer.stopEngine
-		// We received an interrupt signal, shut down.
-		if err := webUIServer.httpServer.Shutdown(context.Background()); err != nil {
-			report.PostError("could not stop HTTP server: ", err.Error())
-		}
-	}()
 }
 
 // stopGinEngine is provided for testing purpose, so that we can shutdown
 // the HTTP server when needed
 func (webUIServer *WebUIServer) stopGinEngine() {
-	webUIServer.stopEngine <- true
+	report.PostInfo("Stopping HTTP server")
+	if err := webUIServer.httpServer.Shutdown(context.Background()); err != nil {
+		report.PostError("could not stop HTTP server: ", err.Error())
+	}
 }
 
 func (webUIServer *WebUIServer) addStaticRoutes() {

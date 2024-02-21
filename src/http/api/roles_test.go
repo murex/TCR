@@ -43,7 +43,7 @@ func Test_roles_get_handler(t *testing.T) {
 	router.GET(rPath, RolesGetHandler)
 
 	// Prepare the request, send it and capture the response
-	req, _ := http.NewRequest("GET", rPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, rPath, nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -75,7 +75,7 @@ func Test_role_get_handler(t *testing.T) {
 	for _, r := range role.All() {
 		t.Run(r.Name(), func(t *testing.T) {
 			// Prepare the request, send it and capture the response
-			req, _ := http.NewRequest("GET",
+			req, _ := http.NewRequest(http.MethodGet,
 				strings.Replace(rPath, ":name", r.Name(), 1), nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
@@ -105,7 +105,7 @@ func Test_role_get_handler_with_invalid_params(t *testing.T) {
 	router.GET(rPath, RoleGetHandler)
 
 	// Prepare the request, send it and capture the response
-	req, _ := http.NewRequest("GET",
+	req, _ := http.NewRequest(http.MethodGet,
 		strings.Replace(rPath, ":name", "unknown-role", 1), nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
@@ -169,7 +169,7 @@ func Test_roles_post_handler(t *testing.T) {
 		subPath := test.role + "/" + test.action
 		t.Run(subPath, func(t *testing.T) {
 			// Prepare the request, send it and capture the response
-			req, _ := http.NewRequest("POST",
+			req, _ := http.NewRequest(http.MethodPost,
 				strings.Replace(rPath, ":name/:action", subPath, 1), nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
@@ -208,7 +208,7 @@ func Test_roles_post_handler_with_invalid_params(t *testing.T) {
 		subPath := test.role + "/" + test.action
 		t.Run(subPath, func(t *testing.T) {
 			// Prepare the request, send it and capture the response
-			req, _ := http.NewRequest("POST",
+			req, _ := http.NewRequest(http.MethodPost,
 				strings.Replace(rPath, ":name/:action", subPath, 1), nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)

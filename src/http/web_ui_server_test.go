@@ -35,10 +35,10 @@ import (
 	"time"
 )
 
-func Test_create_http_server(t *testing.T) {
+func Test_create_web_ui_server(t *testing.T) {
 	p := *params.AParamSet()
 	tcr := engine.NewFakeTCREngine()
-	srv := New(p, tcr)
+	wuis := New(p, tcr)
 
 	tests := []struct {
 		desc     string
@@ -47,43 +47,43 @@ func Test_create_http_server(t *testing.T) {
 		{
 			desc: "access to TCR instance",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, tcr, srv.tcr)
+				assert.Equal(t, tcr, wuis.tcr)
 			},
 		},
 		{
 			desc: "host",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, "127.0.0.1", srv.host)
+				assert.Equal(t, "127.0.0.1", wuis.host)
 			},
 		},
 		{
 			desc: "development mode",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, true, srv.devMode)
+				assert.Equal(t, true, wuis.devMode)
 			},
 		},
 		{
 			desc: "http server instance",
 			asserter: func(t *testing.T) {
-				assert.Nil(t, srv.httpServer)
+				assert.Nil(t, wuis.httpServer)
 			},
 		},
 		{
 			desc: "websocket connections timeout",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, 1*time.Minute, srv.websocketTimeout)
+				assert.Equal(t, 1*time.Minute, wuis.websocketTimeout)
 			},
 		},
 		{
 			desc: "websocket connection pool",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, 0, len(*srv.websockets))
+				assert.Equal(t, 0, len(*wuis.websockets))
 			},
 		},
 		{
 			desc: "access to application parameters",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, p, srv.params)
+				assert.Equal(t, p, wuis.params)
 			},
 		},
 	}
@@ -94,7 +94,6 @@ func Test_create_http_server(t *testing.T) {
 }
 
 func Test_cors_middleware_handler(t *testing.T) {
-
 	tests := []struct {
 		desc     string
 		cors     bool
@@ -136,7 +135,7 @@ func Test_cors_middleware_handler(t *testing.T) {
 			})
 
 			// Prepare the request, send it and capture the response
-			req, _ := http.NewRequest("GET", rPath, nil)
+			req, _ := http.NewRequest(http.MethodGet, rPath, nil)
 			if test.origin != "" {
 				req.Header.Add("Origin", test.origin)
 			}
@@ -179,15 +178,15 @@ func Test_init_gin_engine(t *testing.T) {
 
 func Test_add_static_routes(t *testing.T) {
 	// Setup the router
-	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	srv.initGinEngine()
-	srv.addStaticRoutes()
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	wuis.initGinEngine()
+	wuis.addStaticRoutes()
 
 	// Prepare the request, send it and capture the response
 	rPath := "/some_path"
-	req, _ := http.NewRequest("GET", rPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, rPath, nil)
 	w := httptest.NewRecorder()
-	srv.router.ServeHTTP(w, req)
+	wuis.router.ServeHTTP(w, req)
 
 	// Note: we don't test the regular case where rPath = "/" (returning a StatusOK)
 	// This is to avoid getting dangling test results depending whether
@@ -200,15 +199,27 @@ type testRESTRouteParams struct {
 	methods []string // REST methods accepted for this path
 }
 
+func allRESTMethods() []string {
+	return []string{
+		http.MethodGet,
+		http.MethodPut,
+		http.MethodPost,
+		http.MethodDelete,
+		http.MethodPatch,
+		http.MethodHead,
+		http.MethodOptions,
+		http.MethodTrace,
+	}
+}
+
 func testRESTRoutes(t *testing.T, router *gin.Engine, tests []testRESTRouteParams) {
 	t.Helper()
-	var restMethods = []string{"GET", "PUT", "POST", "DELETE", "PATCH", "HEAD", "OPTIONS", "TRACE"}
 	for _, test := range tests {
 		// Hierarchical test runner seems to get confused when there are "/" in description.
 		// Replacing them with "\" allows to workaround this issue
 		descPath := strings.Replace(test.path, "/", "\\", -1)
 		t.Run(descPath, func(t *testing.T) {
-			for _, method := range restMethods {
+			for _, method := range allRESTMethods() {
 				methodSupported := slices.Contains(test.methods, method)
 				descMethod := method
 				if methodSupported {
@@ -238,40 +249,40 @@ func Test_add_api_routes(t *testing.T) {
 		},
 		{
 			path:    "/api/build-info",
-			methods: []string{"GET"},
+			methods: []string{http.MethodGet},
 		},
 		{
 			path:    "/api/session-info",
-			methods: []string{"GET"},
+			methods: []string{http.MethodGet},
 		},
 		{
 			path:    "/api/roles",
-			methods: []string{"GET"},
+			methods: []string{http.MethodGet},
 		},
 		{
 			path:    "/api/roles/name",
-			methods: []string{"GET"},
+			methods: []string{http.MethodGet},
 		},
 		{
 			path:    "/api/roles/name/action",
-			methods: []string{"POST"},
+			methods: []string{http.MethodPost},
 		},
 	}
 
 	// Setup the router
-	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	srv.initGinEngine()
-	srv.addAPIRoutes()
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	wuis.initGinEngine()
+	wuis.addAPIRoutes()
 
 	// check every route + REST method combination
-	testRESTRoutes(t, srv.router, tests)
+	testRESTRoutes(t, wuis.router, tests)
 }
 
 func Test_add_websocket_routes(t *testing.T) {
 	tests := []testRESTRouteParams{
 		{
 			path:    "/ws",
-			methods: []string{"GET"},
+			methods: []string{http.MethodGet},
 		},
 		{
 			path:    "/ws/any",
@@ -280,21 +291,26 @@ func Test_add_websocket_routes(t *testing.T) {
 	}
 
 	// Setup the router
-	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	srv.initGinEngine()
-	srv.addWebsocketRoutes()
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	wuis.initGinEngine()
+	wuis.addWebsocketRoutes()
 
 	// check every route + REST method combination
-	testRESTRoutes(t, srv.router, tests)
+	testRESTRoutes(t, wuis.router, tests)
 }
 
 func Test_start_server(t *testing.T) {
-	srv := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	srv.Start()
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	wuis.Start()
 	t.Cleanup(func() {
-		srv.stopGinEngine()
+		wuis.stopGinEngine()
 	})
 
-	// TODO improve assertion (send an HTTP request)
-	assert.NotNil(t, srv.router)
+	// Check that the HTTP server instance is here
+	assert.NotNil(t, wuis.httpServer)
+	// Smoke test: Send a simple HTTP request and verify that we get a response
+	req, _ := http.NewRequest(http.MethodGet, "/", nil)
+	w := httptest.NewRecorder()
+	wuis.httpServer.Handler.ServeHTTP(w, req)
+	assert.Equal(t, http.StatusOK, w.Code)
 }

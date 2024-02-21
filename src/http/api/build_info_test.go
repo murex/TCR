@@ -39,7 +39,7 @@ func Test_build_info_get_handler(t *testing.T) {
 	router.GET(rPath, BuildInfoGetHandler)
 
 	// Prepare the request, send it and capture the response
-	req, _ := http.NewRequest("GET", rPath, nil)
+	req, _ := http.NewRequest(http.MethodGet, rPath, nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
