@@ -1,5 +1,4 @@
 import {Component, OnInit, signal} from '@angular/core';
-import {TcrRolesService} from "../../services/trc-roles.service";
 import {catchError, retry, throwError} from "rxjs";
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {TcrTimerService} from "../../services/tcr-timer.service";
@@ -27,6 +26,5 @@ export class NotificationComponent implements OnInit {
         retry({delay: 5_000}))
       .subscribe((m: TcrMessage) => this.message.set(m.text));
   }
-
-
+  
 }
