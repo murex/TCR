@@ -1,13 +1,13 @@
 import {TestBed} from '@angular/core/testing';
 
-import {TrcRolesService} from './trc-roles.service';
+import {TcrRolesService} from './trc-roles.service';
 
-describe('TrcRolesService', () => {
-  let service: TrcRolesService;
+describe('TcrRolesService', () => {
+  let service: TcrRolesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(TrcRolesService);
+    service = TestBed.inject(TcrRolesService);
   });
 
   it('should be created', () => {

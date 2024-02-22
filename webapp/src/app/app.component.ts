@@ -6,6 +6,7 @@ import {TcrAboutComponent} from "./components/tcr-about/tcr-about.component";
 import {TcrSessionInfoComponent} from "./components/tcr-session-info/tcr-session-info.component";
 import {HeaderComponent} from "./components/header/header.component";
 import {FooterComponent} from "./components/footer/footer.component";
+import {NotificationComponent} from "./components/notification/notification.component";
 
 @Component({
   selector: 'app-root',
@@ -20,6 +21,7 @@ import {FooterComponent} from "./components/footer/footer.component";
     HttpClientModule,
     HeaderComponent,
     FooterComponent,
+    NotificationComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
