@@ -1,7 +1,7 @@
-import {Component, OnInit, signal} from '@angular/core';
-import {catchError, retry, throwError} from "rxjs";
+import {Component, OnInit, Signal} from '@angular/core';
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {TcrTimerService} from "../../services/tcr-timer.service";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-notification',
@@ -11,20 +11,13 @@ import {TcrTimerService} from "../../services/tcr-timer.service";
   styleUrl: './notification.component.css'
 })
 export class NotificationComponent implements OnInit {
-  message = signal("timeout");
+  message: Signal<TcrMessage | undefined>;
 
   constructor(
     private tcrTimerService: TcrTimerService) {
+    this.message = toSignal(this.tcrTimerService.webSocket$);
   }
 
   ngOnInit(): void {
-    this.tcrTimerService.webSocket$
-      .pipe(
-        catchError((error) => {
-          return throwError(() => new Error(error));
-        }),
-        retry({delay: 5_000}))
-      .subscribe((m: TcrMessage) => this.message.set(m.text));
   }
-  
 }

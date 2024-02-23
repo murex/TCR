@@ -3,7 +3,6 @@ import {TcrRole} from "../../interfaces/tcr-role";
 import {TcrRolesService} from "../../services/trc-roles.service";
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {NgClass, NgIf} from "@angular/common";
-import {catchError, retry, throwError} from "rxjs";
 
 @Component({
   selector: 'app-tcr-role',
@@ -25,13 +24,7 @@ export class TcrRoleComponent implements OnInit {
 
   ngOnInit(): void {
     this.getRole();
-    this.rolesService.webSocket$
-      .pipe(
-        catchError((error) => {
-          return throwError(() => new Error(error));
-        }),
-        retry({delay: 5_000}))
-      .subscribe((m: TcrMessage) => this.refresh(m));
+    this.rolesService.webSocket$.subscribe((m: TcrMessage) => this.refresh(m));
   }
 
   private refresh(message: TcrMessage): void {

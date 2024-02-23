@@ -1,7 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
-import {catchError, retry, throwError} from "rxjs";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {bgDarkGray, cyan, green, lightCyan, red, yellow} from "ansicolor";
@@ -22,14 +20,7 @@ export class TcrConsoleComponent {
   @ViewChild('term', {static: false}) child!: NgTerminal;
 
   constructor(private ws: WebsocketService) {
-    this.ws.webSocket$
-      .pipe(
-        catchError((error) => {
-          return throwError(() => new Error(error));
-        }),
-        retry({delay: 5_000}),
-        takeUntilDestroyed())
-      .subscribe((m: TcrMessage) => this.writeMessage(m));
+    this.ws.webSocket$.subscribe((m: TcrMessage) => this.writeMessage(m));
   }
 
   private writeMessage(message: TcrMessage): void {
