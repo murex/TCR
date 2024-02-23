@@ -1,8 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, effect, Input, OnInit, Signal} from '@angular/core';
 import {TcrRole} from "../../interfaces/tcr-role";
 import {TcrRolesService} from "../../services/trc-roles.service";
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {NgClass, NgIf} from "@angular/common";
+import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-tcr-role',
@@ -17,26 +18,35 @@ import {NgClass, NgIf} from "@angular/common";
 export class TcrRoleComponent implements OnInit {
   @Input() name = "";
   @Input() role?: TcrRole;
+  roleMessage: Signal<TcrMessage | undefined>;
 
   constructor(
     private rolesService: TcrRolesService) {
+    this.roleMessage = toSignal(this.rolesService.webSocket$);
+
+    effect(() => {
+      // When receiving a role message from the server
+      // trigger a refresh query to ensure that we keep in sync
+      this.refresh(this.roleMessage()!);
+    });
   }
 
   ngOnInit(): void {
     this.getRole();
-    this.rolesService.webSocket$.subscribe((m: TcrMessage) => this.refresh(m));
   }
 
   private refresh(message: TcrMessage): void {
-    const name = message.text.split(":")[0];
-    if (name === this.name) {
-      this.getRole();
+    if (message) {
+      const name = message.text.split(":")[0];
+      if (name === this.name) {
+        this.getRole();
+      }
     }
   }
 
   private getRole(): void {
     this.rolesService.getRole(this.name).subscribe(r => {
-        this.role = r
+        this.role = r;
       }
     );
   }
