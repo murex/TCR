@@ -25,7 +25,11 @@ package http
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/http/ws"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/role"
+	"github.com/murex/tcr/runmode"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -45,7 +49,7 @@ func Test_create_web_ui_server(t *testing.T) {
 		asserter func(t *testing.T)
 	}{
 		{
-			desc: "access to TCR instance",
+			desc: "TCR engine instance",
 			asserter: func(t *testing.T) {
 				assert.Equal(t, tcr, wuis.tcr)
 			},
@@ -63,7 +67,7 @@ func Test_create_web_ui_server(t *testing.T) {
 			},
 		},
 		{
-			desc: "http server instance",
+			desc: "HTTP server instance",
 			asserter: func(t *testing.T) {
 				assert.Nil(t, wuis.httpServer)
 			},
@@ -71,7 +75,7 @@ func Test_create_web_ui_server(t *testing.T) {
 		{
 			desc: "websocket connections timeout",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, 1*time.Minute, wuis.websocketTimeout)
+				assert.Equal(t, 1*time.Minute, wuis.GetWebsocketTimeout())
 			},
 		},
 		{
@@ -81,7 +85,7 @@ func Test_create_web_ui_server(t *testing.T) {
 			},
 		},
 		{
-			desc: "access to application parameters",
+			desc: "application parameters",
 			asserter: func(t *testing.T) {
 				assert.Equal(t, p, wuis.params)
 			},
@@ -313,7 +317,104 @@ func Test_start_server(t *testing.T) {
 	w := httptest.NewRecorder()
 	wuis.httpServer.Handler.ServeHTTP(w, req)
 	// return code depends on whether webapp files are present in static FS
-	// = 200 (Ok) when webapp files are present
+	// - 200 (Ok) when webapp files are present
 	// - 301 (MovedPermanently) when webapp files are missing
 	assert.Contains(t, []int{http.StatusOK, http.StatusMovedPermanently}, w.Code)
+}
+
+func Test_websocket_registration(t *testing.T) {
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	w1 := ws.NewFakeWebSocketWriter()
+	w2 := ws.NewFakeWebSocketWriter()
+
+	wuis.RegisterWebsocket(w1)
+	assert.Equal(t, 1, len(*wuis.websockets))
+	assert.Equal(t, w1, (*wuis.websockets)[0])
+
+	wuis.RegisterWebsocket(w2)
+	assert.Equal(t, 2, len(*wuis.websockets))
+	assert.Equal(t, w2, (*wuis.websockets)[1])
+
+	wuis.UnregisterWebsocket(w1)
+	assert.Equal(t, 1, len(*wuis.websockets))
+	assert.Equal(t, w2, (*wuis.websockets)[0])
+
+	wuis.UnregisterWebsocket(w2)
+	assert.Equal(t, 0, len(*wuis.websockets))
+}
+
+func Test_show_running_mode(t *testing.T) {
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	mode := runmode.Mob{}
+	filter := func(msg report.Message) bool {
+		return msg.Type.Severity == report.Title &&
+			msg.Type.Emphasis == false &&
+			msg.Text == "Running in "+mode.Name()+" mode"
+	}
+	sniffer1 := report.NewSniffer(filter)
+	sniffer2 := report.NewSniffer(filter)
+	wuis.RegisterWebsocket(sniffer1)
+	wuis.RegisterWebsocket(sniffer2)
+
+	wuis.ShowRunningMode(mode)
+
+	sniffer1.Stop()
+	sniffer2.Stop()
+
+	assert.Equal(t, 1, sniffer1.GetMatchCount())
+	assert.Equal(t, 1, sniffer2.GetMatchCount())
+}
+
+func Test_notify_role_starting(t *testing.T) {
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	r := role.Driver{}
+	roleFilter := func(msg report.Message) bool {
+		return msg.Type.Severity == report.Role &&
+			msg.Type.Emphasis == false &&
+			msg.Text == r.Name()+":"+"start"
+	}
+	titleFilter := func(msg report.Message) bool {
+		return msg.Type.Severity == report.Title &&
+			msg.Type.Emphasis == false &&
+			msg.Text == "Starting with "+r.LongName()
+	}
+	sniffer1 := report.NewSniffer(roleFilter, titleFilter)
+	sniffer2 := report.NewSniffer(roleFilter, titleFilter)
+	wuis.RegisterWebsocket(sniffer1)
+	wuis.RegisterWebsocket(sniffer2)
+
+	wuis.NotifyRoleStarting(r)
+
+	sniffer1.Stop()
+	sniffer2.Stop()
+
+	assert.Equal(t, 2, sniffer1.GetMatchCount())
+	assert.Equal(t, 2, sniffer2.GetMatchCount())
+}
+
+func Test_notify_role_ending(t *testing.T) {
+	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
+	r := role.Navigator{}
+	roleFilter := func(msg report.Message) bool {
+		return msg.Type.Severity == report.Role &&
+			msg.Type.Emphasis == false &&
+			msg.Text == r.Name()+":"+"end"
+	}
+	titleFilter := func(msg report.Message) bool {
+		return msg.Type.Severity == report.Title &&
+			msg.Type.Emphasis == false &&
+			msg.Text == "Ending "+r.LongName()
+	}
+	sniffer1 := report.NewSniffer(roleFilter, titleFilter)
+	sniffer2 := report.NewSniffer(roleFilter, titleFilter)
+	wuis.RegisterWebsocket(sniffer1)
+	wuis.RegisterWebsocket(sniffer2)
+
+	wuis.NotifyRoleEnding(r)
+
+	sniffer1.Stop()
+	sniffer2.Stop()
+
+	assert.Equal(t, 2, sniffer1.GetMatchCount())
+	assert.Equal(t, 2, sniffer2.GetMatchCount())
 }
