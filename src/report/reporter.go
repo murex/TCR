@@ -25,6 +25,7 @@ package report
 import (
 	"fmt"
 	"github.com/imkira/go-observer"
+	"github.com/murex/tcr/report/timer"
 	"sync"
 	"time"
 )
@@ -37,11 +38,11 @@ const (
 	Normal Severity = iota
 	Info
 	Title
-	Role
-	Timer
 	Success
 	Warning
 	Error
+	Role
+	TimerEvent
 )
 
 // MessageReporter provides the interface that any message listener needs to implement
@@ -49,11 +50,11 @@ type MessageReporter interface {
 	ReportSimple(emphasis bool, a ...any)
 	ReportInfo(emphasis bool, a ...any)
 	ReportTitle(emphasis bool, a ...any)
-	ReportRole(emphasis bool, a ...any)
-	ReportTimer(emphasis bool, a ...any)
 	ReportSuccess(emphasis bool, a ...any)
 	ReportWarning(emphasis bool, a ...any)
 	ReportError(emphasis bool, a ...any)
+	ReportRole(emphasis bool, a ...any)
+	ReportTimerEvent(emphasis bool, a ...any)
 }
 
 // MessageType type used for message characterization
@@ -115,14 +116,14 @@ func Subscribe(reporter MessageReporter) chan bool {
 // reportMessage tells the reporter to report msg depending on its severity
 func reportMessage(reporter MessageReporter, msg Message) {
 	report := map[Severity]func(r MessageReporter, emphasis bool, a ...any){
-		Info:    MessageReporter.ReportInfo,
-		Normal:  MessageReporter.ReportSimple,
-		Title:   MessageReporter.ReportTitle,
-		Role:    MessageReporter.ReportRole,
-		Timer:   MessageReporter.ReportTimer,
-		Success: MessageReporter.ReportSuccess,
-		Warning: MessageReporter.ReportWarning,
-		Error:   MessageReporter.ReportError,
+		Info:       MessageReporter.ReportInfo,
+		Normal:     MessageReporter.ReportSimple,
+		Title:      MessageReporter.ReportTitle,
+		Success:    MessageReporter.ReportSuccess,
+		Warning:    MessageReporter.ReportWarning,
+		Error:      MessageReporter.ReportError,
+		Role:       MessageReporter.ReportRole,
+		TimerEvent: MessageReporter.ReportTimerEvent,
 	}
 	report[msg.Type.Severity](reporter, msg.Type.Emphasis, msg.Text)
 }
@@ -168,9 +169,16 @@ func PostRole(a ...any) {
 	postMessage(MessageType{Severity: Role, Emphasis: false}, a...)
 }
 
-// PostTimerWithEmphasis posts a timer message with emphasis
-func PostTimerWithEmphasis(a ...any) {
-	postMessage(MessageType{Severity: Timer, Emphasis: true}, a...)
+// PostTimerEvent posts a timer event
+func PostTimerEvent(eventType string, timeout time.Duration, elapsed time.Duration, remaining time.Duration) {
+	msg := timer.EventMessage{
+		Trigger:   timer.EventTrigger(eventType),
+		Timeout:   timeout,
+		Elapsed:   elapsed,
+		Remaining: remaining,
+	}
+	postMessage(MessageType{Severity: TimerEvent, Emphasis: msg.WithEmphasis()},
+		timer.WrapEventMessage(msg))
 }
 
 // PostSuccessWithEmphasis posts a success message for reporting

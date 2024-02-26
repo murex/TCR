@@ -90,16 +90,6 @@ func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, a...))
 }
 
-// ReportRole reports role messages
-func (sniffer *Sniffer) ReportRole(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Role, emphasis}, a...))
-}
-
-// ReportTimer reports timer messages
-func (sniffer *Sniffer) ReportTimer(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Timer, emphasis}, a...))
-}
-
 // ReportSuccess reports warning messages
 func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, a...))
@@ -113,6 +103,16 @@ func (sniffer *Sniffer) ReportWarning(emphasis bool, a ...any) {
 // ReportError reports error messages
 func (sniffer *Sniffer) ReportError(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, a...))
+}
+
+// ReportRole reports role messages
+func (sniffer *Sniffer) ReportRole(emphasis bool, a ...any) {
+	sniffer.sniff(NewMessage(MessageType{Role, emphasis}, a...))
+}
+
+// ReportTimerEvent reports timer event messages
+func (sniffer *Sniffer) ReportTimerEvent(emphasis bool, a ...any) {
+	sniffer.sniff(NewMessage(MessageType{TimerEvent, emphasis}, a...))
 }
 
 // Stop tells the sniffer to stop

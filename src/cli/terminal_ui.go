@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/timer"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
@@ -64,6 +65,8 @@ const (
 	quitDriverRoleMenuHelper     = "Quit Driver role"
 	quitNavigatorRoleMenuHelper  = "Quit Navigator role"
 )
+
+const timerMessagePrefix = "(Mob Timer) "
 
 // New creates a new instance of terminal
 func New(p params.Params, tcr engine.TCRInterface) *TerminalUI {
@@ -131,10 +134,30 @@ func (*TerminalUI) ReportRole(_ bool, a ...any) {
 	printInYellow(a...)
 }
 
-// ReportTimer reports timer messages
-func (term *TerminalUI) ReportTimer(emphasis bool, a ...any) {
-	printInGreen(a...)
-	term.notifyOnEmphasis(emphasis, "⏳", a...)
+// ReportTimerEvent reports timer event messages
+func (term *TerminalUI) ReportTimerEvent(emphasis bool, a ...any) {
+	tem := timer.UnwrapEventMessage(fmt.Sprint(a...))
+	var text string
+	switch tem.Trigger {
+	case timer.TriggerStart:
+		text = fmt.Sprint(timerMessagePrefix, "Starting ",
+			timer.FormatDuration(tem.Timeout), " countdown")
+		printInGreen(text)
+	case timer.TriggerCountdown:
+		text = fmt.Sprint(timerMessagePrefix, "Your turn ends in ",
+			timer.FormatDuration(tem.Remaining))
+		printInGreen(text)
+	case timer.TriggerStop:
+		text = fmt.Sprint(timerMessagePrefix, "Stopping countdown after ",
+			timer.FormatDuration(tem.Elapsed))
+		printInGreen(text)
+
+	case timer.TriggerTimeout:
+		text = fmt.Sprint(timerMessagePrefix, "Time's up. Time to rotate! You are ",
+			timer.FormatDuration(tem.Remaining.Abs()), " over!")
+		printInYellow(text)
+	}
+	term.notifyOnEmphasis(emphasis, "⏳", text)
 }
 
 // ReportSuccess reports success messages

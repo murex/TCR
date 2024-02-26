@@ -106,8 +106,8 @@ func (r *MessageReporter) ReportRole(emphasis bool, a ...any) {
 	r.write(newMessage("role", "0", emphasis, a...))
 }
 
-// ReportTimer reports timer messages
-func (r *MessageReporter) ReportTimer(emphasis bool, a ...any) {
+// ReportTimerEvent reports timer event messages
+func (r *MessageReporter) ReportTimerEvent(emphasis bool, a ...any) {
 	r.write(newMessage("timer", "0", emphasis, a...))
 }
 

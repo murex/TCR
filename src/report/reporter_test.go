@@ -78,7 +78,7 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	Unsubscribe(c)
 }
 
-func Test_post_message_functions(t *testing.T) {
+func Test_post_text_message_functions(t *testing.T) {
 	testCases := []struct {
 		text         string
 		postFunction func(a ...any)
@@ -115,11 +115,6 @@ func Test_post_message_functions(t *testing.T) {
 			MessageType{Role, false},
 		},
 		{
-			"timer message with emphasis",
-			PostTimerWithEmphasis,
-			MessageType{Timer, true},
-		},
-		{
 			"success message with emphasis",
 			PostSuccessWithEmphasis,
 			MessageType{Success, true},
@@ -142,6 +137,35 @@ func Test_post_message_functions(t *testing.T) {
 				tt.postFunction(tt.text)
 			})
 			assert.Equal(t, tt.text, result.Text)
+			assert.Equal(t, tt.expectedType, result.Type)
+			assert.NotZero(t, result.Timestamp)
+		})
+	}
+}
+
+func Test_post_event_message_functions(t *testing.T) {
+	testCases := []struct {
+		text         string
+		postFunction func()
+		expectedType MessageType
+		expectedText string
+	}{
+		{
+			"timer event message",
+			func() {
+				PostTimerEvent("start", 0, 0, 0)
+			},
+			MessageType{TimerEvent, true},
+			"start:0:0:0",
+		},
+	}
+
+	for _, tt := range testCases {
+		t.Run(tt.text, func(t *testing.T) {
+			result := reportAndReceive(func() {
+				tt.postFunction()
+			})
+			assert.Equal(t, tt.expectedText, result.Text)
 			assert.Equal(t, tt.expectedType, result.Type)
 			assert.NotZero(t, result.Timestamp)
 		})
@@ -193,13 +217,14 @@ func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...any) {
 	stub.report(Title, emphasis, a...)
 }
 
+// ReportRole reports role event messages
 func (stub *messageReporterStub) ReportRole(emphasis bool, a ...any) {
 	stub.report(Role, emphasis, a...)
 }
 
-// ReportTimer reports timer messages
-func (stub *messageReporterStub) ReportTimer(emphasis bool, a ...any) {
-	stub.report(Timer, emphasis, a...)
+// ReportTimerEvent reports timer event messages
+func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, a ...any) {
+	stub.report(TimerEvent, emphasis, a...)
 }
 
 // ReportSuccess reports success messages

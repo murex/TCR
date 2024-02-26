@@ -43,7 +43,7 @@ const (
 // ReminderEventType type used for managing ticker state
 type ReminderEventType int
 
-// List of possible values for ReminderState
+// List of possible values for ReminderEventType
 const (
 	StartEvent ReminderEventType = iota
 	PeriodicEvent

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -46,26 +46,6 @@ func Test_best_tick_period_for_timeout(t *testing.T) {
 	for _, tt := range tickTests {
 		t.Run(tt.timeout.String()+"->"+tt.expected.String(), func(t *testing.T) {
 			assert.Equal(t, tt.expected, findBestTickPeriodFor(tt.timeout))
-		})
-	}
-}
-
-func Test_format_duration(t *testing.T) {
-	var fmtTests = []struct {
-		d        time.Duration
-		expected string
-	}{
-		{0 * time.Second, "0s"},
-		{59 * time.Second, "59s"},
-		{60 * time.Second, "1m"},
-		{61 * time.Second, "1m1s"},
-		{1 * time.Hour, "1h"},
-		{1*time.Hour + 1*time.Second, "1h0m1s"},
-		{1*time.Hour + 1*time.Minute, "1h1m"},
-	}
-	for _, tt := range fmtTests {
-		t.Run(tt.expected, func(t *testing.T) {
-			assert.Equal(t, tt.expected, fmtDuration(tt.d))
 		})
 	}
 }
@@ -150,11 +130,11 @@ func Test_mob_turn_count_down(t *testing.T) {
 		severity report.Severity
 		emphasis bool
 	}{
-		{"(Mob Timer) Starting 2s countdown", report.Timer, true},
-		{"(Mob Timer) Your turn ends in 1s", report.Timer, true},
-		{"(Mob Timer) Time's up. Time to rotate! You are 0s over!", report.Warning, false},
-		{"(Mob Timer) Time's up. Time to rotate! You are 1s over!", report.Warning, false},
-		{"(Mob Timer) Stopping countdown after 3s", report.Timer, true},
+		{"start:2:0:2", report.TimerEvent, true},
+		{"countdown:2:1:1", report.TimerEvent, true},
+		{"timeout:2:2:0", report.TimerEvent, true},
+		{"timeout:2:3:-1", report.TimerEvent, false},
+		{"stop:2:3:0", report.TimerEvent, true},
 	}
 	assert.Equal(t, len(expected), sniffer.GetMatchCount())
 	for i, e := range expected {
