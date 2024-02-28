@@ -80,77 +80,77 @@ func Test_websocket_report_messages(t *testing.T) {
 		{
 			desc:     "report.Post",
 			action:   func() { report.Post(messageText) },
-			expected: newMessage("simple", "0", false, messageText),
+			expected: newMessage(messageTypeSimple, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostText",
 			action:   func() { report.PostText(messageText) },
-			expected: newMessage("simple", "0", false, messageText),
+			expected: newMessage(messageTypeSimple, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostInfo",
 			action:   func() { report.PostInfo(messageText) },
-			expected: newMessage("info", "0", false, messageText),
+			expected: newMessage(messageTypeInfo, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostTitle",
 			action:   func() { report.PostTitle(messageText) },
-			expected: newMessage("title", "0", false, messageText),
+			expected: newMessage(messageTypeTitle, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostWarning",
 			action:   func() { report.PostWarning(messageText) },
-			expected: newMessage("warning", "1", false, messageText),
+			expected: newMessage(messageTypeWarning, messageSeverityLow, false, messageText),
 		},
 		{
 			desc:     "report.PostError",
 			action:   func() { report.PostError(messageText) },
-			expected: newMessage("error", "2", false, messageText),
+			expected: newMessage(messageTypeError, messageSeverityHigh, false, messageText),
 		},
 		{
 			desc:     "report.PostRole",
 			action:   func() { report.PostRole(messageText) },
-			expected: newMessage("role", "0", false, messageText),
+			expected: newMessage(messageTypeRole, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostTimerEvent start",
 			action:   func() { report.PostTimerEvent(string(timer.TriggerStart), 0, 0, 0) },
-			expected: newMessage("timer", "0", true, "start:0:0:0"),
+			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "start:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent countdown",
 			action:   func() { report.PostTimerEvent(string(timer.TriggerCountdown), 0, 0, 0) },
-			expected: newMessage("timer", "0", true, "countdown:0:0:0"),
+			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "countdown:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent stop",
 			action:   func() { report.PostTimerEvent(string(timer.TriggerStop), 0, 0, 0) },
-			expected: newMessage("timer", "0", true, "stop:0:0:0"),
+			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "stop:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent first timeout",
 			action:   func() { report.PostTimerEvent(string(timer.TriggerTimeout), 0, 0, 0) },
-			expected: newMessage("timer", "0", true, "timeout:0:0:0"),
+			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "timeout:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent second timeout",
 			action:   func() { report.PostTimerEvent(string(timer.TriggerTimeout), 0, 0, -1*time.Second) },
-			expected: newMessage("timer", "0", false, "timeout:0:0:-1"),
+			expected: newMessage(messageTypeTimer, messageSeverityNormal, false, "timeout:0:0:-1"),
 		},
 		{
 			desc:     "report.PostSuccessWithEmphasis",
 			action:   func() { report.PostSuccessWithEmphasis(messageText) },
-			expected: newMessage("success", "0", true, messageText),
+			expected: newMessage(messageTypeSuccess, messageSeverityNormal, true, messageText),
 		},
 		{
 			desc:     "report.PostWarningWithEmphasis",
 			action:   func() { report.PostWarningWithEmphasis(messageText) },
-			expected: newMessage("warning", "1", true, messageText),
+			expected: newMessage(messageTypeWarning, messageSeverityLow, true, messageText),
 		},
 		{
 			desc:     "report.PostErrorWithEmphasis",
 			action:   func() { report.PostErrorWithEmphasis(messageText) },
-			expected: newMessage("error", "2", true, messageText),
+			expected: newMessage(messageTypeError, messageSeverityHigh, true, messageText),
 		},
 	}
 

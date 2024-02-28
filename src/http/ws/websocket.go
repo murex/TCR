@@ -29,6 +29,7 @@ import (
 	"github.com/murex/tcr/report"
 	"net/http"
 	"net/url"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -49,10 +50,31 @@ type message struct {
 	Timestamp string `json:"timestamp"`
 }
 
-func newMessage(msgType string, severity string, emphasis bool, a ...any) message {
+type messageType string
+
+const (
+	messageTypeSimple  messageType = "simple"
+	messageTypeInfo    messageType = "info"
+	messageTypeTitle   messageType = "title"
+	messageTypeSuccess messageType = "success"
+	messageTypeWarning messageType = "warning"
+	messageTypeError   messageType = "error"
+	messageTypeRole    messageType = "role"
+	messageTypeTimer   messageType = "timer"
+)
+
+type messageSeverity int
+
+const (
+	messageSeverityNormal = iota
+	messageSeverityLow
+	messageSeverityHigh
+)
+
+func newMessage(msgType messageType, severity messageSeverity, emphasis bool, a ...any) message {
 	return message{
-		Type:      msgType,
-		Severity:  severity,
+		Type:      string(msgType),
+		Severity:  strconv.Itoa(int(severity)),
 		Text:      fmt.Sprint(a...),
 		Emphasis:  emphasis,
 		Timestamp: time.Now().Format(time.RFC3339),
@@ -88,42 +110,42 @@ func (r *MessageReporter) stopReporting() {
 
 // ReportSimple reports simple messages
 func (r *MessageReporter) ReportSimple(emphasis bool, a ...any) {
-	r.write(newMessage("simple", "0", emphasis, a...))
+	r.write(newMessage(messageTypeSimple, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportInfo reports info messages
 func (r *MessageReporter) ReportInfo(emphasis bool, a ...any) {
-	r.write(newMessage("info", "0", emphasis, a...))
+	r.write(newMessage(messageTypeInfo, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportTitle reports title messages
 func (r *MessageReporter) ReportTitle(emphasis bool, a ...any) {
-	r.write(newMessage("title", "0", emphasis, a...))
+	r.write(newMessage(messageTypeTitle, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportRole reports role event messages
 func (r *MessageReporter) ReportRole(emphasis bool, a ...any) {
-	r.write(newMessage("role", "0", emphasis, a...))
+	r.write(newMessage(messageTypeRole, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportTimerEvent reports timer event messages
 func (r *MessageReporter) ReportTimerEvent(emphasis bool, a ...any) {
-	r.write(newMessage("timer", "0", emphasis, a...))
+	r.write(newMessage(messageTypeTimer, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportSuccess reports success messages
 func (r *MessageReporter) ReportSuccess(emphasis bool, a ...any) {
-	r.write(newMessage("success", "0", emphasis, a...))
+	r.write(newMessage(messageTypeSuccess, messageSeverityNormal, emphasis, a...))
 }
 
 // ReportWarning reports warning messages
 func (r *MessageReporter) ReportWarning(emphasis bool, a ...any) {
-	r.write(newMessage("warning", "1", emphasis, a...))
+	r.write(newMessage(messageTypeWarning, messageSeverityLow, emphasis, a...))
 }
 
 // ReportError reports error messages
 func (r *MessageReporter) ReportError(emphasis bool, a ...any) {
-	r.write(newMessage("error", "2", emphasis, a...))
+	r.write(newMessage(messageTypeError, messageSeverityHigh, emphasis, a...))
 }
 
 func (r *MessageReporter) write(msg message) {
