@@ -108,9 +108,9 @@ func Test_add_error_checkpoint(t *testing.T) {
 
 func Test_check_group_print_with_checkpoints(t *testing.T) {
 	tests := []struct {
-		desc                   string
-		checkpoints            []CheckPoint
-		expectedReportSeverity report.Severity
+		desc             string
+		checkpoints      []CheckPoint
+		expectedCategory report.Category
 	}{
 		{
 			"1 ok",
@@ -148,12 +148,12 @@ func Test_check_group_print_with_checkpoints(t *testing.T) {
 
 			assert.Equal(t, 2+len(test.checkpoints), sniffer.GetMatchCount())
 			messages := sniffer.GetAllMatches()
-			assert.Equal(t, report.Info, messages[0].Type.Severity)
+			assert.Equal(t, report.Info, messages[0].Type.Category)
 			assert.Equal(t, "", messages[0].Text)
-			assert.Equal(t, test.expectedReportSeverity, messages[1].Type.Severity)
+			assert.Equal(t, test.expectedCategory, messages[1].Type.Category)
 			assert.Equal(t, "➤ checking check group", messages[1].Text)
 			for i := range test.checkpoints {
-				assert.GreaterOrEqual(t, test.expectedReportSeverity, messages[2+i].Type.Severity)
+				assert.GreaterOrEqual(t, test.expectedCategory, messages[2+i].Type.Category)
 			}
 		})
 	}

@@ -53,7 +53,7 @@ func Test_checkpoint_print(t *testing.T) {
 	tests := []struct {
 		desc             string
 		checkpoint       CheckPoint
-		expectedSeverity report.Severity
+		expectedCategory report.Category
 		expectedText     string
 	}{
 		{"ok", OkCheckPoint("A"), report.Info, "\t✔ A"},
@@ -66,7 +66,7 @@ func Test_checkpoint_print(t *testing.T) {
 			test.checkpoint.Print()
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, test.expectedSeverity, sniffer.GetAllMatches()[0].Type.Severity)
+			assert.Equal(t, test.expectedCategory, sniffer.GetAllMatches()[0].Type.Category)
 			assert.Equal(t, test.expectedText, sniffer.GetAllMatches()[0].Text)
 		})
 	}

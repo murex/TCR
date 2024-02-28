@@ -216,7 +216,7 @@ func Test_command_as_string(t *testing.T) {
 
 func Test_run_command_with_vcs_trace_enabled(t *testing.T) {
 	sniffer := report.NewSniffer(func(msg report.Message) bool {
-		return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "echo") == 0
+		return msg.Type.Category == report.Warning && strings.Index(msg.Text, "echo") == 0
 	})
 	vcs.SetTrace(true)
 	_, err := NewCommandFunc("echo", "hello world!").Run()
@@ -230,7 +230,7 @@ func Test_run_command_with_vcs_trace_enabled(t *testing.T) {
 
 func Test_run_piped_command_with_vcs_trace_enabled(t *testing.T) {
 	sniffer := report.NewSniffer(func(msg report.Message) bool {
-		return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "echo") == 0
+		return msg.Type.Category == report.Warning && strings.Index(msg.Text, "echo") == 0
 	})
 	vcs.SetTrace(true)
 	_, err := NewCommandFunc("echo", "hello\tworld!").RunAndPipe(

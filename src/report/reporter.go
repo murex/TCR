@@ -30,12 +30,12 @@ import (
 	"time"
 )
 
-// Severity provides level of severity for message
-type Severity int
+// Category provides different categories for reported message
+type Category int
 
-// List of possible values for Severity field
+// List of possible values for Category field
 const (
-	Normal Severity = iota
+	Normal Category = iota
 	Info
 	Title
 	Success
@@ -59,7 +59,7 @@ type MessageReporter interface {
 
 // MessageType type used for message characterization
 type MessageType struct {
-	Severity Severity
+	Category Category
 	Emphasis bool
 }
 
@@ -78,7 +78,7 @@ func init() {
 
 // Reset resets the reporter pipeline
 func Reset() {
-	msgProperty = observer.NewProperty(Message{Type: MessageType{Severity: Normal}, Text: ""})
+	msgProperty = observer.NewProperty(Message{Type: MessageType{Category: Normal}, Text: ""})
 }
 
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
@@ -113,9 +113,9 @@ func Subscribe(reporter MessageReporter) chan bool {
 	return unsubscribe
 }
 
-// reportMessage tells the reporter to report msg depending on its severity
+// reportMessage tells the reporter to report msg depending on its category
 func reportMessage(reporter MessageReporter, msg Message) {
-	report := map[Severity]func(r MessageReporter, emphasis bool, a ...any){
+	report := map[Category]func(r MessageReporter, emphasis bool, a ...any){
 		Info:       MessageReporter.ReportInfo,
 		Normal:     MessageReporter.ReportSimple,
 		Title:      MessageReporter.ReportTitle,
@@ -125,7 +125,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		Role:       MessageReporter.ReportRole,
 		TimerEvent: MessageReporter.ReportTimerEvent,
 	}
-	report[msg.Type.Severity](reporter, msg.Type.Emphasis, msg.Text)
+	report[msg.Type.Category](reporter, msg.Type.Emphasis, msg.Text)
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified
@@ -141,32 +141,32 @@ func Post(a ...any) {
 
 // PostText posts some text for reporting
 func PostText(a ...any) {
-	postMessage(MessageType{Severity: Normal}, a...)
+	postMessage(MessageType{Category: Normal}, a...)
 }
 
 // PostInfo posts an information message for reporting
 func PostInfo(a ...any) {
-	postMessage(MessageType{Severity: Info}, a...)
+	postMessage(MessageType{Category: Info}, a...)
 }
 
 // PostTitle posts a title message for reporting
 func PostTitle(a ...any) {
-	postMessage(MessageType{Severity: Title}, a...)
+	postMessage(MessageType{Category: Title}, a...)
 }
 
 // PostWarning posts a warning message for reporting
 func PostWarning(a ...any) {
-	postMessage(MessageType{Severity: Warning}, a...)
+	postMessage(MessageType{Category: Warning}, a...)
 }
 
 // PostError posts an error message for reporting
 func PostError(a ...any) {
-	postMessage(MessageType{Severity: Error}, a...)
+	postMessage(MessageType{Category: Error}, a...)
 }
 
 // PostRole posts a role message
 func PostRole(a ...any) {
-	postMessage(MessageType{Severity: Role, Emphasis: false}, a...)
+	postMessage(MessageType{Category: Role, Emphasis: false}, a...)
 }
 
 // PostTimerEvent posts a timer event
@@ -177,23 +177,23 @@ func PostTimerEvent(eventType string, timeout time.Duration, elapsed time.Durati
 		Elapsed:   elapsed,
 		Remaining: remaining,
 	}
-	postMessage(MessageType{Severity: TimerEvent, Emphasis: msg.WithEmphasis()},
+	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()},
 		timer.WrapEventMessage(msg))
 }
 
 // PostSuccessWithEmphasis posts a success message for reporting
 func PostSuccessWithEmphasis(a ...any) {
-	postMessage(MessageType{Severity: Success, Emphasis: true}, a...)
+	postMessage(MessageType{Category: Success, Emphasis: true}, a...)
 }
 
 // PostWarningWithEmphasis posts a warning with emphasis
 func PostWarningWithEmphasis(a ...any) {
-	postMessage(MessageType{Severity: Warning, Emphasis: true}, a...)
+	postMessage(MessageType{Category: Warning, Emphasis: true}, a...)
 }
 
 // PostErrorWithEmphasis posts an error message for reporting
 func PostErrorWithEmphasis(a ...any) {
-	postMessage(MessageType{Severity: Error, Emphasis: true}, a...)
+	postMessage(MessageType{Category: Error, Emphasis: true}, a...)
 }
 
 func postMessage(msgType MessageType, a ...any) {

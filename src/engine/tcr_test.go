@@ -106,7 +106,7 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			desc:   "reports build failures as warnings",
 			failAt: toolchain.BuildOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == buildFailureMessage && msg.Type.Severity == report.Warning
+				return msg.Text == buildFailureMessage && msg.Type.Category == report.Warning
 			},
 		},
 		{
@@ -120,7 +120,7 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			desc:   "reports test successes as success",
 			failAt: toolchain.Never,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testSuccessMessage && msg.Type.Severity == report.Success
+				return msg.Text == testSuccessMessage && msg.Type.Category == report.Success
 			},
 		},
 		{
@@ -134,7 +134,7 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			desc:   "reports test failures as errors",
 			failAt: toolchain.TestOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testFailureMessage && msg.Type.Severity == report.Error
+				return msg.Text == testFailureMessage && msg.Type.Category == report.Error
 			},
 		},
 		{
@@ -470,7 +470,7 @@ func Test_vcs_pull_calls_vcs_command(t *testing.T) {
 func Test_vcs_pull_highlights_errors(t *testing.T) {
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Error && msg.Text == "VCS pull command failed!"
+			return msg.Type.Category == report.Error && msg.Text == "VCS pull command failed!"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PullCommand}, nil)
@@ -482,7 +482,7 @@ func Test_vcs_pull_highlights_errors(t *testing.T) {
 func Test_vcs_push_highlights_errors(t *testing.T) {
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Error && msg.Text == "VCS push command failed!"
+			return msg.Type.Category == report.Error && msg.Text == "VCS push command failed!"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
@@ -529,7 +529,7 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			settings.EnableMobTimer = true
 			sniffer := report.NewSniffer(
 				func(msg report.Message) bool {
-					return msg.Type.Severity == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
+					return msg.Type.Category == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
 				},
 			)
 			tcr, _ = initTCREngineWithFakes(params.AParamSet(
@@ -551,7 +551,7 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Severity == report.Info && msg.Text == "Mob Timer is off"
+			return msg.Type.Category == report.Info && msg.Text == "Mob Timer is off"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Solo{})), nil, nil, nil)
@@ -581,7 +581,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR passing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
+				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -589,7 +589,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR failing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
+				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -597,7 +597,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR revert commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
+				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 0,
@@ -605,7 +605,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "non-TCR commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
+				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 0,
@@ -613,7 +613,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit hashtag is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
+				return msg.Type.Category == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -621,7 +621,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit timestamp is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
+				return msg.Type.Category == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 2,
@@ -629,7 +629,7 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "warning when no record found",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Severity == report.Warning && strings.Index(msg.Text, "no TCR commit found in ") == 0
+				return msg.Type.Category == report.Warning && strings.Index(msg.Text, "no TCR commit found in ") == 0
 			},
 			logItems:        nil,
 			expectedMatches: 1,
@@ -859,7 +859,7 @@ func Test_count_files(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			sniffer := report.NewSniffer(func(msg report.Message) bool {
-				return msg.Type.Severity == report.Warning
+				return msg.Type.Category == report.Warning
 			})
 			count := countFiles("desc",
 				func() ([]string, error) {

@@ -197,8 +197,8 @@ func newMessageReporterStub(index int) *messageReporterStub {
 	}
 }
 
-func (stub *messageReporterStub) report(severity Severity, emphasis bool, a ...any) {
-	stub.message = NewMessage(MessageType{severity, emphasis}, a...)
+func (stub *messageReporterStub) report(category Category, emphasis bool, a ...any) {
+	stub.message = NewMessage(MessageType{category, emphasis}, a...)
 	stub.received <- stub.index
 }
 

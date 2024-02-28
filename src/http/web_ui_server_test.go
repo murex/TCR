@@ -347,7 +347,7 @@ func Test_show_running_mode(t *testing.T) {
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	mode := runmode.Mob{}
 	filter := func(msg report.Message) bool {
-		return msg.Type.Severity == report.Title &&
+		return msg.Type.Category == report.Title &&
 			msg.Type.Emphasis == false &&
 			msg.Text == "Running in "+mode.Name()+" mode"
 	}
@@ -369,12 +369,12 @@ func Test_notify_role_starting(t *testing.T) {
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	r := role.Driver{}
 	roleFilter := func(msg report.Message) bool {
-		return msg.Type.Severity == report.Role &&
+		return msg.Type.Category == report.Role &&
 			msg.Type.Emphasis == false &&
 			msg.Text == r.Name()+":"+"start"
 	}
 	titleFilter := func(msg report.Message) bool {
-		return msg.Type.Severity == report.Title &&
+		return msg.Type.Category == report.Title &&
 			msg.Type.Emphasis == false &&
 			msg.Text == "Starting with "+r.LongName()
 	}
@@ -396,12 +396,12 @@ func Test_notify_role_ending(t *testing.T) {
 	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
 	r := role.Navigator{}
 	roleFilter := func(msg report.Message) bool {
-		return msg.Type.Severity == report.Role &&
+		return msg.Type.Category == report.Role &&
 			msg.Type.Emphasis == false &&
 			msg.Text == r.Name()+":"+"end"
 	}
 	titleFilter := func(msg report.Message) bool {
-		return msg.Type.Severity == report.Title &&
+		return msg.Type.Category == report.Title &&
 			msg.Type.Emphasis == false &&
 			msg.Text == "Ending "+r.LongName()
 	}

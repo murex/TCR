@@ -127,7 +127,7 @@ func Test_mob_turn_count_down(t *testing.T) {
 
 	expected := []struct {
 		text     string
-		severity report.Severity
+		category report.Category
 		emphasis bool
 	}{
 		{"start:2:0:2", report.TimerEvent, true},
@@ -139,7 +139,7 @@ func Test_mob_turn_count_down(t *testing.T) {
 	assert.Equal(t, len(expected), sniffer.GetMatchCount())
 	for i, e := range expected {
 		msg := sniffer.GetAllMatches()[i]
-		assert.Equal(t, report.MessageType{Severity: e.severity, Emphasis: e.emphasis}, msg.Type)
+		assert.Equal(t, report.MessageType{Category: e.category, Emphasis: e.emphasis}, msg.Type)
 		assert.Equal(t, e.text, msg.Text)
 	}
 }
