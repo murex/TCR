@@ -184,23 +184,13 @@ func (webUIServer *WebUIServer) ShowRunningMode(mode runmode.RunMode) {
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (webUIServer *WebUIServer) NotifyRoleStarting(r role.Role) {
-	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
-		// ReportRole call is used for role changing trigger message
-		w.ReportRole(false, r.Name(), ":", "start")
-		// ReportTitle is used for console trace
-		w.ReportTitle(false, "Starting with ", r.LongName())
-	})
+func (*WebUIServer) NotifyRoleStarting(_ role.Role) {
+	// TODO remove
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (webUIServer *WebUIServer) NotifyRoleEnding(r role.Role) {
-	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
-		// ReportRole call is used for role changing trigger message
-		w.ReportRole(false, r.Name(), ":", "end")
-		// ReportTitle is used for console trace
-		w.ReportTitle(false, "Ending ", r.LongName())
-	})
+func (*WebUIServer) NotifyRoleEnding(_ role.Role) {
+	// TODO remove
 }
 
 // ShowSessionInfo shows main information related to the current TCR session

@@ -20,39 +20,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package role
+package role_event
 
 import (
+	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func Test_get_all_roles(t *testing.T) {
+func Test_wrap_unwrap_message(t *testing.T) {
 	tests := []struct {
-		role Role
+		wrapped string
+		message Message
 	}{
-		{role: Driver{}},
-		{role: Navigator{}},
+		{
+			wrapped: "driver:start",
+			message: Message{Trigger: TriggerStart, Role: role.Driver{}},
+		},
+		{
+			wrapped: "navigator:start",
+			message: Message{Trigger: TriggerStart, Role: role.Navigator{}},
+		},
+		{
+			wrapped: "driver:end",
+			message: Message{Trigger: TriggerEnd, Role: role.Driver{}},
+		},
+		{
+			wrapped: "navigator:end",
+			message: Message{Trigger: TriggerEnd, Role: role.Navigator{}},
+		},
 	}
+
 	for _, test := range tests {
-		t.Run(test.role.Name(), func(t *testing.T) {
-			assert.Contains(t, All(), test.role)
+		t.Run(test.wrapped, func(t *testing.T) {
+			result := WrapMessage(test.message)
+			assert.Equal(t, test.wrapped, result)
+			assert.Equal(t, test.message, UnwrapMessage(result))
 		})
 	}
 }
 
-func Test_get_role_instance_from_name(t *testing.T) {
+func Test_message_emphasis(t *testing.T) {
 	tests := []struct {
-		name string
-		role Role
+		desc     string
+		message  Message
+		expected bool
 	}{
-		{name: "driver", role: Driver{}},
-		{name: "navigator", role: Navigator{}},
-		{name: "unknown", role: nil},
+		{
+			desc:     "start trigger",
+			message:  Message{Trigger: TriggerStart},
+			expected: false,
+		},
+		{
+			desc:     "end trigger",
+			message:  Message{Trigger: TriggerEnd},
+			expected: false,
+		},
 	}
+
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, test.role, FromName(test.name))
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, test.message.WithEmphasis())
 		})
 	}
 }

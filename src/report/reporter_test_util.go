@@ -105,9 +105,9 @@ func (sniffer *Sniffer) ReportError(emphasis bool, a ...any) {
 	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, a...))
 }
 
-// ReportRole reports role messages
-func (sniffer *Sniffer) ReportRole(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Role, emphasis}, a...))
+// ReportRoleEvent reports role event messages
+func (sniffer *Sniffer) ReportRoleEvent(emphasis bool, a ...any) {
+	sniffer.sniff(NewMessage(MessageType{RoleEvent, emphasis}, a...))
 }
 
 // ReportTimerEvent reports timer event messages

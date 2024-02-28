@@ -28,7 +28,6 @@ import (
 	"github.com/murex/tcr/http/ws"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -363,58 +362,4 @@ func Test_show_running_mode(t *testing.T) {
 
 	assert.Equal(t, 1, sniffer1.GetMatchCount())
 	assert.Equal(t, 1, sniffer2.GetMatchCount())
-}
-
-func Test_notify_role_starting(t *testing.T) {
-	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	r := role.Driver{}
-	roleFilter := func(msg report.Message) bool {
-		return msg.Type.Category == report.Role &&
-			msg.Type.Emphasis == false &&
-			msg.Text == r.Name()+":"+"start"
-	}
-	titleFilter := func(msg report.Message) bool {
-		return msg.Type.Category == report.Title &&
-			msg.Type.Emphasis == false &&
-			msg.Text == "Starting with "+r.LongName()
-	}
-	sniffer1 := report.NewSniffer(roleFilter, titleFilter)
-	sniffer2 := report.NewSniffer(roleFilter, titleFilter)
-	wuis.RegisterWebsocket(sniffer1)
-	wuis.RegisterWebsocket(sniffer2)
-
-	wuis.NotifyRoleStarting(r)
-
-	sniffer1.Stop()
-	sniffer2.Stop()
-
-	assert.Equal(t, 2, sniffer1.GetMatchCount())
-	assert.Equal(t, 2, sniffer2.GetMatchCount())
-}
-
-func Test_notify_role_ending(t *testing.T) {
-	wuis := New(*params.AParamSet(), engine.NewFakeTCREngine())
-	r := role.Navigator{}
-	roleFilter := func(msg report.Message) bool {
-		return msg.Type.Category == report.Role &&
-			msg.Type.Emphasis == false &&
-			msg.Text == r.Name()+":"+"end"
-	}
-	titleFilter := func(msg report.Message) bool {
-		return msg.Type.Category == report.Title &&
-			msg.Type.Emphasis == false &&
-			msg.Text == "Ending "+r.LongName()
-	}
-	sniffer1 := report.NewSniffer(roleFilter, titleFilter)
-	sniffer2 := report.NewSniffer(roleFilter, titleFilter)
-	wuis.RegisterWebsocket(sniffer1)
-	wuis.RegisterWebsocket(sniffer2)
-
-	wuis.NotifyRoleEnding(r)
-
-	sniffer1.Stop()
-	sniffer2.Stop()
-
-	assert.Equal(t, 2, sniffer1.GetMatchCount())
-	assert.Equal(t, 2, sniffer2.GetMatchCount())
 }

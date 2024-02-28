@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,4 +43,14 @@ var allRoles = []Role{Driver{}, Navigator{}}
 // All returns the list of existing roles in TCR
 func All() []Role {
 	return allRoles
+}
+
+// FromName returns a role instance based on its name
+func FromName(name string) Role {
+	for _, r := range allRoles {
+		if name == r.Name() {
+			return r
+		}
+	}
+	return nil
 }

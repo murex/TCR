@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/timer"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
@@ -104,13 +105,13 @@ func (term *TerminalUI) StopReporting() {
 }
 
 // NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (term *TerminalUI) NotifyRoleStarting(r role.Role) {
-	term.ReportRole(false, "Starting with ", r.LongName(), ". Press ? for options")
+func (*TerminalUI) NotifyRoleStarting(_ role.Role) {
+	// TODO remove
 }
 
 // NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (term *TerminalUI) NotifyRoleEnding(r role.Role) {
-	term.ReportRole(false, "Ending ", r.LongName())
+func (*TerminalUI) NotifyRoleEnding(_ role.Role) {
+	// TODO remove
 }
 
 // ReportSimple reports simple messages
@@ -129,9 +130,17 @@ func (*TerminalUI) ReportTitle(_ bool, a ...any) {
 	printInCyan(a...)
 }
 
-// ReportRole reports role messages
-func (*TerminalUI) ReportRole(_ bool, a ...any) {
-	printInYellow(a...)
+// ReportRoleEvent reports role event messages
+func (*TerminalUI) ReportRoleEvent(_ bool, a ...any) {
+	rem := role_event.UnwrapMessage(fmt.Sprint(a...))
+	var text string
+	switch rem.Trigger {
+	case role_event.TriggerStart:
+		text = fmt.Sprint("Starting with ", rem.Role.LongName(), ". Press ? for options")
+	case role_event.TriggerEnd:
+		text = fmt.Sprint("Ending ", rem.Role.LongName())
+	}
+	printInYellow(text)
 }
 
 // ReportTimerEvent reports timer event messages
@@ -151,7 +160,6 @@ func (term *TerminalUI) ReportTimerEvent(emphasis bool, a ...any) {
 		text = fmt.Sprint(timerMessagePrefix, "Stopping countdown after ",
 			timer.FormatDuration(tem.Elapsed))
 		printInGreen(text)
-
 	case timer.TriggerTimeout:
 		text = fmt.Sprint(timerMessagePrefix, "Time's up. Time to rotate! You are ",
 			timer.FormatDuration(tem.Remaining.Abs()), " over!")

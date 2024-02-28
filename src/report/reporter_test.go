@@ -24,6 +24,9 @@ package report
 
 import (
 	"fmt"
+	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -110,11 +113,6 @@ func Test_post_text_message_functions(t *testing.T) {
 			MessageType{Error, false},
 		},
 		{
-			"role message",
-			PostRole,
-			MessageType{Role, false},
-		},
-		{
 			"success message with emphasis",
 			PostSuccessWithEmphasis,
 			MessageType{Success, true},
@@ -151,9 +149,17 @@ func Test_post_event_message_functions(t *testing.T) {
 		expectedText string
 	}{
 		{
+			"role event message",
+			func() {
+				PostRoleEvent(string(role_event.TriggerStart), role.Navigator{})
+			},
+			MessageType{RoleEvent, false},
+			"navigator:start",
+		},
+		{
 			"timer event message",
 			func() {
-				PostTimerEvent("start", 0, 0, 0)
+				PostTimerEvent(string(timer.TriggerStart), 0, 0, 0)
 			},
 			MessageType{TimerEvent, true},
 			"start:0:0:0",
@@ -217,16 +223,6 @@ func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...any) {
 	stub.report(Title, emphasis, a...)
 }
 
-// ReportRole reports role event messages
-func (stub *messageReporterStub) ReportRole(emphasis bool, a ...any) {
-	stub.report(Role, emphasis, a...)
-}
-
-// ReportTimerEvent reports timer event messages
-func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, a ...any) {
-	stub.report(TimerEvent, emphasis, a...)
-}
-
 // ReportSuccess reports success messages
 func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...any) {
 	stub.report(Success, emphasis, a...)
@@ -240,4 +236,14 @@ func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...any) {
 // ReportError reports error messages
 func (stub *messageReporterStub) ReportError(emphasis bool, a ...any) {
 	stub.report(Error, emphasis, a...)
+}
+
+// ReportTimerEvent reports role event messages
+func (stub *messageReporterStub) ReportRoleEvent(emphasis bool, a ...any) {
+	stub.report(RoleEvent, emphasis, a...)
+}
+
+// ReportTimerEvent reports timer event messages
+func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, a ...any) {
+	stub.report(TimerEvent, emphasis, a...)
 }

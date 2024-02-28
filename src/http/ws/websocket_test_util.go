@@ -35,8 +35,5 @@ func NewFakeWebSocketWriter() FakeWebSocketWriter {
 
 // ReportTitle report title message fake
 func (FakeWebSocketWriter) ReportTitle(_ bool, _ ...any) {
-}
-
-// ReportRole report role message fake
-func (FakeWebSocketWriter) ReportRole(_ bool, _ ...any) {
+	// Stub
 }

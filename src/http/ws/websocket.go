@@ -38,7 +38,6 @@ import (
 // through a websocket connection
 type WebsocketWriter interface {
 	ReportTitle(emphasis bool, a ...any)
-	ReportRole(emphasis bool, a ...any)
 }
 
 // message is used to JSON-encode TCR report messages
@@ -123,8 +122,8 @@ func (r *MessageReporter) ReportTitle(emphasis bool, a ...any) {
 	r.write(newMessage(messageTypeTitle, messageSeverityNormal, emphasis, a...))
 }
 
-// ReportRole reports role event messages
-func (r *MessageReporter) ReportRole(emphasis bool, a ...any) {
+// ReportRoleEvent reports role event messages
+func (r *MessageReporter) ReportRoleEvent(emphasis bool, a ...any) {
 	r.write(newMessage(messageTypeRole, messageSeverityNormal, emphasis, a...))
 }
 

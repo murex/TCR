@@ -20,57 +20,46 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package ws
+package role_event //nolint:revive
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"fmt"
+	"github.com/murex/tcr/role"
+	"strings"
 )
 
-type fakeWebsocketWriter struct {
-	operationCount int
+// Trigger represents what triggers a role event
+type Trigger string
+
+// List of possible Trigger values
+const (
+	TriggerStart Trigger = "start"
+	TriggerEnd   Trigger = "end"
+)
+
+const separator = ":"
+
+// Message contains a role event information
+type Message struct {
+	Trigger Trigger
+	Role    role.Role
 }
 
-func newFakeWebsocketWriter() *fakeWebsocketWriter {
-	return &fakeWebsocketWriter{operationCount: 0}
+// WithEmphasis indicates whether the event message should be reported with emphasis flag
+func (Message) WithEmphasis() bool {
+	return false
 }
 
-func (f *fakeWebsocketWriter) ReportTitle(_ bool, _ ...any) {
-	f.operationCount++
+// WrapMessage wraps a role event Message into a string
+func WrapMessage(em Message) string {
+	return fmt.Sprint(em.Role.Name(), separator, em.Trigger)
 }
 
-func Test_connection_pool_registration(t *testing.T) {
-	cp := NewConnectionPool()
-	ws1 := newFakeWebsocketWriter()
-	ws2 := newFakeWebsocketWriter()
-
-	assert.Empty(t, *cp)
-
-	cp.Register(ws1)
-	assert.Len(t, *cp, 1)
-
-	cp.Register(ws2)
-	assert.Len(t, *cp, 2)
-
-	cp.Unregister(ws1)
-	assert.Len(t, *cp, 1)
-
-	cp.Unregister(ws2)
-	assert.Len(t, *cp, 0)
-}
-
-func Test_connection_pool_dispatch(t *testing.T) {
-	cp := NewConnectionPool()
-	ws1 := newFakeWebsocketWriter()
-	cp.Register(ws1)
-	ws2 := newFakeWebsocketWriter()
-	cp.Register(ws2)
-
-	assert.Equal(t, 0, ws1.operationCount)
-	assert.Equal(t, 0, ws2.operationCount)
-	cp.Dispatch(func(w WebsocketWriter) {
-		w.ReportTitle(false, "")
-	})
-	assert.Equal(t, 1, ws1.operationCount)
-	assert.Equal(t, 1, ws2.operationCount)
+// UnwrapMessage unwraps a role event message string into a role event Message instance
+func UnwrapMessage(message string) Message {
+	parts := strings.Split(message, separator)
+	return Message{
+		Role:    role.FromName(parts[0]),
+		Trigger: Trigger(parts[1]),
+	}
 }

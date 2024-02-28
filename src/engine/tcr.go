@@ -30,6 +30,7 @@ import (
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
@@ -396,7 +397,7 @@ func (tcr *TCREngine) RunAsDriver() {
 			// the goroutine waits until currenRole is reset
 			// prior to starting driver role
 			tcr.setCurrentRole(role.Driver{})
-			tcr.ui.NotifyRoleStarting(tcr.GetCurrentRole())
+			report.PostRoleEvent(string(role_event.TriggerStart), tcr.GetCurrentRole())
 			tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
 			tcr.startTimer()
 		},
@@ -412,7 +413,7 @@ func (tcr *TCREngine) RunAsDriver() {
 		},
 		func() {
 			tcr.stopTimer()
-			tcr.ui.NotifyRoleEnding(tcr.GetCurrentRole())
+			report.PostRoleEvent(string(role_event.TriggerEnd), tcr.GetCurrentRole())
 			tcr.resetCurrentRole()
 		},
 	)
@@ -430,7 +431,7 @@ func (tcr *TCREngine) RunAsNavigator() {
 			// the goroutine waits until currenRole is reset
 			// prior to starting navigator role
 			tcr.setCurrentRole(role.Navigator{})
-			tcr.ui.NotifyRoleStarting(tcr.GetCurrentRole())
+			report.PostRoleEvent(string(role_event.TriggerStart), tcr.GetCurrentRole())
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -443,7 +444,7 @@ func (tcr *TCREngine) RunAsNavigator() {
 			}
 		},
 		func() {
-			tcr.ui.NotifyRoleEnding(tcr.GetCurrentRole())
+			report.PostRoleEvent(string(role_event.TriggerEnd), tcr.GetCurrentRole())
 			tcr.resetCurrentRole()
 		},
 	)

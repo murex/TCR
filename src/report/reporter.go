@@ -25,7 +25,9 @@ package report
 import (
 	"fmt"
 	"github.com/imkira/go-observer"
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/role"
 	"sync"
 	"time"
 )
@@ -41,7 +43,7 @@ const (
 	Success
 	Warning
 	Error
-	Role
+	RoleEvent
 	TimerEvent
 )
 
@@ -53,7 +55,7 @@ type MessageReporter interface {
 	ReportSuccess(emphasis bool, a ...any)
 	ReportWarning(emphasis bool, a ...any)
 	ReportError(emphasis bool, a ...any)
-	ReportRole(emphasis bool, a ...any)
+	ReportRoleEvent(emphasis bool, a ...any)
 	ReportTimerEvent(emphasis bool, a ...any)
 }
 
@@ -122,7 +124,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		Success:    MessageReporter.ReportSuccess,
 		Warning:    MessageReporter.ReportWarning,
 		Error:      MessageReporter.ReportError,
-		Role:       MessageReporter.ReportRole,
+		RoleEvent:  MessageReporter.ReportRoleEvent,
 		TimerEvent: MessageReporter.ReportTimerEvent,
 	}
 	report[msg.Type.Category](reporter, msg.Type.Emphasis, msg.Text)
@@ -164,9 +166,14 @@ func PostError(a ...any) {
 	postMessage(MessageType{Category: Error}, a...)
 }
 
-// PostRole posts a role message
-func PostRole(a ...any) {
-	postMessage(MessageType{Category: Role, Emphasis: false}, a...)
+// PostRoleEvent posts a role event
+func PostRoleEvent(trigger string, r role.Role) {
+	msg := role_event.Message{
+		Trigger: role_event.Trigger(trigger),
+		Role:    r,
+	}
+	postMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()},
+		role_event.WrapMessage(msg))
 }
 
 // PostTimerEvent posts a timer event

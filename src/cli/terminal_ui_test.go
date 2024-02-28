@@ -27,6 +27,7 @@ import (
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/timer"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
@@ -203,58 +204,6 @@ func Test_terminal_tracing_methods(t *testing.T) {
 	}
 }
 
-func Test_notify_role_starting(t *testing.T) {
-	var testFlags = []struct {
-		currentRole role.Role
-		expected    string
-	}{
-		{
-			currentRole: role.Driver{},
-			expected:    asYellowTrace("Starting with Driver role. Press ? for options"),
-		},
-		{
-			currentRole: role.Navigator{},
-			expected:    asYellowTrace("Starting with Navigator role. Press ? for options"),
-		},
-	}
-
-	for _, tt := range testFlags {
-		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _, _ := terminalSetup(*params.AParamSet())
-			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term.NotifyRoleStarting(tt.currentRole)
-			}))
-			terminalTeardown(*term)
-		})
-	}
-}
-
-func Test_notify_role_ending(t *testing.T) {
-	var testFlags = []struct {
-		currentRole role.Role
-		expected    string
-	}{
-		{
-			currentRole: role.Driver{},
-			expected:    asYellowTrace("Ending Driver role"),
-		},
-		{
-			currentRole: role.Navigator{},
-			expected:    asYellowTrace("Ending Navigator role"),
-		},
-	}
-
-	for _, tt := range testFlags {
-		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _, _ := terminalSetup(*params.AParamSet())
-			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term.NotifyRoleEnding(tt.currentRole)
-			}))
-			terminalTeardown(*term)
-		})
-	}
-}
-
 func Test_list_role_menu_options(t *testing.T) {
 	title := "some title"
 	var testFlags = []struct {
@@ -395,9 +344,32 @@ func Test_terminal_reporting(t *testing.T) {
 			asNeutralTrace("Some text report"),
 		},
 		{
-			"PostRole method",
-			func() { report.PostRole("Some role report") },
-			asYellowTrace("Some role report"),
+			"PostRoleEvent method start driver",
+			func() {
+				report.PostRoleEvent(string(role_event.TriggerStart), role.Driver{})
+			},
+			asYellowTrace("Starting with Driver role. Press ? for options"),
+		},
+		{
+			"PostRoleEvent method start navigator",
+			func() {
+				report.PostRoleEvent(string(role_event.TriggerStart), role.Navigator{})
+			},
+			asYellowTrace("Starting with Navigator role. Press ? for options"),
+		},
+		{
+			"PostRoleEvent method end driver",
+			func() {
+				report.PostRoleEvent(string(role_event.TriggerEnd), role.Driver{})
+			},
+			asYellowTrace("Ending Driver role"),
+		},
+		{
+			"PostRoleEvent method end navigator",
+			func() {
+				report.PostRoleEvent(string(role_event.TriggerEnd), role.Navigator{})
+			},
+			asYellowTrace("Ending Navigator role"),
 		},
 		{
 			"PostTimerEvent method start",

@@ -26,7 +26,9 @@ import (
 	"context"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
 	"net"
 	"net/http"
@@ -108,9 +110,24 @@ func Test_websocket_report_messages(t *testing.T) {
 			expected: newMessage(messageTypeError, messageSeverityHigh, false, messageText),
 		},
 		{
-			desc:     "report.PostRole",
-			action:   func() { report.PostRole(messageText) },
-			expected: newMessage(messageTypeRole, messageSeverityNormal, false, messageText),
+			desc:     "report.PostRoleEvent navigator start",
+			action:   func() { report.PostRoleEvent(string(role_event.TriggerStart), role.Navigator{}) },
+			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:start"),
+		},
+		{
+			desc:     "report.PostRoleEvent driver start",
+			action:   func() { report.PostRoleEvent(string(role_event.TriggerStart), role.Driver{}) },
+			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:start"),
+		},
+		{
+			desc:     "report.PostRoleEvent navigator end",
+			action:   func() { report.PostRoleEvent(string(role_event.TriggerEnd), role.Navigator{}) },
+			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:end"),
+		},
+		{
+			desc:     "report.PostRoleEvent driver end",
+			action:   func() { report.PostRoleEvent(string(role_event.TriggerEnd), role.Driver{}) },
+			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:end"),
 		},
 		{
 			desc:     "report.PostTimerEvent start",
