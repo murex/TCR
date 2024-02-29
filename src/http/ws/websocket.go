@@ -34,12 +34,6 @@ import (
 	"time"
 )
 
-// WebsocketWriter provides the interface allowing to send messages
-// through a websocket connection
-type WebsocketWriter interface {
-	ReportTitle(emphasis bool, a ...any)
-}
-
 // message is used to JSON-encode TCR report messages
 type message struct {
 	Type      string `json:"type"`
@@ -96,12 +90,10 @@ func newMessageReporter(server tcrHTTPServer, conn *websocket.Conn) *MessageRepo
 }
 
 func (r *MessageReporter) startReporting() {
-	r.server.RegisterWebsocket(r)
 	r.reportingChannel = report.Subscribe(r)
 }
 
 func (r *MessageReporter) stopReporting() {
-	r.server.UnregisterWebsocket(r)
 	if r.reportingChannel != nil {
 		report.Unsubscribe(r.reportingChannel)
 	}

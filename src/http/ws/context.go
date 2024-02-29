@@ -33,8 +33,6 @@ type tcrHTTPServer = interface {
 	InDevMode() bool
 	GetServerAddress() string
 	GetWebsocketTimeout() time.Duration
-	RegisterWebsocket(r WebsocketWriter)
-	UnregisterWebsocket(r WebsocketWriter)
 }
 
 type serverContextKeyType string

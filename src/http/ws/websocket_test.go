@@ -64,14 +64,6 @@ func (s *fakeHTTPServer) GetWebsocketTimeout() time.Duration {
 	return 100 * time.Millisecond
 }
 
-// RegisterWebsocket register a new websocket connection to the server
-func (s *fakeHTTPServer) RegisterWebsocket(_ WebsocketWriter) {
-}
-
-// UnregisterWebsocket unregister a new websocket connection from the server
-func (s *fakeHTTPServer) UnregisterWebsocket(_ WebsocketWriter) {
-}
-
 func Test_websocket_report_messages(t *testing.T) {
 	const messageText = "hello from TCR!"
 	tests := []struct {

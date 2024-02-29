@@ -48,7 +48,6 @@ type WebUIServer struct {
 	router           *gin.Engine
 	httpServer       *http.Server
 	websocketTimeout time.Duration
-	websockets       *ws.ConnectionPool
 }
 
 // New creates a new instance of WebUIServer
@@ -61,7 +60,6 @@ func New(p params.Params, tcr engine.TCRInterface) *WebUIServer {
 		router:           nil,
 		httpServer:       nil,
 		websocketTimeout: 1 * time.Minute, // default timeout value
-		websockets:       ws.NewConnectionPool(),
 		params:           p,
 	}
 	tcr.AttachUI(&webUIServer, false)
@@ -165,21 +163,9 @@ func (webUIServer *WebUIServer) GetWebsocketTimeout() time.Duration {
 	return webUIServer.websocketTimeout
 }
 
-// RegisterWebsocket register a new websocket connection to the server
-func (webUIServer *WebUIServer) RegisterWebsocket(w ws.WebsocketWriter) {
-	webUIServer.websockets.Register(w)
-}
-
-// UnregisterWebsocket unregister a new websocket connection from the server
-func (webUIServer *WebUIServer) UnregisterWebsocket(w ws.WebsocketWriter) {
-	webUIServer.websockets.Unregister(w)
-}
-
 // ShowRunningMode shows the current running mode
-func (webUIServer *WebUIServer) ShowRunningMode(mode runmode.RunMode) {
-	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
-		w.ReportTitle(false, "Running in ", mode.Name(), " mode")
-	})
+func (*WebUIServer) ShowRunningMode(_ runmode.RunMode) {
+	// Not needed: Runmode query will be handled by the client through a GET request
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
