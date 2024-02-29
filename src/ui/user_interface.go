@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 )
 
@@ -32,8 +31,6 @@ import (
 type UserInterface interface {
 	Start()
 	ShowRunningMode(mode runmode.RunMode)
-	NotifyRoleStarting(r role.Role)
-	NotifyRoleEnding(r role.Role)
 	ShowSessionInfo()
 	Confirm(message string, def bool) bool
 	StartReporting()

@@ -104,16 +104,6 @@ func (term *TerminalUI) StopReporting() {
 	}
 }
 
-// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (*TerminalUI) NotifyRoleStarting(_ role.Role) {
-	// TODO remove
-}
-
-// NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (*TerminalUI) NotifyRoleEnding(_ role.Role) {
-	// TODO remove
-}
-
 // ReportSimple reports simple messages
 func (*TerminalUI) ReportSimple(_ bool, a ...any) {
 	printUntouched(a...)

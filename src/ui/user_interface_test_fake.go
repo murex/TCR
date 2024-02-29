@@ -25,7 +25,6 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 )
 
@@ -36,8 +35,6 @@ type Call string
 const (
 	CallStart                    Call = "start"
 	CallShowRunningMode          Call = "show-running-mode"
-	CallNotifyRoleStarting       Call = "notify-role-starting"
-	CallNotifyRoleEnding         Call = "notify-role-ending"
 	CallShowSessionInfo          Call = "show-session-info"
 	CallConfirm                  Call = "confirm"
 	CallStartReporting           Call = "start-reporting"
@@ -75,16 +72,6 @@ func (ui *FakeUI) Start() {
 // ShowRunningMode does nothing in FakeUI
 func (ui *FakeUI) ShowRunningMode(_ runmode.RunMode) {
 	ui.recordCall(CallShowRunningMode)
-}
-
-// NotifyRoleStarting does nothing in FakeUI
-func (ui *FakeUI) NotifyRoleStarting(_ role.Role) {
-	ui.recordCall(CallNotifyRoleStarting)
-}
-
-// NotifyRoleEnding does nothing in FakeUI
-func (ui *FakeUI) NotifyRoleEnding(_ role.Role) {
-	ui.recordCall(CallNotifyRoleEnding)
 }
 
 // ShowSessionInfo does nothing in FakeUI

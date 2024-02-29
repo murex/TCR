@@ -33,7 +33,6 @@ import (
 	"github.com/murex/tcr/http/ws"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"net/http"
 	"time"
@@ -181,16 +180,6 @@ func (webUIServer *WebUIServer) ShowRunningMode(mode runmode.RunMode) {
 	webUIServer.websockets.Dispatch(func(w ws.WebsocketWriter) {
 		w.ReportTitle(false, "Running in ", mode.Name(), " mode")
 	})
-}
-
-// NotifyRoleStarting tells the user that TCR engine is starting with the provided role
-func (*WebUIServer) NotifyRoleStarting(_ role.Role) {
-	// TODO remove
-}
-
-// NotifyRoleEnding tells the user that TCR engine is ending the provided role
-func (*WebUIServer) NotifyRoleEnding(_ role.Role) {
-	// TODO remove
 }
 
 // ShowSessionInfo shows main information related to the current TCR session

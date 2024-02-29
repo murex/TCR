@@ -73,16 +73,6 @@ func Test_multicasting_ui_messages(t *testing.T) {
 			CallShowRunningMode,
 		},
 		{
-			"notify role starting",
-			func() { multicaster.NotifyRoleStarting(nil) },
-			CallNotifyRoleStarting,
-		},
-		{
-			"notify role ending",
-			func() { multicaster.NotifyRoleEnding(nil) },
-			CallNotifyRoleEnding,
-		},
-		{
 			"show session info",
 			func() { multicaster.ShowSessionInfo() },
 			CallShowSessionInfo,

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,6 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 )
 
@@ -60,20 +59,6 @@ func (m *Multicaster) Start() {
 func (m *Multicaster) ShowRunningMode(mode runmode.RunMode) {
 	for _, u := range m.uiList {
 		u.ShowRunningMode(mode)
-	}
-}
-
-// NotifyRoleStarting sends NotifyRoleStarting message to all registered user interfaces
-func (m *Multicaster) NotifyRoleStarting(r role.Role) {
-	for _, u := range m.uiList {
-		u.NotifyRoleStarting(r)
-	}
-}
-
-// NotifyRoleEnding sends NotifyRoleEnding message to all registered user interfaces
-func (m *Multicaster) NotifyRoleEnding(r role.Role) {
-	for _, u := range m.uiList {
-		u.NotifyRoleEnding(r)
 	}
 }
 
