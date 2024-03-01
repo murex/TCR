@@ -49,14 +49,14 @@ const (
 
 // MessageReporter provides the interface that any message listener should implement
 type MessageReporter interface {
-	ReportSimple(emphasis bool, a ...any)
-	ReportInfo(emphasis bool, a ...any)
-	ReportTitle(emphasis bool, a ...any)
-	ReportSuccess(emphasis bool, a ...any)
-	ReportWarning(emphasis bool, a ...any)
-	ReportError(emphasis bool, a ...any)
-	ReportRoleEvent(emphasis bool, a ...any)
-	ReportTimerEvent(emphasis bool, a ...any)
+	ReportSimple(emphasis bool, payload text.Message)
+	ReportInfo(emphasis bool, payload text.Message)
+	ReportTitle(emphasis bool, payload text.Message)
+	ReportSuccess(emphasis bool, payload text.Message)
+	ReportWarning(emphasis bool, payload text.Message)
+	ReportError(emphasis bool, payload text.Message)
+	ReportRoleEvent(emphasis bool, payload role_event.Message)
+	ReportTimerEvent(emphasis bool, payload timer_event.Message)
 }
 
 // MessageType contains message characterization information
@@ -120,17 +120,24 @@ func Subscribe(reporter MessageReporter) chan bool {
 
 // reportMessage tells the reporter to report msg depending on its category
 func reportMessage(reporter MessageReporter, msg Message) {
-	report := map[Category]func(r MessageReporter, emphasis bool, a ...any){
-		Info:       MessageReporter.ReportInfo,
-		Normal:     MessageReporter.ReportSimple,
-		Title:      MessageReporter.ReportTitle,
-		Success:    MessageReporter.ReportSuccess,
-		Warning:    MessageReporter.ReportWarning,
-		Error:      MessageReporter.ReportError,
-		RoleEvent:  MessageReporter.ReportRoleEvent,
-		TimerEvent: MessageReporter.ReportTimerEvent,
+	switch msg.Type.Category {
+	case Info:
+		MessageReporter.ReportInfo(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case Normal:
+		MessageReporter.ReportSimple(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case Title:
+		MessageReporter.ReportTitle(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case Success:
+		MessageReporter.ReportSuccess(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case Warning:
+		MessageReporter.ReportWarning(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case Error:
+		MessageReporter.ReportError(reporter, msg.Type.Emphasis, msg.Payload.(text.Message))
+	case RoleEvent:
+		MessageReporter.ReportRoleEvent(reporter, msg.Type.Emphasis, msg.Payload.(role_event.Message))
+	case TimerEvent:
+		MessageReporter.ReportTimerEvent(reporter, msg.Type.Emphasis, msg.Payload.(timer_event.Message))
 	}
-	report[msg.Type.Category](reporter, msg.Type.Emphasis, msg.Payload)
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified
@@ -185,25 +192,20 @@ func PostErrorWithEmphasis(a ...any) {
 }
 
 // PostRoleEvent posts a role event
-func PostRoleEvent(trigger string, r role.Role) {
-	msg := role_event.Message{
-		Trigger: role_event.Trigger(trigger),
-		Role:    r,
-	}
-	// TODO - Temporary conversion to text message until we directly use role event message
-	postMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()}, text.New(msg.ToString()))
+func PostRoleEvent(trigger role_event.Trigger, r role.Role) {
+	msg := role_event.New(trigger, r)
+	postMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()}, msg)
 }
 
 // PostTimerEvent posts a timer event
-func PostTimerEvent(eventType string, timeout time.Duration, elapsed time.Duration, remaining time.Duration) {
-	msg := timer_event.Message{
-		Trigger:   timer_event.Trigger(eventType),
-		Timeout:   timeout,
-		Elapsed:   elapsed,
-		Remaining: remaining,
-	}
-	// TODO - Temporary conversion to text message until we directly use timer event message
-	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()}, text.New(msg.ToString()))
+func PostTimerEvent(
+	trigger timer_event.Trigger,
+	timeout time.Duration,
+	elapsed time.Duration,
+	remaining time.Duration,
+) {
+	msg := timer_event.New(trigger, timeout, elapsed, remaining)
+	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()}, msg)
 }
 
 func postMessage(msgType MessageType, payload MessagePayload) {

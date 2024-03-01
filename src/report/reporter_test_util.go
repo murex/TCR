@@ -25,7 +25,9 @@ SOFTWARE.
 package report
 
 import (
+	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/text"
+	"github.com/murex/tcr/report/timer_event"
 	"time"
 )
 
@@ -79,43 +81,43 @@ func (sniffer *Sniffer) sniff(msg Message) {
 }
 
 // ReportSimple reports simple messages
-func (sniffer *Sniffer) ReportSimple(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Normal, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportSimple(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Normal, emphasis}, payload))
 }
 
 // ReportInfo reports info messages
-func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportInfo(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, payload))
 }
 
 // ReportTitle reports title messages
-func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportTitle(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, payload))
 }
 
 // ReportSuccess reports warning messages
-func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportSuccess(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, payload))
 }
 
 // ReportWarning reports warning messages
-func (sniffer *Sniffer) ReportWarning(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Warning, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportWarning(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Warning, emphasis}, payload))
 }
 
 // ReportError reports error messages
-func (sniffer *Sniffer) ReportError(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportError(emphasis bool, payload text.Message) {
+	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, payload))
 }
 
 // ReportRoleEvent reports role event messages
-func (sniffer *Sniffer) ReportRoleEvent(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{RoleEvent, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportRoleEvent(emphasis bool, payload role_event.Message) {
+	sniffer.sniff(NewMessage(MessageType{RoleEvent, emphasis}, payload))
 }
 
 // ReportTimerEvent reports timer event messages
-func (sniffer *Sniffer) ReportTimerEvent(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{TimerEvent, emphasis}, text.New(a...)))
+func (sniffer *Sniffer) ReportTimerEvent(emphasis bool, payload timer_event.Message) {
+	sniffer.sniff(NewMessage(MessageType{TimerEvent, emphasis}, payload))
 }
 
 // Stop tells the sniffer to stop

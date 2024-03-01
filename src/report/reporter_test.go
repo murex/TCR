@@ -144,26 +144,34 @@ func Test_post_text_message_functions(t *testing.T) {
 
 func Test_post_event_message_functions(t *testing.T) {
 	testCases := []struct {
-		text         string
-		postFunction func()
-		expectedType MessageType
-		expectedText string
+		text            string
+		postFunction    func()
+		expectedType    MessageType
+		expectedPayload MessagePayload
 	}{
 		{
 			"role event message",
 			func() {
-				PostRoleEvent(string(role_event.TriggerStart), role.Navigator{})
+				PostRoleEvent(role_event.TriggerStart, role.Navigator{})
 			},
 			MessageType{RoleEvent, false},
-			"navigator:start",
+			role_event.Message{
+				Trigger: role_event.TriggerStart,
+				Role:    role.Navigator{},
+			},
 		},
 		{
 			"timer event message",
 			func() {
-				PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0)
+				PostTimerEvent(timer_event.TriggerCountdown, 3*time.Second, 2*time.Second, 1*time.Second)
 			},
 			MessageType{TimerEvent, true},
-			"start:0:0:0",
+			timer_event.Message{
+				Trigger:   timer_event.TriggerCountdown,
+				Timeout:   3 * time.Second,
+				Elapsed:   2 * time.Second,
+				Remaining: 1 * time.Second,
+			},
 		},
 	}
 
@@ -172,8 +180,7 @@ func Test_post_event_message_functions(t *testing.T) {
 			result := reportAndReceive(func() {
 				tt.postFunction()
 			})
-			// TODO replace with timer or role instance
-			assert.Equal(t, tt.expectedText, result.Payload.ToString())
+			assert.Equal(t, tt.expectedPayload, result.Payload)
 			assert.Equal(t, tt.expectedType, result.Type)
 			assert.NotZero(t, result.Timestamp)
 		})
@@ -211,41 +218,41 @@ func (stub *messageReporterStub) report(category Category, emphasis bool, payloa
 }
 
 // ReportSimple reports simple messages
-func (stub *messageReporterStub) ReportSimple(emphasis bool, a ...any) {
-	stub.report(Normal, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportSimple(emphasis bool, payload text.Message) {
+	stub.report(Normal, emphasis, payload)
 }
 
 // ReportInfo reports info messages
-func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...any) {
-	stub.report(Info, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportInfo(emphasis bool, payload text.Message) {
+	stub.report(Info, emphasis, payload)
 }
 
 // ReportTitle reports title messages
-func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...any) {
-	stub.report(Title, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportTitle(emphasis bool, payload text.Message) {
+	stub.report(Title, emphasis, payload)
 }
 
 // ReportSuccess reports success messages
-func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...any) {
-	stub.report(Success, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportSuccess(emphasis bool, payload text.Message) {
+	stub.report(Success, emphasis, payload)
 }
 
 // ReportWarning reports warning messages
-func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...any) {
-	stub.report(Warning, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportWarning(emphasis bool, payload text.Message) {
+	stub.report(Warning, emphasis, payload)
 }
 
 // ReportError reports error messages
-func (stub *messageReporterStub) ReportError(emphasis bool, a ...any) {
-	stub.report(Error, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportError(emphasis bool, payload text.Message) {
+	stub.report(Error, emphasis, payload)
 }
 
 // ReportTimerEvent reports role event messages
-func (stub *messageReporterStub) ReportRoleEvent(emphasis bool, a ...any) {
-	stub.report(RoleEvent, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportRoleEvent(emphasis bool, payload role_event.Message) {
+	stub.report(RoleEvent, emphasis, payload)
 }
 
 // ReportTimerEvent reports timer event messages
-func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, a ...any) {
-	stub.report(TimerEvent, emphasis, text.New(a...))
+func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, payload timer_event.Message) {
+	stub.report(TimerEvent, emphasis, payload)
 }

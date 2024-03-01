@@ -28,46 +28,26 @@ import (
 	"time"
 )
 
-func Test_wrap_unwrap_event_message(t *testing.T) {
+func Test_wrap_event_message(t *testing.T) {
 	tests := []struct {
 		message Message
 		wrapped string
 	}{
 		{
-			message: Message{
-				Trigger:   TriggerStart,
-				Timeout:   10 * time.Second,
-				Elapsed:   0 * time.Second,
-				Remaining: 10 * time.Second,
-			},
+			message: New(TriggerStart, 10*time.Second, 0*time.Second, 10*time.Second),
 			wrapped: "start:10:0:10",
 		},
 		{
-			message: Message{
-				Trigger:   TriggerCountdown,
-				Timeout:   10 * time.Second,
-				Elapsed:   1 * time.Second,
-				Remaining: 9 * time.Second,
-			},
+			message: New(TriggerCountdown, 10*time.Second, 1*time.Second, 9*time.Second),
 			wrapped: "countdown:10:1:9",
 		},
 		{
-			message: Message{
-				Trigger:   TriggerStop,
-				Timeout:   10 * time.Second,
-				Elapsed:   4 * time.Second,
-				Remaining: 0 * time.Second,
-			},
+			message: New(TriggerStop, 10*time.Second, 4*time.Second, 0*time.Second),
 			wrapped: "stop:10:4:0",
 		},
 		{
-			message: Message{
-				Trigger:   TriggerTimeout,
-				Timeout:   10 * time.Second,
-				Elapsed:   0 * time.Second,
-				Remaining: -5 * time.Second,
-			},
-			wrapped: "timeout:10:0:-5",
+			message: New(TriggerTimeout, 10*time.Second, 11*time.Second, -1*time.Second),
+			wrapped: "timeout:10:11:-1",
 		},
 	}
 
@@ -75,7 +55,6 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 		t.Run(test.wrapped, func(t *testing.T) {
 			str := test.message.ToString()
 			assert.Equal(t, test.wrapped, str)
-			assert.Equal(t, test.message, UnwrapMessage(str))
 		})
 	}
 }
@@ -88,27 +67,27 @@ func Test_event_message_emphasis(t *testing.T) {
 	}{
 		{
 			desc:     "start trigger",
-			message:  Message{Trigger: TriggerStart},
+			message:  New(TriggerStart, 10*time.Second, 0*time.Second, 10*time.Second),
 			expected: true,
 		},
 		{
 			desc:     "countdown trigger",
-			message:  Message{Trigger: TriggerCountdown},
+			message:  New(TriggerCountdown, 10*time.Second, 1*time.Second, 9*time.Second),
 			expected: true,
 		},
 		{
 			desc:     "stop trigger",
-			message:  Message{Trigger: TriggerStop},
+			message:  New(TriggerStop, 10*time.Second, 4*time.Second, 0*time.Second),
 			expected: true,
 		},
 		{
 			desc:     "first timeout trigger",
-			message:  Message{Trigger: TriggerTimeout, Remaining: 0},
+			message:  New(TriggerTimeout, 10*time.Second, 10*time.Second, 0*time.Second),
 			expected: true,
 		},
 		{
 			desc:     "later timeout trigger",
-			message:  Message{Trigger: TriggerTimeout, Remaining: -1},
+			message:  New(TriggerTimeout, 10*time.Second, 11*time.Second, -1*time.Second),
 			expected: false,
 		},
 	}

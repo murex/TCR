@@ -346,56 +346,56 @@ func Test_terminal_reporting(t *testing.T) {
 		{
 			"PostRoleEvent method start driver",
 			func() {
-				report.PostRoleEvent(string(role_event.TriggerStart), role.Driver{})
+				report.PostRoleEvent(role_event.TriggerStart, role.Driver{})
 			},
 			asYellowTrace("Starting with Driver role. Press ? for options"),
 		},
 		{
 			"PostRoleEvent method start navigator",
 			func() {
-				report.PostRoleEvent(string(role_event.TriggerStart), role.Navigator{})
+				report.PostRoleEvent(role_event.TriggerStart, role.Navigator{})
 			},
 			asYellowTrace("Starting with Navigator role. Press ? for options"),
 		},
 		{
 			"PostRoleEvent method end driver",
 			func() {
-				report.PostRoleEvent(string(role_event.TriggerEnd), role.Driver{})
+				report.PostRoleEvent(role_event.TriggerEnd, role.Driver{})
 			},
 			asYellowTrace("Ending Driver role"),
 		},
 		{
 			"PostRoleEvent method end navigator",
 			func() {
-				report.PostRoleEvent(string(role_event.TriggerEnd), role.Navigator{})
+				report.PostRoleEvent(role_event.TriggerEnd, role.Navigator{})
 			},
 			asYellowTrace("Ending Navigator role"),
 		},
 		{
 			"PostTimerEvent method start",
 			func() {
-				report.PostTimerEvent(string(timer_event.TriggerStart), 1*time.Minute, 0, 0)
+				report.PostTimerEvent(timer_event.TriggerStart, 1*time.Minute, 0, 0)
 			},
 			asGreenTrace("(Mob Timer) Starting 1m countdown"),
 		},
 		{
 			"PostTimerEvent method countdown",
 			func() {
-				report.PostTimerEvent(string(timer_event.TriggerCountdown), 0, 0, 1*time.Minute)
+				report.PostTimerEvent(timer_event.TriggerCountdown, 0, 0, 1*time.Minute)
 			},
 			asGreenTrace("(Mob Timer) Your turn ends in 1m"),
 		},
 		{
 			"PostTimerEvent method stop",
 			func() {
-				report.PostTimerEvent(string(timer_event.TriggerStop), 0, 1*time.Minute, 0)
+				report.PostTimerEvent(timer_event.TriggerStop, 0, 1*time.Minute, 0)
 			},
 			asGreenTrace("(Mob Timer) Stopping countdown after 1m"),
 		},
 		{
 			"PostTimerEvent method timeout",
 			func() {
-				report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, 1*time.Minute)
+				report.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, 1*time.Minute)
 			},
 			asYellowTrace("(Mob Timer) Time's up. Time to rotate! You are 1m over!"),
 		},
@@ -443,7 +443,7 @@ func Test_terminal_notification_box_title(t *testing.T) {
 		{
 			"timer with emphasis",
 			func(_ ...any) {
-				report.PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0)
+				report.PostTimerEvent(timer_event.TriggerStart, 0, 0, 0)
 			},
 			"⏳ TCR",
 		},
@@ -488,7 +488,7 @@ func Test_show_session_info(t *testing.T) {
 	}))
 }
 
-func Test_report_vcs_info(t *testing.T) {
+func Test_print_vcs_info(t *testing.T) {
 	tests := []struct {
 		desc     string
 		info     engine.SessionInfo
@@ -524,14 +524,14 @@ func Test_report_vcs_info(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
 				term, _, _ := terminalSetup(*params.AParamSet())
-				term.reportVCSInfo(test.info)
+				term.printVCSInfo(test.info)
 				terminalTeardown(*term)
 			}))
 		})
 	}
 }
 
-func Test_report_commit_message_suffix(t *testing.T) {
+func Test_print_commit_message_suffix(t *testing.T) {
 	tests := []struct {
 		desc     string
 		suffix   string
@@ -557,7 +557,7 @@ func Test_report_commit_message_suffix(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
 				term, _, _ := terminalSetup(*params.AParamSet())
-				term.reportMessageSuffix(test.suffix)
+				term.printMessageSuffix(test.suffix)
 				terminalTeardown(*term)
 			}))
 		})

@@ -27,6 +27,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/text"
+	"github.com/murex/tcr/report/timer_event"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -100,43 +103,43 @@ func (r *MessageReporter) stopReporting() {
 }
 
 // ReportSimple reports simple messages
-func (r *MessageReporter) ReportSimple(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeSimple, messageSeverityNormal, emphasis, a...))
+func (r *MessageReporter) ReportSimple(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeSimple, messageSeverityNormal, emphasis, payload.ToString()))
 }
 
 // ReportInfo reports info messages
-func (r *MessageReporter) ReportInfo(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeInfo, messageSeverityNormal, emphasis, a...))
+func (r *MessageReporter) ReportInfo(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeInfo, messageSeverityNormal, emphasis, payload.ToString()))
 }
 
 // ReportTitle reports title messages
-func (r *MessageReporter) ReportTitle(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeTitle, messageSeverityNormal, emphasis, a...))
-}
-
-// ReportRoleEvent reports role event messages
-func (r *MessageReporter) ReportRoleEvent(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeRole, messageSeverityNormal, emphasis, a...))
-}
-
-// ReportTimerEvent reports timer event messages
-func (r *MessageReporter) ReportTimerEvent(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeTimer, messageSeverityNormal, emphasis, a...))
+func (r *MessageReporter) ReportTitle(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeTitle, messageSeverityNormal, emphasis, payload.ToString()))
 }
 
 // ReportSuccess reports success messages
-func (r *MessageReporter) ReportSuccess(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeSuccess, messageSeverityNormal, emphasis, a...))
+func (r *MessageReporter) ReportSuccess(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeSuccess, messageSeverityNormal, emphasis, payload.ToString()))
 }
 
 // ReportWarning reports warning messages
-func (r *MessageReporter) ReportWarning(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeWarning, messageSeverityLow, emphasis, a...))
+func (r *MessageReporter) ReportWarning(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeWarning, messageSeverityLow, emphasis, payload.ToString()))
 }
 
 // ReportError reports error messages
-func (r *MessageReporter) ReportError(emphasis bool, a ...any) {
-	r.write(newMessage(messageTypeError, messageSeverityHigh, emphasis, a...))
+func (r *MessageReporter) ReportError(emphasis bool, payload text.Message) {
+	r.write(newMessage(messageTypeError, messageSeverityHigh, emphasis, payload.ToString()))
+}
+
+// ReportRoleEvent reports role event messages
+func (r *MessageReporter) ReportRoleEvent(emphasis bool, payload role_event.Message) {
+	r.write(newMessage(messageTypeRole, messageSeverityNormal, emphasis, payload.ToString()))
+}
+
+// ReportTimerEvent reports timer event messages
+func (r *MessageReporter) ReportTimerEvent(emphasis bool, payload timer_event.Message) {
+	r.write(newMessage(messageTypeTimer, messageSeverityNormal, emphasis, payload.ToString()))
 }
 
 func (r *MessageReporter) write(msg message) {

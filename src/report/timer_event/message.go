@@ -24,8 +24,6 @@ package timer_event //nolint:revive
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -50,6 +48,11 @@ type Message struct {
 	Remaining time.Duration
 }
 
+// New creates a new timer event message
+func New(trigger Trigger, timeout time.Duration, elapsed time.Duration, remaining time.Duration) Message {
+	return Message{Trigger: trigger, Timeout: timeout, Elapsed: elapsed, Remaining: remaining}
+}
+
 // ToString returns the string representation of the message
 func (m Message) ToString() string {
 	return fmt.Sprint(
@@ -57,20 +60,6 @@ func (m Message) ToString() string {
 		separator, int(m.Timeout.Seconds()),
 		separator, int(m.Elapsed.Seconds()),
 		separator, int(m.Remaining.Seconds()))
-}
-
-// UnwrapMessage unwraps a timer event message string into a Message instance
-func UnwrapMessage(str string) Message {
-	parts := strings.Split(str, separator)
-	timeout, _ := strconv.Atoi(parts[1])
-	elapsed, _ := strconv.Atoi(parts[2])
-	remaining, _ := strconv.Atoi(parts[3])
-	return Message{
-		Trigger:   Trigger(parts[0]),
-		Timeout:   time.Duration(timeout) * time.Second,
-		Elapsed:   time.Duration(elapsed) * time.Second,
-		Remaining: time.Duration(remaining) * time.Second,
-	}
 }
 
 // WithEmphasis indicates whether the message should be reported with emphasis flag

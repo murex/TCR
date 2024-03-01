@@ -59,7 +59,7 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 }
 
 func reportTimerEvent(ctx ReminderContext, trigger timer_event.Trigger, timeout time.Duration) {
-	report.PostTimerEvent(string(trigger), timeout, ctx.elapsed, ctx.remaining)
+	report.PostTimerEvent(trigger, timeout, ctx.elapsed, ctx.remaining)
 }
 
 func findBestTickPeriodFor(timeout time.Duration) time.Duration {

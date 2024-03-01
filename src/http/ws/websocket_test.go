@@ -103,47 +103,47 @@ func Test_websocket_report_messages(t *testing.T) {
 		},
 		{
 			desc:     "report.PostRoleEvent navigator start",
-			action:   func() { report.PostRoleEvent(string(role_event.TriggerStart), role.Navigator{}) },
+			action:   func() { report.PostRoleEvent(role_event.TriggerStart, role.Navigator{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:start"),
 		},
 		{
 			desc:     "report.PostRoleEvent driver start",
-			action:   func() { report.PostRoleEvent(string(role_event.TriggerStart), role.Driver{}) },
+			action:   func() { report.PostRoleEvent(role_event.TriggerStart, role.Driver{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:start"),
 		},
 		{
 			desc:     "report.PostRoleEvent navigator end",
-			action:   func() { report.PostRoleEvent(string(role_event.TriggerEnd), role.Navigator{}) },
+			action:   func() { report.PostRoleEvent(role_event.TriggerEnd, role.Navigator{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:end"),
 		},
 		{
 			desc:     "report.PostRoleEvent driver end",
-			action:   func() { report.PostRoleEvent(string(role_event.TriggerEnd), role.Driver{}) },
+			action:   func() { report.PostRoleEvent(role_event.TriggerEnd, role.Driver{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:end"),
 		},
 		{
 			desc:     "report.PostTimerEvent start",
-			action:   func() { report.PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(timer_event.TriggerStart, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "start:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent countdown",
-			action:   func() { report.PostTimerEvent(string(timer_event.TriggerCountdown), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(timer_event.TriggerCountdown, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "countdown:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent stop",
-			action:   func() { report.PostTimerEvent(string(timer_event.TriggerStop), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(timer_event.TriggerStop, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "stop:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent first timeout",
-			action:   func() { report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "timeout:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent second timeout",
-			action:   func() { report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, -1*time.Second) },
+			action:   func() { report.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, -1*time.Second) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, false, "timeout:0:0:-1"),
 		},
 		{

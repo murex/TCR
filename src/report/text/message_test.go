@@ -27,7 +27,7 @@ import (
 	"testing"
 )
 
-func Test_wrap_unwrap_message(t *testing.T) {
+func Test_wrap_message(t *testing.T) {
 	tests := []struct {
 		message Message
 		wrapped string
@@ -50,7 +50,6 @@ func Test_wrap_unwrap_message(t *testing.T) {
 		t.Run(test.wrapped, func(t *testing.T) {
 			str := test.message.ToString()
 			assert.Equal(t, test.wrapped, str)
-			assert.Equal(t, test.message, UnwrapMessage(str))
 		})
 	}
 }

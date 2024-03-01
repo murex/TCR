@@ -28,25 +28,25 @@ import (
 	"testing"
 )
 
-func Test_wrap_unwrap_message(t *testing.T) {
+func Test_wrap_message(t *testing.T) {
 	tests := []struct {
 		message Message
 		wrapped string
 	}{
 		{
-			message: Message{Trigger: TriggerStart, Role: role.Driver{}},
+			message: New(TriggerStart, role.Driver{}),
 			wrapped: "driver:start",
 		},
 		{
-			message: Message{Trigger: TriggerStart, Role: role.Navigator{}},
+			message: New(TriggerStart, role.Navigator{}),
 			wrapped: "navigator:start",
 		},
 		{
-			message: Message{Trigger: TriggerEnd, Role: role.Driver{}},
+			message: New(TriggerEnd, role.Driver{}),
 			wrapped: "driver:end",
 		},
 		{
-			message: Message{Trigger: TriggerEnd, Role: role.Navigator{}},
+			message: New(TriggerEnd, role.Navigator{}),
 			wrapped: "navigator:end",
 		},
 	}
@@ -55,7 +55,6 @@ func Test_wrap_unwrap_message(t *testing.T) {
 		t.Run(test.wrapped, func(t *testing.T) {
 			str := test.message.ToString()
 			assert.Equal(t, test.wrapped, str)
-			assert.Equal(t, test.message, UnwrapMessage(str))
 		})
 	}
 }
@@ -68,12 +67,12 @@ func Test_message_emphasis(t *testing.T) {
 	}{
 		{
 			desc:     "start trigger",
-			message:  Message{Trigger: TriggerStart},
+			message:  New(TriggerStart, role.Driver{}),
 			expected: false,
 		},
 		{
 			desc:     "end trigger",
-			message:  Message{Trigger: TriggerEnd},
+			message:  New(TriggerEnd, role.Driver{}),
 			expected: false,
 		},
 	}

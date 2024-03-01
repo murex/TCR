@@ -29,6 +29,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
@@ -105,82 +106,117 @@ func (term *TerminalUI) StopReporting() {
 }
 
 // ReportSimple reports simple messages
-func (*TerminalUI) ReportSimple(_ bool, a ...any) {
-	printUntouched(a...)
+func (*TerminalUI) ReportSimple(_ bool, payload text.Message) {
+	printUntouched(payload.ToString())
 }
 
 // ReportInfo reports info messages
-func (*TerminalUI) ReportInfo(_ bool, a ...any) {
-	printInCyan(a...)
+func (term *TerminalUI) ReportInfo(_ bool, payload text.Message) {
+	term.printInfo(payload.ToString())
 }
 
 // ReportTitle reports title messages
-func (*TerminalUI) ReportTitle(_ bool, a ...any) {
+func (term *TerminalUI) ReportTitle(_ bool, payload text.Message) {
+	term.printTitle(payload.ToString())
+}
+
+// ReportSuccess reports success messages
+func (term *TerminalUI) ReportSuccess(emphasis bool, payload text.Message) {
+	txt := payload.ToString()
+	term.printSuccess(txt)
+	term.notifyOnEmphasis(emphasis, "🟢", txt)
+}
+
+// ReportWarning reports warning messages
+func (term *TerminalUI) ReportWarning(emphasis bool, payload text.Message) {
+	txt := payload.ToString()
+	term.printWarning(txt)
+	term.notifyOnEmphasis(emphasis, "🔶", txt)
+}
+
+// ReportError reports error messages
+func (term *TerminalUI) ReportError(emphasis bool, payload text.Message) {
+	txt := payload.ToString()
+	term.printError(txt)
+	term.notifyOnEmphasis(emphasis, "🟥", txt)
+}
+
+// ReportRoleEvent reports role event messages
+func (term *TerminalUI) ReportRoleEvent(_ bool, payload role_event.Message) {
+	switch payload.Trigger {
+	case role_event.TriggerStart:
+		term.printRoleEvent("Starting with ", payload.Role.LongName(), ". Press ? for options")
+	case role_event.TriggerEnd:
+		term.printRoleEvent("Ending ", payload.Role.LongName())
+	}
+}
+
+// ReportTimerEvent reports timer event messages
+func (term *TerminalUI) ReportTimerEvent(emphasis bool, payload timer_event.Message) {
+	var txt string
+	switch payload.Trigger {
+	case timer_event.TriggerStart:
+		txt = fmt.Sprint(timerMessagePrefix, "Starting ",
+			timer_event.FormatDuration(payload.Timeout), " countdown")
+	case timer_event.TriggerCountdown:
+		txt = fmt.Sprint(timerMessagePrefix, "Your turn ends in ",
+			timer_event.FormatDuration(payload.Remaining))
+	case timer_event.TriggerStop:
+		txt = fmt.Sprint(timerMessagePrefix, "Stopping countdown after ",
+			timer_event.FormatDuration(payload.Elapsed))
+	case timer_event.TriggerTimeout:
+		txt = fmt.Sprint(timerMessagePrefix, "Time's up. Time to rotate! You are ",
+			timer_event.FormatDuration(payload.Remaining.Abs()), " over!")
+	}
+	term.printTimerEvent(payload.Trigger == timer_event.TriggerTimeout, txt)
+	term.notifyOnEmphasis(emphasis, "⏳", txt)
+}
+
+// printTitle prints title messages locally in the terminal
+func (*TerminalUI) printTitle(a ...any) {
 	printHorizontalLine()
 	printInCyan(a...)
 }
 
-// ReportRoleEvent reports role event messages
-func (*TerminalUI) ReportRoleEvent(_ bool, a ...any) {
-	rem := role_event.UnwrapMessage(fmt.Sprint(a...))
-	var text string
-	switch rem.Trigger {
-	case role_event.TriggerStart:
-		text = fmt.Sprint("Starting with ", rem.Role.LongName(), ". Press ? for options")
-	case role_event.TriggerEnd:
-		text = fmt.Sprint("Ending ", rem.Role.LongName())
-	}
-	printInYellow(text)
+// printInfo prints info messages locally in the terminal
+func (*TerminalUI) printInfo(a ...any) {
+	printInCyan(a...)
 }
 
-// ReportTimerEvent reports timer event messages
-func (term *TerminalUI) ReportTimerEvent(emphasis bool, a ...any) {
-	tem := timer_event.UnwrapMessage(fmt.Sprint(a...))
-	var text string
-	switch tem.Trigger {
-	case timer_event.TriggerStart:
-		text = fmt.Sprint(timerMessagePrefix, "Starting ",
-			timer_event.FormatDuration(tem.Timeout), " countdown")
-		printInGreen(text)
-	case timer_event.TriggerCountdown:
-		text = fmt.Sprint(timerMessagePrefix, "Your turn ends in ",
-			timer_event.FormatDuration(tem.Remaining))
-		printInGreen(text)
-	case timer_event.TriggerStop:
-		text = fmt.Sprint(timerMessagePrefix, "Stopping countdown after ",
-			timer_event.FormatDuration(tem.Elapsed))
-		printInGreen(text)
-	case timer_event.TriggerTimeout:
-		text = fmt.Sprint(timerMessagePrefix, "Time's up. Time to rotate! You are ",
-			timer_event.FormatDuration(tem.Remaining.Abs()), " over!")
-		printInYellow(text)
-	}
-	term.notifyOnEmphasis(emphasis, "⏳", text)
-}
-
-// ReportSuccess reports success messages
-func (term *TerminalUI) ReportSuccess(emphasis bool, a ...any) {
+// printSuccess prints info messages locally in the terminal
+func (*TerminalUI) printSuccess(a ...any) {
 	printInGreen(a...)
-	term.notifyOnEmphasis(emphasis, "🟢", a...)
 }
 
-// ReportWarning reports warning messages
-func (term *TerminalUI) ReportWarning(emphasis bool, a ...any) {
+// printWarning prints warning messages locally in the terminal
+func (*TerminalUI) printWarning(a ...any) {
 	printInYellow(a...)
-	term.notifyOnEmphasis(emphasis, "🔶", a...)
 }
 
-// ReportError reports error messages
-func (term *TerminalUI) ReportError(emphasis bool, a ...any) {
+// printError prints error messages locally in the terminal
+func (*TerminalUI) printError(a ...any) {
 	printInRed(a...)
-	term.notifyOnEmphasis(emphasis, "🟥", a...)
+}
+
+// printRoleEvent prints role event messages locally in the terminal
+func (*TerminalUI) printRoleEvent(a ...any) {
+	printInYellow(a...)
+}
+
+// printTimerEvent prints timer event messages locally in the terminal
+func (*TerminalUI) printTimerEvent(timeout bool, a ...any) {
+	if timeout {
+		printInYellow(a...)
+	} else {
+		printInGreen(a...)
+	}
 }
 
 func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...any) {
 	if emphasis {
 		err := term.desktop.ShowNotification(desktop.NormalLevel, emoji+" "+settings.ApplicationName, fmt.Sprint(a...))
 		if err != nil {
-			term.ReportWarning(false, "Failed to show desktop notification: ", err.Error())
+			term.printWarning("Failed to show desktop notification: ", err.Error())
 		}
 	}
 }
@@ -193,7 +229,7 @@ func (term *TerminalUI) enterMainMenu() {
 func (term *TerminalUI) enterRole(r role.Role) {
 	// We ask first TCR engine to start...
 	if err := term.runTCR(r); err != nil {
-		term.ReportError(false, err)
+		term.printError(err.Error())
 		return
 	}
 	// Then we enter the role menu loop, waiting for user input
@@ -230,7 +266,7 @@ func (term *TerminalUI) readKeyboardInput() byte {
 	keyboardInput := make([]byte, 1)
 	_, err := os.Stdin.Read(keyboardInput)
 	if err != nil {
-		term.ReportWarning(false, "Something went wrong while reading from stdin: ", err)
+		term.printWarning("Something went wrong while reading from stdin: ", err)
 	}
 	return keyboardInput[0]
 }
@@ -263,39 +299,39 @@ func (term *TerminalUI) showTimerStatus() {
 
 // ShowRunningMode shows the current running mode
 func (term *TerminalUI) ShowRunningMode(mode runmode.RunMode) {
-	term.ReportTitle(false, "Running in ", mode.Name(), " mode")
+	term.printTitle("Running in ", mode.Name(), " mode")
 }
 
 // ShowSessionInfo shows main information related to the current TCR session
 func (term *TerminalUI) ShowSessionInfo() {
 	info := term.tcr.GetSessionInfo()
-	term.ReportTitle(false, "Base Directory: ", info.BaseDir)
-	term.ReportInfo(false, "Work Directory: ", info.WorkDir)
-	term.ReportInfo(false, "Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
-	term.reportVCSInfo(info)
-	term.reportMessageSuffix(info.MessageSuffix)
+	term.printTitle("Base Directory: ", info.BaseDir)
+	term.printInfo("Work Directory: ", info.WorkDir)
+	term.printInfo("Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
+	term.printVCSInfo(info)
+	term.printMessageSuffix(info.MessageSuffix)
 }
 
-func (term *TerminalUI) reportVCSInfo(info engine.SessionInfo) {
+func (term *TerminalUI) printVCSInfo(info engine.SessionInfo) {
 	switch info.VCSName {
 	case git.Name:
 		autoPush := "disabled"
 		if info.GitAutoPush {
 			autoPush = "enabled"
 		}
-		term.ReportInfo(false, "Running on ", info.VCSSessionSummary, " with auto-push ", autoPush)
+		term.printInfo("Running on ", info.VCSSessionSummary, " with auto-push ", autoPush)
 	case p4.Name:
-		term.ReportInfo(false, "Running with ", info.VCSSessionSummary)
+		term.printInfo("Running with ", info.VCSSessionSummary)
 	default:
-		term.ReportWarning(false, "VCS \"", info.VCSName, "\" is unknown")
+		term.printWarning("VCS \"", info.VCSName, "\" is unknown")
 	}
 }
 
-func (term *TerminalUI) reportMessageSuffix(suffix string) {
+func (term *TerminalUI) printMessageSuffix(suffix string) {
 	if suffix == "" {
 		return
 	}
-	term.ReportInfo(false, "Commit message suffix: \"", suffix, "\"")
+	term.printInfo("Commit message suffix: \"", suffix, "\"")
 }
 
 // Confirm asks the user for confirmation
@@ -303,8 +339,8 @@ func (term *TerminalUI) Confirm(message string, defaultAnswer bool) bool {
 	_ = SetRaw()
 	defer Restore()
 
-	term.ReportWarning(false, message)
-	term.ReportWarning(false, "Do you want to proceed? ", yesOrNoAdvice(defaultAnswer))
+	term.printWarning(message)
+	term.printWarning("Do you want to proceed? ", yesOrNoAdvice(defaultAnswer))
 
 	keyboardInput := make([]byte, 1)
 	for {
@@ -367,14 +403,14 @@ func (term *TerminalUI) Start() {
 		term.tcr.PrintStats(term.params)
 		term.tcr.Quit()
 	default:
-		term.ReportError(false, "Unknown run mode: ", term.params.Mode)
+		term.printError("Unknown run mode: ", term.params.Mode)
 	}
 }
 
 func (term *TerminalUI) listMenuOptions(m *menu, title string) {
-	term.ReportTitle(false, title)
+	term.printTitle(title)
 	for _, option := range m.getOptions() {
-		term.ReportInfo(false, (*option).toString())
+		term.printInfo((*option).toString())
 	}
 }
 

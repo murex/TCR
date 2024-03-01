@@ -36,8 +36,3 @@ func New(a ...any) Message {
 func (m Message) ToString() string {
 	return string(m)
 }
-
-// UnwrapMessage unwraps a text message string into a Message instance
-func UnwrapMessage(str string) Message {
-	return Message(str)
-}
