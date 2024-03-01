@@ -28,7 +28,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/vcs/git"
@@ -374,28 +374,28 @@ func Test_terminal_reporting(t *testing.T) {
 		{
 			"PostTimerEvent method start",
 			func() {
-				report.PostTimerEvent(string(timer.TriggerStart), 1*time.Minute, 0, 0)
+				report.PostTimerEvent(string(timer_event.TriggerStart), 1*time.Minute, 0, 0)
 			},
 			asGreenTrace("(Mob Timer) Starting 1m countdown"),
 		},
 		{
 			"PostTimerEvent method countdown",
 			func() {
-				report.PostTimerEvent(string(timer.TriggerCountdown), 0, 0, 1*time.Minute)
+				report.PostTimerEvent(string(timer_event.TriggerCountdown), 0, 0, 1*time.Minute)
 			},
 			asGreenTrace("(Mob Timer) Your turn ends in 1m"),
 		},
 		{
 			"PostTimerEvent method stop",
 			func() {
-				report.PostTimerEvent(string(timer.TriggerStop), 0, 1*time.Minute, 0)
+				report.PostTimerEvent(string(timer_event.TriggerStop), 0, 1*time.Minute, 0)
 			},
 			asGreenTrace("(Mob Timer) Stopping countdown after 1m"),
 		},
 		{
 			"PostTimerEvent method timeout",
 			func() {
-				report.PostTimerEvent(string(timer.TriggerTimeout), 0, 0, 1*time.Minute)
+				report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, 1*time.Minute)
 			},
 			asYellowTrace("(Mob Timer) Time's up. Time to rotate! You are 1m over!"),
 		},
@@ -443,7 +443,7 @@ func Test_terminal_notification_box_title(t *testing.T) {
 		{
 			"timer with emphasis",
 			func(_ ...any) {
-				report.PostTimerEvent(string(timer.TriggerStart), 0, 0, 0)
+				report.PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0)
 			},
 			"⏳ TCR",
 		},

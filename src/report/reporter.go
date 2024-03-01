@@ -26,7 +26,7 @@ import (
 	"fmt"
 	"github.com/imkira/go-observer"
 	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"sync"
 	"time"
@@ -178,14 +178,14 @@ func PostRoleEvent(trigger string, r role.Role) {
 
 // PostTimerEvent posts a timer event
 func PostTimerEvent(eventType string, timeout time.Duration, elapsed time.Duration, remaining time.Duration) {
-	msg := timer.EventMessage{
-		Trigger:   timer.EventTrigger(eventType),
+	msg := timer_event.Message{
+		Trigger:   timer_event.Trigger(eventType),
 		Timeout:   timeout,
 		Elapsed:   elapsed,
 		Remaining: remaining,
 	}
 	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()},
-		timer.WrapEventMessage(msg))
+		timer_event.WrapMessage(msg))
 }
 
 // PostSuccessWithEmphasis posts a success message for reporting

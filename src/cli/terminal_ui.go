@@ -29,7 +29,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
@@ -135,24 +135,24 @@ func (*TerminalUI) ReportRoleEvent(_ bool, a ...any) {
 
 // ReportTimerEvent reports timer event messages
 func (term *TerminalUI) ReportTimerEvent(emphasis bool, a ...any) {
-	tem := timer.UnwrapEventMessage(fmt.Sprint(a...))
+	tem := timer_event.UnwrapMessage(fmt.Sprint(a...))
 	var text string
 	switch tem.Trigger {
-	case timer.TriggerStart:
+	case timer_event.TriggerStart:
 		text = fmt.Sprint(timerMessagePrefix, "Starting ",
-			timer.FormatDuration(tem.Timeout), " countdown")
+			timer_event.FormatDuration(tem.Timeout), " countdown")
 		printInGreen(text)
-	case timer.TriggerCountdown:
+	case timer_event.TriggerCountdown:
 		text = fmt.Sprint(timerMessagePrefix, "Your turn ends in ",
-			timer.FormatDuration(tem.Remaining))
+			timer_event.FormatDuration(tem.Remaining))
 		printInGreen(text)
-	case timer.TriggerStop:
+	case timer_event.TriggerStop:
 		text = fmt.Sprint(timerMessagePrefix, "Stopping countdown after ",
-			timer.FormatDuration(tem.Elapsed))
+			timer_event.FormatDuration(tem.Elapsed))
 		printInGreen(text)
-	case timer.TriggerTimeout:
+	case timer_event.TriggerTimeout:
 		text = fmt.Sprint(timerMessagePrefix, "Time's up. Time to rotate! You are ",
-			timer.FormatDuration(tem.Remaining.Abs()), " over!")
+			timer_event.FormatDuration(tem.Remaining.Abs()), " over!")
 		printInYellow(text)
 	}
 	term.notifyOnEmphasis(emphasis, "⏳", text)

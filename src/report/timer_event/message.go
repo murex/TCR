@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package timer
+package timer_event //nolint:revive
 
 import (
 	"fmt"
@@ -29,48 +29,49 @@ import (
 	"time"
 )
 
-// EventTrigger represents what triggers a timer event
-type EventTrigger string
+// Trigger represents what triggers a timer event
+type Trigger string
 
-// List of possible EventTrigger values
+// List of possible Trigger values
 const (
-	TriggerStart     EventTrigger = "start"
-	TriggerCountdown EventTrigger = "countdown"
-	TriggerStop      EventTrigger = "stop"
-	TriggerTimeout   EventTrigger = "timeout"
+	TriggerStart     Trigger = "start"
+	TriggerCountdown Trigger = "countdown"
+	TriggerStop      Trigger = "stop"
+	TriggerTimeout   Trigger = "timeout"
 )
 
 const separator = ":"
 
-// EventMessage contains a timer event information
-type EventMessage struct {
-	Trigger   EventTrigger
+// Message contains a timer event information
+type Message struct {
+	Trigger   Trigger
 	Timeout   time.Duration
 	Elapsed   time.Duration
 	Remaining time.Duration
 }
 
 // WithEmphasis indicates whether the event message should be reported with emphasis flag
-func (em EventMessage) WithEmphasis() bool {
+func (em Message) WithEmphasis() bool {
 	return em.Trigger != TriggerTimeout || em.Remaining >= 0
 }
 
-// WrapEventMessage wraps a TimerEventMessage into a string
-func WrapEventMessage(em EventMessage) string {
-	return fmt.Sprint(em.Trigger,
-		separator, int(em.Timeout.Seconds()),
-		separator, int(em.Elapsed.Seconds()),
-		separator, int(em.Remaining.Seconds()))
+// WrapMessage wraps a timer event Message into a string
+func WrapMessage(message Message) string {
+	return fmt.Sprint(
+		message.Trigger,
+		separator, int(message.Timeout.Seconds()),
+		separator, int(message.Elapsed.Seconds()),
+		separator, int(message.Remaining.Seconds()))
 }
 
-// UnwrapEventMessage unwraps a timer event message string into a TimerEventMessage
-func UnwrapEventMessage(message string) EventMessage {
-	parts := strings.Split(message, separator)
+// UnwrapMessage unwraps a timer event message string into a Message instance
+func UnwrapMessage(str string) Message {
+	parts := strings.Split(str, separator)
 	timeout, _ := strconv.Atoi(parts[1])
 	elapsed, _ := strconv.Atoi(parts[2])
 	remaining, _ := strconv.Atoi(parts[3])
-	return EventMessage{
-		Trigger:   EventTrigger(parts[0]),
+	return Message{
+		Trigger:   Trigger(parts[0]),
 		Timeout:   time.Duration(timeout) * time.Second,
 		Elapsed:   time.Duration(elapsed) * time.Second,
 		Remaining: time.Duration(remaining) * time.Second,

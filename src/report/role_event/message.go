@@ -51,13 +51,15 @@ func (Message) WithEmphasis() bool {
 }
 
 // WrapMessage wraps a role event Message into a string
-func WrapMessage(em Message) string {
-	return fmt.Sprint(em.Role.Name(), separator, em.Trigger)
+func WrapMessage(message Message) string {
+	return fmt.Sprint(
+		message.Role.Name(),
+		separator, message.Trigger)
 }
 
-// UnwrapMessage unwraps a role event message string into a role event Message instance
-func UnwrapMessage(message string) Message {
-	parts := strings.Split(message, separator)
+// UnwrapMessage unwraps a role event message string into a Message instance
+func UnwrapMessage(str string) Message {
+	parts := strings.Split(str, separator)
 	return Message{
 		Role:    role.FromName(parts[0]),
 		Trigger: Trigger(parts[1]),

@@ -25,7 +25,7 @@ package report
 import (
 	"fmt"
 	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -159,7 +159,7 @@ func Test_post_event_message_functions(t *testing.T) {
 		{
 			"timer event message",
 			func() {
-				PostTimerEvent(string(timer.TriggerStart), 0, 0, 0)
+				PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0)
 			},
 			MessageType{TimerEvent, true},
 			"start:0:0:0",

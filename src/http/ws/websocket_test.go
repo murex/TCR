@@ -27,7 +27,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
 	"net"
@@ -123,27 +123,27 @@ func Test_websocket_report_messages(t *testing.T) {
 		},
 		{
 			desc:     "report.PostTimerEvent start",
-			action:   func() { report.PostTimerEvent(string(timer.TriggerStart), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(string(timer_event.TriggerStart), 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "start:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent countdown",
-			action:   func() { report.PostTimerEvent(string(timer.TriggerCountdown), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(string(timer_event.TriggerCountdown), 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "countdown:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent stop",
-			action:   func() { report.PostTimerEvent(string(timer.TriggerStop), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(string(timer_event.TriggerStop), 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "stop:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent first timeout",
-			action:   func() { report.PostTimerEvent(string(timer.TriggerTimeout), 0, 0, 0) },
+			action:   func() { report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "timeout:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent second timeout",
-			action:   func() { report.PostTimerEvent(string(timer.TriggerTimeout), 0, 0, -1*time.Second) },
+			action:   func() { report.PostTimerEvent(string(timer_event.TriggerTimeout), 0, 0, -1*time.Second) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, false, "timeout:0:0:-1"),
 		},
 		{

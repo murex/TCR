@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package timer
+package timer_event
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -31,11 +31,11 @@ import (
 func Test_wrap_unwrap_event_message(t *testing.T) {
 	tests := []struct {
 		wrapped string
-		message EventMessage
+		message Message
 	}{
 		{
 			wrapped: "start:10:0:10",
-			message: EventMessage{
+			message: Message{
 				Trigger:   TriggerStart,
 				Timeout:   10 * time.Second,
 				Elapsed:   0 * time.Second,
@@ -44,7 +44,7 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 		},
 		{
 			wrapped: "countdown:10:1:9",
-			message: EventMessage{
+			message: Message{
 				Trigger:   TriggerCountdown,
 				Timeout:   10 * time.Second,
 				Elapsed:   1 * time.Second,
@@ -53,7 +53,7 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 		},
 		{
 			wrapped: "stop:10:4:0",
-			message: EventMessage{
+			message: Message{
 				Trigger:   TriggerStop,
 				Timeout:   10 * time.Second,
 				Elapsed:   4 * time.Second,
@@ -62,7 +62,7 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 		},
 		{
 			wrapped: "timeout:10:0:-5",
-			message: EventMessage{
+			message: Message{
 				Trigger:   TriggerTimeout,
 				Timeout:   10 * time.Second,
 				Elapsed:   0 * time.Second,
@@ -73,9 +73,9 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.wrapped, func(t *testing.T) {
-			result := WrapEventMessage(test.message)
+			result := WrapMessage(test.message)
 			assert.Equal(t, test.wrapped, result)
-			assert.Equal(t, test.message, UnwrapEventMessage(result))
+			assert.Equal(t, test.message, UnwrapMessage(result))
 		})
 	}
 }
@@ -83,32 +83,32 @@ func Test_wrap_unwrap_event_message(t *testing.T) {
 func Test_event_message_emphasis(t *testing.T) {
 	tests := []struct {
 		desc     string
-		message  EventMessage
+		message  Message
 		expected bool
 	}{
 		{
 			desc:     "start trigger",
-			message:  EventMessage{Trigger: TriggerStart},
+			message:  Message{Trigger: TriggerStart},
 			expected: true,
 		},
 		{
 			desc:     "countdown trigger",
-			message:  EventMessage{Trigger: TriggerCountdown},
+			message:  Message{Trigger: TriggerCountdown},
 			expected: true,
 		},
 		{
 			desc:     "stop trigger",
-			message:  EventMessage{Trigger: TriggerStop},
+			message:  Message{Trigger: TriggerStop},
 			expected: true,
 		},
 		{
 			desc:     "first timeout trigger",
-			message:  EventMessage{Trigger: TriggerTimeout, Remaining: 0},
+			message:  Message{Trigger: TriggerTimeout, Remaining: 0},
 			expected: true,
 		},
 		{
 			desc:     "later timeout trigger",
-			message:  EventMessage{Trigger: TriggerTimeout, Remaining: -1},
+			message:  Message{Trigger: TriggerTimeout, Remaining: -1},
 			expected: false,
 		},
 	}

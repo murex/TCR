@@ -20,34 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package timer
+package timer_event //nolint:revive
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"strings"
 	"time"
 )
 
-func Test_format_duration(t *testing.T) {
-	tests := []struct {
-		duration time.Duration
-		expected string
-	}{
-		{duration: 0 * time.Second, expected: "0s"},
-		{duration: 59 * time.Second, expected: "59s"},
-		{duration: 60 * time.Second, expected: "1m"},
-		{duration: 61 * time.Second, expected: "1m1s"},
-		{duration: 120 * time.Second, expected: "2m"},
-		{duration: 59 * time.Minute, expected: "59m"},
-		{duration: 60 * time.Minute, expected: "1h"},
-		{duration: 60*time.Minute + 1*time.Second, expected: "1h0m1s"},
-		{duration: 61 * time.Minute, expected: "1h1m"},
-		{duration: 120 * time.Minute, expected: "2h"},
+// FormatDuration slightly alters time.Duration.String() behaviour though removal
+// of trailing "0s" or "0m"
+func FormatDuration(d time.Duration) string {
+	s := d.Round(time.Second).String()
+	if strings.HasSuffix(s, "m0s") {
+		s = s[:len(s)-2]
 	}
-
-	for _, test := range tests {
-		t.Run(test.duration.String(), func(t *testing.T) {
-			assert.Equal(t, test.expected, FormatDuration(test.duration))
-		})
+	if strings.HasSuffix(s, "h0m") {
+		s = s[:len(s)-2]
 	}
+	return s
 }

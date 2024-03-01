@@ -24,7 +24,7 @@ package timer
 
 import (
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/report/timer"
+	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/runmode"
 	"time"
 )
@@ -42,23 +42,23 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 		func(ctx ReminderContext) {
 			switch ctx.eventType {
 			case StartEvent:
-				reportTimerEvent(ctx, timer.TriggerStart, timeout)
+				reportTimerEvent(ctx, timer_event.TriggerStart, timeout)
 			case PeriodicEvent:
 				if ctx.remaining > 0 {
-					reportTimerEvent(ctx, timer.TriggerCountdown, timeout)
+					reportTimerEvent(ctx, timer_event.TriggerCountdown, timeout)
 				} else {
-					reportTimerEvent(ctx, timer.TriggerTimeout, timeout)
+					reportTimerEvent(ctx, timer_event.TriggerTimeout, timeout)
 				}
 			case InterruptEvent:
-				reportTimerEvent(ctx, timer.TriggerStop, timeout)
+				reportTimerEvent(ctx, timer_event.TriggerStop, timeout)
 			case TimeoutEvent:
-				reportTimerEvent(ctx, timer.TriggerTimeout, timeout)
+				reportTimerEvent(ctx, timer_event.TriggerTimeout, timeout)
 			}
 		},
 	)
 }
 
-func reportTimerEvent(ctx ReminderContext, trigger timer.EventTrigger, timeout time.Duration) {
+func reportTimerEvent(ctx ReminderContext, trigger timer_event.Trigger, timeout time.Duration) {
 	report.PostTimerEvent(string(trigger), timeout, ctx.elapsed, ctx.remaining)
 }
 
@@ -87,11 +87,11 @@ func ReportCountDownStatus(t *PeriodicReminder) {
 			report.PostInfo("Mob Timer is not started")
 		case Running:
 			report.PostInfo("Mob Timer: ",
-				timer.FormatDuration(t.GetElapsedTime()), " done, ",
-				timer.FormatDuration(t.GetRemainingTime()), " to go")
+				timer_event.FormatDuration(t.GetElapsedTime()), " done, ",
+				timer_event.FormatDuration(t.GetRemainingTime()), " to go")
 		case AfterTimeOut:
 			report.PostWarning("Mob Timer has timed out: ",
-				timer.FormatDuration(t.GetRemainingTime().Abs()), " over!")
+				timer_event.FormatDuration(t.GetRemainingTime().Abs()), " over!")
 		case StoppedAfterInterruption:
 			report.PostInfo("Mob Timer was interrupted")
 		}
