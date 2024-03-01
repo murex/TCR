@@ -71,7 +71,7 @@ func Test_report_count_down_status_when_mob_is_not_started(t *testing.T) {
 	ReportCountDownStatus(nil)
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "Mob Timer is off", sniffer.GetAllMatches()[0].Text)
+	assert.Equal(t, "Mob Timer is off", sniffer.GetAllMatches()[0].Payload.ToString())
 }
 
 func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
@@ -110,7 +110,7 @@ func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 			ReportCountDownStatus(reminder)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, test.expectedTrace, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, test.expectedTrace, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }
@@ -140,6 +140,6 @@ func Test_mob_turn_count_down(t *testing.T) {
 	for i, e := range expected {
 		msg := sniffer.GetAllMatches()[i]
 		assert.Equal(t, report.MessageType{Category: e.category, Emphasis: e.emphasis}, msg.Type)
-		assert.Equal(t, e.text, msg.Text)
+		assert.Equal(t, e.text, msg.Payload.ToString())
 	}
 }

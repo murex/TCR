@@ -23,9 +23,9 @@ SOFTWARE.
 package report
 
 import (
-	"fmt"
 	"github.com/imkira/go-observer"
 	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"sync"
@@ -47,7 +47,7 @@ const (
 	TimerEvent
 )
 
-// MessageReporter provides the interface that any message listener needs to implement
+// MessageReporter provides the interface that any message listener should implement
 type MessageReporter interface {
 	ReportSimple(emphasis bool, a ...any)
 	ReportInfo(emphasis bool, a ...any)
@@ -59,16 +59,21 @@ type MessageReporter interface {
 	ReportTimerEvent(emphasis bool, a ...any)
 }
 
-// MessageType type used for message characterization
+// MessageType contains message characterization information
 type MessageType struct {
 	Category Category
 	Emphasis bool
 }
 
+// MessagePayload provides the abstraction for different types of message contents
+type MessagePayload interface {
+	ToString() string
+}
+
 // Message is the placeholder for any reported message
 type Message struct {
 	Type      MessageType
-	Text      string
+	Payload   MessagePayload
 	Timestamp time.Time
 }
 
@@ -80,7 +85,7 @@ func init() {
 
 // Reset resets the reporter pipeline
 func Reset() {
-	msgProperty = observer.NewProperty(Message{Type: MessageType{Category: Normal}, Text: ""})
+	msgProperty = observer.NewProperty(Message{Type: MessageType{Category: Normal}, Payload: text.New("")})
 }
 
 // Subscribe allows a listener to subscribe to any posted message through the reporter.
@@ -90,7 +95,6 @@ func Subscribe(reporter MessageReporter) chan bool {
 	stream := msgProperty.Observe()
 
 	msg, _ := stream.Value().(Message) //nolint:revive
-	// fmt.Printf("initial value: %v\n", msg)
 
 	unsubscribe := make(chan bool)
 	var wg sync.WaitGroup
@@ -104,7 +108,6 @@ func Subscribe(reporter MessageReporter) chan bool {
 				// advance to next value
 				s.Next()
 				msg, _ = s.Value().(Message) //nolint:revive
-				// fmt.Printf("got new value: %v\n", msg)
 				reportMessage(reporter, msg)
 			case <-unsubscribe:
 				return
@@ -127,7 +130,7 @@ func reportMessage(reporter MessageReporter, msg Message) {
 		RoleEvent:  MessageReporter.ReportRoleEvent,
 		TimerEvent: MessageReporter.ReportTimerEvent,
 	}
-	report[msg.Type.Category](reporter, msg.Type.Emphasis, msg.Text)
+	report[msg.Type.Category](reporter, msg.Type.Emphasis, msg.Payload)
 }
 
 // Unsubscribe unsubscribes the listener associated to the provided channel from being notified
@@ -143,27 +146,42 @@ func Post(a ...any) {
 
 // PostText posts some text for reporting
 func PostText(a ...any) {
-	postMessage(MessageType{Category: Normal}, a...)
+	postMessage(MessageType{Category: Normal}, text.New(a...))
 }
 
 // PostInfo posts an information message for reporting
 func PostInfo(a ...any) {
-	postMessage(MessageType{Category: Info}, a...)
+	postMessage(MessageType{Category: Info}, text.New(a...))
 }
 
 // PostTitle posts a title message for reporting
 func PostTitle(a ...any) {
-	postMessage(MessageType{Category: Title}, a...)
+	postMessage(MessageType{Category: Title}, text.New(a...))
 }
 
 // PostWarning posts a warning message for reporting
 func PostWarning(a ...any) {
-	postMessage(MessageType{Category: Warning}, a...)
+	postMessage(MessageType{Category: Warning}, text.New(a...))
 }
 
 // PostError posts an error message for reporting
 func PostError(a ...any) {
-	postMessage(MessageType{Category: Error}, a...)
+	postMessage(MessageType{Category: Error}, text.New(a...))
+}
+
+// PostSuccessWithEmphasis posts a success message for reporting
+func PostSuccessWithEmphasis(a ...any) {
+	postMessage(MessageType{Category: Success, Emphasis: true}, text.New(a...))
+}
+
+// PostWarningWithEmphasis posts a warning with emphasis
+func PostWarningWithEmphasis(a ...any) {
+	postMessage(MessageType{Category: Warning, Emphasis: true}, text.New(a...))
+}
+
+// PostErrorWithEmphasis posts an error message for reporting
+func PostErrorWithEmphasis(a ...any) {
+	postMessage(MessageType{Category: Error, Emphasis: true}, text.New(a...))
 }
 
 // PostRoleEvent posts a role event
@@ -172,8 +190,8 @@ func PostRoleEvent(trigger string, r role.Role) {
 		Trigger: role_event.Trigger(trigger),
 		Role:    r,
 	}
-	postMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()},
-		role_event.WrapMessage(msg))
+	// TODO - Temporary conversion to text message until we directly use role event message
+	postMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()}, text.New(msg.ToString()))
 }
 
 // PostTimerEvent posts a timer event
@@ -184,30 +202,19 @@ func PostTimerEvent(eventType string, timeout time.Duration, elapsed time.Durati
 		Elapsed:   elapsed,
 		Remaining: remaining,
 	}
-	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()},
-		timer_event.WrapMessage(msg))
+	// TODO - Temporary conversion to text message until we directly use timer event message
+	postMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()}, text.New(msg.ToString()))
 }
 
-// PostSuccessWithEmphasis posts a success message for reporting
-func PostSuccessWithEmphasis(a ...any) {
-	postMessage(MessageType{Category: Success, Emphasis: true}, a...)
+func postMessage(msgType MessageType, payload MessagePayload) {
+	msgProperty.Update(NewMessage(msgType, payload))
 }
 
-// PostWarningWithEmphasis posts a warning with emphasis
-func PostWarningWithEmphasis(a ...any) {
-	postMessage(MessageType{Category: Warning, Emphasis: true}, a...)
-}
-
-// PostErrorWithEmphasis posts an error message for reporting
-func PostErrorWithEmphasis(a ...any) {
-	postMessage(MessageType{Category: Error, Emphasis: true}, a...)
-}
-
-func postMessage(msgType MessageType, a ...any) {
-	msgProperty.Update(NewMessage(msgType, a...))
-}
-
-// NewMessage returns a message with the specified type
-func NewMessage(messageType MessageType, a ...any) Message {
-	return Message{messageType, fmt.Sprint(a...), time.Now()}
+// NewMessage builds a new reporter message
+func NewMessage(messageType MessageType, messagePayload MessagePayload) Message {
+	return Message{
+		Type:      messageType,
+		Payload:   messagePayload,
+		Timestamp: time.Now(),
+	}
 }

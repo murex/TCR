@@ -67,7 +67,7 @@ func Test_checkpoint_print(t *testing.T) {
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 			assert.Equal(t, test.expectedCategory, sniffer.GetAllMatches()[0].Type.Category)
-			assert.Equal(t, test.expectedText, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, test.expectedText, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }

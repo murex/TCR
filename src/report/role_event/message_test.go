@@ -30,32 +30,32 @@ import (
 
 func Test_wrap_unwrap_message(t *testing.T) {
 	tests := []struct {
-		wrapped string
 		message Message
+		wrapped string
 	}{
 		{
-			wrapped: "driver:start",
 			message: Message{Trigger: TriggerStart, Role: role.Driver{}},
+			wrapped: "driver:start",
 		},
 		{
-			wrapped: "navigator:start",
 			message: Message{Trigger: TriggerStart, Role: role.Navigator{}},
+			wrapped: "navigator:start",
 		},
 		{
-			wrapped: "driver:end",
 			message: Message{Trigger: TriggerEnd, Role: role.Driver{}},
+			wrapped: "driver:end",
 		},
 		{
-			wrapped: "navigator:end",
 			message: Message{Trigger: TriggerEnd, Role: role.Navigator{}},
+			wrapped: "navigator:end",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.wrapped, func(t *testing.T) {
-			result := WrapMessage(test.message)
-			assert.Equal(t, test.wrapped, result)
-			assert.Equal(t, test.message, UnwrapMessage(result))
+			str := test.message.ToString()
+			assert.Equal(t, test.wrapped, str)
+			assert.Equal(t, test.message, UnwrapMessage(str))
 		})
 	}
 }

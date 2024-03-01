@@ -106,42 +106,42 @@ func Test_tcr_reports_and_emphasises(t *testing.T) {
 			desc:   "reports build failures as warnings",
 			failAt: toolchain.BuildOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == buildFailureMessage && msg.Type.Category == report.Warning
+				return msg.Payload.ToString() == buildFailureMessage && msg.Type.Category == report.Warning
 			},
 		},
 		{
 			desc:   "emphasises build failures",
 			failAt: toolchain.BuildOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == buildFailureMessage && msg.Type.Emphasis
+				return msg.Payload.ToString() == buildFailureMessage && msg.Type.Emphasis
 			},
 		},
 		{
 			desc:   "reports test successes as success",
 			failAt: toolchain.Never,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testSuccessMessage && msg.Type.Category == report.Success
+				return msg.Payload.ToString() == testSuccessMessage && msg.Type.Category == report.Success
 			},
 		},
 		{
 			desc:   "emphasises test successes",
 			failAt: toolchain.Never,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testSuccessMessage && msg.Type.Emphasis
+				return msg.Payload.ToString() == testSuccessMessage && msg.Type.Emphasis
 			},
 		},
 		{
 			desc:   "reports test failures as errors",
 			failAt: toolchain.TestOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testFailureMessage && msg.Type.Category == report.Error
+				return msg.Payload.ToString() == testFailureMessage && msg.Type.Category == report.Error
 			},
 		},
 		{
 			desc:   "emphasises test failures",
 			failAt: toolchain.TestOperation,
 			isExpectedMessage: func(msg report.Message) bool {
-				return msg.Text == testFailureMessage && msg.Type.Emphasis
+				return msg.Payload.ToString() == testFailureMessage && msg.Type.Emphasis
 			},
 		},
 	}
@@ -470,7 +470,8 @@ func Test_vcs_pull_calls_vcs_command(t *testing.T) {
 func Test_vcs_pull_highlights_errors(t *testing.T) {
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Category == report.Error && msg.Text == "VCS pull command failed!"
+			return msg.Type.Category == report.Error &&
+				msg.Payload.ToString() == "VCS pull command failed!"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PullCommand}, nil)
@@ -482,7 +483,8 @@ func Test_vcs_pull_highlights_errors(t *testing.T) {
 func Test_vcs_push_highlights_errors(t *testing.T) {
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Category == report.Error && msg.Text == "VCS push command failed!"
+			return msg.Type.Category == report.Error &&
+				msg.Payload.ToString() == "VCS push command failed!"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
@@ -529,7 +531,8 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			settings.EnableMobTimer = true
 			sniffer := report.NewSniffer(
 				func(msg report.Message) bool {
-					return msg.Type.Category == report.Info && msg.Text == "Timer duration is "+tt.timer.String()
+					return msg.Type.Category == report.Info &&
+						msg.Payload.ToString() == "Timer duration is "+tt.timer.String()
 				},
 			)
 			tcr, _ = initTCREngineWithFakes(params.AParamSet(
@@ -551,7 +554,8 @@ func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
-			return msg.Type.Category == report.Info && msg.Text == "Mob Timer is off"
+			return msg.Type.Category == report.Info &&
+				msg.Payload.ToString() == "Mob Timer is off"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Solo{})), nil, nil, nil)
@@ -581,7 +585,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR passing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ✅ TCR - tests passing") == 0
+				return msg.Type.Category == report.Info &&
+					strings.Index(msg.Payload.ToString(), "message:   ✅ TCR - tests passing") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -589,7 +594,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR failing commits are kept",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ❌ TCR - tests failing") == 0
+				return msg.Type.Category == report.Info &&
+					strings.Index(msg.Payload.ToString(), "message:   ❌ TCR - tests failing") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -597,7 +603,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "TCR revert commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   ⏪ TCR - revert changes") == 0
+				return msg.Type.Category == report.Info &&
+					strings.Index(msg.Payload.ToString(), "message:   ⏪ TCR - revert changes") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 0,
@@ -605,7 +612,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "non-TCR commits are dropped",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Info && strings.Index(msg.Text, "message:   other commit message") == 0
+				return msg.Type.Category == report.Info &&
+					strings.Index(msg.Payload.ToString(), "message:   other commit message") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 0,
@@ -613,7 +621,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit hashtag is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Title && strings.Index(msg.Text, "commit:    1111") == 0
+				return msg.Type.Category == report.Title &&
+					strings.Index(msg.Payload.ToString(), "commit:    1111") == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -621,7 +630,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "commit timestamp is printed",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Info && strings.Index(msg.Text, "timestamp: "+now.String()) == 0
+				return msg.Type.Category == report.Info &&
+					strings.Index(msg.Payload.ToString(), "timestamp: "+now.String()) == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 2,
@@ -629,7 +639,8 @@ func Test_tcr_print_log(t *testing.T) {
 		{
 			desc: "warning when no record found",
 			filter: func(msg report.Message) bool {
-				return msg.Type.Category == report.Warning && strings.Index(msg.Text, "no TCR commit found in ") == 0
+				return msg.Type.Category == report.Warning &&
+					strings.Index(msg.Payload.ToString(), "no TCR commit found in ") == 0
 			},
 			logItems:        nil,
 			expectedMatches: 1,

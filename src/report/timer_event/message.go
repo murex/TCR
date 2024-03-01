@@ -50,18 +50,13 @@ type Message struct {
 	Remaining time.Duration
 }
 
-// WithEmphasis indicates whether the event message should be reported with emphasis flag
-func (em Message) WithEmphasis() bool {
-	return em.Trigger != TriggerTimeout || em.Remaining >= 0
-}
-
-// WrapMessage wraps a timer event Message into a string
-func WrapMessage(message Message) string {
+// ToString returns the string representation of the message
+func (m Message) ToString() string {
 	return fmt.Sprint(
-		message.Trigger,
-		separator, int(message.Timeout.Seconds()),
-		separator, int(message.Elapsed.Seconds()),
-		separator, int(message.Remaining.Seconds()))
+		m.Trigger,
+		separator, int(m.Timeout.Seconds()),
+		separator, int(m.Elapsed.Seconds()),
+		separator, int(m.Remaining.Seconds()))
 }
 
 // UnwrapMessage unwraps a timer event message string into a Message instance
@@ -76,4 +71,9 @@ func UnwrapMessage(str string) Message {
 		Elapsed:   time.Duration(elapsed) * time.Second,
 		Remaining: time.Duration(remaining) * time.Second,
 	}
+}
+
+// WithEmphasis indicates whether the message should be reported with emphasis flag
+func (m Message) WithEmphasis() bool {
+	return m.Trigger != TriggerTimeout || m.Remaining >= 0
 }

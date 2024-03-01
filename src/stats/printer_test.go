@@ -57,7 +57,7 @@ func Test_print_stat(t *testing.T) {
 			printStat(tt.name, tt.value)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }
@@ -83,7 +83,7 @@ func Test_print_stat_value_and_ratio(t *testing.T) {
 			printStatValueAndRatio(tt.name, tt.stat)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }
@@ -116,7 +116,7 @@ func Test_print_stat_min_max_avg(t *testing.T) {
 			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }
@@ -143,7 +143,7 @@ func Test_print_stat_evolution(t *testing.T) {
 			time.Sleep(1 * time.Millisecond)
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Text)
+			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
 		})
 	}
 }
@@ -214,7 +214,7 @@ func Test_print_all_stats(t *testing.T) {
 	assert.Equal(t, len(expected), sniffer.GetMatchCount())
 	var result []string
 	for _, line := range sniffer.GetAllMatches() {
-		result = append(result, line.Text)
+		result = append(result, line.Payload.ToString())
 	}
 	assert.Equal(t, expected, result)
 }

@@ -20,48 +20,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package role_event //nolint:revive
+package text
 
 import (
-	"fmt"
-	"github.com/murex/tcr/role"
-	"strings"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// Trigger represents what triggers a role event
-type Trigger string
-
-// List of possible Trigger values
-const (
-	TriggerStart Trigger = "start"
-	TriggerEnd   Trigger = "end"
-)
-
-const separator = ":"
-
-// Message contains a role event information
-type Message struct {
-	Trigger Trigger
-	Role    role.Role
-}
-
-// ToString returns the string representation of the message
-func (m Message) ToString() string {
-	return fmt.Sprint(
-		m.Role.Name(),
-		separator, m.Trigger)
-}
-
-// UnwrapMessage unwraps a role event message string into a Message instance
-func UnwrapMessage(str string) Message {
-	parts := strings.Split(str, separator)
-	return Message{
-		Role:    role.FromName(parts[0]),
-		Trigger: Trigger(parts[1]),
+func Test_wrap_unwrap_message(t *testing.T) {
+	tests := []struct {
+		message Message
+		wrapped string
+	}{
+		{
+			message: New("single string"),
+			wrapped: "single string",
+		},
+		{
+			message: New("two", " strings"),
+			wrapped: "two strings",
+		},
+		{
+			message: New(2, " different types"),
+			wrapped: "2 different types",
+		},
 	}
-}
 
-// WithEmphasis indicates whether the message should be reported with emphasis flag
-func (Message) WithEmphasis() bool {
-	return false
+	for _, test := range tests {
+		t.Run(test.wrapped, func(t *testing.T) {
+			str := test.message.ToString()
+			assert.Equal(t, test.wrapped, str)
+			assert.Equal(t, test.message, UnwrapMessage(str))
+		})
+	}
 }

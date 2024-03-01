@@ -25,6 +25,7 @@ package report
 import (
 	"fmt"
 	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
@@ -33,16 +34,16 @@ import (
 )
 
 func Test_can_retrieve_reported_message(t *testing.T) {
-	text := "dummy message"
+	txt := "dummy message"
 	result := reportAndReceive(func() {
-		Post(text)
+		Post(txt)
 	})
-	assert.Equal(t, text, result.Text)
+	assert.Equal(t, txt, result.Payload.ToString())
 }
 
 func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
-	text := "dummy message"
+	txt := "dummy message"
 	var c [nbListeners]chan bool
 	var stubs [nbListeners]*messageReporterStub
 
@@ -55,12 +56,12 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 
 	// To make sure observers are ready to receive
 	time.Sleep(1 * time.Millisecond)
-	Post(text)
+	Post(txt)
 
 	for i := 0; i < nbListeners; i++ {
 		iReceived := <-stubs[i].received
 		Unsubscribe(c[iReceived])
-		assert.Equal(t, text, stubs[iReceived].message.Text)
+		assert.Equal(t, txt, stubs[iReceived].message.Payload.ToString())
 	}
 }
 
@@ -73,10 +74,10 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
 	for i := 0; i < nbMessages; i++ {
-		text := fmt.Sprintf("dummy message %v", i)
-		Post(text)
+		txt := fmt.Sprintf("dummy message %v", i)
+		Post(txt)
 		<-stub.received
-		assert.Equal(t, text, stub.message.Text)
+		assert.Equal(t, txt, stub.message.Payload.ToString())
 	}
 	Unsubscribe(c)
 }
@@ -134,7 +135,7 @@ func Test_post_text_message_functions(t *testing.T) {
 			result := reportAndReceive(func() {
 				tt.postFunction(tt.text)
 			})
-			assert.Equal(t, tt.text, result.Text)
+			assert.Equal(t, text.New(tt.text), result.Payload)
 			assert.Equal(t, tt.expectedType, result.Type)
 			assert.NotZero(t, result.Timestamp)
 		})
@@ -171,7 +172,8 @@ func Test_post_event_message_functions(t *testing.T) {
 			result := reportAndReceive(func() {
 				tt.postFunction()
 			})
-			assert.Equal(t, tt.expectedText, result.Text)
+			// TODO replace with timer or role instance
+			assert.Equal(t, tt.expectedText, result.Payload.ToString())
 			assert.Equal(t, tt.expectedType, result.Type)
 			assert.NotZero(t, result.Timestamp)
 		})
@@ -203,47 +205,47 @@ func newMessageReporterStub(index int) *messageReporterStub {
 	}
 }
 
-func (stub *messageReporterStub) report(category Category, emphasis bool, a ...any) {
-	stub.message = NewMessage(MessageType{category, emphasis}, a...)
+func (stub *messageReporterStub) report(category Category, emphasis bool, payload MessagePayload) {
+	stub.message = NewMessage(MessageType{category, emphasis}, payload)
 	stub.received <- stub.index
 }
 
 // ReportSimple reports simple messages
 func (stub *messageReporterStub) ReportSimple(emphasis bool, a ...any) {
-	stub.report(Normal, emphasis, a...)
+	stub.report(Normal, emphasis, text.New(a...))
 }
 
 // ReportInfo reports info messages
 func (stub *messageReporterStub) ReportInfo(emphasis bool, a ...any) {
-	stub.report(Info, emphasis, a...)
+	stub.report(Info, emphasis, text.New(a...))
 }
 
 // ReportTitle reports title messages
 func (stub *messageReporterStub) ReportTitle(emphasis bool, a ...any) {
-	stub.report(Title, emphasis, a...)
+	stub.report(Title, emphasis, text.New(a...))
 }
 
 // ReportSuccess reports success messages
 func (stub *messageReporterStub) ReportSuccess(emphasis bool, a ...any) {
-	stub.report(Success, emphasis, a...)
+	stub.report(Success, emphasis, text.New(a...))
 }
 
 // ReportWarning reports warning messages
 func (stub *messageReporterStub) ReportWarning(emphasis bool, a ...any) {
-	stub.report(Warning, emphasis, a...)
+	stub.report(Warning, emphasis, text.New(a...))
 }
 
 // ReportError reports error messages
 func (stub *messageReporterStub) ReportError(emphasis bool, a ...any) {
-	stub.report(Error, emphasis, a...)
+	stub.report(Error, emphasis, text.New(a...))
 }
 
 // ReportTimerEvent reports role event messages
 func (stub *messageReporterStub) ReportRoleEvent(emphasis bool, a ...any) {
-	stub.report(RoleEvent, emphasis, a...)
+	stub.report(RoleEvent, emphasis, text.New(a...))
 }
 
 // ReportTimerEvent reports timer event messages
 func (stub *messageReporterStub) ReportTimerEvent(emphasis bool, a ...any) {
-	stub.report(TimerEvent, emphasis, a...)
+	stub.report(TimerEvent, emphasis, text.New(a...))
 }

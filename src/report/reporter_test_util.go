@@ -24,7 +24,10 @@ SOFTWARE.
 
 package report
 
-import "time"
+import (
+	"github.com/murex/tcr/report/text"
+	"time"
+)
 
 type messageFilter func(msg Message) bool
 
@@ -77,42 +80,42 @@ func (sniffer *Sniffer) sniff(msg Message) {
 
 // ReportSimple reports simple messages
 func (sniffer *Sniffer) ReportSimple(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Normal, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Normal, emphasis}, text.New(a...)))
 }
 
 // ReportInfo reports info messages
 func (sniffer *Sniffer) ReportInfo(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Info, emphasis}, text.New(a...)))
 }
 
 // ReportTitle reports title messages
 func (sniffer *Sniffer) ReportTitle(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Title, emphasis}, text.New(a...)))
 }
 
 // ReportSuccess reports warning messages
 func (sniffer *Sniffer) ReportSuccess(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Success, emphasis}, text.New(a...)))
 }
 
 // ReportWarning reports warning messages
 func (sniffer *Sniffer) ReportWarning(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Warning, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Warning, emphasis}, text.New(a...)))
 }
 
 // ReportError reports error messages
 func (sniffer *Sniffer) ReportError(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{Error, emphasis}, text.New(a...)))
 }
 
 // ReportRoleEvent reports role event messages
 func (sniffer *Sniffer) ReportRoleEvent(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{RoleEvent, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{RoleEvent, emphasis}, text.New(a...)))
 }
 
 // ReportTimerEvent reports timer event messages
 func (sniffer *Sniffer) ReportTimerEvent(emphasis bool, a ...any) {
-	sniffer.sniff(NewMessage(MessageType{TimerEvent, emphasis}, a...))
+	sniffer.sniff(NewMessage(MessageType{TimerEvent, emphasis}, text.New(a...)))
 }
 
 // Stop tells the sniffer to stop

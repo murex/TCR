@@ -30,52 +30,52 @@ import (
 
 func Test_wrap_unwrap_event_message(t *testing.T) {
 	tests := []struct {
-		wrapped string
 		message Message
+		wrapped string
 	}{
 		{
-			wrapped: "start:10:0:10",
 			message: Message{
 				Trigger:   TriggerStart,
 				Timeout:   10 * time.Second,
 				Elapsed:   0 * time.Second,
 				Remaining: 10 * time.Second,
 			},
+			wrapped: "start:10:0:10",
 		},
 		{
-			wrapped: "countdown:10:1:9",
 			message: Message{
 				Trigger:   TriggerCountdown,
 				Timeout:   10 * time.Second,
 				Elapsed:   1 * time.Second,
 				Remaining: 9 * time.Second,
 			},
+			wrapped: "countdown:10:1:9",
 		},
 		{
-			wrapped: "stop:10:4:0",
 			message: Message{
 				Trigger:   TriggerStop,
 				Timeout:   10 * time.Second,
 				Elapsed:   4 * time.Second,
 				Remaining: 0 * time.Second,
 			},
+			wrapped: "stop:10:4:0",
 		},
 		{
-			wrapped: "timeout:10:0:-5",
 			message: Message{
 				Trigger:   TriggerTimeout,
 				Timeout:   10 * time.Second,
 				Elapsed:   0 * time.Second,
 				Remaining: -5 * time.Second,
 			},
+			wrapped: "timeout:10:0:-5",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.wrapped, func(t *testing.T) {
-			result := WrapMessage(test.message)
-			assert.Equal(t, test.wrapped, result)
-			assert.Equal(t, test.message, UnwrapMessage(result))
+			str := test.message.ToString()
+			assert.Equal(t, test.wrapped, str)
+			assert.Equal(t, test.message, UnwrapMessage(str))
 		})
 	}
 }

@@ -20,48 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package role_event //nolint:revive
+package text
 
-import (
-	"fmt"
-	"github.com/murex/tcr/role"
-	"strings"
-)
+import "fmt"
 
-// Trigger represents what triggers a role event
-type Trigger string
+// Message contains a text message information
+type Message string
 
-// List of possible Trigger values
-const (
-	TriggerStart Trigger = "start"
-	TriggerEnd   Trigger = "end"
-)
-
-const separator = ":"
-
-// Message contains a role event information
-type Message struct {
-	Trigger Trigger
-	Role    role.Role
+// New creates a new text message (leveraging on string formatting)
+func New(a ...any) Message {
+	return Message(fmt.Sprint(a...))
 }
 
 // ToString returns the string representation of the message
 func (m Message) ToString() string {
-	return fmt.Sprint(
-		m.Role.Name(),
-		separator, m.Trigger)
+	return string(m)
 }
 
-// UnwrapMessage unwraps a role event message string into a Message instance
+// UnwrapMessage unwraps a text message string into a Message instance
 func UnwrapMessage(str string) Message {
-	parts := strings.Split(str, separator)
-	return Message{
-		Role:    role.FromName(parts[0]),
-		Trigger: Trigger(parts[1]),
-	}
-}
-
-// WithEmphasis indicates whether the message should be reported with emphasis flag
-func (Message) WithEmphasis() bool {
-	return false
+	return Message(str)
 }
