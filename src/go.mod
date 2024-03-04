@@ -128,7 +128,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/butuzov/ireturn v0.3.0 // indirect
 	github.com/butuzov/mirror v1.1.0 // indirect
-	github.com/bytedance/sonic v1.11.1 // indirect
+	github.com/bytedance/sonic v1.11.2 // indirect
 	github.com/caarlos0/ctrlc v1.2.0 // indirect
 	github.com/caarlos0/env/v9 v9.0.0 // indirect
 	github.com/caarlos0/go-reddit/v3 v3.0.1 // indirect
@@ -189,17 +189,17 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/analysis v0.22.2 // indirect
 	github.com/go-openapi/errors v0.21.1 // indirect
-	github.com/go-openapi/jsonpointer v0.20.2 // indirect
-	github.com/go-openapi/jsonreference v0.20.4 // indirect
+	github.com/go-openapi/jsonpointer v0.20.3 // indirect
+	github.com/go-openapi/jsonreference v0.20.5 // indirect
 	github.com/go-openapi/loads v0.21.5 // indirect
 	github.com/go-openapi/runtime v0.27.1 // indirect
-	github.com/go-openapi/spec v0.20.14 // indirect
+	github.com/go-openapi/spec v0.20.15 // indirect
 	github.com/go-openapi/strfmt v0.22.1 // indirect
 	github.com/go-openapi/swag v0.22.10 // indirect
 	github.com/go-openapi/validate v0.23.1 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.19.0 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
