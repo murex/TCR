@@ -64,6 +64,7 @@ type (
 		RunTCRCycle()
 		GetSessionInfo() SessionInfo
 		ReportMobTimerStatus()
+		GetMobTimerStatus() timer.CurrentState
 		SetRunMode(m runmode.RunMode)
 		RunCheck(p params.Params)
 		PrintLog(p params.Params)
@@ -685,6 +686,11 @@ func (tcr *TCREngine) ReportMobTimerStatus() {
 	if settings.EnableMobTimer {
 		timer.ReportCountDownStatus(tcr.mobTimer)
 	}
+}
+
+// GetMobTimerStatus returns the status of the mob timer
+func (tcr *TCREngine) GetMobTimerStatus() timer.CurrentState {
+	return timer.GetCurrentState(tcr.mobTimer)
 }
 
 // SetRunMode sets the run mode for TCR engine

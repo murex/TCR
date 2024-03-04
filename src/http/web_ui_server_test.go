@@ -261,6 +261,10 @@ func Test_add_api_routes(t *testing.T) {
 			path:    "/api/roles/name/action",
 			methods: []string{http.MethodPost},
 		},
+		{
+			path:    "/api/timer",
+			methods: []string{http.MethodGet},
+		},
 	}
 
 	// Set up the router

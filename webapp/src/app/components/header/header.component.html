@@ -1,9 +1,5 @@
-<nav class="navbar px-3 navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar sticky-top px-3 navbar-expand-sm navbar-dark bg-dark">
   <a class="navbar-brand mb-0 h1" href="#">TCR</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-          aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
   <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav">
       <a class="nav-item nav-link active" routerLink="/">Home <span class="sr-only">(current)</span></a>
@@ -11,5 +7,8 @@
       <a class="nav-item nav-link" routerLink="/console">Console</a>
       <a class="nav-item nav-link" routerLink="/about">About</a>
     </div>
+  </div>
+  <div>
+    <app-tcr-timer></app-tcr-timer>
   </div>
 </nav>

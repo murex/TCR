@@ -137,6 +137,7 @@ func (webUIServer *WebUIServer) addAPIRoutes() {
 		apiRoutes.GET("/roles", api.RolesGetHandler)
 		apiRoutes.GET("/roles/:name", api.RoleGetHandler)
 		apiRoutes.POST("/roles/:name/:action", api.RolesPostHandler)
+		apiRoutes.GET("/timer", api.TimerGetHandler)
 	}
 }
 

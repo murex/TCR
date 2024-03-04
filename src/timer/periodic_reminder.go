@@ -29,26 +29,26 @@ import (
 const defaultTimeout = 5 * time.Minute
 const defaultTickPeriod = 1 * time.Minute
 
-// ReminderState type used for managing reminder state
-type ReminderState int
+// reminderState type used for managing reminder state
+type reminderState int
 
-// List of possible values for ReminderState
+// List of possible values for reminderState
 const (
-	NotStarted ReminderState = iota
-	Running
-	AfterTimeOut
-	StoppedAfterInterruption
+	notStarted reminderState = iota
+	running
+	afterTimeOut
+	stoppedAfterInterruption
 )
 
-// ReminderEventType type used for managing ticker state
-type ReminderEventType int
+// reminderEventType type used for managing ticker state
+type reminderEventType int
 
-// List of possible values for ReminderEventType
+// List of possible values for reminderEventType
 const (
-	StartEvent ReminderEventType = iota
-	PeriodicEvent
-	InterruptEvent
-	TimeoutEvent
+	startEvent reminderEventType = iota
+	periodicEvent
+	interruptEvent
+	timeoutEvent
 )
 
 // PeriodicReminder provides a mechanism allowing to trigger an action every tickPeriod, until timeout expires.
@@ -56,7 +56,7 @@ type PeriodicReminder struct {
 	timeout       time.Duration
 	tickPeriod    time.Duration
 	onEventAction func(ctx ReminderContext)
-	state         ReminderState
+	state         reminderState
 	startTime     time.Time
 	stopTime      time.Time
 	tickCounter   int
@@ -67,7 +67,7 @@ type PeriodicReminder struct {
 
 // ReminderContext provides the context related to a specific reminder event
 type ReminderContext struct {
-	eventType ReminderEventType
+	eventType reminderEventType
 	index     int
 	indexMax  int
 	timestamp time.Time
@@ -88,7 +88,7 @@ func NewPeriodicReminder(
 		tickPeriod:    defaultTickPeriod,
 		tickCounter:   0,
 		onEventAction: onEventAction,
-		state:         NotStarted,
+		state:         notStarted,
 	}
 	if timeout > 0 {
 		r.timeout = timeout
@@ -104,23 +104,23 @@ func NewPeriodicReminder(
 func (r *PeriodicReminder) Start() {
 	// Create the ticker and stopTicking it for now
 	r.ticker = time.NewTicker(r.tickPeriod)
-	r.state = Running
+	r.state = running
 	r.startTime = time.Now()
 	r.done = make(chan bool)
 
-	r.onEventAction(r.buildEventContext(StartEvent, r.startTime))
+	r.onEventAction(r.buildEventContext(startEvent, r.startTime))
 
 	go func() {
 		for {
 			select {
 			case <-r.done:
-				r.onEventAction(r.buildEventContext(InterruptEvent, time.Now()))
+				r.onEventAction(r.buildEventContext(interruptEvent, time.Now()))
 				return
 			case timestamp := <-r.ticker.C:
-				if r.state == AfterTimeOut {
-					r.onEventAction(r.buildEventContext(TimeoutEvent, timestamp))
+				if r.state == afterTimeOut {
+					r.onEventAction(r.buildEventContext(timeoutEvent, timestamp))
 				} else {
-					r.onEventAction(r.buildEventContext(PeriodicEvent, timestamp))
+					r.onEventAction(r.buildEventContext(periodicEvent, timestamp))
 				}
 				r.tickCounter++
 			}
@@ -129,16 +129,16 @@ func (r *PeriodicReminder) Start() {
 
 	go func() {
 		time.Sleep(r.timeout)
-		if r.state == Running {
-			r.state = AfterTimeOut
+		if r.state == running {
+			r.state = afterTimeOut
 		}
 	}()
 }
 
-func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timestamp time.Time) ReminderContext {
+func (r *PeriodicReminder) buildEventContext(eventType reminderEventType, timestamp time.Time) ReminderContext {
 	var ctx ReminderContext
 	switch eventType {
-	case StartEvent:
+	case startEvent:
 		ctx = ReminderContext{
 			eventType: eventType,
 			index:     -1,
@@ -147,7 +147,7 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			elapsed:   0,
 			remaining: r.timeout,
 		}
-	case PeriodicEvent, TimeoutEvent:
+	case periodicEvent, timeoutEvent:
 		elapsed := time.Duration(r.tickCounter+1) * r.tickPeriod
 		ctx = ReminderContext{
 			eventType: eventType,
@@ -157,7 +157,7 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 			elapsed:   elapsed,
 			remaining: r.timeout - elapsed,
 		}
-	case InterruptEvent:
+	case interruptEvent:
 		ctx = ReminderContext{
 			eventType: eventType,
 			index:     -1,
@@ -170,8 +170,8 @@ func (r *PeriodicReminder) buildEventContext(eventType ReminderEventType, timest
 	return ctx
 }
 
-func (r *PeriodicReminder) stopTicking(s ReminderState) {
-	if r.state == Running || r.state == AfterTimeOut {
+func (r *PeriodicReminder) stopTicking(s reminderState) {
+	if r.state == running || r.state == afterTimeOut {
 		r.ticker.Stop()
 		r.state = s
 		r.stopTime = time.Now()
@@ -181,15 +181,15 @@ func (r *PeriodicReminder) stopTicking(s ReminderState) {
 
 // Stop stops the PeriodicReminder, even if it has not yet timed out.
 func (r *PeriodicReminder) Stop() {
-	r.stopTicking(StoppedAfterInterruption)
+	r.stopTicking(stoppedAfterInterruption)
 }
 
 // GetElapsedTime returns the time elapsed since the timer was started
 func (r *PeriodicReminder) GetElapsedTime() time.Duration {
 	switch r.state {
-	case NotStarted:
+	case notStarted:
 		return 0
-	case Running, AfterTimeOut:
+	case running, afterTimeOut:
 		return time.Since(r.startTime)
 	default:
 		return r.stopTime.Sub(r.startTime)
@@ -199,9 +199,9 @@ func (r *PeriodicReminder) GetElapsedTime() time.Duration {
 // GetRemainingTime returns the time remaining until the timer ends
 func (r *PeriodicReminder) GetRemainingTime() time.Duration {
 	switch r.state {
-	case NotStarted:
+	case notStarted:
 		return r.timeout
-	case Running, AfterTimeOut:
+	case running, afterTimeOut:
 		return r.timeout - time.Since(r.startTime)
 	default:
 		return 0

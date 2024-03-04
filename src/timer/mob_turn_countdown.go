@@ -41,17 +41,17 @@ func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicR
 	return NewPeriodicReminder(timeout, tickPeriod,
 		func(ctx ReminderContext) {
 			switch ctx.eventType {
-			case StartEvent:
+			case startEvent:
 				reportTimerEvent(ctx, timer_event.TriggerStart, timeout)
-			case PeriodicEvent:
+			case periodicEvent:
 				if ctx.remaining > 0 {
 					reportTimerEvent(ctx, timer_event.TriggerCountdown, timeout)
 				} else {
 					reportTimerEvent(ctx, timer_event.TriggerTimeout, timeout)
 				}
-			case InterruptEvent:
+			case interruptEvent:
 				reportTimerEvent(ctx, timer_event.TriggerStop, timeout)
-			case TimeoutEvent:
+			case timeoutEvent:
 				reportTimerEvent(ctx, timer_event.TriggerTimeout, timeout)
 			}
 		},
@@ -83,16 +83,16 @@ func ReportCountDownStatus(t *PeriodicReminder) {
 		report.PostInfo("Mob Timer is off")
 	} else {
 		switch t.state {
-		case NotStarted:
+		case notStarted:
 			report.PostInfo("Mob Timer is not started")
-		case Running:
+		case running:
 			report.PostInfo("Mob Timer: ",
 				timer_event.FormatDuration(t.GetElapsedTime()), " done, ",
 				timer_event.FormatDuration(t.GetRemainingTime()), " to go")
-		case AfterTimeOut:
+		case afterTimeOut:
 			report.PostWarning("Mob Timer has timed out: ",
 				timer_event.FormatDuration(t.GetRemainingTime().Abs()), " over!")
-		case StoppedAfterInterruption:
+		case stoppedAfterInterruption:
 			report.PostInfo("Mob Timer was interrupted")
 		}
 	}

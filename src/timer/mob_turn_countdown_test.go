@@ -77,27 +77,27 @@ func Test_report_count_down_status_when_mob_is_not_started(t *testing.T) {
 func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
 	tests := []struct {
 		desc          string
-		state         ReminderState
+		state         reminderState
 		expectedTrace string
 	}{
 		{
 			"timer not started",
-			NotStarted,
+			notStarted,
 			"Mob Timer is not started",
 		},
 		{
 			"timer running",
-			Running,
+			running,
 			"Mob Timer: 0s done, 5m to go",
 		},
 		{
 			"after timeout",
-			AfterTimeOut,
+			afterTimeOut,
 			"Mob Timer has timed out: 5m over!",
 		},
 		{
 			"timer stopped after interruption",
-			StoppedAfterInterruption,
+			stoppedAfterInterruption,
 			"Mob Timer was interrupted",
 		},
 	}

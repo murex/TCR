@@ -72,7 +72,7 @@ func Test_ticking_does_not_stop_after_timeout(t *testing.T) {
 	r.Start()
 	time.Sleep(testTimeout * 2)
 	assert.Equal(t, 4, r.tickCounter)
-	assert.Equal(t, AfterTimeOut, r.state)
+	assert.Equal(t, afterTimeOut, r.state)
 }
 
 // Tick Period
@@ -101,7 +101,7 @@ func Test_start_reminder(t *testing.T) {
 func Test_start_reminder_triggers_start_event(t *testing.T) {
 	var eventFired = false
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {
-		if ctx.eventType == StartEvent {
+		if ctx.eventType == startEvent {
 			eventFired = true
 		}
 	})
@@ -121,7 +121,7 @@ func Test_stop_reminder_before_1st_tick(t *testing.T) {
 	time.Sleep(testTimeout)
 
 	assert.Equal(t, 0, r.tickCounter)
-	assert.Equal(t, StoppedAfterInterruption, r.state)
+	assert.Equal(t, stoppedAfterInterruption, r.state)
 }
 
 func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
@@ -132,7 +132,7 @@ func Test_stop_reminder_between_1st_and_2nd_tick(t *testing.T) {
 	time.Sleep(testTimeout)
 
 	assert.Equal(t, 1, r.tickCounter)
-	assert.Equal(t, StoppedAfterInterruption, r.state)
+	assert.Equal(t, stoppedAfterInterruption, r.state)
 }
 
 func Test_keep_posting_reminders_after_timeout(t *testing.T) {
@@ -142,7 +142,7 @@ func Test_keep_posting_reminders_after_timeout(t *testing.T) {
 	r.Stop()
 
 	assert.Equal(t, 5, r.tickCounter)
-	assert.Equal(t, StoppedAfterInterruption, r.state)
+	assert.Equal(t, stoppedAfterInterruption, r.state)
 }
 
 // PeriodicReminder tick counter
@@ -162,7 +162,7 @@ func Test_can_track_number_of_ticks_fired_before_and_after_timeout(t *testing.T)
 func Test_callback_function_can_know_current_tick_index(t *testing.T) {
 	var index int
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {
-		if ctx.eventType == PeriodicEvent {
+		if ctx.eventType == periodicEvent {
 			index = ctx.index
 		}
 	})
@@ -179,13 +179,13 @@ func Test_callback_function_can_know_timestamp(t *testing.T) {
 	var tsTimeout time.Time
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {
 		switch ctx.eventType {
-		case StartEvent:
+		case startEvent:
 			tsStart = ctx.timestamp
-		case PeriodicEvent:
+		case periodicEvent:
 			if ctx.index < 2 {
 				tsPeriodic[ctx.index] = ctx.timestamp
 			}
-		case TimeoutEvent:
+		case timeoutEvent:
 			tsTimeout = ctx.timestamp
 		}
 	})
@@ -205,9 +205,9 @@ func Test_callback_function_can_know_elapsed_time_since_start(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {
 		var expected time.Duration
 		switch ctx.eventType {
-		case StartEvent:
+		case startEvent:
 			expected = 0
-		case PeriodicEvent, TimeoutEvent:
+		case periodicEvent, timeoutEvent:
 			expected = testTickPeriod * time.Duration(ctx.index+1)
 		}
 		assert.Equal(t, expected, ctx.elapsed)
@@ -220,11 +220,11 @@ func Test_callback_function_can_know_remaining_time_until_end(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {
 		var expected time.Duration
 		switch ctx.eventType {
-		case StartEvent:
+		case startEvent:
 			expected = testTimeout
-		case PeriodicEvent:
+		case periodicEvent:
 			expected = testTimeout - testTickPeriod*time.Duration(ctx.index+1)
-		case TimeoutEvent:
+		case timeoutEvent:
 			expected = 0
 		}
 		assert.Equal(t, expected, ctx.remaining)

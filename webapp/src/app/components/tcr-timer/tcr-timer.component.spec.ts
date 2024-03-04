@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NotificationComponent } from './notification.component';
+import { TcrTimerComponent } from './tcr-timer.component';
 
-describe('TimeoutNotificationComponent', () => {
-  let component: NotificationComponent;
-  let fixture: ComponentFixture<NotificationComponent>;
+describe('TcrTimerComponent', () => {
+  let component: TcrTimerComponent;
+  let fixture: ComponentFixture<TcrTimerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NotificationComponent]
+      imports: [TcrTimerComponent]
     })
     .compileComponents();
-
-    fixture = TestBed.createComponent(NotificationComponent);
+    
+    fixture = TestBed.createComponent(TcrTimerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

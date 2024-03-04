@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {TcrMessage} from "../../interfaces/tcr-message";
-import {bgDarkGray, cyan, green, lightCyan, red, yellow} from "ansicolor";
+import {bgDarkGray, cyan, green, lightCyan, lightYellow, red, yellow} from "ansicolor";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 
 @Component({
@@ -36,10 +36,16 @@ export class TcrConsoleComponent {
         this.write(lightCyan(message.text));
         break;
       case "role":
-        // ignore: handled by roles service
+        if (getRoleAction(message.text) === "start") {
+          this.clear();
+        }
+        this.write(yellow("─".repeat(80)));
+        this.write(lightYellow(formatRoleMessage(message.text)));
+        this.write(yellow("─".repeat(80)));
         break;
       case "timer":
-        this.write("⏳ " + green(message.text));
+        // ignore: handled by timer service
+        // this.write("⏳ " + green(message.text));
         break;
       case "success":
         this.write("🟢 " + green(message.text));
@@ -61,4 +67,27 @@ export class TcrConsoleComponent {
     this.child.write(input.replace(/\n/g, "\r\n") + "\r\n");
   };
 
+  private clear() {
+    this.child.underlying?.reset();
+  }
+
+}
+
+function getRoleAction(message: string): string {
+  return message ? message.split(":")[1] : "";
+}
+
+function getRoleName(message: string): string {
+  return message ? message.split(":")[0] : "";
+}
+
+function formatRoleMessage(message: string): string {
+  return message
+    ? capitalize(getRoleAction(message)) + "ing "
+    + capitalize(getRoleName(message)) + " role"
+    : "";
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }

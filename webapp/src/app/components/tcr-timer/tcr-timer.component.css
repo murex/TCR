@@ -1,0 +1,29 @@
+
+.wrap {
+  display: flex;
+  border-radius: 0.5rem;
+  box-shadow: 7px 7px 30px -5px rgba(0, 0, 0, 0.1);
+}
+
+.ico-wrap {
+  margin: auto;
+}
+
+.vcenter {
+  margin: auto;
+}
+
+h2 {
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+}
+
+.display-5 {
+  text-align: center;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1.8rem;
+}
+
+.mbr-bold {
+  font-weight: 700;
+}
