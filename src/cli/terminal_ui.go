@@ -34,6 +34,7 @@ import (
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
+	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"os"
@@ -288,12 +289,19 @@ func (term *TerminalUI) keyNotRecognizedMessage() {
 }
 
 func (term *TerminalUI) showTimerStatus() {
-	if settings.EnableMobTimer {
-		if r := term.tcr.GetCurrentRole(); r != nil && r.RunsWithTimer() {
-			term.tcr.ReportMobTimerStatus()
-		} else {
-			term.keyNotRecognizedMessage()
-		}
+	mts := term.tcr.GetMobTimerStatus()
+	switch mts.State {
+	case timer.StateOff:
+		term.printInfo("Mob Timer is off")
+	case timer.StateRunning:
+		term.printInfo("Mob Timer: ",
+			timer_event.FormatDuration(mts.Elapsed), " done, ",
+			timer_event.FormatDuration(mts.Remaining), " to go")
+	case timer.StateTimeout:
+		term.printWarning("Mob Timer has timed out: ",
+			timer_event.FormatDuration(mts.Remaining.Abs()), " over!")
+	case timer.StateStopped:
+		term.printInfo("Mob Timer was interrupted")
 	}
 }
 
@@ -424,6 +432,9 @@ func (term *TerminalUI) initMainMenu() *menu {
 			term.enterRoleMenuAction(role.Driver{}), false),
 		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
 			term.enterRoleMenuAction(role.Navigator{}), false),
+		newMenuOption('T', timerStatusMenuHelper,
+			term.timerStatusMenuEnabler(),
+			term.timerStatusMenuAction(), false),
 		newMenuOption('P', gitAutoPushMenuHelper,
 			term.gitMenuEnabler(),
 			term.autoPushMenuAction(), false),
@@ -529,10 +540,9 @@ func (term *TerminalUI) quitMenuAction() menuAction {
 	}
 }
 
-func (term *TerminalUI) timerStatusMenuEnabler() menuEnabler {
+func (*TerminalUI) timerStatusMenuEnabler() menuEnabler {
 	return func() bool {
-		r := term.tcr.GetCurrentRole()
-		return settings.EnableMobTimer && r != nil && r.RunsWithTimer()
+		return settings.EnableMobTimer
 	}
 }
 

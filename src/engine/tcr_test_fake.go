@@ -1,7 +1,7 @@
 //go:build test_helper
 
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/status"
+	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/ui"
 )
 
@@ -43,6 +44,7 @@ const (
 	TCRCallRunAsNavigator       TCRCall = "run-as-navigator"
 	TCRCallStop                 TCRCall = "stop"
 	TCRCallReportMobTimerStatus TCRCall = "report-mob-timer-status"
+	TCRCallGetMobTimerStatus    TCRCall = "get-mob-timer-status"
 	TCRCallRunTcrCycle          TCRCall = "run-tcr-cycle"
 	TCRCallRunCheck             TCRCall = "run-check"
 	TCRCallPrintLog             TCRCall = "print-log"
@@ -137,6 +139,12 @@ func (fake *FakeTCREngine) Stop() {
 // ReportMobTimerStatus reports the status of the mob timer
 func (fake *FakeTCREngine) ReportMobTimerStatus() {
 	fake.recordCall(TCRCallReportMobTimerStatus)
+}
+
+// GetMobTimerStatus returns the status of the mob timer
+func (fake *FakeTCREngine) GetMobTimerStatus() timer.CurrentState {
+	fake.recordCall(TCRCallGetMobTimerStatus)
+	return timer.CurrentState{State: timer.StateOff}
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle

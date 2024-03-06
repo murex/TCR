@@ -220,6 +220,7 @@ func Test_list_role_menu_options(t *testing.T) {
 		{
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tT "+menuArrow+" "+timerStatusMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitNavigatorRoleMenuHelper) +
 				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
@@ -257,6 +258,7 @@ func Test_simple_message_methods(t *testing.T) {
 			expected: asCyanTraceWithSeparatorLine("What shall we do?") +
 				asCyanTrace("\tD "+menuArrow+" "+enterDriverRoleMenuHelper) +
 				asCyanTrace("\tN "+menuArrow+" "+enterNavigatorRoleMenuHelper) +
+				asCyanTrace("\tT "+menuArrow+" "+timerStatusMenuHelper) +
 				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
 				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
 				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
@@ -585,8 +587,10 @@ func Test_main_menu(t *testing.T) {
 			engine.NoTCRCall,
 		},
 		{
-			"T key has no action in main menu", git.Name, []byte{'t'}, []byte{'T'},
-			engine.NoTCRCall,
+			"T key triggers retrieving timer status", git.Name, []byte{'t'}, []byte{'T'},
+			[]engine.TCRCall{
+				engine.TCRCallGetMobTimerStatus,
+			},
 		},
 		{
 			"P key is actionable with git", git.Name, []byte{'p'}, []byte{'P'},
@@ -694,8 +698,8 @@ func Test_driver_menu(t *testing.T) {
 			engine.NoTCRCall,
 		},
 		{
-			"T key triggers reporting timer status", []byte{'t', 'T'},
-			[]engine.TCRCall{engine.TCRCallReportMobTimerStatus},
+			"T key triggers retrieving timer status", []byte{'t', 'T'},
+			[]engine.TCRCall{engine.TCRCallGetMobTimerStatus},
 		},
 		{
 			"P key has no action", []byte{'p', 'P'},
@@ -747,8 +751,8 @@ func Test_navigator_menu(t *testing.T) {
 			engine.NoTCRCall,
 		},
 		{
-			"T key has no action", []byte{'t', 'T'},
-			engine.NoTCRCall,
+			"T key triggers retrieving timer status", []byte{'t', 'T'},
+			[]engine.TCRCall{engine.TCRCallGetMobTimerStatus},
 		},
 		{
 			"P key has no action", []byte{'p', 'P'},
