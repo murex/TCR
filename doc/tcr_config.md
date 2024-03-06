@@ -32,7 +32,7 @@ tcr config [flags]
   -o, --polling duration        set VCS polling period when running as navigator
   -P, --port-number int         indicate port number used by TCR HTTP server in web mode (experimental) (default: 8483)
   -t, --toolchain string        indicate the toolchain to be used by TCR
-  -T, --trace string            indicate trace options. Recognized values: none or vcs
+  -T, --trace string            indicate trace options. Recognized values: none (default), vcs or http
   -V, --vcs string              indicate the VCS (version control system) to be used by TCR: git (default) or p4
   -w, --work-dir string         indicate the directory from which TCR is running (default: current directory)
 ```

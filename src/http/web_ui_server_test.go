@@ -59,7 +59,7 @@ func Test_create_web_ui_server(t *testing.T) {
 		{
 			desc: "development mode",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, true, wuis.devMode)
+				assert.Equal(t, false, wuis.devMode)
 			},
 		},
 		{

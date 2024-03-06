@@ -56,7 +56,7 @@ func New(p params.Params, tcr engine.TCRInterface) *WebUIServer {
 		tcr: tcr,
 		// host: "0.0.0.0", // To enable connections from a remote host
 		host:             "127.0.0.1", // To restrict connections to local host only
-		devMode:          true,
+		devMode:          p.Trace == "http",
 		router:           nil,
 		httpServer:       nil,
 		websocketTimeout: 1 * time.Minute, // default timeout value
@@ -77,11 +77,12 @@ func (webUIServer *WebUIServer) Start() {
 }
 
 func (webUIServer *WebUIServer) initGinEngine() {
+	gin.SetMode(gin.ReleaseMode)
+
 	// gin.Default() uses gin.Logger() which should be turned off in TCR production version
 	webUIServer.router = gin.New()
 	webUIServer.router.Use(gin.Recovery())
 
-	gin.SetMode(gin.ReleaseMode)
 	if webUIServer.InDevMode() {
 		gin.SetMode(gin.DebugMode)
 		// In development mode we want to see incoming HTTP requests
