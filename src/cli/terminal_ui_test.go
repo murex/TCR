@@ -31,6 +31,7 @@ import (
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"github.com/stretchr/testify/assert"
@@ -527,6 +528,53 @@ func Test_print_vcs_info(t *testing.T) {
 			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
 				term, _, _ := terminalSetup(*params.AParamSet())
 				term.printVCSInfo(test.info)
+				terminalTeardown(*term)
+			}))
+		})
+	}
+}
+
+func Test_show_timer_status(t *testing.T) {
+	tests := []struct {
+		timerState timer.CurrentState
+		expected   string
+	}{
+		{
+			timerState: timer.CurrentState{State: timer.StateOff, Timeout: 0, Elapsed: 0, Remaining: 0},
+			expected:   asCyanTrace("Mob Timer is off"),
+		},
+		{
+			timerState: timer.CurrentState{
+				State:     timer.StateRunning,
+				Timeout:   10 * time.Minute,
+				Elapsed:   2 * time.Minute,
+				Remaining: 8 * time.Minute},
+			expected: asCyanTrace("Mob Timer: 2m done, 8m to go"),
+		},
+		{
+			timerState: timer.CurrentState{
+				State:     timer.StateTimeout,
+				Timeout:   10 * time.Minute,
+				Elapsed:   13 * time.Minute,
+				Remaining: -3 * time.Minute},
+			expected: asYellowTrace("Mob Timer has timed out: 3m over!"),
+		},
+		{
+			timerState: timer.CurrentState{
+				State:     timer.StateStopped,
+				Timeout:   10 * time.Minute,
+				Elapsed:   5 * time.Minute,
+				Remaining: 0 * time.Minute},
+			expected: asCyanTrace("Mob Timer was interrupted"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.timerState.State, func(t *testing.T) {
+			assert.Equal(t, test.expected, capturer.CaptureStdout(func() {
+				term, fakeEngine, _ := terminalSetup(*params.AParamSet())
+				fakeEngine.SetMobTimerStatus(test.timerState)
+				term.showTimerStatus()
 				terminalTeardown(*term)
 			}))
 		})

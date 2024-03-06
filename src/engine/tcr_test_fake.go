@@ -37,20 +37,19 @@ type TCRCall string
 
 // Possible values for TCRCall
 const (
-	TCRCallQuit                 TCRCall = "quit"
-	TCRCallToggleAutoPush       TCRCall = "toggle-auto-push"
-	TCRCallGetSessionInfo       TCRCall = "get-session-info"
-	TCRCallRunAsDriver          TCRCall = "run-as-driver"
-	TCRCallRunAsNavigator       TCRCall = "run-as-navigator"
-	TCRCallStop                 TCRCall = "stop"
-	TCRCallReportMobTimerStatus TCRCall = "report-mob-timer-status"
-	TCRCallGetMobTimerStatus    TCRCall = "get-mob-timer-status"
-	TCRCallRunTcrCycle          TCRCall = "run-tcr-cycle"
-	TCRCallRunCheck             TCRCall = "run-check"
-	TCRCallPrintLog             TCRCall = "print-log"
-	TCRCallPrintStats           TCRCall = "print-stats"
-	TCRCallVCSPull              TCRCall = "vcs-pull"
-	TCRCallVCSPush              TCRCall = "vcs-push"
+	TCRCallQuit              TCRCall = "quit"
+	TCRCallToggleAutoPush    TCRCall = "toggle-auto-push"
+	TCRCallGetSessionInfo    TCRCall = "get-session-info"
+	TCRCallRunAsDriver       TCRCall = "run-as-driver"
+	TCRCallRunAsNavigator    TCRCall = "run-as-navigator"
+	TCRCallStop              TCRCall = "stop"
+	TCRCallGetMobTimerStatus TCRCall = "get-mob-timer-status"
+	TCRCallRunTcrCycle       TCRCall = "run-tcr-cycle"
+	TCRCallRunCheck          TCRCall = "run-check"
+	TCRCallPrintLog          TCRCall = "print-log"
+	TCRCallPrintStats        TCRCall = "print-stats"
+	TCRCallVCSPull           TCRCall = "vcs-pull"
+	TCRCallVCSPush           TCRCall = "vcs-push"
 )
 
 var NoTCRCall []TCRCall
@@ -59,15 +58,17 @@ var NoTCRCall []TCRCall
 // such as cli.
 type FakeTCREngine struct {
 	TCREngine
-	callRecord []TCRCall
-	returnCode int
-	info       *SessionInfo
+	timerStatus timer.CurrentState
+	callRecord  []TCRCall
+	returnCode  int
+	info        *SessionInfo
 }
 
 // NewFakeTCREngine creates a FakeToolchain instance
 func NewFakeTCREngine() *FakeTCREngine {
 	return &FakeTCREngine{
-		returnCode: 0,
+		returnCode:  0,
+		timerStatus: timer.CurrentState{State: timer.StateOff, Timeout: 0, Elapsed: 0, Remaining: 0},
 		info: &SessionInfo{
 			BaseDir:           "fake",
 			WorkDir:           "fake",
@@ -136,15 +137,15 @@ func (fake *FakeTCREngine) Stop() {
 	fake.recordCall(TCRCallStop)
 }
 
-// ReportMobTimerStatus reports the status of the mob timer
-func (fake *FakeTCREngine) ReportMobTimerStatus() {
-	fake.recordCall(TCRCallReportMobTimerStatus)
-}
-
 // GetMobTimerStatus returns the status of the mob timer
 func (fake *FakeTCREngine) GetMobTimerStatus() timer.CurrentState {
 	fake.recordCall(TCRCallGetMobTimerStatus)
-	return timer.CurrentState{State: timer.StateOff}
+	return fake.timerStatus
+}
+
+// SetMobTimerStatus sets the status of the mob timer
+func (fake *FakeTCREngine) SetMobTimerStatus(state timer.CurrentState) {
+	fake.timerStatus = state
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle

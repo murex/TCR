@@ -75,25 +75,3 @@ func findBestTickPeriodFor(timeout time.Duration) time.Duration {
 	}
 	return defaultTickPeriod
 }
-
-// ReportCountDownStatus Reports the status for the provided PeriodicReminder,
-// If the PeriodicReminder is in running state, indicates time spent and time remaining.
-func ReportCountDownStatus(t *PeriodicReminder) {
-	if t == nil {
-		report.PostInfo("Mob Timer is off")
-	} else {
-		switch t.state {
-		case notStarted:
-			report.PostInfo("Mob Timer is not started")
-		case running:
-			report.PostInfo("Mob Timer: ",
-				timer_event.FormatDuration(t.GetElapsedTime()), " done, ",
-				timer_event.FormatDuration(t.GetRemainingTime()), " to go")
-		case afterTimeOut:
-			report.PostWarning("Mob Timer has timed out: ",
-				timer_event.FormatDuration(t.GetRemainingTime().Abs()), " over!")
-		case stoppedAfterInterruption:
-			report.PostInfo("Mob Timer was interrupted")
-		}
-	}
-}

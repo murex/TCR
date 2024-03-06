@@ -66,55 +66,6 @@ func Test_mob_turn_countdown_creation_in_one_shot_runmode(t *testing.T) {
 	assert.Zero(t, NewMobTurnCountdown(runmode.OneShot{}, defaultTimeout))
 }
 
-func Test_report_count_down_status_when_mob_is_not_started(t *testing.T) {
-	sniffer := report.NewSniffer()
-	ReportCountDownStatus(nil)
-	sniffer.Stop()
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, "Mob Timer is off", sniffer.GetAllMatches()[0].Payload.ToString())
-}
-
-func Test_report_count_down_status_when_mob_is_started(t *testing.T) {
-	tests := []struct {
-		desc          string
-		state         reminderState
-		expectedTrace string
-	}{
-		{
-			"timer not started",
-			notStarted,
-			"Mob Timer is not started",
-		},
-		{
-			"timer running",
-			running,
-			"Mob Timer: 0s done, 5m to go",
-		},
-		{
-			"after timeout",
-			afterTimeOut,
-			"Mob Timer has timed out: 5m over!",
-		},
-		{
-			"timer stopped after interruption",
-			stoppedAfterInterruption,
-			"Mob Timer was interrupted",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			reminder := NewPeriodicReminder(0, 0, func(ctx ReminderContext) {})
-			reminder.state = test.state
-			reminder.startTime = time.Now()
-			ReportCountDownStatus(reminder)
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, test.expectedTrace, sniffer.GetAllMatches()[0].Payload.ToString())
-		})
-	}
-}
-
 func Test_mob_turn_count_down(t *testing.T) {
 	sniffer := report.NewSniffer()
 

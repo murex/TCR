@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -541,30 +541,26 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 			), nil, nil, nil)
 			tcr.RunAsDriver()
 			time.Sleep(1 * time.Millisecond)
-			tcr.ReportMobTimerStatus()
 			tcr.Stop()
 			sniffer.Stop()
-			//fmt.Println(sniffer.GetAllMatches())
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
 	}
 }
 
-func Test_mob_timer_should_not_start_in_solo_mode(t *testing.T) {
+func Test_mob_timer_should_be_off_in_solo_mode(t *testing.T) {
 	settings.EnableMobTimer = true
 	sniffer := report.NewSniffer(
 		func(msg report.Message) bool {
 			return msg.Type.Category == report.Info &&
-				msg.Payload.ToString() == "Mob Timer is off"
+				msg.Payload.ToString() == "Timer is not used in "+runmode.Solo{}.Name()+" mode"
 		},
 	)
 	tcr, _ := initTCREngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Solo{})), nil, nil, nil)
 	tcr.RunAsDriver()
 	time.Sleep(1 * time.Millisecond)
-	tcr.ReportMobTimerStatus()
 	tcr.Stop()
 	sniffer.Stop()
-	//fmt.Println(sniffer.GetAllMatches())
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
 

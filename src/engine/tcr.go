@@ -63,7 +63,6 @@ type (
 		Stop()
 		RunTCRCycle()
 		GetSessionInfo() SessionInfo
-		ReportMobTimerStatus()
 		GetMobTimerStatus() timer.CurrentState
 		SetRunMode(m runmode.RunMode)
 		RunCheck(p params.Params)
@@ -192,9 +191,13 @@ func (tcr *TCREngine) SetCommitOnFail(flag bool) {
 }
 
 func (tcr *TCREngine) setMobTimerDuration(duration time.Duration) {
-	if settings.EnableMobTimer && tcr.mode.NeedsCountdownTimer() {
-		tcr.mobTurnDuration = duration
-		report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
+	if settings.EnableMobTimer {
+		if tcr.mode.NeedsCountdownTimer() {
+			tcr.mobTurnDuration = duration
+			report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
+		} else {
+			report.PostInfo("Timer is not used in " + tcr.mode.Name() + " mode")
+		}
 	}
 }
 
@@ -678,13 +681,6 @@ func (tcr *TCREngine) stopTimer() {
 	if settings.EnableMobTimer && tcr.mobTimer != nil {
 		tcr.mobTimer.Stop()
 		tcr.mobTimer = nil
-	}
-}
-
-// ReportMobTimerStatus reports the status of the mob timer
-func (tcr *TCREngine) ReportMobTimerStatus() {
-	if settings.EnableMobTimer {
-		timer.ReportCountDownStatus(tcr.mobTimer)
 	}
 }
 
