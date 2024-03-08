@@ -35,8 +35,8 @@ func Test_solo_mode_default_auto_push_if_false(t *testing.T) {
 	assert.False(t, Solo{}.AutoPushDefault())
 }
 
-func Test_solo_mode_does_not_require_a_countdown_timer(t *testing.T) {
-	assert.False(t, Solo{}.NeedsCountdownTimer())
+func Test_solo_mode_does_not_require_multiple_roles(t *testing.T) {
+	assert.False(t, Solo{}.IsMultiRole())
 }
 
 func Test_solo_mode_allows_user_interactions(t *testing.T) {

@@ -192,7 +192,7 @@ func (tcr *TCREngine) SetCommitOnFail(flag bool) {
 
 func (tcr *TCREngine) setMobTimerDuration(duration time.Duration) {
 	if settings.EnableMobTimer {
-		if tcr.mode.NeedsCountdownTimer() {
+		if tcr.mode.IsMultiRole() {
 			tcr.mobTurnDuration = duration
 			report.PostInfo("Timer duration is ", tcr.mobTurnDuration)
 		} else {

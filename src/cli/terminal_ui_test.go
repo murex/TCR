@@ -112,8 +112,8 @@ func terminalSetup(p params.Params) (term *TerminalUI, fakeEngine *engine.FakeTC
 	fakeEngine = engine.NewFakeTCREngine()
 	fakeNotifier = &desktop.FakeNotifier{}
 	term = &TerminalUI{params: p, tcr: fakeEngine, desktop: desktop.NewDesktop(fakeNotifier)}
-	term.mainMenu = term.initMainMenu()
-	term.roleMenu = term.initRoleMenu()
+	term.mobMenu = term.initMobMenu()
+	term.soloMenu = term.initSoloMenu()
 	sttyCmdDisabled = true
 	report.Reset()
 	term.StartReporting()
@@ -208,31 +208,58 @@ func Test_terminal_tracing_methods(t *testing.T) {
 func Test_list_role_menu_options(t *testing.T) {
 	title := "some title"
 	var testFlags = []struct {
+		runMode     runmode.RunMode
 		currentRole role.Role
 		expected    string
 	}{
 		{
+			runMode:     runmode.Solo{},
 			currentRole: role.Driver{},
 			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
+				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
+				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
+				asCyanTrace("\tQ "+menuArrow+" "+quitTCRMenuHelper) +
+				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
+		},
+		{
+			runMode:     runmode.Mob{},
+			currentRole: role.Driver{},
+			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tN "+menuArrow+" "+enterNavigatorRoleMenuHelper) +
 				asCyanTrace("\tT "+menuArrow+" "+timerStatusMenuHelper) +
+				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
+				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
+				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitDriverRoleMenuHelper) +
 				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
 		{
+			runMode:     runmode.Mob{},
 			currentRole: role.Navigator{},
 			expected: asCyanTraceWithSeparatorLine(title) +
+				asCyanTrace("\tD "+menuArrow+" "+enterDriverRoleMenuHelper) +
 				asCyanTrace("\tT "+menuArrow+" "+timerStatusMenuHelper) +
+				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
+				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
+				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitNavigatorRoleMenuHelper) +
 				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
 	}
 
 	for _, tt := range testFlags {
-		t.Run(tt.currentRole.Name(), func(t *testing.T) {
-			term, _, _ := terminalSetup(*params.AParamSet())
+		desc := tt.runMode.Name() + " " + tt.currentRole.Name()
+		t.Run(desc, func(t *testing.T) {
+			term, _, _ := terminalSetup(*params.AParamSet(params.WithRunMode(tt.runMode)))
 			_ = term.runTCR(tt.currentRole)
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(func() {
-				term.listMenuOptions(term.roleMenu, title)
+				switch tt.runMode {
+				case runmode.Solo{}:
+					term.listMenuOptions(term.soloMenu, title)
+				case runmode.Mob{}:
+					term.listMenuOptions(term.mobMenu, title)
+				}
 			}))
 			terminalTeardown(*term)
 		})
@@ -270,7 +297,7 @@ func Test_simple_message_methods(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			term, _, _ = terminalSetup(*params.AParamSet())
+			term, _, _ = terminalSetup(*params.AParamSet(params.WithRunMode(runmode.Mob{})))
 			assert.Equal(t, tt.expected, capturer.CaptureStdout(tt.method))
 			terminalTeardown(*term)
 		})
@@ -614,7 +641,114 @@ func Test_print_commit_message_suffix(t *testing.T) {
 	}
 }
 
-func Test_main_menu(t *testing.T) {
+func Test_solo_menu_actions(t *testing.T) {
+	testFlags := []struct {
+		desc     string
+		vcsName  string
+		input1   []byte
+		input2   []byte
+		expected []engine.TCRCall
+	}{
+		{
+			"Enter key has no action", git.Name, []byte{enterKey}, nil,
+			engine.NoTCRCall,
+		},
+		{
+			"? key has no action on TCR", git.Name, []byte{'?'}, nil,
+			engine.NoTCRCall,
+		},
+		{
+			"T key has no action", git.Name, []byte{'t'}, []byte{'T'},
+			engine.NoTCRCall,
+		},
+		{
+			"P key is actionable with git", git.Name, []byte{'p'}, []byte{'P'},
+			[]engine.TCRCall{
+				engine.TCRCallToggleAutoPush,
+				engine.TCRCallGetSessionInfo,
+			},
+		},
+		{
+			"P key has no action with p4", p4.Name, []byte{'p'}, []byte{'P'},
+			engine.NoTCRCall,
+		},
+		{
+			"L key is actionable with git", git.Name, []byte{'l'}, []byte{'L'},
+			[]engine.TCRCall{
+				engine.TCRCallVCSPull,
+			},
+		},
+		{
+			"L key has no action with p4", p4.Name, []byte{'l'}, []byte{'L'},
+			engine.NoTCRCall,
+		},
+		{
+			"S key is actionable with git", git.Name, []byte{'s'}, []byte{'S'},
+			[]engine.TCRCall{
+				engine.TCRCallVCSPush,
+			},
+		},
+		{
+			"S key has no action with p4", p4.Name, []byte{'s'}, []byte{'S'},
+			engine.NoTCRCall,
+		},
+		{
+			"Y key has no action with git", git.Name, []byte{'y'}, []byte{'Y'},
+			engine.NoTCRCall,
+		},
+		{
+			"Y key is actionable with p4", p4.Name, []byte{'y'}, []byte{'Y'},
+			[]engine.TCRCall{
+				engine.TCRCallVCSPull,
+			},
+		},
+		{
+			"D key has no action", git.Name, []byte{'d'}, []byte{'D'},
+			engine.NoTCRCall,
+		},
+		{
+			"N key has no action", git.Name, []byte{'n'}, []byte{'N'},
+			engine.NoTCRCall,
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			for _, input := range [][]byte{tt.input1, tt.input2} {
+				if input != nil {
+					assertSoloMenuActions(t, tt.vcsName, input, tt.expected)
+				}
+			}
+		})
+	}
+}
+
+func assertSoloMenuActions(t *testing.T, vcsName string, input []byte, expected []engine.TCRCall) {
+	t.Helper()
+	stdin := os.Stdin
+	stdout := os.Stdout
+	stderr := os.Stderr
+	// Restore stdin, stdout and stderr right after the test.
+	defer func() { os.Stdin = stdin; os.Stdout = stdout; os.Stderr = stderr }()
+	// We fake stdin so that we can simulate a key press
+	// We always add a 'q' at the end to make sure we get out of the infinite loop
+	os.Stdin = fakeStdin(t, append(input, 'q'))
+	// Displayed info on stdout and stderr is not used in the test
+	os.Stdout = os.NewFile(0, os.DevNull)
+	os.Stderr = os.NewFile(0, os.DevNull)
+
+	term, fakeEngine, _ := terminalSetup(*params.AParamSet(
+		params.WithRunMode(runmode.Solo{}),
+		params.WithVCS(vcsName),
+	))
+	term.enterSoloMenu()
+	expectedHistory := append(append(
+		[]engine.TCRCall{engine.TCRCallRunAsDriver}, expected...),
+		engine.TCRCallStop)
+	assert.Equal(t, expectedHistory, fakeEngine.GetCallHistory())
+	terminalTeardown(*term)
+}
+
+func Test_mob_menu_actions(t *testing.T) {
 	testFlags := []struct {
 		desc     string
 		vcsName  string
@@ -722,134 +856,8 @@ func assertMainMenuActions(t *testing.T, vcsName string, input []byte, expected 
 	os.Stderr = os.NewFile(0, os.DevNull)
 
 	term, fakeEngine, _ := terminalSetup(*params.AParamSet(params.WithVCS(vcsName)))
-	term.enterMainMenu()
+	term.enterMobMenu()
 	assert.Equal(t, append(expected, engine.TCRCallQuit), fakeEngine.GetCallHistory())
-	terminalTeardown(*term)
-}
-
-func Test_driver_menu(t *testing.T) {
-	testFlags := []struct {
-		desc     string
-		input    []byte
-		expected []engine.TCRCall
-	}{
-		{
-			"Enter key has no action", []byte{enterKey},
-			engine.NoTCRCall,
-		},
-		{
-			"? key has no action on TCR", []byte{'?'},
-			engine.NoTCRCall,
-		},
-		{
-			"Q key has no action on TCR", []byte{'q', 'Q'},
-			engine.NoTCRCall,
-		},
-		{
-			"T key triggers retrieving timer status", []byte{'t', 'T'},
-			[]engine.TCRCall{engine.TCRCallGetMobTimerStatus},
-		},
-		{
-			"P key has no action", []byte{'p', 'P'},
-			engine.NoTCRCall,
-		},
-		{
-			"D key has no action", []byte{'d', 'D'},
-			engine.NoTCRCall,
-		},
-		{
-			"N key has no action", []byte{'n', 'N'},
-			engine.NoTCRCall,
-		},
-		{
-			"L key has no action", []byte{'l', 'L'},
-			engine.NoTCRCall,
-		},
-		{
-			"S key has no action", []byte{'s', 'S'},
-			engine.NoTCRCall,
-		},
-	}
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			for _, input := range tt.input {
-				assertStartAsActions(t, role.Driver{}, input,
-					append([]engine.TCRCall{engine.TCRCallRunAsDriver}, tt.expected...))
-			}
-		})
-	}
-}
-
-func Test_navigator_menu(t *testing.T) {
-	testFlags := []struct {
-		desc     string
-		input    []byte
-		expected []engine.TCRCall
-	}{
-		{
-			"Enter key has no action", []byte{enterKey},
-			engine.NoTCRCall,
-		},
-		{
-			"? key has no action on TCR", []byte{'?'},
-			engine.NoTCRCall,
-		},
-		{
-			"Q key has no action on TCR", []byte{'q', 'Q'},
-			engine.NoTCRCall,
-		},
-		{
-			"T key triggers retrieving timer status", []byte{'t', 'T'},
-			[]engine.TCRCall{engine.TCRCallGetMobTimerStatus},
-		},
-		{
-			"P key has no action", []byte{'p', 'P'},
-			engine.NoTCRCall,
-		},
-		{
-			"L key has no action", []byte{'l', 'L'},
-			engine.NoTCRCall,
-		},
-		{
-			"S key has no action", []byte{'s', 'S'},
-			engine.NoTCRCall,
-		},
-		{
-			"D key has no action", []byte{'d', 'D'},
-			engine.NoTCRCall,
-		},
-		{
-			"N key has no action", []byte{'n', 'N'},
-			engine.NoTCRCall,
-		},
-	}
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			for _, input := range tt.input {
-				assertStartAsActions(t, role.Navigator{}, input,
-					append([]engine.TCRCall{engine.TCRCallRunAsNavigator}, tt.expected...))
-			}
-		})
-	}
-}
-
-func assertStartAsActions(t *testing.T, r role.Role, input byte, expected []engine.TCRCall) {
-	t.Helper()
-	stdin := os.Stdin
-	stdout := os.Stdout
-	stderr := os.Stderr
-	// Restore stdin, stdout and stderr right after the test.
-	defer func() { os.Stdin = stdin; os.Stdout = stdout; os.Stderr = stderr }()
-	// We fake stdin so that we can simulate a key press
-	// We always add a 'q' at the end to make sure we get out of the infinite loop
-	os.Stdin = fakeStdin(t, []byte{input, 'q'})
-	// Displayed info on stdout and stderr is not used in the test
-	os.Stdout = os.NewFile(0, os.DevNull)
-	os.Stderr = os.NewFile(0, os.DevNull)
-
-	term, fakeEngine, _ := terminalSetup(*params.AParamSet())
-	term.enterRole(r)
-	assert.Equal(t, append(expected, engine.TCRCallStop), fakeEngine.GetCallHistory())
 	terminalTeardown(*term)
 }
 

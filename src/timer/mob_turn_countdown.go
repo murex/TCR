@@ -34,7 +34,7 @@ import (
 // sends a message notifying the end of driver's turn.
 // If the mode does not require a mob timer, this function returns nil
 func NewMobTurnCountdown(mode runmode.RunMode, timeout time.Duration) *PeriodicReminder {
-	if !mode.NeedsCountdownTimer() {
+	if !mode.IsMultiRole() {
 		return nil
 	}
 	tickPeriod := findBestTickPeriodFor(timeout)

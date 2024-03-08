@@ -35,8 +35,8 @@ func Test_log_mode_default_auto_push_if_false(t *testing.T) {
 	assert.False(t, Log{}.AutoPushDefault())
 }
 
-func Test_log_mode_does_not_require_a_countdown_timer(t *testing.T) {
-	assert.False(t, Log{}.NeedsCountdownTimer())
+func Test_log_mode_does_not_require_multiple_roles(t *testing.T) {
+	assert.False(t, Log{}.IsMultiRole())
 }
 
 func Test_log_mode_does_not_allow_user_interactions(t *testing.T) {

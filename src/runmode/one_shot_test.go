@@ -35,8 +35,8 @@ func Test_one_shot_mode_default_auto_push_if_false(t *testing.T) {
 	assert.False(t, OneShot{}.AutoPushDefault())
 }
 
-func Test_one_shot_mode_does_not_require_a_countdown_timer(t *testing.T) {
-	assert.False(t, OneShot{}.NeedsCountdownTimer())
+func Test_one_shot_mode_does_not_require_multiple_roles(t *testing.T) {
+	assert.False(t, OneShot{}.IsMultiRole())
 }
 
 func Test_one_shot_mode_does_not_allow_user_interactions(t *testing.T) {

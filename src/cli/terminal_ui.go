@@ -46,8 +46,8 @@ type TerminalUI struct {
 	tcr              engine.TCRInterface
 	params           params.Params
 	desktop          *desktop.Desktop
-	mainMenu         *menu
-	roleMenu         *menu
+	soloMenu         *menu
+	mobMenu          *menu
 }
 
 const (
@@ -67,6 +67,7 @@ const (
 	timerStatusMenuHelper        = "Timer status"
 	quitDriverRoleMenuHelper     = "Quit Driver role"
 	quitNavigatorRoleMenuHelper  = "Quit Navigator role"
+	quitTCRMenuHelper            = "Quit TCR"
 )
 
 const timerMessagePrefix = "(Mob Timer) "
@@ -76,8 +77,8 @@ func New(p params.Params, tcr engine.TCRInterface) *TerminalUI {
 	setLinePrefix("[" + settings.ApplicationName + "]")
 	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	tcr.AttachUI(&term, true)
-	term.mainMenu = term.initMainMenu()
-	term.roleMenu = term.initRoleMenu()
+	term.soloMenu = term.initSoloMenu()
+	term.mobMenu = term.initMobMenu()
 	term.MuteDesktopNotifications(false)
 	term.StartReporting()
 	StartInterruptHandler()
@@ -222,19 +223,21 @@ func (term *TerminalUI) notifyOnEmphasis(emphasis bool, emoji string, a ...any) 
 	}
 }
 
-func (term *TerminalUI) enterMainMenu() {
+func (term *TerminalUI) enterSoloMenu() {
+	term.enterRole(role.Driver{})
+	// Then we enter the solo menu loop, waiting for user input
+	term.runMenuLoop(term.soloMenu)
+}
+
+func (term *TerminalUI) enterMobMenu() {
 	term.whatShallWeDo()
-	term.runMenuLoop(term.mainMenu)
+	term.runMenuLoop(term.mobMenu)
 }
 
 func (term *TerminalUI) enterRole(r role.Role) {
-	// We ask first TCR engine to start...
 	if err := term.runTCR(r); err != nil {
 		term.printError(err.Error())
-		return
 	}
-	// Then we enter the role menu loop, waiting for user input
-	term.runMenuLoop(term.roleMenu)
 }
 
 func (term *TerminalUI) runTCR(r role.Role) error {
@@ -281,7 +284,9 @@ func (term *TerminalUI) vcsPush() {
 }
 
 func (term *TerminalUI) whatShallWeDo() {
-	term.listMenuOptions(term.mainMenu, "What shall we do?")
+	if term.params.Mode.IsMultiRole() {
+		term.listMenuOptions(term.mobMenu, "What shall we do?")
+	}
 }
 
 func (term *TerminalUI) keyNotRecognizedMessage() {
@@ -382,14 +387,13 @@ func (term *TerminalUI) Start() {
 	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no selection menu:
 		// we directly enter driver mode, and quit when done
-		term.enterRole(role.Driver{})
-		Restore()
+		term.enterSoloMenu()
 		term.tcr.Quit()
 	case runmode.Mob{}:
 		// When running TCR in mob mode, every participant
 		// is given the possibility to switch between
 		// driver and navigator modes
-		term.enterMainMenu()
+		term.enterMobMenu()
 	case runmode.OneShot{}:
 		// When running TCR in one-shot mode, there's no selection menu:
 		// we directly ask TCR engine to run one cycle and quit when done
@@ -422,15 +426,41 @@ func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 	}
 }
 
-func (term *TerminalUI) initMainMenu() *menu {
-	m := newMenu("Main menu")
+func (term *TerminalUI) initSoloMenu() *menu {
+	m := newMenu("Solo menu")
+	m.addOptions(
+		newMenuOption('P', gitAutoPushMenuHelper,
+			term.gitMenuEnabler(),
+			term.autoPushMenuAction(), false),
+		newMenuOption('L', pullMenuHelper,
+			term.gitMenuEnabler(),
+			term.vcsPullMenuAction(), false),
+		newMenuOption('S', pushMenuHelper,
+			term.gitMenuEnabler(),
+			term.vcsPushMenuAction(), false),
+		newMenuOption('Y', syncMenuHelper,
+			term.p4MenuEnabler(),
+			term.vcsPullMenuAction(), false),
+		newMenuOption('Q', quitTCRMenuHelper,
+			term.quitRoleMenuEnabler(role.Driver{}),
+			term.quitRoleMenuAction(), true),
+		newMenuOption('?', optionsMenuHelper, nil,
+			term.optionsMenuAction(m), false),
+	)
+	return m
+}
+
+func (term *TerminalUI) initMobMenu() *menu {
+	m := newMenu("Mob main menu")
 	m.addOptions(
 		newMenuOption('O', openBrowserMenuHelper,
 			term.webMenuEnabler(),
 			term.openBrowserMenuAction(), false),
-		newMenuOption('D', enterDriverRoleMenuHelper, nil,
+		newMenuOption('D', enterDriverRoleMenuHelper,
+			term.enterRoleMenuEnabler(role.Driver{}),
 			term.enterRoleMenuAction(role.Driver{}), false),
-		newMenuOption('N', enterNavigatorRoleMenuHelper, nil,
+		newMenuOption('N', enterNavigatorRoleMenuHelper,
+			term.enterRoleMenuEnabler(role.Navigator{}),
 			term.enterRoleMenuAction(role.Navigator{}), false),
 		newMenuOption('T', timerStatusMenuHelper,
 			term.timerStatusMenuEnabler(),
@@ -447,36 +477,30 @@ func (term *TerminalUI) initMainMenu() *menu {
 		newMenuOption('Y', syncMenuHelper,
 			term.p4MenuEnabler(),
 			term.vcsPullMenuAction(), false),
-		newMenuOption('Q', quitMenuHelper, nil,
+		newMenuOption('Q', quitMenuHelper,
+			term.quitRoleMenuEnabler(nil),
 			term.quitMenuAction(), true),
+		newMenuOption('Q', quitDriverRoleMenuHelper,
+			term.quitRoleMenuEnabler(role.Driver{}),
+			term.quitRoleMenuAction(), false),
+		newMenuOption('Q', quitNavigatorRoleMenuHelper,
+			term.quitRoleMenuEnabler(role.Navigator{}),
+			term.quitRoleMenuAction(), false),
 		newMenuOption('?', optionsMenuHelper, nil,
 			term.optionsMenuAction(m), false),
 	)
 	return m
 }
 
-func (term *TerminalUI) initRoleMenu() *menu {
-	m := newMenu("Role menu")
-	m.addOptions(
-		newMenuOption('T', timerStatusMenuHelper,
-			term.timerStatusMenuEnabler(),
-			term.timerStatusMenuAction(), false),
-		newMenuOption('Q', quitDriverRoleMenuHelper,
-			term.quitRoleMenuEnabler(role.Driver{}),
-			term.quitRoleMenuAction(), true),
-		newMenuOption('Q', quitNavigatorRoleMenuHelper,
-			term.quitRoleMenuEnabler(role.Navigator{}),
-			term.quitRoleMenuAction(), true),
-		newMenuOption('?', optionsMenuHelper, nil,
-			term.optionsMenuAction(m), false),
-	)
-	return m
+func (term *TerminalUI) enterRoleMenuEnabler(r role.Role) menuEnabler {
+	return func() bool {
+		return term.tcr.GetCurrentRole() != r
+	}
 }
 
 func (term *TerminalUI) enterRoleMenuAction(r role.Role) menuAction {
 	return func() {
 		term.enterRole(r)
-		term.whatShallWeDo()
 	}
 }
 
@@ -562,5 +586,6 @@ func (term *TerminalUI) quitRoleMenuAction() menuAction {
 	return func() {
 		term.ReportWarning(false, "OK, I heard you")
 		term.tcr.Stop()
+		term.whatShallWeDo()
 	}
 }

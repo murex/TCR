@@ -134,6 +134,7 @@ func (fake *FakeTCREngine) RunAsNavigator() {
 
 // Stop is the entry point for telling TCR engine to stop its current operations
 func (fake *FakeTCREngine) Stop() {
+	fake.currentRole = nil
 	fake.recordCall(TCRCallStop)
 }
 

@@ -36,8 +36,8 @@ func (Log) AutoPushDefault() bool {
 	return false
 }
 
-// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (Log) NeedsCountdownTimer() bool {
+// IsMultiRole indicates if this run mode supports multiple roles
+func (Log) IsMultiRole() bool {
 	return false
 }
 

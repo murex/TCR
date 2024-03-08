@@ -35,8 +35,8 @@ func Test_check_mode_default_auto_push_if_false(t *testing.T) {
 	assert.False(t, Check{}.AutoPushDefault())
 }
 
-func Test_check_mode_does_not_require_a_countdown_timer(t *testing.T) {
-	assert.False(t, Check{}.NeedsCountdownTimer())
+func Test_check_mode_does_not_require_multiple_roles(t *testing.T) {
+	assert.False(t, Check{}.IsMultiRole())
 }
 
 func Test_check_mode_does_not_allow_user_interactions(t *testing.T) {

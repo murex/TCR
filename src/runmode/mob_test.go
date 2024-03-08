@@ -35,8 +35,8 @@ func Test_mob_mode_default_auto_push_if_true(t *testing.T) {
 	assert.True(t, Mob{}.AutoPushDefault())
 }
 
-func Test_mob_mode_requires_a_countdown_timer(t *testing.T) {
-	assert.True(t, Mob{}.NeedsCountdownTimer())
+func Test_mob_mode_allows_multiple_roles(t *testing.T) {
+	assert.True(t, Mob{}.IsMultiRole())
 }
 
 func Test_mob_mode_allows_user_interactions(t *testing.T) {
