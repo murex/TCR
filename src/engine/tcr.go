@@ -364,7 +364,10 @@ func (tcr *TCREngine) SetAutoPush(ap bool) {
 // resetCurrentRole sets the current role to nil (TCR engine in standby).
 // This is a mandatory step prior to starting a new role.
 func (tcr *TCREngine) resetCurrentRole() {
-	tcr.currentRole = nil
+	if tcr.currentRole != nil {
+		report.PostRoleEvent(role_event.TriggerEnd, tcr.currentRole)
+		tcr.currentRole = nil
+	}
 	tcr.roleMutex.Unlock()
 }
 
@@ -378,7 +381,10 @@ func (tcr *TCREngine) setCurrentRole(r role.Role) {
 		return
 	}
 	tcr.roleMutex.Lock()
-	tcr.currentRole = r
+	if r != tcr.currentRole {
+		tcr.currentRole = r
+		report.PostRoleEvent(role_event.TriggerStart, tcr.currentRole)
+	}
 }
 
 // GetCurrentRole returns the role currently used for running TCR.
@@ -401,7 +407,6 @@ func (tcr *TCREngine) RunAsDriver() {
 			// the goroutine waits until currenRole is reset
 			// prior to starting driver role
 			tcr.setCurrentRole(role.Driver{})
-			report.PostRoleEvent(role_event.TriggerStart, tcr.GetCurrentRole())
 			tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
 			tcr.startTimer()
 		},
@@ -417,7 +422,6 @@ func (tcr *TCREngine) RunAsDriver() {
 		},
 		func() {
 			tcr.stopTimer()
-			report.PostRoleEvent(role_event.TriggerEnd, tcr.GetCurrentRole())
 			tcr.resetCurrentRole()
 		},
 	)
@@ -435,7 +439,6 @@ func (tcr *TCREngine) RunAsNavigator() {
 			// the goroutine waits until currenRole is reset
 			// prior to starting navigator role
 			tcr.setCurrentRole(role.Navigator{})
-			report.PostRoleEvent(role_event.TriggerStart, tcr.GetCurrentRole())
 		},
 		func(interrupt <-chan bool) bool {
 			select {
@@ -448,7 +451,6 @@ func (tcr *TCREngine) RunAsNavigator() {
 			}
 		},
 		func() {
-			report.PostRoleEvent(role_event.TriggerEnd, tcr.GetCurrentRole())
 			tcr.resetCurrentRole()
 		},
 	)

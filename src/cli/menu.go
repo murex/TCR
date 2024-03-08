@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -83,10 +83,7 @@ func (mo *menuOption) isQuitOption() bool {
 }
 
 func (mo *menuOption) isEnabled() bool {
-	if mo.enabler == nil {
-		return true
-	}
-	return mo.enabler()
+	return mo.enabler == nil || mo.enabler()
 }
 
 func (mo *menuOption) toString() string {
