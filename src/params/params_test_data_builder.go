@@ -40,7 +40,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		MobTurnDuration: 0,
 		AutoPush:        false,
 		PollingPeriod:   0,
-		Mode:            runmode.Check{},
+		Mode:            runmode.OneShot{},
 		VCS:             "git",
 		PortNumber:      0,
 	}

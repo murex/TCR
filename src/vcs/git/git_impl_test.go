@@ -62,15 +62,15 @@ func Test_get_vcs_session_summary(t *testing.T) {
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
-	assert.Zero(t, g.IsPushEnabled())
+	assert.Zero(t, g.IsAutoPushEnabled())
 }
 
 func Test_git_enable_disable_push(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "")
-	g.EnablePush(true)
-	assert.NotZero(t, g.IsPushEnabled())
-	g.EnablePush(false)
-	assert.Zero(t, g.IsPushEnabled())
+	g.EnableAutoPush(true)
+	assert.NotZero(t, g.IsAutoPushEnabled())
+	g.EnableAutoPush(false)
+	assert.Zero(t, g.IsAutoPushEnabled())
 }
 
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
@@ -209,37 +209,37 @@ func Test_git_diff(t *testing.T) {
 func Test_git_push(t *testing.T) {
 	testFlags := []struct {
 		desc                 string
-		pushEnabled          bool
+		autoPushEnabled      bool
 		gitError             error
 		expectError          bool
 		expectBranchOnRemote bool
 	}{
 		{
-			"push enabled and git push command call succeeds",
+			"auto push enabled and git push command call succeeds",
 			true,
 			nil,
 			false,
 			true,
 		},
 		{
-			"push enabled and git push command call fails",
+			"auto push enabled and git push command call fails",
 			true,
 			errors.New("git push error"),
 			true,
 			false,
 		},
 		{
-			"push disabled and git push command call succeeds",
+			"auto push disabled and git push command call succeeds",
 			false,
 			nil,
 			false,
-			false,
+			true,
 		},
 		{
-			"push disabled and git push command call fails",
+			"auto push disabled and git push command call fails",
 			false,
 			errors.New("git push error"),
-			false,
+			true,
 			false,
 		},
 	}
@@ -249,7 +249,7 @@ func Test_git_push(t *testing.T) {
 			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
-			g.pushEnabled = tt.pushEnabled
+			g.autoPushEnabled = tt.autoPushEnabled
 			g.remoteEnabled = true
 			g.remoteName = DefaultRemoteName
 

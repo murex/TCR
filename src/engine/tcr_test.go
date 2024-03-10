@@ -188,7 +188,9 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"commit with VCS push failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.PushCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(
+					params.AParamSet(params.WithAutoPush(true)), nil,
+					fake.Commands{fake.PushCommand}, nil)
 				tcr.commit(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -329,7 +331,9 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			status.RecordState(status.Ok)
-			tcr, _ := initTCREngineWithFakes(nil, tt.toolchainFailures, tt.vcsFailures, nil)
+			tcr, _ := initTCREngineWithFakes(
+				params.AParamSet(params.WithAutoPush(true)),
+				tt.toolchainFailures, tt.vcsFailures, nil)
 			tcr.RunTCRCycle()
 			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
 		})
@@ -350,7 +354,6 @@ func initTCREngineWithFakes(
 		parameters = *params.AParamSet(
 			params.WithLanguage(lang),
 			params.WithToolchain(tchn),
-			params.WithRunMode(runmode.OneShot{}),
 		)
 	} else {
 		parameters = *params.AParamSet(

@@ -250,15 +250,15 @@ func (*p4Impl) Log(_ func(msg string) bool) (logs vcs.LogItems, err error) {
 	return nil, errors.New("VCS log operation not yet available for p4")
 }
 
-// EnablePush sets a flag allowing to turn on/off p4 push operations.
+// EnableAutoPush sets a flag allowing to turn on/off p4 auto-push operations.
 // Auto-push is always on with p4 due its architecture (all changes occur directly on the server)
-func (*p4Impl) EnablePush(_ bool) {
+func (*p4Impl) EnableAutoPush(_ bool) {
 	// nothing to do here.
 }
 
-// IsPushEnabled indicates if p4 push operations are turned on.
+// IsAutoPushEnabled indicates if p4 auto-push operations are turned on.
 // Auto-push is always on with p4 due its architecture (all changes occur directly on the server)
-func (*p4Impl) IsPushEnabled() bool {
+func (*p4Impl) IsAutoPushEnabled() bool {
 	return true
 }
 

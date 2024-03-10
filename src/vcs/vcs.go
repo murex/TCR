@@ -23,8 +23,8 @@ SOFTWARE.
 package vcs
 
 const (
-	// DefaultPushEnabled provides the default value for auto-push (off by default)
-	DefaultPushEnabled = false
+	// DefaultAutoPushEnabled provides the default value for auto-push (off by default)
+	DefaultAutoPushEnabled = false
 	// DefaultTrace provides the default value for VCS commands trace (off by default)
 	DefaultTrace = false // VCS trace is off by default
 )
@@ -65,8 +65,8 @@ type Interface interface {
 	UnStash(keep bool) error
 	Diff() (diffs FileDiffs, err error)
 	Log(msgFilter func(msg string) bool) (logs LogItems, err error)
-	EnablePush(flag bool)
-	IsPushEnabled() bool
+	EnableAutoPush(flag bool)
+	IsAutoPushEnabled() bool
 	IsRemoteEnabled() bool
 	CheckRemoteAccess() bool
 }

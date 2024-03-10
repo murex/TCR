@@ -51,15 +51,15 @@ func Test_get_vcs_session_summary(t *testing.T) {
 
 func Test_p4_auto_push_is_always_enabled(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
-	assert.True(t, p.IsPushEnabled())
+	assert.True(t, p.IsAutoPushEnabled())
 }
 
 func Test_p4_enable_disable_push_has_no_effect(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
-	p.EnablePush(true)
-	assert.True(t, p.IsPushEnabled())
-	p.EnablePush(false)
-	assert.True(t, p.IsPushEnabled())
+	p.EnableAutoPush(true)
+	assert.True(t, p.IsAutoPushEnabled())
+	p.EnableAutoPush(false)
+	assert.True(t, p.IsAutoPushEnabled())
 }
 
 func Test_p4_init_fails_when_working_dir_is_not_in_a_depot(t *testing.T) {

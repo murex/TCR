@@ -170,7 +170,7 @@ func (tcr *TCREngine) Init(p params.Params) {
 
 	tcr.initVCS(p.VCS, p.Trace)
 	tcr.setMessageSuffix(p.MessageSuffix)
-	tcr.vcs.EnablePush(p.AutoPush)
+	tcr.vcs.EnableAutoPush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
 	tcr.setMobTimerDuration(p.MobTurnDuration)
@@ -353,12 +353,12 @@ func (tcr *TCREngine) warnIfOnRootBranch(interactive bool) {
 
 // ToggleAutoPush toggles VCS auto-push state
 func (tcr *TCREngine) ToggleAutoPush() {
-	tcr.vcs.EnablePush(!tcr.vcs.IsPushEnabled())
+	tcr.vcs.EnableAutoPush(!tcr.vcs.IsAutoPushEnabled())
 }
 
 // SetAutoPush sets VCS auto-push to the provided value
 func (tcr *TCREngine) SetAutoPush(ap bool) {
-	tcr.vcs.EnablePush(ap)
+	tcr.vcs.EnableAutoPush(ap)
 }
 
 // resetCurrentRole sets the current role to nil (TCR engine in standby).
@@ -574,7 +574,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	tcr.handleError(tcr.vcs.Push(), false, status.VCSError)
+	tcr.handleError(tcr.vcsPushAuto(), false, status.VCSError)
 }
 
 func (tcr *TCREngine) revert(event events.TCREvent) {
@@ -584,7 +584,7 @@ func (tcr *TCREngine) revert(event events.TCREvent) {
 		if err != nil {
 			return
 		}
-		tcr.handleError(tcr.vcs.Push(), false, status.VCSError)
+		tcr.handleError(tcr.vcsPushAuto(), false, status.VCSError)
 	}
 	tcr.revertSrcFiles()
 }
@@ -661,7 +661,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		ToolchainName:     tcr.toolchain.GetName(),
 		VCSName:           tcr.vcs.Name(),
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
-		GitAutoPush:       tcr.vcs.IsPushEnabled(),
+		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
 		MessageSuffix:     tcr.messageSuffix,
 	}
@@ -731,6 +731,14 @@ func (tcr *TCREngine) VCSPush() {
 	if tcr.vcs.Push() != nil {
 		report.PostError("VCS push command failed!")
 	}
+}
+
+// vcsPushAuto runs a VCS push command if the auto-push option is enabled
+func (tcr *TCREngine) vcsPushAuto() error {
+	if tcr.vcs.IsAutoPushEnabled() {
+		return tcr.vcs.Push()
+	}
+	return nil
 }
 
 // reportFileStats traces summary information about the source and test files and directories

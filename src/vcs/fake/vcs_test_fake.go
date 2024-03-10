@@ -192,13 +192,13 @@ func (vf *VCSFake) IsOnRootBranch() bool {
 	return true
 }
 
-// EnablePush sets a flag allowing to turn on/off VCS push operations
-func (vf *VCSFake) EnablePush(flag bool) {
+// EnableAutoPush sets a flag allowing to turn on/off VCS auto-push operations
+func (vf *VCSFake) EnableAutoPush(flag bool) {
 	vf.pushEnabled = flag
 }
 
-// IsPushEnabled indicates if VCS push operations are turned on
-func (vf *VCSFake) IsPushEnabled() bool {
+// IsAutoPushEnabled indicates if VCS auto-push operations are turned on
+func (vf *VCSFake) IsAutoPushEnabled() bool {
 	return vf.pushEnabled
 }
 

@@ -56,7 +56,7 @@ type gitImpl struct {
 	remoteEnabled               bool
 	workingBranch               string
 	workingBranchExistsOnRemote bool
-	pushEnabled                 bool
+	autoPushEnabled             bool
 	runGitFunction              func(params ...string) (output []byte, err error)
 	traceGitFunction            func(params ...string) (err error)
 }
@@ -69,7 +69,7 @@ func New(dir string) (vcs.Interface, error) {
 func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error), dir string) (*gitImpl, error) {
 	var g = gitImpl{
 		baseDir:          dir,
-		pushEnabled:      vcs.DefaultPushEnabled,
+		autoPushEnabled:  vcs.DefaultAutoPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
 	}
@@ -268,7 +268,7 @@ func (g *gitImpl) Revert() error {
 // Push runs a git push operation.
 // Current implementation uses a direct call to git
 func (g *gitImpl) Push() error {
-	if !g.IsRemoteEnabled() || !g.IsPushEnabled() {
+	if !g.IsRemoteEnabled() {
 		// There's nothing to do in this case
 		return nil
 	}
@@ -367,22 +367,22 @@ func (g *gitImpl) Log(msgFilter func(msg string) bool) (logs vcs.LogItems, err e
 	return logs, nil
 }
 
-// EnablePush sets a flag allowing to turn on/off git push operations
-func (g *gitImpl) EnablePush(flag bool) {
-	if g.pushEnabled == flag {
+// EnableAutoPush sets a flag allowing to turn on/off git auto push operations
+func (g *gitImpl) EnableAutoPush(flag bool) {
+	if g.autoPushEnabled == flag {
 		return
 	}
-	g.pushEnabled = flag
+	g.autoPushEnabled = flag
 	autoPushStr := "off"
-	if g.pushEnabled {
+	if g.autoPushEnabled {
 		autoPushStr = "on"
 	}
 	report.PostInfo(fmt.Sprintf("Git auto-push is turned %v", autoPushStr))
 }
 
-// IsPushEnabled indicates if git push operations are turned on
-func (g *gitImpl) IsPushEnabled() bool {
-	return g.pushEnabled
+// IsAutoPushEnabled indicates if git auto-push operations are turned on
+func (g *gitImpl) IsAutoPushEnabled() bool {
+	return g.autoPushEnabled
 }
 
 // CheckRemoteAccess returns true if git remote can be accessed. This is currently done through
