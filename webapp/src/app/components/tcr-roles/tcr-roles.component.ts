@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {NgForOf} from "@angular/common";
-import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
+import { Component } from '@angular/core';
+import { NgForOf } from "@angular/common";
+import { TcrRoleComponent } from "../tcr-role/tcr-role.component";
 
 @Component({
   selector: 'app-tcr-roles',
@@ -12,13 +12,10 @@ import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
   templateUrl: './tcr-roles.component.html',
   styleUrl: './tcr-roles.component.css'
 })
-export class TcrRolesComponent implements OnInit {
+export class TcrRolesComponent {
   title = "Role";
   roles = ['driver', 'navigator'];
 
   constructor() {
-  }
-
-  ngOnInit(): void {
   }
 }

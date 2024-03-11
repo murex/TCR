@@ -65,7 +65,7 @@ export class TcrConsoleComponent {
     // ng-console handles EOL in Windows style, e.g. it needs CRLF to properly
     // go back to beginning of next line in the console
     this.child.write(input.replace(/\n/g, "\r\n") + "\r\n");
-  };
+  }
 
   private clear() {
     this.child.underlying?.reset();

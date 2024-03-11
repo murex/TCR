@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {catchError, filter, Observable, of, tap} from "rxjs";
+import {catchError, filter, Observable, of} from "rxjs";
 import {TcrMessage} from "../interfaces/tcr-message";
 import {WebsocketService} from "./websocket.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
@@ -30,14 +30,8 @@ export class TcrTimerService {
 
     return this.http.get<TcrTimer>(url, httpOptions)
       .pipe(
-        tap(t => this.log(`fetched TCR timer ${t.state}`)),
         catchError(this.handleError<TcrTimer>('getTimer'))
       );
-  }
-
-  private log(_message: string) {
-    // TODO - add messageService component
-    // this.messageService.add(`AlbumService: ${message}`);
   }
 
   /**
@@ -48,14 +42,8 @@ export class TcrTimerService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
+    return (error: unknown): Observable<T> => {
+      console.error(`${operation} - ` + error);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {catchError, Observable, of, tap} from "rxjs";
+import {catchError, Observable, of} from "rxjs";
 import {TcrSessionInfo} from "../interfaces/tcr-session-info";
 
 @Injectable({
@@ -23,14 +23,8 @@ export class TcrSessionInfoService {
 
     return this.http.get<TcrSessionInfo>(url, httpOptions)
       .pipe(
-        tap(_ => this.log('fetched TCR session info')),
         catchError(this.handleError<TcrSessionInfo>('getSessionInfo'))
       );
-  }
-
-  private log(message: string) {
-    // TODO - add messageService component
-    // this.messageService.add(`AlbumService: ${message}`);
   }
 
   /**
@@ -41,14 +35,8 @@ export class TcrSessionInfoService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
+    return (error: unknown): Observable<T> => {
+      console.error(`${operation} - ` + error);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };

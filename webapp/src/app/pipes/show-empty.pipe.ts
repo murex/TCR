@@ -6,8 +6,10 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class ShowEmptyPipe implements PipeTransform {
 
+  private readonly NOT_SET = "[not set]";
+
   transform(value: unknown, ..._args: unknown[]): unknown {
-    return value || "[not set]";
+    return value || this.NOT_SET;
   }
 
 }

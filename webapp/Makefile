@@ -11,15 +11,15 @@ deps:
 
 .PHONY: lint
 lint:
-	@echo "TODO - investigate how to run angular/typescript linter"
+	@npm run lint
 
 .PHONY: test
 test:
-	@echo "TODO - investigate how to run angular/typescript tests"
+	@npm test
 
 .PHONY: cov
 cov:
-	@echo "TODO - investigate how to run angular/typescript coverage"
+	@npm run test-cov
 
 .PHONY: build
 build: setup

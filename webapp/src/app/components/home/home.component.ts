@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import { Component } from '@angular/core';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -8,11 +8,8 @@ import {Router} from "@angular/router";
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   title = 'TCR - Test && Commit || Revert';
-
-  ngOnInit() {
-  }
 
   constructor(private router: Router) {
   }
@@ -24,6 +21,6 @@ export class HomeComponent implements OnInit {
           window.alert(`Page not found: ${url}`)
         }
       }
-    );
+      );
   }
 }

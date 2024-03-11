@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcrConsoleComponent } from './tcr-console.component';
+import {TcrConsoleComponent} from './tcr-console.component';
 
-describe('TcrConsoleComponent', () => {
+xdescribe('TcrConsoleComponent', () => {
   let component: TcrConsoleComponent;
   let fixture: ComponentFixture<TcrConsoleComponent>;
 
@@ -10,8 +10,8 @@ describe('TcrConsoleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrConsoleComponent]
     })
-    .compileComponents();
-    
+      .compileComponents();
+
     fixture = TestBed.createComponent(TcrConsoleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
 import {TcrBuildInfoService} from "../../services/tcr-build-info.service";
 import {DatePipe, NgIf} from "@angular/common";
@@ -13,7 +13,7 @@ import {DatePipe, NgIf} from "@angular/common";
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.css'
 })
-export class FooterComponent {
+export class FooterComponent implements OnInit {
   @Input() buildInfo?: TcrBuildInfo;
 
   constructor(

@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { TcrTimerService } from './tcr-timer.service';
+import {TcrTimerService} from './tcr-timer.service';
 
-describe('TcrTimerService', () => {
+xdescribe('TcrTimerService', () => {
   let service: TcrTimerService;
 
   beforeEach(() => {

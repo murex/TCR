@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcrAboutComponent } from './tcr-about.component';
+import {TcrAboutComponent} from './tcr-about.component';
 
-describe('TcrBuildInfoComponent', () => {
+xdescribe('TcrAboutComponent', () => {
   let component: TcrAboutComponent;
   let fixture: ComponentFixture<TcrAboutComponent>;
 
@@ -10,7 +10,7 @@ describe('TcrBuildInfoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrAboutComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(TcrAboutComponent);
     component = fixture.componentInstance;

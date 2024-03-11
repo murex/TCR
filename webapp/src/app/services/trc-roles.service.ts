@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {catchError, filter, Observable, of, tap} from "rxjs";
+import {catchError, filter, Observable, of} from "rxjs";
 import {TcrRole} from "../interfaces/tcr-role";
 import {WebsocketService} from "./websocket.service";
 import {TcrMessage} from "../interfaces/tcr-message";
@@ -30,7 +30,6 @@ export class TcrRolesService {
 
     return this.http.get<TcrRole[]>(url, httpOptions)
       .pipe(
-        tap(_ => this.log('fetched TCR roles')),
         catchError(this.handleError<TcrRole[]>('getRoles', []))
       );
   }
@@ -45,14 +44,11 @@ export class TcrRolesService {
 
     return this.http.get<TcrRole>(url, httpOptions)
       .pipe(
-        tap(r => this.log(`fetched TCR role ${r.name}`)),
         catchError(this.handleError<TcrRole>('getRole'))
       );
   }
 
   activateRole(name: string, state: boolean): Observable<TcrRole> {
-    this.log("name: ${name} state: ${state}");
-
     const url = `${this.apiUrl}/roles/${name}/${state ? "start" : "stop"}`;
     const httpOptions = {
       headers: new HttpHeaders({
@@ -62,15 +58,8 @@ export class TcrRolesService {
     };
 
     return this.http.post<TcrRole>(url, httpOptions).pipe(
-      tap((role: TcrRole) =>
-        this.log(`set role name=${role.name} to active=${role.active}`)),
       catchError(this.handleError<TcrRole>('toggleRole'))
     );
-  }
-
-  private log(_message: string) {
-    // TODO - add messageService component
-    // this.messageService.add(`AlbumService: ${message}`);
   }
 
   /**
@@ -81,14 +70,8 @@ export class TcrRolesService {
    * @param result - optional value to return as the observable result
    */
   private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      this.log(`${operation} failed: ${error.message}`);
-
+    return (error: unknown): Observable<T> => {
+      console.error(`${operation} - ` + error);
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
