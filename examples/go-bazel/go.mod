@@ -2,11 +2,7 @@ module example/go-bazel
 
 go 1.22.0
 
-require (
-	github.com/stretchr/testify v1.9.0
-	golang.org/x/mod v0.15.0
-	golang.org/x/tools v0.18.0
-)
+require github.com/stretchr/testify v1.9.0
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
