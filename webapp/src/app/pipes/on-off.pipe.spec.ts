@@ -1,34 +1,26 @@
 import {OnOffPipe} from './on-off.pipe';
 
-const MARKER_ON = "✅";
-const MARKER_OFF = "❌";
-
 describe('OnOffPipe', () => {
-  it('create an instance', () => {
-    expect(new OnOffPipe()).toBeTruthy();
+  let pipe: OnOffPipe;
+
+  beforeEach(() => {
+    pipe = new OnOffPipe();
   });
 
-  it(`should return "${MARKER_ON}" when the input value is truthy`, () => {
-    expect(new OnOffPipe().transform(true)).toEqual(MARKER_ON);
-  });
+  const markerOn = "✅";
+  const markerOff = "❌";
+  const testCases = [
+    {input: true, expected: markerOn},
+    {input: false, expected: markerOff},
+    {input: "non-empty string", expected: markerOn},
+    {input: "", expected: markerOff},
+    {input: null, expected: markerOff},
+    {input: undefined, expected: markerOff}
+  ];
 
-  it(`should return "${MARKER_OFF}" when the input value is falsy`, () => {
-    expect(new OnOffPipe().transform(false)).toEqual(MARKER_OFF);
-  });
-
-  it(`should return "${MARKER_ON}" when the input value is a non-empty string`, () => {
-    expect(new OnOffPipe().transform("non-empty string")).toEqual(MARKER_ON);
-  });
-
-  it(`should return "${MARKER_OFF}" when the input value is an empty string`, () => {
-    expect(new OnOffPipe().transform("")).toEqual(MARKER_OFF);
-  });
-
-  it(`should return "${MARKER_OFF}" when the input value is null`, () => {
-    expect(new OnOffPipe().transform(null)).toEqual(MARKER_OFF);
-  });
-
-  it(`should return "${MARKER_OFF}" when the input value is undefined`, () => {
-    expect(new OnOffPipe().transform(undefined)).toEqual(MARKER_OFF);
-  });
+  for (const testCase of testCases) {
+    it(`should return "${testCase.expected}" when the input value is ${testCase.input}`, () => {
+      expect(pipe.transform(testCase.input)).toEqual(testCase.expected);
+    });
+  }
 });
