@@ -2,7 +2,7 @@
 # Example Makefile for Kotlin language
 # ----------------------------------------------------------------------------
 
-junit.ver = 1.8.2
+junit.ver = 1.9.3
 junit.jar = junit-platform-console-standalone-$(junit.ver).jar
 maven.url = https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone
 junit.url = $(maven.url)/$(junit.ver)/$(junit.jar)
