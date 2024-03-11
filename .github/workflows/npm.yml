@@ -1,0 +1,46 @@
+name: Go build and test
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - "webapp/**"
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: webapp
+    strategy:
+      matrix:
+        node-version: [ 21 ]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Skip Duplicate Actions
+        uses: fkirc/skip-duplicate-actions@v5.3.1
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install npm
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run linter
+        run: npm run lint
