@@ -10,7 +10,11 @@
     "test": "ng test --source-map=false --browsers=ChromeHeadless --watch=false",
     "test-cov": "ng test --source-map=false --browsers=ChromeHeadless --watch=false --code-coverage",
     "test-watch": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "clean": "rm -rf node_modules ../src/http/static/webapp",
+    "reinstall": "npm run clean && npm install",
+    "rebuild": "npm run reinstall && npm run build",
+    "rebuild-prod": "npm run reinstall && npm run build-prod"
   },
   "private": true,
   "dependencies": {

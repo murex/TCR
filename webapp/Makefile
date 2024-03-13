@@ -29,3 +29,6 @@ build: setup
 run:
 	@npm start
 
+.PHONY: clean
+clean:
+	@npm run clean

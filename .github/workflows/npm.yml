@@ -27,17 +27,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Skip Duplicate Actions
+      - name: Skip duplicate actions
         uses: fkirc/skip-duplicate-actions@v5.3.1
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup node.js version ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: webapp/package-lock.json
 
-      - name: Install npm
+      - name: Run npm install
         run: npm ci
 
       - name: Run tests

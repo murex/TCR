@@ -24,7 +24,16 @@ jobs:
           go-version: '1.21'
           check-latest: true
           cache-dependency-path: src/go.sum
-      - name: Run GoReleaser
+      - name: Setup node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '21'
+          cache: 'npm'
+          cache-dependency-path: webapp/package-lock.json
+      - name: Run npm install
+        working-directory: webapp
+        run: npm ci
+      - name: Run goreleaser
         uses: goreleaser/goreleaser-action@v5
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro'

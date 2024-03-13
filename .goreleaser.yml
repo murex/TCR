@@ -4,6 +4,7 @@ project_name: tcr
 before:
   hooks:
     - make tidy
+    - make -C webapp build
 builds:
   - id: "tcr"
     dir: src
@@ -18,7 +19,7 @@ builds:
       - -X {{.Env.CONFIG_PKG}}.BuildArch={{.Arch}}
       - -X {{.Env.CONFIG_PKG}}.BuildCommit={{.Commit}}
       - -X {{.Env.CONFIG_PKG}}.BuildDate={{.Date}}
-      - -X {{.Env.CONFIG_PKG}}.BuildAuthor=goreleaser
+      - -X {{.Env.CONFIG_PKG}}.BuildAuthor=murex
     goos:
       - linux
       - windows

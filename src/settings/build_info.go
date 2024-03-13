@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ package settings
 
 import (
 	"fmt"
-	"time"
 )
 
 // Below variables are set at build time through -ldflags
@@ -33,7 +32,7 @@ var (
 	BuildOs      = "unknown"
 	BuildArch    = "unknown"
 	BuildCommit  = "none"
-	BuildDate    = time.Time{}.Format(time.RFC3339)
+	BuildDate    = "0001-01-01T00:00:00Z"
 	BuildAuthor  = "unknown"
 )
 
