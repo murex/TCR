@@ -19,7 +19,7 @@ test:
 
 .PHONY: cov
 cov:
-	@npm run test-cov
+	@npm run coverage
 
 .PHONY: build
 build: setup
