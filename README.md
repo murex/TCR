@@ -1,5 +1,6 @@
 [![Go](https://github.com/murex/tcr/actions/workflows/go.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go.yml)
 [![Go lint](https://github.com/murex/tcr/actions/workflows/golangci_lint.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/golangci_lint.yml)
+[![NPM build and test](https://github.com/murex/TCR/actions/workflows/npm.yml/badge.svg)](https://github.com/murex/TCR/actions/workflows/npm.yml)
 [![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=murex_TCR&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=murex_TCR)
 [![Coveralls](https://coveralls.io/repos/github/murex/TCR/badge.svg?branch=main)](https://coveralls.io/github/murex/TCR?branch=main)
 [![goreleaser](https://github.com/murex/tcr/actions/workflows/go_releaser.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go_releaser.yml)
@@ -118,18 +119,20 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 <details>
   <summary>Configuration directory layout</summary>
 
-- `configuration directory`/
-    - `.tcr`/
-        - `config.yml` - contains all TCR configuration settings
-        - `language`/ - subdirectory containing all language configurations
-            - `java.yml` - configuration for Java language
-            - `cpp.yml` - configuration for C++ language
-            - etc.
-        - `toolchain`/ - subdirectory containing all toolchain configurations
-            - `gradle.yml` - configuration for Gradle toolchain
-            - `gradle-wrapper.yml` - configuration for Gradle wrapper toolchain
-            - `cmake.yml` - configuration for CMake toolchain
-            - etc.
+  ```text
+  <configuration directory>/
+  └── .tcr/
+      ├── config.yml             - contains all TCR configuration settings
+      ├── language/              - subdirectory containing all language configurations
+      │   ├── cpp.yml            - configuration for C++ language
+      │   ├── java.yml           - configuration for java language
+      │   └── etc.
+      └── toolchain/             - subdirectory containing all toolchain configurations
+          ├── cmake.yml          - configuration for cmake toolchain
+          ├── gradle.yml         - configuration for gradle toolchain
+          ├── gradle-wrapper.yml - configuration for gradle wrapper toolchain
+          └── etc.
+  ```
 
 </details>
 
@@ -150,7 +153,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.28.0_Darwin_x86_64.tar.gz
+    tar zxf tcr_1.0.0_Darwin_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -169,7 +172,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.28.0_Linux_x86_64.tar.gz
+    tar zxf tcr_1.0.0_Linux_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -188,7 +191,7 @@ TCR for various language/toolchain combinations.
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
     ```shell
-    tar zxf tcr_0.28.0_Windows_x86_64.tar.gz
+    tar zxf tcr_1.0.0_Windows_x86_64.tar.gz
     ```
 
 3. Launch TCR
@@ -387,6 +390,24 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
    > In the above example, `-t yarn` could actually be skipped.
 
 </details>
+
+### Using TCR's embedded web interface `experimental`
+
+Since version `1.0.0`, TCR comes with an embedded web interface that can be used
+to monitor the TCR cycle, control driver and navigator roles,
+and show the countdown timer when the driver mode active.
+
+To use it, start TCR using the `web` subcommand:
+
+```shell
+./tcr web
+```
+
+Once TCR is running, you can open the web interface in your browser
+by typing the `O` shortcut in the terminal.
+
+TCR runs its internal web server on port `8483` by default.
+You can change the port through using the `-P` (or `--port-number`) command line option.
 
 ### Command line help (all platforms)
 
