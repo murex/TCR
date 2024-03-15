@@ -20,48 +20,48 @@ export class TcrConsoleComponent {
   @ViewChild('term', {static: false}) child!: NgTerminal;
 
   constructor(private ws: WebsocketService) {
-    this.ws.webSocket$.subscribe((m: TcrMessage) => this.writeMessage(m));
+    this.ws.webSocket$.subscribe((m: TcrMessage) => this.printMessage(m));
   }
 
-  private writeMessage(message: TcrMessage): void {
+  private printMessage(message: TcrMessage): void {
     switch (message.type) {
       case "simple":
-        this.write(message.text);
+        this.print(message.text);
         break;
       case "info":
-        this.write(cyan(message.text))
+        this.print(cyan(message.text))
         break;
       case "title":
-        this.write(lightCyan("─".repeat(80)));
-        this.write(lightCyan(message.text));
+        this.print(lightCyan("─".repeat(80)));
+        this.print(lightCyan(message.text));
         break;
       case "role":
         if (getRoleAction(message.text) === "start") {
           this.clear();
         }
-        this.write(yellow("─".repeat(80)));
-        this.write(lightYellow(formatRoleMessage(message.text)));
-        this.write(yellow("─".repeat(80)));
+        this.print(yellow("─".repeat(80)));
+        this.print(lightYellow(formatRoleMessage(message.text)));
+        this.print(yellow("─".repeat(80)));
         break;
       case "timer":
         // ignore: handled by timer service
-        // this.write("⏳ " + green(message.text));
+        // this.print("⏳ " + green(message.text));
         break;
       case "success":
-        this.write("🟢 " + green(message.text));
+        this.print("🟢 " + green(message.text));
         break;
       case "warning":
-        this.write("🔶 " + yellow(message.text));
+        this.print("🔶 " + yellow(message.text));
         break;
       case "error":
-        this.write("🟥 " + red(message.text));
+        this.print("🟥 " + red(message.text));
         break;
       default:
-        this.write(bgDarkGray("[" + message.type + "]") + " " + message.text);
+        this.print(bgDarkGray("[" + message.type + "]") + " " + message.text);
     }
   }
 
-  private write(input: string) {
+  private print(input: string) {
     // ng-console handles EOL in Windows style, e.g. it needs CRLF to properly
     // go back to beginning of next line in the console
     this.child.write(input.replace(/\n/g, "\r\n") + "\r\n");

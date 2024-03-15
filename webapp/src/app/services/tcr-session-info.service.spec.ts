@@ -58,7 +58,7 @@ describe('TcrSessionInfoService', () => {
 
     const req = httpMock.expectOne(`/api/session-info`);
     expect(req.request.method).toBe('GET');
-    req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'})
+    req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'});
     expect(actual).toBeUndefined();
   });
 });
