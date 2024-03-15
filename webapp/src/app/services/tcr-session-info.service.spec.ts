@@ -21,7 +21,11 @@ describe('TcrSessionInfoService', () => {
     httpMock.verify();
   });
 
-  it('returns expected session info when getSessionInfo is called', () => {
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('should return expected session info when getSessionInfo is called', () => {
     const sample: TcrSessionInfo = {
       baseDir: "/my/base/dir",
       commitOnFail: false,
@@ -34,23 +38,27 @@ describe('TcrSessionInfoService', () => {
       workDir: "/my/work/dir"
     };
 
-    service.getSessionInfo().subscribe(sessionInfo => {
-      expect(sessionInfo).toEqual(sample);
+    let actual: TcrSessionInfo | undefined;
+    service.getSessionInfo().subscribe(other => {
+      actual = other;
     });
 
     const req = httpMock.expectOne(`/api/session-info`);
     expect(req.request.method).toBe('GET');
     expect(req.request.responseType).toEqual('json');
     req.flush(sample);
+    expect(actual).toEqual(sample);
   });
 
-  it('returns undefined when getSessionInfo receives an error response', () => {
-    service.getSessionInfo().subscribe(sessionInfo => {
-      expect(sessionInfo).toBeUndefined();
+  it('should return undefined when getSessionInfo receives an error response', () => {
+    let actual: TcrSessionInfo | undefined;
+    service.getSessionInfo().subscribe(other => {
+      actual = other;
     });
 
     const req = httpMock.expectOne(`/api/session-info`);
     expect(req.request.method).toBe('GET');
-    req.flush(null, {status: 500, statusText: 'Server error'})
+    req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'})
+    expect(actual).toBeUndefined();
   });
 });
