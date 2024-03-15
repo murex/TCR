@@ -31,7 +31,7 @@ describe('TcrBuildInfoService', () => {
       os: "some-os",
       arch: "some-arch",
       commit: "abc123",
-      date: "2022-01-01T00:00:00Z",
+      date: "2024-01-01T00:00:00Z",
       author: "some-author",
     };
 

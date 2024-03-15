@@ -1,29 +1,37 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, InjectionToken, OnDestroy} from '@angular/core';
 import {webSocket, WebSocketSubject} from "rxjs/webSocket";
 import {TcrMessage} from "../interfaces/tcr-message";
-import {catchError, Observable, retry, throwError} from "rxjs";
+import {catchError, retry, throwError} from "rxjs";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+
+export const WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
+  'rxjs/webSocket.webSocket',
+  {
+    providedIn: 'root',
+    factory: () => webSocket,
+  }
+);
 
 @Injectable({
   providedIn: 'root'
 })
-export class WebsocketService {
-  private readonly url = this.webSocketURL("/ws");
-  private webSocketSubject: WebSocketSubject<TcrMessage>;
-  public webSocket$: Observable<TcrMessage>;
+export class WebsocketService implements OnDestroy {
+  private readonly url = "ws://" + window.location.host + "/ws";
+  public webSocket$: WebSocketSubject<TcrMessage>;
 
-  constructor() {
-    this.webSocketSubject = webSocket<TcrMessage>(this.url);
-    this.webSocket$ = this.webSocketSubject.asObservable().pipe(
+  constructor(@Inject(WEBSOCKET_CTOR) private webSocketSubject: typeof webSocket) {
+    this.webSocket$ = this.webSocketSubject<TcrMessage>(this.url);
+    this.webSocket$.asObservable().pipe(
       catchError((error) => {
         return throwError(() => new Error(error));
       }),
-      retry({delay: 5_000}),
+      retry({delay: 1_000}),
       takeUntilDestroyed()
-    )
+    );
   }
 
-  private webSocketURL(path: string): string {
-    return "ws://" + window.location.host + path;
+  ngOnDestroy(): void {
+    console.info(`closed websocket connection to ${this.url}`);
+    this.webSocket$.complete();
   }
 }
