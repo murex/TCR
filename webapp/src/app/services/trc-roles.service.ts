@@ -20,20 +20,6 @@ export class TcrRolesService {
     )
   }
 
-  getRoles(): Observable<TcrRole[]> {
-    const url = `${this.apiUrl}/roles`;
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Accept': 'application/json',
-      })
-    };
-
-    return this.http.get<TcrRole[]>(url, httpOptions)
-      .pipe(
-        catchError(this.handleError<TcrRole[]>('getRoles', []))
-      );
-  }
-
   getRole(name: string): Observable<TcrRole> {
     const url = `${this.apiUrl}/roles/${name}`;
     const httpOptions = {
