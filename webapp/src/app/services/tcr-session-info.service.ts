@@ -34,7 +34,7 @@ export class TcrSessionInfoService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation: string, result?: T) {
     return (error: unknown): Observable<T> => {
       console.error(`${operation} - ` + error);
       // Let the app keep running by returning an empty result.

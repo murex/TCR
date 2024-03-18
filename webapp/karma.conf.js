@@ -31,8 +31,8 @@ module.exports = function (config) {
       check: {
         global: {
           statements: 45,
-          branches: 15, // Something wrong with the branch coverage
-          functions: 25,
+          branches: 25,
+          functions: 35,
           lines: 45,
         },
       },

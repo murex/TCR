@@ -8,7 +8,7 @@
     "build-prod": "ng build --output-path ../src/http/static/webapp --configuration production --extract-licenses false",
     "watch": "ng build --watch --configuration development",
     "test": "ng test --source-map=false --browsers=ChromeHeadless --watch=false",
-    "coverage": "ng test --source-map=false --browsers=ChromeHeadless --watch=false --code-coverage",
+    "coverage": "ng test --source-map=true --browsers=ChromeHeadless --watch=false --code-coverage",
     "test-watch": "ng test",
     "lint": "ng lint",
     "clean": "rm -rf node_modules ../src/http/static/webapp",

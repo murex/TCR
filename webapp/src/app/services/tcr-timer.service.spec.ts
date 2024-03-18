@@ -79,11 +79,11 @@ describe('TcrTimerService', () => {
 
     it('should forward timer messages', (done) => {
       const sampleMessage: TcrMessage = {
-        emphasis: false,
         type: "timer",
-        severity: "0",
-        text: "running:500:300:200",
-        timestamp: "2024-01-01T00:00:00Z",
+        emphasis: false,
+        severity: "",
+        text: "",
+        timestamp: "",
       };
       let actual: TcrMessage | undefined;
       service.webSocket$.subscribe((msg) => {
@@ -96,11 +96,11 @@ describe('TcrTimerService', () => {
 
     it('should drop non-timer messages', (done) => {
       const sampleMessage: TcrMessage = {
-        emphasis: false,
         type: "other",
-        severity: "0",
-        text: "running:500:300:200",
-        timestamp: "2024-01-01T00:00:00Z",
+        emphasis: false,
+        severity: "",
+        text: "",
+        timestamp: "",
       };
       let actual: TcrMessage | undefined;
       service.webSocket$.subscribe((msg) => {
