@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {WebsocketService} from "../../services/websocket.service";
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
-import {TcrMessage} from "../../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {bgDarkGray, cyan, green, lightCyan, lightYellow, red, yellow} from "ansicolor";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 
@@ -25,17 +25,17 @@ export class TcrConsoleComponent {
 
   private printMessage(message: TcrMessage): void {
     switch (message.type) {
-      case "simple":
+      case TcrMessageType.SIMPLE:
         this.print(message.text);
         break;
-      case "info":
+      case TcrMessageType.INFO:
         this.print(cyan(message.text))
         break;
-      case "title":
+      case TcrMessageType.TITLE:
         this.print(lightCyan("─".repeat(80)));
         this.print(lightCyan(message.text));
         break;
-      case "role":
+      case TcrMessageType.ROLE:
         if (getRoleAction(message.text) === "start") {
           this.clear();
         }
@@ -43,17 +43,16 @@ export class TcrConsoleComponent {
         this.print(lightYellow(formatRoleMessage(message.text)));
         this.print(yellow("─".repeat(80)));
         break;
-      case "timer":
+      case TcrMessageType.TIMER:
         // ignore: handled by timer service
-        // this.print("⏳ " + green(message.text));
         break;
-      case "success":
+      case TcrMessageType.SUCCESS:
         this.print("🟢 " + green(message.text));
         break;
-      case "warning":
+      case TcrMessageType.WARNING:
         this.print("🔶 " + yellow(message.text));
         break;
-      case "error":
+      case TcrMessageType.ERROR:
         this.print("🟥 " + red(message.text));
         break;
       default:

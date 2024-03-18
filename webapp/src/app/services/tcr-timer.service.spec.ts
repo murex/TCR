@@ -3,7 +3,7 @@ import {TestBed} from '@angular/core/testing';
 import {TcrTimerService} from './tcr-timer.service';
 import {TcrTimer} from '../interfaces/tcr-timer';
 import {WebsocketService} from './websocket.service';
-import {TcrMessage} from "../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {Subject} from "rxjs";
 
 class WebsocketServiceFake {
@@ -79,7 +79,7 @@ describe('TcrTimerService', () => {
 
     it('should forward timer messages', (done) => {
       const sampleMessage: TcrMessage = {
-        type: "timer",
+        type: TcrMessageType.TIMER,
         emphasis: false,
         severity: "",
         text: "",
@@ -96,7 +96,7 @@ describe('TcrTimerService', () => {
 
     it('should drop non-timer messages', (done) => {
       const sampleMessage: TcrMessage = {
-        type: "other",
+        type: TcrMessageType.INFO,
         emphasis: false,
         severity: "",
         text: "",

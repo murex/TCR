@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 import {WebsocketService} from './websocket.service';
-import {TcrMessage} from "../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 
 // Mocking the websocket
 let fakeSocket: Subject<TcrMessage>;
@@ -12,7 +12,7 @@ const fakeSocketCtor = jasmine
 describe('WebsocketService', () => {
   const sampleMessage: TcrMessage = {
     emphasis: false,
-    type: "info",
+    type: TcrMessageType.INFO,
     severity: "0",
     text: "some info message",
     timestamp: "2024-01-01T00:00:00Z",

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {catchError, filter, Observable, of} from "rxjs";
-import {TcrMessage} from "../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {WebsocketService} from "./websocket.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {TcrTimer} from "../interfaces/tcr-timer";
@@ -16,7 +16,7 @@ export class TcrTimerService {
     private http: HttpClient,
     private ws: WebsocketService) {
     this.webSocket$ = this.ws.webSocket$.pipe(
-      filter(message => message.type === "timer")
+      filter(message => message.type === TcrMessageType.TIMER)
     )
   }
 

@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {catchError, filter, Observable, of} from "rxjs";
 import {TcrRole} from "../interfaces/tcr-role";
 import {WebsocketService} from "./websocket.service";
-import {TcrMessage} from "../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class TcrRolesService {
     private http: HttpClient,
     private ws: WebsocketService) {
     this.webSocket$ = this.ws.webSocket$.pipe(
-      filter(message => message.type === "role")
+      filter(message => message.type === TcrMessageType.ROLE)
     )
   }
 

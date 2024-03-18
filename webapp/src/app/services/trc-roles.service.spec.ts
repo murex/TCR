@@ -2,7 +2,7 @@ import {TestBed} from '@angular/core/testing';
 
 import {TcrRolesService} from './trc-roles.service';
 import {Subject} from "rxjs";
-import {TcrMessage} from "../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {WebsocketService} from "./websocket.service";
 import {TcrRole} from "../interfaces/tcr-role";
@@ -126,7 +126,7 @@ describe('TcrRolesService', () => {
 
     it('should forward role messages', (done) => {
       const sampleMessage: TcrMessage = {
-        type: "role",
+        type: TcrMessageType.ROLE,
         emphasis: false,
         severity: "",
         text: "",
@@ -143,7 +143,7 @@ describe('TcrRolesService', () => {
 
     it('should drop non-role messages', (done) => {
       const sampleMessage: TcrMessage = {
-        type: "other",
+        type: TcrMessageType.INFO,
         emphasis: false,
         severity: "",
         text: "",
