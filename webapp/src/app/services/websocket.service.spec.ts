@@ -32,35 +32,43 @@ describe('WebsocketService', () => {
     });
   });
 
-  it('should attempt a websocket connection on create', () => {
-    const expectedUrl = 'ws://' + window.location.host + '/ws';
-    expect(fakeSocketCtor).toHaveBeenCalledOnceWith(expectedUrl);
-  });
+  describe('service instance', () => {
 
-  it('should be able to receive TCR messages', (done) => {
-    let actual: TcrMessage | undefined;
-    service.webSocket$.subscribe((msg) => {
-      actual = msg;
-      done();
+    it('should be created', () => {
+      expect(service).toBeTruthy();
     });
-    fakeSocket.next(sampleMessage);
-    expect(actual).toBe(sampleMessage);
-  });
 
-  it('should handle websocket errors', () => {
-    const sampleError = new Error('WebSocket error');
-    let actual: Error | undefined;
-    service.webSocket$.asObservable().subscribe({
-      error: (err) => actual = err,
+    it('should attempt a websocket connection on create', () => {
+      const expectedUrl = 'ws://' + window.location.host + '/ws';
+      expect(fakeSocketCtor).toHaveBeenCalledOnceWith(expectedUrl);
     });
-    fakeSocket.error(sampleError);
-    expect(actual).toEqual(sampleError);
-  });
 
-  it('should close the websocket on destroy', () => {
-    spyOn(fakeSocket, 'complete');
-    service.ngOnDestroy();
-    expect(fakeSocket.complete).toHaveBeenCalled();
+    it('should be able to forward received TCR messages', (done) => {
+      let actual: TcrMessage | undefined;
+      service.webSocket$.subscribe((msg) => {
+        actual = msg;
+        done();
+      });
+      fakeSocket.next(sampleMessage);
+      expect(actual).toBe(sampleMessage);
+    });
+
+    it('should handle websocket errors', () => {
+      const sampleError = new Error('WebSocket error');
+      let actual: Error | undefined;
+      service.webSocket$.asObservable().subscribe({
+        error: (err) => actual = err,
+      });
+      fakeSocket.error(sampleError);
+      expect(actual).toEqual(sampleError);
+    });
+
+    it('should close the websocket on destroy', () => {
+      spyOn(fakeSocket, 'complete');
+      service.ngOnDestroy();
+      expect(fakeSocket.complete).toHaveBeenCalled();
+    });
+
   });
 
 });

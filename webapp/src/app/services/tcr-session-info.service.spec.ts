@@ -21,44 +21,53 @@ describe('TcrSessionInfoService', () => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  describe('service instance', () => {
 
-  it('should return expected session info when getSessionInfo is called', () => {
-    const sample: TcrSessionInfo = {
-      baseDir: "/my/base/dir",
-      commitOnFail: false,
-      gitAutoPush: false,
-      language: "java",
-      messageSuffix: "my-suffix",
-      toolchain: "gradle",
-      vcsName: "git",
-      vcsSession: "my VCS session",
-      workDir: "/my/work/dir"
-    };
-
-    let actual: TcrSessionInfo | undefined;
-    service.getSessionInfo().subscribe(other => {
-      actual = other;
+    it('should be created', () => {
+      expect(service).toBeTruthy();
     });
 
-    const req = httpMock.expectOne(`/api/session-info`);
-    expect(req.request.method).toBe('GET');
-    expect(req.request.responseType).toEqual('json');
-    req.flush(sample);
-    expect(actual).toEqual(sample);
   });
 
-  it('should return undefined when getSessionInfo receives an error response', () => {
-    let actual: TcrSessionInfo | undefined;
-    service.getSessionInfo().subscribe(other => {
-      actual = other;
+  describe('getSessionInfo() function', () => {
+
+    it('should return session info when called', () => {
+      const sample: TcrSessionInfo = {
+        baseDir: "/my/base/dir",
+        commitOnFail: false,
+        gitAutoPush: false,
+        language: "java",
+        messageSuffix: "my-suffix",
+        toolchain: "gradle",
+        vcsName: "git",
+        vcsSession: "my VCS session",
+        workDir: "/my/work/dir"
+      };
+
+      let actual: TcrSessionInfo | undefined;
+      service.getSessionInfo().subscribe(other => {
+        actual = other;
+      });
+
+      const req = httpMock.expectOne(`/api/session-info`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.responseType).toEqual('json');
+      req.flush(sample);
+      expect(actual).toEqual(sample);
     });
 
-    const req = httpMock.expectOne(`/api/session-info`);
-    expect(req.request.method).toBe('GET');
-    req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'});
-    expect(actual).toBeUndefined();
+    it('should return undefined when receiving an error response', () => {
+      let actual: TcrSessionInfo | undefined;
+      service.getSessionInfo().subscribe(other => {
+        actual = other;
+      });
+
+      const req = httpMock.expectOne(`/api/session-info`);
+      expect(req.request.method).toBe('GET');
+      req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'});
+      expect(actual).toBeUndefined();
+    });
+
   });
+
 });
