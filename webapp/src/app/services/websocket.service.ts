@@ -25,7 +25,7 @@ export class WebsocketService implements OnDestroy {
       catchError((error) => {
         return throwError(() => new Error(error));
       }),
-      retry({delay: 1_000}),
+      retry({delay: 5_000}),
       takeUntilDestroyed()
     );
   }
