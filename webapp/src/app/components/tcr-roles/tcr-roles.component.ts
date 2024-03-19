@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { NgForOf } from "@angular/common";
-import { TcrRoleComponent } from "../tcr-role/tcr-role.component";
+import {Component} from '@angular/core';
+import {NgForOf} from "@angular/common";
+import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
 
 @Component({
   selector: 'app-tcr-roles',
@@ -13,7 +13,6 @@ import { TcrRoleComponent } from "../tcr-role/tcr-role.component";
   styleUrl: './tcr-roles.component.css'
 })
 export class TcrRolesComponent {
-  title = "Role";
   roles = ['driver', 'navigator'];
 
   constructor() {
