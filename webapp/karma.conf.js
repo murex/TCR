@@ -30,10 +30,10 @@ module.exports = function (config) {
       subdir: '.',
       check: {
         global: {
-          statements: 55,
+          statements: 60,
           branches: 30,
-          functions: 55,
-          lines: 55,
+          functions: 65,
+          lines: 60,
         },
       },
       reporters: [

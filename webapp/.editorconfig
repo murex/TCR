@@ -9,8 +9,42 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.ts]
-quote_type = single
+max_line_length = 80
+
+[*.js]
+max_line_length = 80
+
+[*.json]
+max_line_length = off
+
+[*.yml]
+max_line_length = off
+
+[*.yaml]
+max_line_length = off
 
 [*.md]
 max_line_length = off
-trim_trailing_whitespace = false
+
+[*.html]
+max_line_length = off
+
+[*.css]
+max_line_length = off
+
+[*.scss]
+max_line_length = off
+
+[*.less]
+max_line_length = off
+
+[*.xml]
+max_line_length = off
+
+[*.svg]
+max_line_length = off
+
+[*.toml]
+max_line_length = off
+
+
