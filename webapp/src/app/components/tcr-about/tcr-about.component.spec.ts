@@ -1,23 +1,53 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {Observable, of} from 'rxjs';
+import {TcrBuildInfoService} from '../../services/tcr-build-info.service';
+import {TcrAboutComponent} from "./tcr-about.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
 
-import {TcrAboutComponent} from './tcr-about.component';
+const sample: TcrBuildInfo = {
+  version: "1.0.0",
+  os: "some-os",
+  arch: "some-arch",
+  commit: "abc123",
+  date: "2024-01-01T00:00:00Z",
+  author: "some-author",
+};
 
-xdescribe('TcrAboutComponent', () => {
+class FakeTcrBuildInfoService implements Partial<TcrBuildInfoService> {
+  buildInfo: TcrBuildInfo = sample;
+
+  getBuildInfo(): Observable<TcrBuildInfo> {
+    return of(this.buildInfo);
+  }
+}
+
+describe('TcrAboutComponent', () => {
   let component: TcrAboutComponent;
   let fixture: ComponentFixture<TcrAboutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrAboutComponent]
-    })
-      .compileComponents();
+      imports: [TcrAboutComponent, HttpClientTestingModule],
+      providers: [
+        {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService}
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TcrAboutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should have title "About TCR"', () => {
+    expect(component.title).toEqual('About TCR');
+  });
+
+  it('should fetch TCR build info on init', () => {
+    expect(component.buildInfo).toEqual(sample);
   });
 });
