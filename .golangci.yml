@@ -27,22 +27,13 @@ linters:
 run:
   go: "1.21"
   timeout: 5m
-  skip-dirs:
-    - testdata
-    - build
-    - _test_results
-  skip-files:
-    - .*generated.*
 linters-settings:
   gocyclo:
     min-complexity: 16
-  govet:
-    check-shadowing: false
+  govet: { }
   lll:
     line-length: 200
-  nakedret:
-    command: nakedret
-    pattern: ^(?P<path>.*?\\.go):(?P<line>\\d+)\\s*(?P<message>.*)$
+  nakedret: { }
   revive:
     # Maximum number of open files at the same time.
     # See https://github.com/mgechev/revive#command-line-flags
@@ -380,6 +371,13 @@ linters-settings:
         disabled: false
 issues:
   # The default exclusion rules are a bit too permissive, so copying the relevant ones below
+  exclude-dirs:
+    - testdata
+    - build
+    - webapp
+    - _test_results
+  exclude-files:
+    - .*generated.*
   exclude-use-default: false
   exclude-rules:
     - path: '(.+)_test(_.+)?\.go'
