@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from "@angular/router";
+import {Component} from '@angular/core';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -17,10 +17,8 @@ export class HomeComponent {
   navigateTo(url: string) {
     this.router.navigateByUrl(url)
       .then(r => {
-        if (!r) {
-          window.alert(`Page not found: ${url}`)
-        }
-      }
-      );
+        if (!r)
+          window.alert(`Page not found: ${url}`);
+      });
   }
 }
