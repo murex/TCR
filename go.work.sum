@@ -1822,6 +1822,8 @@ github.com/ebitengine/purego v0.5.0 h1:JrMGKfRIAM4/QVKaesIIT7m/UVjTj5GYhRSQYwfVd
 github.com/ebitengine/purego v0.5.0/go.mod h1:ah1In8AOtksoNK6yk5z1HTJeUkC1Ez4Wk2idgGslMwQ=
 github.com/eggsampler/acme/v3 v3.4.0 h1:LHWnB3wShVshK1+umL6ObCjnc0MM+D7TE8JINjk8zGY=
 github.com/eggsampler/acme/v3 v3.4.0/go.mod h1:/qh0rKC/Dh7Jj+p4So7DbWmFNzC4dpcpK53r226Fhuo=
+github.com/eggsampler/acme/v3 v3.5.0 h1:tM8IXhS95HLm2LGxRDI3yzQrs7iZ9mKep1JjQhTIsUo=
+github.com/eggsampler/acme/v3 v3.5.0/go.mod h1:/qh0rKC/Dh7Jj+p4So7DbWmFNzC4dpcpK53r226Fhuo=
 github.com/emicklei/go-restful/v3 v3.10.2 h1:hIovbnmBTLjHXkqEBUz3HGpXZdM7ZrE9fJIZIqlJLqE=
 github.com/emicklei/go-restful/v3 v3.10.2/go.mod h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=
 github.com/emicklei/go-restful/v3 v3.11.0 h1:rAQeMHw1c7zTmncogyy8VvRZwtkmkZ4FxERmMY4rD+g=
@@ -2475,6 +2477,8 @@ google.golang.org/genproto/googleapis/bytestream v0.0.0-20240304161311-37d4d3c04
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240304161311-37d4d3c04a78/go.mod h1:vh/N7795ftP0AkN1w8XKqN4w1OdUKXW5Eummda+ofv8=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240311132316-a219d84964c2 h1:DjcmH9OjLzvc4aA2QbEyC+G9i3LGbQfNcL4xoX31UaI=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240311132316-a219d84964c2/go.mod h1:vh/N7795ftP0AkN1w8XKqN4w1OdUKXW5Eummda+ofv8=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20240314234333-6e1732d8331c h1:4z0DVWmDWWZ4OeQHLrb6lLBE3uCgSLs9DDA5Zb36DFg=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20240314234333-6e1732d8331c/go.mod h1:IN9OQUXZ0xT+26MDwZL8fJcYw+y99b0eYPA2U15Jt8o=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 h1:M1YKkFIboKNieVO5DLUEVzQfGwJD30Nv2jfUgzb5UcE=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0 h1:Rc2Z3tspHI+PsspsfO4wZsSqL8l658yAUo7lFUSnPD0=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0/go.mod h1:m0tVxCbhcuHsiHhhaw749KeQcVjRZOWBPMa6wHL6LBQ=
