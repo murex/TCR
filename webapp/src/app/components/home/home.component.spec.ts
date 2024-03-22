@@ -6,7 +6,7 @@ import {By} from "@angular/platform-browser";
 
 class RouterFake {
   url: string = '';
-  
+
   navigateByUrl(url: string | UrlTree, _extras?: NavigationBehaviorOptions): Promise<boolean> {
     this.url = url.toString();
     return Promise.resolve(true);
@@ -58,6 +58,13 @@ describe('HomeComponent', () => {
         element.triggerEventHandler('click', null);
         expect(router.url).toEqual(expectedUrl);
       });
+    });
+
+    it('should alert the user when the router does not navigate', async () => {
+      spyOn(window, 'alert');
+      router.navigateByUrl = () => Promise.resolve(false);
+      await component.navigateTo('/invalid-path');
+      expect(window.alert).toHaveBeenCalled();
     });
 
   });

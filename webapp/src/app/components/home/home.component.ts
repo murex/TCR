@@ -14,7 +14,7 @@ export class HomeComponent {
   constructor(private router: Router) {
   }
 
-  navigateTo(url: string) {
+  async navigateTo(url: string) {
     this.router.navigateByUrl(url)
       .then(r => {
         if (!r)
