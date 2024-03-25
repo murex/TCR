@@ -71,7 +71,7 @@ func Test_create_web_ui_server(t *testing.T) {
 		{
 			desc: "websocket connections timeout",
 			asserter: func(t *testing.T) {
-				assert.Equal(t, 1*time.Minute, wuis.GetWebsocketTimeout())
+				assert.Equal(t, 2*time.Hour, wuis.GetWebsocketTimeout())
 			},
 		},
 		{
