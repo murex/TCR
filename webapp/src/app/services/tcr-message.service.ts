@@ -8,10 +8,10 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   providedIn: 'root'
 })
 export class TcrMessageService {
-  public webSocket$: Observable<TcrMessage>;
+  public message$: Observable<TcrMessage>;
 
   constructor(private ws: WebsocketService) {
-    this.webSocket$ = this.ws.webSocket$.pipe(
+    this.message$ = this.ws.webSocket$.pipe(
       retry({delay: 5_000}),
       takeUntilDestroyed(),
     )

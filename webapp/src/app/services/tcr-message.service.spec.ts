@@ -43,7 +43,7 @@ describe('TcrMessageService', () => {
           timestamp: "",
         };
         let actual: TcrMessage | undefined;
-        service.webSocket$.subscribe((msg) => {
+        service.message$.subscribe((msg) => {
           actual = msg;
           done();
         });

@@ -29,7 +29,7 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   private SYNC_INTERVAL = 10;
 
   constructor(private timerService: TcrTimerService) {
-    this.timerMessage = toSignal(this.timerService.webSocket$);
+    this.timerMessage = toSignal(this.timerService.message$);
 
     effect(() => {
       // When receiving a timer message from the server

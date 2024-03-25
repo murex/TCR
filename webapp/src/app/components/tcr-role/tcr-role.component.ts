@@ -21,7 +21,7 @@ export class TcrRoleComponent implements OnInit {
   roleMessage: Signal<TcrMessage | undefined>;
 
   constructor(private rolesService: TcrRolesService) {
-    this.roleMessage = toSignal(this.rolesService.webSocket$);
+    this.roleMessage = toSignal(this.rolesService.message$);
 
     effect(() => {
       // When receiving a role message from the server

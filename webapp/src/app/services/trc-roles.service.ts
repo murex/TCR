@@ -11,10 +11,10 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export class TcrRolesService {
   private apiUrl = `/api`; // URL to web api
-  public webSocket$: Observable<TcrMessage>;
+  public message$: Observable<TcrMessage>;
 
   constructor(private http: HttpClient, private ws: WebsocketService) {
-    this.webSocket$ = this.ws.webSocket$.pipe(
+    this.message$ = this.ws.webSocket$.pipe(
       filter(message => message.type === TcrMessageType.ROLE),
       retry({delay: 5_000}),
       takeUntilDestroyed(),

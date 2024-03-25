@@ -31,7 +31,7 @@ export class TcrConsoleComponent implements OnInit {
   @ViewChild('term', {static: false}) child!: NgTerminal;
 
   constructor(private messageService: TcrMessageService) {
-    this.tcrMessage = toSignal(this.messageService.webSocket$);
+    this.tcrMessage = toSignal(this.messageService.message$);
 
     effect(() => {
       // When receiving a message from the server
