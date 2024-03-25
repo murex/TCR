@@ -106,7 +106,7 @@ type (
 
 const traceReporterWaitingTime = 100 * time.Millisecond
 
-const fsWatchRearmDelay = 2 * time.Second
+const fsWatchRearmDelay = 100 * time.Millisecond
 
 const (
 	commitMessageOk     = "✅ TCR - tests passing"
