@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {catchError, filter, Observable, of} from "rxjs";
+import {catchError, filter, Observable, of, retry} from "rxjs";
 import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {WebsocketService} from "./websocket.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {TcrTimer} from "../interfaces/tcr-timer";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,11 @@ export class TcrTimerService {
   private apiUrl = `/api`; // URL to web api
   public webSocket$: Observable<TcrMessage>;
 
-  constructor(
-    private http: HttpClient,
-    private ws: WebsocketService) {
+  constructor(private http: HttpClient, private ws: WebsocketService) {
     this.webSocket$ = this.ws.webSocket$.pipe(
-      filter(message => message.type === TcrMessageType.TIMER)
+      filter(message => message.type === TcrMessageType.TIMER),
+      retry({delay: 5_000}),
+      takeUntilDestroyed(),
     )
   }
 

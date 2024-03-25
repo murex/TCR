@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, effect, Input, OnInit, Signal} from '@angular/core';
+import {AfterViewInit, Component, effect, OnInit, Signal} from '@angular/core';
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {TcrTimerService} from "../../services/tcr-timer.service";
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -19,17 +19,16 @@ import {NgClass, NgIf, NgStyle} from "@angular/common";
   styleUrl: './tcr-timer.component.css'
 })
 export class TcrTimerComponent implements OnInit, AfterViewInit {
-  @Input() timer?: TcrTimer;
-  @Input() progressRatio: number | undefined;
-  @Input() remaining: number | undefined;
-  @Input() timeout: number | undefined;
-  @Input() fgColor: string | undefined;
+  timer?: TcrTimer;
+  progressRatio: number | undefined;
+  remaining: number | undefined;
+  timeout: number | undefined;
+  fgColor: string | undefined;
   timerMessage: Signal<TcrMessage | undefined>;
   private syncCounter = 0;
   private SYNC_INTERVAL = 10;
 
-  constructor(
-    private timerService: TcrTimerService) {
+  constructor(private timerService: TcrTimerService) {
     this.timerMessage = toSignal(this.timerService.webSocket$);
 
     effect(() => {

@@ -1,16 +1,14 @@
-<div *ngIf="role">
-  <div (click)="toggleRole(role)"
-       [ngClass]="{
+<div *ngIf="role" (click)="toggleRole(role)"
+     [ngClass]="{
               'navigator-on': role.active && role.name === 'navigator',
-              'driver-on' :role.active && role.name === 'driver',
+              'driver-on' : role.active && role.name === 'driver',
               'role-off': !role.active}"
-       class="wrap">
-    <div class="ico-wrap">
-      <span class="mbr-iconfont fa-compass fa" *ngIf="role.name === 'navigator'"></span>
-      <span class="mbr-iconfont fa-keyboard-o fa" *ngIf="role.name === 'driver'"></span>
-    </div>
-    <div class="text-wrap vcenter">
-      <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">{{ role.description }}</h2>
-    </div>
+     class="wrap">
+  <div class="ico-wrap">
+    <span class="mbr-iconfont fa-compass fa" *ngIf="role.name === 'navigator'"></span>
+    <span class="mbr-iconfont fa-keyboard-o fa" *ngIf="role.name === 'driver'"></span>
+  </div>
+  <div class="text-wrap vcenter">
+    <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">{{ role.description }}</h2>
   </div>
 </div>

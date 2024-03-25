@@ -1,9 +1,18 @@
-import {Component, ViewChild} from '@angular/core';
-import {WebsocketService} from "../../services/websocket.service";
+import {Component, effect, OnInit, Signal, ViewChild} from '@angular/core';
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
-import {bgDarkGray, cyan, green, lightCyan, lightYellow, red, yellow} from "ansicolor";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
+import {TcrMessageService} from "../../services/tcr-message.service";
+import {toSignal} from "@angular/core/rxjs-interop";
+import {
+  bgDarkGray,
+  cyan,
+  green,
+  lightCyan,
+  lightYellow,
+  red,
+  yellow
+} from "ansicolor";
 
 @Component({
   selector: 'app-tcr-console',
@@ -15,15 +24,30 @@ import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
   templateUrl: './tcr-console.component.html',
   styleUrl: './tcr-console.component.css'
 })
-export class TcrConsoleComponent {
+export class TcrConsoleComponent implements OnInit {
   title = "TCR Console";
+  tcrMessage: Signal<TcrMessage | undefined>;
+
   @ViewChild('term', {static: false}) child!: NgTerminal;
 
-  constructor(private ws: WebsocketService) {
-    this.ws.webSocket$.subscribe((m: TcrMessage) => this.printMessage(m));
+  constructor(private messageService: TcrMessageService) {
+    this.tcrMessage = toSignal(this.messageService.webSocket$);
+
+    effect(() => {
+      // When receiving a message from the server
+      // print it in the terminal
+      this.printMessage(this.tcrMessage()!);
+    });
+  }
+
+  ngOnInit(): void {
+    this.clear();
   }
 
   private printMessage(message: TcrMessage): void {
+    if (message === undefined) {
+      return;
+    }
     switch (message.type) {
       case TcrMessageType.SIMPLE:
         this.print(message.text);

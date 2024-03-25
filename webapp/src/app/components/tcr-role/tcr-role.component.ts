@@ -16,12 +16,11 @@ import {toSignal} from "@angular/core/rxjs-interop";
   styleUrl: './tcr-role.component.css'
 })
 export class TcrRoleComponent implements OnInit {
-  @Input() name = "";
-  @Input() role?: TcrRole;
+  @Input({required: true}) name = "";
+  role?: TcrRole;
   roleMessage: Signal<TcrMessage | undefined>;
 
-  constructor(
-    private rolesService: TcrRolesService) {
+  constructor(private rolesService: TcrRolesService) {
     this.roleMessage = toSignal(this.rolesService.webSocket$);
 
     effect(() => {
@@ -56,5 +55,8 @@ export class TcrRoleComponent implements OnInit {
       .subscribe(r => {
         console.log(r.name + ' set to ' + r.active);
       });
+    // To make sure the role is updated in the UI even when
+    // websocket connection is down
+    this.getRole();
   }
 }

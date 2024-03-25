@@ -1,7 +1,6 @@
 
 .wrap {
   display: flex;
-  /*background: blue;*/
   border-radius: 0.5rem;
   box-shadow: 7px 7px 30px -5px rgba(0, 0, 0, 0.1);
 }
