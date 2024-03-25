@@ -59,7 +59,7 @@ func New(p params.Params, tcr engine.TCRInterface) *WebUIServer {
 		devMode:          p.Trace == "http",
 		router:           nil,
 		httpServer:       nil,
-		websocketTimeout: 1 * time.Minute, // default timeout value
+		websocketTimeout: 2 * time.Hour, // default timeout value
 		params:           p,
 	}
 	tcr.AttachUI(&webUIServer, false)
