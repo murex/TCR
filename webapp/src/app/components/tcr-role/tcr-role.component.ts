@@ -34,7 +34,7 @@ export class TcrRoleComponent implements OnInit {
     this.getRole();
   }
 
-  private refresh(message: TcrMessage): void {
+  refresh(message: TcrMessage): void {
     if (message) {
       const name = message.text.split(":")[0];
       if (name === this.name) {

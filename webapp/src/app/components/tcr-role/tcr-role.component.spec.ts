@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcrRoleComponent} from './tcr-role.component';
 import {Observable, of} from "rxjs";
-import {TcrMessage} from "../../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {TcrRolesService} from "../../services/trc-roles.service";
 import {TcrRole} from "../../interfaces/tcr-role";
 import {By} from "@angular/platform-browser";
@@ -85,6 +85,7 @@ describe('TcrRoleComponent', () => {
         serviceFake.getRole = () => of(role);
         fixture = TestBed.createComponent(TcrRoleComponent);
         component = fixture.componentInstance;
+        component.name = testCase.name;
         fixture.detectChanges();
         done()
 
@@ -108,6 +109,83 @@ describe('TcrRoleComponent', () => {
           By.css(`[data-testid="role-label"]`));
         expect(labelElement).toBeTruthy();
         expect(labelElement.nativeElement.textContent).toEqual(role.description);
+      });
+    });
+  });
+
+  describe('component refresh', () => {
+    const testCases = [
+      {
+        expectation: "should activate on own role start messages",
+        name: "driver",
+        description: "driver role",
+        activeBefore: false,
+        message: "driver:start",
+        activeAfter: true,
+      },
+      {
+        expectation: "should deactivate on own role stop messages",
+        name: "driver",
+        description: "driver role",
+        activeBefore: true,
+        message: "driver:stop",
+        activeAfter: false,
+      },
+      {
+        expectation: "should ignore other role start messages",
+        name: "driver",
+        description: "driver role",
+        activeBefore: false,
+        message: "navigator:start",
+        activeAfter: false,
+      },
+      {
+        expectation: "should ignore other role stop messages",
+        name: "driver",
+        description: "driver role",
+        activeBefore: true,
+        message: "navigator:stop",
+        activeAfter: true,
+      },
+
+    ];
+
+    testCases.forEach(testCase => {
+      it(`${testCase.expectation}`, (done) => {
+        // Have the service fake's getRole method return the starting role
+        const roleBefore: TcrRole = {
+          name: testCase.name,
+          description: testCase.description,
+          active: testCase.activeBefore,
+        };
+        serviceFake.getRole = () => of(roleBefore);
+
+        fixture = TestBed.createComponent(TcrRoleComponent);
+        component = fixture.componentInstance;
+        component.name = testCase.name;
+
+        // Verify that the initial role is set correctly
+        fixture.detectChanges();
+        expect(component.role?.active).toEqual(testCase.activeBefore);
+
+        // Update the service fake to return the expected new role
+        const roleAfter: TcrRole = {
+          name: testCase.name,
+          description: testCase.description,
+          active: testCase.activeAfter,
+        };
+        serviceFake.getRole = () => of(roleAfter);
+
+        // Trigger the refresh method with the message
+        component.refresh({
+          type: TcrMessageType.ROLE,
+          text: testCase.message
+        } as TcrMessage);
+
+        // Verify that the component's role attribute was updated as expected
+        fixture.detectChanges();
+        expect(component.role?.active).toEqual(testCase.activeAfter);
+        done()
       });
     });
   });
