@@ -2,7 +2,7 @@ import {AfterViewInit, Component, effect, OnInit, Signal} from '@angular/core';
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {TcrTimerService} from "../../services/tcr-timer.service";
 import {toSignal} from "@angular/core/rxjs-interop";
-import {TcrTimer} from "../../interfaces/tcr-timer";
+import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
 import {FormatTimerPipe} from "../../pipes/format-timer.pipe";
 import {NgClass, NgIf, NgStyle} from "@angular/common";
 
@@ -38,52 +38,61 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    // Timer periodic update. We re-sync with the server every SYNC_INTERVAL seconds
-    setInterval(() => {
-      if (this.syncCounter++ >= this.SYNC_INTERVAL) {
-        this.getTimer();
-        this.syncCounter = 0;
-      } else if (this.timer?.state != 'off') {
-        this.remaining = this.remaining! - 1;
-        this.updateColor();
-      }
-    }, 1000);
-  }
-
   ngOnInit(): void {
     this.getTimer();
   }
 
-  private refresh(message: TcrMessage): void {
-    if (message) {
+  ngAfterViewInit(): void {
+    setInterval(() => this.periodicUpdate(), 1000);
+  }
+
+  // Timer periodic update. We re-sync with the server every SYNC_INTERVAL seconds
+  periodicUpdate() {
+    const activeStates = [TcrTimerState.RUNNING, TcrTimerState.TIMEOUT];
+    if (this.syncCounter++ >= this.SYNC_INTERVAL) {
       this.getTimer();
+      this.syncCounter = 0;
+    } else if (activeStates.includes(this.timer?.state as TcrTimerState)) {
+      this.remaining = this.remaining! - 1;
+      this.updateColor();
     }
+  }
+
+  refresh(message: TcrMessage): void {
+    if (message)
+      this.getTimer();
   }
 
   public getTimer(): void {
     this.timerService.getTimer().subscribe(t => {
-        this.timer = t;
-        this.timeout = parseInt(t.timeout, 10);
-        this.remaining = parseInt(t.remaining, 10);
-        this.updateColor()
-      }
-    );
+      this.timer = t;
+      this.timeout = parseInt(t.timeout, 10);
+      this.remaining = parseInt(t.remaining, 10);
+      this.updateColor()
+    });
   }
 
-  private updateColor(): void {
+  updateColor(): void {
+    let color = {red: 0, green: 0, blue: 0};
     if (this.timer) {
-      if (this.timer.state === 'off') {
-        this.fgColor = `gray`
-      } else if (this.remaining! < 0) {
-        this.fgColor = `rgb(255, 0, 0)`
-      } else {
-        this.progressRatio = (this.timeout! - this.remaining!) / this.timeout!;
-        const red = 255 * this.progressRatio
-        const green = 255 * (1 - this.progressRatio)
-        const blue = 0
-        this.fgColor = `rgb(${red},${green},${blue})`
+      switch (this.timer.state) {
+        case TcrTimerState.OFF:
+        case TcrTimerState.STOPPED:
+          color = {red: 128, green: 128, blue: 128};
+          break;
+        case TcrTimerState.TIMEOUT:
+          color = {red: 255, green: 0, blue: 0};
+          break;
+        default:
+          this.progressRatio = (this.timeout! - this.remaining!) / this.timeout!;
+          color = {
+            red: 255,
+            green: 255 * (1 - this.progressRatio),
+            blue: 255 * (1 - this.progressRatio),
+          };
+          break;
       }
     }
+    this.fgColor = `rgb(${color.red},${color.green},${color.blue})`;
   }
 }

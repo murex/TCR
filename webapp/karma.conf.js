@@ -30,10 +30,10 @@ module.exports = function (config) {
       subdir: '.',
       check: {
         global: {
-          statements: 70,
-          branches: 35,
-          functions: 75,
-          lines: 70,
+          statements: 80,
+          branches: 60,
+          functions: 80,
+          lines: 80,
         },
       },
       reporters: [
@@ -48,7 +48,7 @@ module.exports = function (config) {
       useBrowserName: false, // add browser name to report and classes names
       nameFormatter: undefined, // function (browser, result) to customize the name attribute in xml testcase element
       classNameFormatter: undefined, // function (browser, result) to customize the classname attribute in xml testcase element
-      properties: {}, // key value pair of properties to add to the <properties> section of the report
+      properties: {}, // key value pairs of properties to add to the <properties> section of the report
       xmlVersion: null, // use '1' if reporting to be per SonarQube 6.2 XML format
     },
     reporters: ['progress', 'kjhtml', 'junit'],

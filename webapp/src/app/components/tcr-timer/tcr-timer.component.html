@@ -1,5 +1,9 @@
-<div *ngIf="timer" class="timer-off wrap vcenter px-2 py-0" [ngStyle]="{'color': fgColor}" (click)="getTimer()">
-  <i *ngIf="timer.state === 'timeout'" class="fa fa-warning vcenter px-2 py-0" style="font-size:36px"></i>
-  <i *ngIf="timer.state !== 'timeout'" class="fa fa-clock-o vcenter px-2 py-0" style="font-size:36px"></i>
-  <h2 class="mbr-bold display-5 px-2 py-0">{{ remaining | formatTimer }}</h2>
+<div *ngIf="timer"
+     class="timer-off wrap vcenter px-2 py-0"
+     [ngStyle]="{'color': fgColor}"
+     (click)="getTimer()"
+     data-testid="timer-component">
+  <i *ngIf="timer.state === 'timeout'" class="fa fa-warning vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></i>
+  <i *ngIf="timer.state !== 'timeout'" class="fa fa-clock-o vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></i>
+  <h2 class="mbr-bold display-5 px-2 py-0" data-testid="timer-label">{{ remaining | formatTimer }}</h2>
 </div>

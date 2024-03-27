@@ -1,23 +1,364 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcrTimerComponent} from './tcr-timer.component';
+import {Observable, of} from "rxjs";
+import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
+import {TcrTimerService} from "../../services/tcr-timer.service";
+import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
+import {By} from "@angular/platform-browser";
 
-xdescribe('TcrTimerComponent', () => {
+class TcrTimerServiceFake implements Partial<TcrTimerService> {
+  constructor(public message$ = new Observable<TcrMessage>()) {
+  }
+
+  getTimer(): Observable<TcrTimer> {
+    return of({
+      state: TcrTimerState.OFF,
+      timeout: "0",
+      elapsed: "0",
+      remaining: "0",
+    });
+  }
+}
+
+describe('TcrTimerComponent', () => {
   let component: TcrTimerComponent;
   let fixture: ComponentFixture<TcrTimerComponent>;
+  let serviceFake: TcrTimerService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrTimerComponent]
-    })
-      .compileComponents();
+      imports: [TcrTimerComponent],
+      providers: [
+        {provide: TcrTimerService, useClass: TcrTimerServiceFake},
+      ]
+    }).compileComponents();
 
+    serviceFake = TestBed.inject(TcrTimerService);
     fixture = TestBed.createComponent(TcrTimerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('component instance', () => {
+    it('should be created', () => {
+      expect(component).toBeTruthy();
+    });
+  });
+
+  describe('component initialization', () => {
+    const testCases = [
+      {
+        state: TcrTimerState.OFF,
+        timeout: "100",
+        elapsed: "0",
+        remaining: "0",
+        expectedColor: "rgb(128, 128, 128)",
+        expectedIcon: 'fa-clock-o',
+        expectedText: "00:00",
+      },
+      {
+        state: TcrTimerState.PENDING,
+        timeout: "100",
+        elapsed: "0",
+        remaining: "100",
+        expectedColor: "rgb(255, 255, 255)",
+        expectedIcon: 'fa-clock-o',
+        expectedText: "01:40",
+      },
+      {
+        state: TcrTimerState.RUNNING,
+        timeout: "100",
+        elapsed: "20",
+        remaining: "80",
+        expectedColor: "rgb(255, 204, 204)",
+        expectedIcon: 'fa-clock-o',
+        expectedText: "01:20",
+      },
+      {
+        state: TcrTimerState.STOPPED,
+        timeout: "100",
+        elapsed: "60",
+        remaining: "0",
+        expectedColor: "rgb(128, 128, 128)",
+        expectedIcon: 'fa-clock-o',
+        expectedText: "00:00",
+      },
+      {
+        state: TcrTimerState.TIMEOUT,
+        timeout: "100",
+        elapsed: "120",
+        remaining: "-20",
+        expectedColor: "rgb(255, 0, 0)",
+        expectedIcon: 'fa-warning',
+        expectedText: "-00:20",
+      },
+    ];
+
+    testCases.forEach((testCase) => {
+      it(`should work with timer in ${testCase.state} state`, (done) => {
+        const timer: TcrTimer = {
+          state: testCase.state,
+          timeout: testCase.timeout,
+          elapsed: testCase.elapsed,
+          remaining: testCase.remaining,
+        };
+
+        // Have the service fake's getTimer method return the timer data
+        serviceFake.getTimer = () => of(timer);
+        fixture = TestBed.createComponent(TcrTimerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        done()
+
+        // Verify that the component's timer attribute is set correctly
+        expect(component.timer).toEqual(timer);
+
+        // Verify that the component is rendered with the expected color
+        const componentElement = fixture.debugElement.query(
+          By.css(`[data-testid="timer-component"]`));
+        expect(componentElement).toBeTruthy();
+        expect(componentElement.nativeElement.style.color).toEqual(testCase.expectedColor);
+
+        // Verify that the right icon is rendered
+        const iconElement = fixture.debugElement.query(
+          By.css(`[data-testid="timer-icon"]`));
+        expect(iconElement).toBeTruthy();
+        expect(iconElement.nativeElement.classList).toContain(testCase.expectedIcon);
+
+        // Verify that the timer text is rendered
+        const textElement = fixture.debugElement.query(
+          By.css(`[data-testid="timer-label"]`));
+        expect(textElement).toBeTruthy();
+        expect(textElement.nativeElement.textContent).toEqual(testCase.expectedText);
+      });
+    });
+  });
+
+  describe('component updateColor', () => {
+    const testCases = [
+      {
+        state: TcrTimerState.OFF,
+        timeout: 100,
+        elapsed: 0,
+        remaining: 0,
+        expectedColor: "rgb(128,128,128)",
+      },
+      {
+        state: TcrTimerState.PENDING,
+        timeout: 100,
+        elapsed: 0,
+        remaining: 100,
+        expectedColor: "rgb(255,255,255)",
+      },
+      {
+        state: TcrTimerState.RUNNING,
+        timeout: 100,
+        elapsed: 20,
+        remaining: 80,
+        expectedColor: "rgb(255,204,204)",
+      },
+      {
+        state: TcrTimerState.STOPPED,
+        timeout: 100,
+        elapsed: 60,
+        remaining: 0,
+        expectedColor: "rgb(128,128,128)",
+      },
+      {
+        state: TcrTimerState.TIMEOUT,
+        timeout: 100,
+        elapsed: 120,
+        remaining: -20,
+        expectedColor: "rgb(255,0,0)",
+      },
+    ];
+
+    testCases.forEach((testCase) => {
+      const input = `${testCase.state}/${testCase.timeout}/${testCase.elapsed}/${testCase.remaining}`;
+      it(`should translate ${input} into ${testCase.expectedColor}`, () => {
+        // Setup the timer component with the timer data
+        fixture = TestBed.createComponent(TcrTimerComponent);
+        component = fixture.componentInstance;
+        component.timer = {
+          state: testCase.state,
+          timeout: `${testCase.timeout}`,
+          elapsed: `${testCase.elapsed}`,
+          remaining: `${testCase.remaining}`,
+        };
+        component.timeout = testCase.timeout;
+        component.remaining = testCase.remaining;
+
+        component.updateColor();
+        expect(component.fgColor).toEqual(testCase.expectedColor);
+      });
+    });
+  });
+
+  describe('component periodicUpdate', () => {
+    [
+      {
+        state: TcrTimerState.OFF,
+        timeout: 100,
+        elapsed: 0,
+        remaining: 0,
+        expectedRemaining: 0,
+      },
+      {
+        state: TcrTimerState.PENDING,
+        timeout: 100,
+        elapsed: 0,
+        remaining: 100,
+        expectedRemaining: 100,
+      },
+      {
+        state: TcrTimerState.RUNNING,
+        timeout: 100,
+        elapsed: 20,
+        remaining: 80,
+        expectedRemaining: 79,
+      },
+      {
+        state: TcrTimerState.STOPPED,
+        timeout: 100,
+        elapsed: 60,
+        remaining: 0,
+        expectedRemaining: 0,
+      },
+      {
+        state: TcrTimerState.TIMEOUT,
+        timeout: 100,
+        elapsed: 120,
+        remaining: -20,
+        expectedRemaining: -21,
+      },
+    ].forEach((testCase) => {
+      it(`should change remaining time from ${testCase.remaining} to ${testCase.expectedRemaining} when ${testCase.state}`, () => {
+        // Setup the timer component with the timer data
+        component = TestBed.createComponent(TcrTimerComponent).componentInstance;
+        component.timer = {
+          state: testCase.state,
+          timeout: `${testCase.timeout}`,
+          elapsed: `${testCase.elapsed}`,
+          remaining: `${testCase.remaining}`,
+        };
+        component.timeout = testCase.timeout;
+        component.remaining = testCase.remaining;
+
+        component.periodicUpdate();
+        expect(component.remaining).toEqual(testCase.expectedRemaining);
+      });
+    });
+
+    [
+      {
+        description: "ticking too fast",
+        state: TcrTimerState.RUNNING,
+        timeout: 100,
+        initialRemaining: 80,
+        serverRemaining: 71,
+      },
+      {
+        description: "ticking too slow",
+        state: TcrTimerState.RUNNING,
+        timeout: 100,
+        initialRemaining: 80,
+        serverRemaining: 69,
+      },
+    ].forEach((testCase) => {
+      it(`should re-sync with the server when ${testCase.description}`, () => {
+        // Have the service fake's getTimer method return the server timer data
+        serviceFake.getTimer = () => of({
+          state: TcrTimerState.RUNNING,
+          timeout: `${testCase.timeout}`,
+          elapsed: `${testCase.timeout - testCase.serverRemaining}`,
+          remaining: `${testCase.serverRemaining}`,
+        });
+        component = TestBed.createComponent(TcrTimerComponent).componentInstance;
+
+        // Setup the timer component starting state
+        component.timer = {
+          state: TcrTimerState.RUNNING,
+          timeout: `${testCase.timeout}`,
+          elapsed: `${testCase.timeout - testCase.initialRemaining}`,
+          remaining: `${testCase.initialRemaining}`,
+        };
+        component.timeout = testCase.timeout;
+        component.remaining = testCase.initialRemaining;
+
+        // Simulate 10 seconds passing
+        for (let tick = 1; tick <= 10; tick++) {
+          component.periodicUpdate();
+          expect(component.remaining).toEqual(testCase.initialRemaining - tick);
+        }
+
+        // Verify that the timer has re-synced with the server
+        component.periodicUpdate();
+        expect(component.remaining).toEqual(testCase.serverRemaining);
+      });
+    });
+  });
+
+  describe('component refresh', () => {
+    [
+      {
+        expectation: "should fetch timer data on actual messages",
+        timerBefore: {
+          state: TcrTimerState.OFF,
+          timeout: "0",
+          elapsed: "0",
+          remaining: "0",
+        } as TcrTimer,
+        message: {
+          type: TcrMessageType.TIMER,
+          text: "start:100:0:100"
+        } as TcrMessage,
+        timerAfter: {
+          state: TcrTimerState.RUNNING,
+          timeout: "100",
+          elapsed: "5",
+          remaining: "95",
+        } as TcrTimer,
+      },
+      {
+        expectation: "should not fetch timer data on empty messages",
+        timerBefore: {
+          state: TcrTimerState.OFF,
+          timeout: "0",
+          elapsed: "0",
+          remaining: "0",
+        } as TcrTimer,
+        message: undefined,
+        timerAfter: {
+          state: TcrTimerState.RUNNING,
+          timeout: "100",
+          elapsed: "5",
+          remaining: "95",
+        } as TcrTimer,
+      },
+    ].forEach(testCase => {
+      it(`${testCase.expectation}`, () => {
+        // Have the service fake's getTimer method return the starting timer data
+        serviceFake.getTimer = () => of(testCase.timerBefore);
+
+        fixture = TestBed.createComponent(TcrTimerComponent);
+        component = fixture.componentInstance;
+
+        // Verify that the initial timer is set correctly
+        fixture.detectChanges();
+        expect(component.timer).toEqual(testCase.timerBefore);
+
+        // Update the service fake to return the expected new timer data
+        serviceFake.getTimer = () => of(testCase.timerAfter);
+
+        // Trigger the refresh method with a message
+        component.refresh(testCase.message!);
+
+        // Verify that the component's role active attribute was updated
+        fixture.detectChanges();
+        expect(component.timer).toEqual(
+          testCase.message ? testCase.timerAfter : testCase.timerBefore);
+      });
+    });
   });
 });
