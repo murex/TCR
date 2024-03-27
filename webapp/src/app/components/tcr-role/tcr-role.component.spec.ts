@@ -14,6 +14,10 @@ class TcrRolesServiceFake implements Partial<TcrRolesService> {
   getRole(): Observable<TcrRole> {
     return of({name: "", description: "", active: false});
   }
+
+  activateRole(name: string, state: boolean): Observable<TcrRole> {
+    return of({name: name, description: name + " role", active: state});
+  }
 }
 
 describe('TcrRoleComponent', () => {
@@ -147,7 +151,6 @@ describe('TcrRoleComponent', () => {
         message: "navigator:stop",
         activeAfter: true,
       },
-
     ];
 
     testCases.forEach(testCase => {
@@ -182,10 +185,58 @@ describe('TcrRoleComponent', () => {
           text: testCase.message
         } as TcrMessage);
 
-        // Verify that the component's role attribute was updated as expected
+        // Verify that the component's role active attribute was updated
         fixture.detectChanges();
         expect(component.role?.active).toEqual(testCase.activeAfter);
         done()
+      });
+    });
+  });
+
+  describe('component toggleRole', () => {
+    const testCases = [
+      {
+        expectation: "should activate driver role when off",
+        name: "driver",
+        active: false,
+      },
+      {
+        expectation: "should deactivate driver role when on",
+        name: "driver",
+        active: true,
+      },
+      {
+        expectation: "should activate navigator role when off",
+        name: "navigator",
+        active: false,
+      },
+      {
+        expectation: "should deactivate navigator role when on",
+        name: "navigator",
+        active: true,
+      },
+    ];
+
+    testCases.forEach(testCase => {
+      it(`${testCase.expectation}`, () => {
+        // Set initial role state
+        component.role = {
+          name: testCase.name,
+          description: "role description",
+          active: testCase.active,
+        };
+
+        // Verify that the initial role is set correctly
+        fixture.detectChanges();
+        expect(component.role?.active).toEqual(testCase.active);
+
+        // Trigger the toggleRole call
+        component.toggleRole(component.role!);
+
+        // Verify that the component's role active attribute was updated
+        fixture.detectChanges();
+        expect(component.role?.name).toEqual(testCase.name);
+        expect(component.role?.active).toEqual(!testCase.active);
       });
     });
   });

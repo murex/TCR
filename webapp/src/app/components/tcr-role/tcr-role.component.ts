@@ -44,19 +44,17 @@ export class TcrRoleComponent implements OnInit {
   }
 
   private getRole(): void {
-    this.rolesService.getRole(this.name).subscribe(r => {
+    this.rolesService.getRole(this.name)
+      .subscribe(r => {
         this.role = r;
-      }
-    );
+      });
   }
 
   toggleRole(role: TcrRole) {
     this.rolesService.activateRole(role.name, !role.active)
       .subscribe(r => {
         console.log(r.name + ' set to ' + r.active);
+        this.role = r;
       });
-    // To make sure the role is updated in the UI even when
-    // websocket connection is down
-    this.getRole();
   }
 }
