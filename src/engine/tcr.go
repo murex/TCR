@@ -433,6 +433,9 @@ func (tcr *TCREngine) RunAsNavigator() {
 	if tcr.GetCurrentRole() != nil {
 		tcr.Stop()
 	}
+	// preemptionDuration is the max time to wait before navigator role can be interrupted
+	const preemptionDuration = 100 * time.Millisecond
+	countdown := 0 * time.Millisecond
 
 	go tcr.fromBirthTillDeath(
 		func() {
@@ -445,8 +448,13 @@ func (tcr *TCREngine) RunAsNavigator() {
 			case <-interrupt:
 				return false
 			default:
-				tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
-				time.Sleep(tcr.pollingPeriod)
+				if countdown <= 0 {
+					tcr.handleError(tcr.vcs.Pull(), false, status.VCSError)
+					countdown = tcr.pollingPeriod
+				} else {
+					time.Sleep(preemptionDuration)
+					countdown -= preemptionDuration
+				}
 				return true
 			}
 		},
