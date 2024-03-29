@@ -4,7 +4,7 @@ import {RouterModule} from "@angular/router";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('AppComponent', () => {
-  let component: AppComponent;
+  let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
   beforeEach(async () => {
@@ -13,20 +13,16 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
+    app = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   describe('component instance', () => {
     it('should create the app', () => {
-      const fixture = TestBed.createComponent(AppComponent);
-      const app = fixture.componentInstance;
       expect(app).toBeTruthy();
     });
 
     it(`should have TCR for title`, () => {
-      const fixture = TestBed.createComponent(AppComponent);
-      const app = fixture.componentInstance;
       expect(app.title).toEqual('TCR');
     });
   });
