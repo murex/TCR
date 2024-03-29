@@ -91,7 +91,8 @@ export class TcrConsoleComponent implements OnInit {
   }
 
   private clear() {
-    this.child.underlying?.reset();
+    if (this.child)
+      this.child.underlying?.reset();
   }
 
 }
