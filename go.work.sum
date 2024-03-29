@@ -292,6 +292,8 @@ cloud.google.com/go/certificatemanager v1.7.5 h1:UMBr/twXvH3jcT5J5/YjRxf2tvwTYIf
 cloud.google.com/go/certificatemanager v1.7.5/go.mod h1:uX+v7kWqy0Y3NG/ZhNvffh0kuqkKZIXdvlZRO7z0VtM=
 cloud.google.com/go/certificatemanager v1.7.6 h1:rRkGZuvEurFpaAfNbngLUILEAkwIw5d11qnOMlTt01s=
 cloud.google.com/go/certificatemanager v1.7.6/go.mod h1:5qq/D7PPlrMI+q9AJeLrSoFLX3eTkLc9MrcECKrWdIM=
+cloud.google.com/go/certificatemanager v1.8.0 h1:oc15T+leZ2Wm5oocvGTbDXwonka0chpJTEiHIVsBiEA=
+cloud.google.com/go/certificatemanager v1.8.0/go.mod h1:5qq/D7PPlrMI+q9AJeLrSoFLX3eTkLc9MrcECKrWdIM=
 cloud.google.com/go/channel v1.16.0 h1:dqRkK2k7Ll/HHeYGxv18RrfhozNxuTJRkspW0iaFZoY=
 cloud.google.com/go/channel v1.16.0/go.mod h1:eN/q1PFSl5gyu0dYdmxNXscY/4Fi7ABmeHCJNf/oHmc=
 cloud.google.com/go/channel v1.17.0 h1:Hy2EaOiOB7BS1IJmg2lLilEo8uMfFWTy7RgjTzbUqjM=
@@ -496,6 +498,8 @@ cloud.google.com/go/dataplex v1.14.2 h1:fxIfdU8fxzR3clhOoNI7XFppvAmndxDu1AMH+qX9
 cloud.google.com/go/dataplex v1.14.2/go.mod h1:0oGOSFlEKef1cQeAHXy4GZPB/Ife0fz/PxBf+ZymA2U=
 cloud.google.com/go/dataplex v1.14.3 h1:vnviWmkEcC3aWzJvz9oVgE0ojW49/AMYciSophrBg4Q=
 cloud.google.com/go/dataplex v1.14.3/go.mod h1:R5rUQ3X18d6wcMraLOUIOTEULasL/1nvSrNF7C98eyg=
+cloud.google.com/go/dataplex v1.15.0 h1:Ob8NPT1UcB4kDaDx7/UdsRfZ8xUvUggZshXUlGWDahk=
+cloud.google.com/go/dataplex v1.15.0/go.mod h1:R5rUQ3X18d6wcMraLOUIOTEULasL/1nvSrNF7C98eyg=
 cloud.google.com/go/dataproc/v2 v2.0.1 h1:4OpSiPMMGV3XmtPqskBU/RwYpj3yMFjtMLj/exi425Q=
 cloud.google.com/go/dataproc/v2 v2.0.1/go.mod h1:7Ez3KRHdFGcfY7GcevBbvozX+zyWGcwLJvvAMwCaoZ4=
 cloud.google.com/go/dataproc/v2 v2.2.0 h1:jKijbdsERm2hy/5dFl/LeQN+7CNssLdGXQYBMvMH/M4=
@@ -968,6 +972,8 @@ cloud.google.com/go/networkmanagement v1.9.4 h1:aLV5GcosBNmd6M8+a0ekB0XlLRexv4fv
 cloud.google.com/go/networkmanagement v1.9.4/go.mod h1:daWJAl0KTFytFL7ar33I6R/oNBH8eEOX/rBNHrC/8TA=
 cloud.google.com/go/networkmanagement v1.10.0 h1:xL4Ol/YtkZJcC0aRAwy2Xp4RsiEG+J+TcHjO4Q0egDg=
 cloud.google.com/go/networkmanagement v1.10.0/go.mod h1:vDHJ224DMYuUUNGJvDzKBWOj4P2loqubVyzIcMAAC5k=
+cloud.google.com/go/networkmanagement v1.11.0 h1:ZWn7dZix5/5KPFZslxjmh44Q6VSOXM16EAUHPf6Py/8=
+cloud.google.com/go/networkmanagement v1.11.0/go.mod h1:lNx5rxkxRwY0SaQL3iqWLfkwU9H5A6Bnp/knv2tjQdk=
 cloud.google.com/go/networksecurity v0.9.1 h1:TBLEkMp3AE+6IV/wbIGRNTxnqLXHCTEQWoxRVC18TzY=
 cloud.google.com/go/networksecurity v0.9.1/go.mod h1:MCMdxOKQ30wsBI1eI659f9kEp4wuuAueoC9AJKSPWZQ=
 cloud.google.com/go/networksecurity v0.9.2 h1:fA73AX//KWaqNKOvuQ00WUD3Z/XMhiMhHSFTEl2Wxec=
@@ -1260,6 +1266,8 @@ cloud.google.com/go/secretmanager v1.11.5 h1:82fpF5vBBvu9XW4qj0FU2C6qVMtj1RM/XHw
 cloud.google.com/go/secretmanager v1.11.5/go.mod h1:eAGv+DaCHkeVyQi0BeXgAHOU0RdrMeZIASKc+S7VqH4=
 cloud.google.com/go/secretmanager v1.11.6 h1:xDFCr7AKz4VGPVtaWGOdeRoG7Al8q74qhPQZXW+7Mbw=
 cloud.google.com/go/secretmanager v1.11.6/go.mod h1:Y1Gne3Ag+fZ2TDTiJc8ZJCMFbi7k1rYT4Rw30GXfvlk=
+cloud.google.com/go/secretmanager v1.12.0 h1:e5pIo/QEgiFiHPVJPxM5jbtUr4O/u5h2zLHYtkFQr24=
+cloud.google.com/go/secretmanager v1.12.0/go.mod h1:Y1Gne3Ag+fZ2TDTiJc8ZJCMFbi7k1rYT4Rw30GXfvlk=
 cloud.google.com/go/security v1.15.1 h1:jR3itwycg/TgGA0uIgTItcVhA55hKWiNJxaNNpQJaZE=
 cloud.google.com/go/security v1.15.1/go.mod h1:MvTnnbsWnehoizHi09zoiZob0iCHVcL4AUBj76h9fXA=
 cloud.google.com/go/security v1.15.2 h1:VNpdJNfMeHSJZ+647QtzPrvZ6rWChBklLm/NY64RVW8=
@@ -1338,6 +1346,8 @@ cloud.google.com/go/spanner v1.58.0 h1:W0SAtTz50XIZlTCJtHJ7x4Yxux6ZsorBBxjdXfjZ7
 cloud.google.com/go/spanner v1.58.0/go.mod h1:eSpP+aaT38sdwFs0ovo7Z1VsG9RyM9n7EHpM5DhDEsE=
 cloud.google.com/go/spanner v1.59.0 h1:YxcRwgPVktTrRNL005bMh2Q2FpdMOakh0W8ryUwS/yM=
 cloud.google.com/go/spanner v1.59.0/go.mod h1:D2bOAeT/dC6zsZhXRIxbdYa5nQEYU3wYM/1KN3eg7Fs=
+cloud.google.com/go/spanner v1.60.0 h1:O9kf49dfaDRzPpKJNChHUJ+Bao02WPedZb8ZPyi02lI=
+cloud.google.com/go/spanner v1.60.0/go.mod h1:D2bOAeT/dC6zsZhXRIxbdYa5nQEYU3wYM/1KN3eg7Fs=
 cloud.google.com/go/speech v1.19.0 h1:MCagaq8ObV2tr1kZJcJYgXYbIn8Ai5rp42tyGYw9rls=
 cloud.google.com/go/speech v1.19.0/go.mod h1:8rVNzU43tQvxDaGvqOhpDqgkJTFowBpDvCJ14kGlJYo=
 cloud.google.com/go/speech v1.19.1 h1:z035FMLs98jpnqcP5xZZ6Es+g6utbeVoUH64BaTzTSU=
@@ -1910,6 +1920,8 @@ github.com/golang/glog v1.2.0/go.mod h1:6AhwSGph0fcJtXVM/PEHPqZlFeoLxhs7/t5UDAwm
 github.com/golang/mock v1.6.0 h1:ErTB+efbowRARo13NNdxyJji2egdxLGQhRaY+DUumQc=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
 github.com/golang/snappy v0.0.4/go.mod h1:/XxbfmMg8lxefKM7IXC3fBNl/7bRcc72aCRzEWrmP2Q=
+github.com/golangci/modinfo v0.3.3 h1:YBQDZpDMJpe5mtd0klUFYL8tSVkmF3cmm0fZ48sc7+s=
+github.com/golangci/modinfo v0.3.3/go.mod h1:wytF1M5xl9u0ij8YSvhkEVPP3M5Mc7XLl1pxH3B2aUM=
 github.com/google/btree v1.0.0 h1:0udJVsspx3VBr5FwtLhQQtuAsVc79tTq0ocGIPAU6qo=
 github.com/google/certificate-transparency-go v1.1.6 h1:SW5K3sr7ptST/pIvNkSVWMiJqemRmkjJPPT0jzXdOOY=
 github.com/google/certificate-transparency-go v1.1.6/go.mod h1:0OJjOsOk+wj6aYQgP7FU0ioQ0AJUmnWPFMqTjQeazPQ=
@@ -2479,6 +2491,8 @@ google.golang.org/genproto/googleapis/bytestream v0.0.0-20240311132316-a219d8496
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240311132316-a219d84964c2/go.mod h1:vh/N7795ftP0AkN1w8XKqN4w1OdUKXW5Eummda+ofv8=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240314234333-6e1732d8331c h1:4z0DVWmDWWZ4OeQHLrb6lLBE3uCgSLs9DDA5Zb36DFg=
 google.golang.org/genproto/googleapis/bytestream v0.0.0-20240314234333-6e1732d8331c/go.mod h1:IN9OQUXZ0xT+26MDwZL8fJcYw+y99b0eYPA2U15Jt8o=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20240318140521-94a12d6c2237 h1:BGtl5+MtFriTFllRl3QPEPWZrD8nVhSTONzTkSin3+c=
+google.golang.org/genproto/googleapis/bytestream v0.0.0-20240318140521-94a12d6c2237/go.mod h1:IN9OQUXZ0xT+26MDwZL8fJcYw+y99b0eYPA2U15Jt8o=
 google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0 h1:M1YKkFIboKNieVO5DLUEVzQfGwJD30Nv2jfUgzb5UcE=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0 h1:Rc2Z3tspHI+PsspsfO4wZsSqL8l658yAUo7lFUSnPD0=
 gopkg.in/DataDog/dd-trace-go.v1 v1.53.0/go.mod h1:m0tVxCbhcuHsiHhhaw749KeQcVjRZOWBPMa6wHL6LBQ=
