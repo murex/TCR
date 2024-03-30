@@ -3,25 +3,16 @@
     <div class="row mb-3 mbr-justify-content-center">
       <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
     </div>
-
     <div class="row mbr-justify-content-center">
-
       <div class="col-lg-10 mbr-col-md-10">
         <div class="wrap">
           <div class="text-wrap vcenter">
             <app-tcr-roles></app-tcr-roles>
             <br>
-            <ng-terminal #term>
-              [rows]="40"
-              [cols]="80"
-              [minWidth]="1000"
-              [minHeight]="150"
-              [draggable]="false"
-            </ng-terminal>
+            <app-tcr-trace [text]="text()" [clearTrace]="clearTrace.asObservable()"/>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>

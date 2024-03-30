@@ -1,5 +1,4 @@
-import {Component, effect, OnInit, Signal, ViewChild} from '@angular/core';
-import {NgTerminal, NgTerminalModule} from "ng-terminal";
+import {Component, effect, signal, Signal} from '@angular/core';
 import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 import {TcrMessageService} from "../../services/tcr-message.service";
@@ -13,22 +12,24 @@ import {
   red,
   yellow
 } from "ansicolor";
+import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-tcr-console',
   standalone: true,
   imports: [
-    NgTerminalModule,
-    TcrRolesComponent
+    TcrRolesComponent,
+    TcrTraceComponent
   ],
   templateUrl: './tcr-console.component.html',
   styleUrl: './tcr-console.component.css'
 })
-export class TcrConsoleComponent implements OnInit {
+export class TcrConsoleComponent {
   title = "TCR Console";
   tcrMessage: Signal<TcrMessage | undefined>;
-
-  @ViewChild('term', {static: false}) child!: NgTerminal;
+  text = signal("");
+  clearTrace: Subject<void> = new Subject<void>();
 
   constructor(private messageService: TcrMessageService) {
     this.tcrMessage = toSignal(this.messageService.message$);
@@ -37,11 +38,7 @@ export class TcrConsoleComponent implements OnInit {
       // When receiving a message from the server
       // print it in the terminal
       this.printMessage(this.tcrMessage()!);
-    });
-  }
-
-  ngOnInit(): void {
-    this.clear();
+    }, {allowSignalWrites: true});
   }
 
   private printMessage(message: TcrMessage): void {
@@ -50,68 +47,98 @@ export class TcrConsoleComponent implements OnInit {
     }
     switch (message.type) {
       case TcrMessageType.SIMPLE:
-        this.print(message.text);
+        this.printSimple(message.text);
         break;
       case TcrMessageType.INFO:
-        this.print(cyan(message.text))
+        this.printInfo(message.text);
         break;
       case TcrMessageType.TITLE:
-        this.print(lightCyan("─".repeat(80)));
-        this.print(lightCyan(message.text));
+        this.printTitle(message.text);
         break;
       case TcrMessageType.ROLE:
-        if (getRoleAction(message.text) === "start") {
+        if (isRoleStartMessage(message.text))
           this.clear();
-        }
-        this.print(yellow("─".repeat(80)));
-        this.print(lightYellow(formatRoleMessage(message.text)));
-        this.print(yellow("─".repeat(80)));
+        this.printRole(message.text);
         break;
       case TcrMessageType.TIMER:
         // ignore: handled by timer service
         break;
       case TcrMessageType.SUCCESS:
-        this.print("🟢 " + green(message.text));
+        this.printSuccess(message.text);
         break;
       case TcrMessageType.WARNING:
-        this.print("🔶 " + yellow(message.text));
+        this.printWarning(message.text);
         break;
       case TcrMessageType.ERROR:
-        this.print("🟥 " + red(message.text));
+        this.printError(message.text);
         break;
       default:
-        this.print(bgDarkGray("[" + message.type + "]") + " " + message.text);
+        this.printUnhandled(message);
     }
   }
 
-  private print(input: string) {
-    // ng-console handles EOL in Windows style, e.g. it needs CRLF to properly
-    // go back to beginning of next line in the console
-    this.child.write(input.replace(/\n/g, "\r\n") + "\r\n");
+  private printSimple(text: string) {
+    this.print(text);
   }
 
-  private clear() {
-    if (this.child)
-      this.child.underlying?.reset();
+  private printInfo(text: string) {
+    this.print(cyan(text));
   }
 
+  private printTitle(text: string) {
+    const lineSep = lightCyan("─".repeat(80));
+    this.print(lineSep + "\n" + lightCyan(text));
+  }
+
+  private printRole(text: string) {
+    const sepLine = yellow("─".repeat(80));
+    this.print(sepLine + "\n" + lightYellow(formatRoleMessage(text)) + "\n" + sepLine);
+  }
+
+  private printSuccess(text: string) {
+    this.print("🟢- " + green(text));
+  }
+
+  private printWarning(text: string) {
+    this.print("🔶- " + yellow(text));
+  }
+
+  private printError(text: string) {
+    this.print("🟥- " + red(text));
+  }
+
+  private printUnhandled(message: TcrMessage) {
+    this.print(bgDarkGray("[" + message.type + "]") + " " + message.text);
+  }
+
+  print(input: string): void {
+    this.text.set(input);
+  }
+
+  clear() {
+    this.clearTrace.next();
+  }
 }
 
-function getRoleAction(message: string): string {
+export function getRoleAction(message: string): string {
   return message ? message.split(":")[1] : "";
 }
 
-function getRoleName(message: string): string {
+export function getRoleName(message: string): string {
   return message ? message.split(":")[0] : "";
 }
 
-function formatRoleMessage(message: string): string {
-  return message
-    ? capitalize(getRoleAction(message)) + "ing "
-    + capitalize(getRoleName(message)) + " role"
-    : "";
+export function formatRoleMessage(message: string): string {
+  const action = getRoleAction(message);
+  return action ? capitalize(action) + "ing " + getRoleName(message) + " role" : "";
 }
 
-function capitalize(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+const ROLE_START = "start";
+
+export function isRoleStartMessage(text: string) {
+  return getRoleAction(text) === ROLE_START;
 }
