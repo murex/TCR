@@ -34,14 +34,12 @@ describe('TcrTimerService', () => {
   });
 
   describe('service instance', () => {
-
     it('should be created', () => {
       expect(service).toBeTruthy();
     });
   });
 
   describe('getTimer() function', () => {
-
     it('should return timer info when called', () => {
       const sample: TcrTimer = {
         state: "some-state",
@@ -76,7 +74,6 @@ describe('TcrTimerService', () => {
   });
 
   describe('websocket message handler', () => {
-
     it('should forward timer messages', (done) => {
       const sampleMessage: TcrMessage = {
         type: TcrMessageType.TIMER,

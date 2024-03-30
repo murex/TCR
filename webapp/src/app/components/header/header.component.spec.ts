@@ -32,8 +32,7 @@ describe('HeaderComponent', () => {
   });
 
   describe('component DOM', () => {
-
-    const testCases = [
+    [
       {
         description: 'a navigation bar',
         selector: '.navbar'
@@ -67,9 +66,7 @@ describe('HeaderComponent', () => {
         description: 'a timer component',
         selector: 'app-tcr-timer',
       },
-    ];
-
-    testCases.forEach(({selector, description, text}) => {
+    ].forEach(({selector, description, text}) => {
       it(`should contain ${description}`, () => {
         const element = fixture.nativeElement.querySelector(selector);
         expect(element).toBeTruthy();

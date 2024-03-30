@@ -58,5 +58,4 @@ describe('FooterComponent', () => {
   it('should fetch TCR build info on init', () => {
     expect(component.buildInfo).toEqual(sample);
   });
-
 });

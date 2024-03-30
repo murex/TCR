@@ -22,15 +22,12 @@ describe('TcrSessionInfoService', () => {
   });
 
   describe('service instance', () => {
-
     it('should be created', () => {
       expect(service).toBeTruthy();
     });
-
   });
 
   describe('getSessionInfo() function', () => {
-
     it('should return session info when called', () => {
       const sample: TcrSessionInfo = {
         baseDir: "/my/base/dir",
@@ -67,7 +64,5 @@ describe('TcrSessionInfoService', () => {
       req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'});
       expect(actual).toBeUndefined();
     });
-
   });
-
 });

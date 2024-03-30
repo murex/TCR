@@ -33,7 +33,6 @@ describe('WebsocketService', () => {
   });
 
   describe('service instance', () => {
-
     it('should be created', () => {
       expect(service).toBeTruthy();
     });
@@ -68,7 +67,5 @@ describe('WebsocketService', () => {
       service.ngOnDestroy();
       expect(fakeSocket.complete).toHaveBeenCalled();
     });
-
   });
-
 });

@@ -35,14 +35,12 @@ describe('TcrRolesService', () => {
   });
 
   describe('service instance', () => {
-
     it('should be created', () => {
       expect(service).toBeTruthy();
     });
   });
 
   describe('getRole() function', () => {
-
     it('should return role info when called', () => {
       const roleName = "some-role";
       const sample: TcrRole = {
@@ -79,7 +77,6 @@ describe('TcrRolesService', () => {
   });
 
   describe('activateRole() function', () => {
-
     const testCases = [
       {state: true, action: 'start'},
       {state: false, action: 'stop'}
@@ -123,7 +120,6 @@ describe('TcrRolesService', () => {
   });
 
   describe('websocket message handler', () => {
-
     it('should forward role messages', (done) => {
       const sampleMessage: TcrMessage = {
         type: TcrMessageType.ROLE,
@@ -159,7 +155,5 @@ describe('TcrRolesService', () => {
       setTimeout(() => done(), 10);
       expect(actual).toBeUndefined();
     });
-
   });
-
 });

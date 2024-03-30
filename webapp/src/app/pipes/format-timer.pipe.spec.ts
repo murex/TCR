@@ -8,7 +8,8 @@ describe('FormatTimerPipe', () => {
   });
 
   const defaultFormat = '--:--';
-  const testCases = [
+
+  [
     {input: 'abc', expected: defaultFormat},
     {input: '', expected: defaultFormat},
     {input: undefined, expected: defaultFormat},
@@ -23,11 +24,9 @@ describe('FormatTimerPipe', () => {
     {input: '-60', expected: '-01:00'},
     {input: '-119', expected: '-01:59'},
     {input: '-3600', expected: '-1:00:00'},
-  ];
-
-  for (const testCase of testCases) {
+  ].forEach(testCase => {
     it(`should return "${testCase.expected}" when input is ${testCase.input}`, () => {
       expect(pipe.transform(testCase.input)).toEqual(testCase.expected);
     });
-  }
+  });
 });

@@ -47,7 +47,7 @@ describe('TcrTimerComponent', () => {
   });
 
   describe('component initialization', () => {
-    const testCases = [
+    [
       {
         state: TcrTimerState.OFF,
         timeout: "100",
@@ -93,9 +93,7 @@ describe('TcrTimerComponent', () => {
         expectedIcon: 'fa-warning',
         expectedText: "-00:20",
       },
-    ];
-
-    testCases.forEach((testCase) => {
+    ].forEach((testCase) => {
       it(`should work with timer in ${testCase.state} state`, (done) => {
         const timer: TcrTimer = {
           state: testCase.state,
@@ -136,7 +134,7 @@ describe('TcrTimerComponent', () => {
   });
 
   describe('component updateColor', () => {
-    const testCases = [
+    [
       {
         state: TcrTimerState.OFF,
         timeout: 100,
@@ -172,9 +170,7 @@ describe('TcrTimerComponent', () => {
         remaining: -20,
         expectedColor: "rgb(255,0,0)",
       },
-    ];
-
-    testCases.forEach((testCase) => {
+    ].forEach((testCase) => {
       const input = `${testCase.state}/${testCase.timeout}/${testCase.elapsed}/${testCase.remaining}`;
       it(`should translate ${input} into ${testCase.expectedColor}`, () => {
         // Setup the timer component with the timer data

@@ -46,7 +46,7 @@ describe('TcrRoleComponent', () => {
   });
 
   describe('component initialization', () => {
-    const testCases = [
+    [
       {
         name: "driver",
         description: "driver role",
@@ -75,9 +75,7 @@ describe('TcrRoleComponent', () => {
         componentClass: 'role-off',
         iconClass: 'fa-compass'
       }
-    ];
-
-    testCases.forEach(testCase => {
+    ].forEach(testCase => {
       it(`should work with ${testCase.name} role ${testCase.active ? "on" : "off"}`, (done) => {
         const role: TcrRole = {
           name: testCase.name,
@@ -118,7 +116,7 @@ describe('TcrRoleComponent', () => {
   });
 
   describe('component refresh', () => {
-    const testCases = [
+    [
       {
         expectation: "should activate on own role start messages",
         name: "driver",
@@ -151,9 +149,7 @@ describe('TcrRoleComponent', () => {
         message: "navigator:stop",
         activeAfter: true,
       },
-    ];
-
-    testCases.forEach(testCase => {
+    ].forEach(testCase => {
       it(`${testCase.expectation}`, (done) => {
         // Have the service fake's getRole method return the starting role
         const roleBefore: TcrRole = {
@@ -194,7 +190,7 @@ describe('TcrRoleComponent', () => {
   });
 
   describe('component toggleRole', () => {
-    const testCases = [
+    [
       {
         expectation: "should activate driver role when off",
         name: "driver",
@@ -215,9 +211,7 @@ describe('TcrRoleComponent', () => {
         name: "navigator",
         active: true,
       },
-    ];
-
-    testCases.forEach(testCase => {
+    ].forEach(testCase => {
       it(`${testCase.expectation}`, () => {
         // Set initial role state
         component.role = {
