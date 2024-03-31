@@ -47,6 +47,9 @@ describe('TcrTimerComponent', () => {
   });
 
   describe('component initialization', () => {
+    const clockIcon = 'fa-clock-o';
+    const warningIcon = 'fa-exclamation-circle';
+
     [
       {
         state: TcrTimerState.OFF,
@@ -54,7 +57,7 @@ describe('TcrTimerComponent', () => {
         elapsed: "0",
         remaining: "0",
         expectedColor: "rgb(128, 128, 128)",
-        expectedIcon: 'fa-clock-o',
+        expectedIcon: clockIcon,
         expectedText: "00:00",
       },
       {
@@ -63,7 +66,7 @@ describe('TcrTimerComponent', () => {
         elapsed: "0",
         remaining: "100",
         expectedColor: "rgb(255, 255, 255)",
-        expectedIcon: 'fa-clock-o',
+        expectedIcon: clockIcon,
         expectedText: "01:40",
       },
       {
@@ -72,7 +75,7 @@ describe('TcrTimerComponent', () => {
         elapsed: "20",
         remaining: "80",
         expectedColor: "rgb(255, 204, 204)",
-        expectedIcon: 'fa-clock-o',
+        expectedIcon: clockIcon,
         expectedText: "01:20",
       },
       {
@@ -81,7 +84,7 @@ describe('TcrTimerComponent', () => {
         elapsed: "60",
         remaining: "0",
         expectedColor: "rgb(128, 128, 128)",
-        expectedIcon: 'fa-clock-o',
+        expectedIcon: clockIcon,
         expectedText: "00:00",
       },
       {
@@ -90,7 +93,7 @@ describe('TcrTimerComponent', () => {
         elapsed: "120",
         remaining: "-20",
         expectedColor: "rgb(255, 0, 0)",
-        expectedIcon: 'fa-warning',
+        expectedIcon: warningIcon,
         expectedText: "-00:20",
       },
     ].forEach((testCase) => {
