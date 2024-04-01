@@ -1,11 +1,4 @@
-import {
-  Component,
-  effect,
-  input,
-  Input,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {Observable} from "rxjs";
 
@@ -14,33 +7,29 @@ import {Observable} from "rxjs";
   standalone: true,
   imports: [NgTerminalModule],
   templateUrl: './tcr-trace.component.html',
-  styleUrl: './tcr-trace.component.css'
+  styleUrl: './tcr-trace.component.css',
 })
-export class TcrTraceComponent implements OnInit {
-  text = input<string>("");
+export class TcrTraceComponent implements AfterViewInit {
+  @Input() text?: Observable<string>;
   @Input() clearTrace?: Observable<void>;
   @ViewChild('term', {static: false}) child!: NgTerminal;
 
   constructor() {
-    effect(() => {
-      this.print(this.text());
-    });
   }
 
-  ngOnInit(): void {
-    this.clear();
+  ngAfterViewInit(): void {
+    this.text?.subscribe((text) => this.print(text));
     this.clearTrace?.subscribe(() => this.clear());
   }
 
   print(input: string): void {
     // ng-console handles EOL in Windows style, e.g. it needs CRLF to properly
     // go back to beginning of next line in the console
-    this.child.write(toCRLF(input));
+    this.child?.write(toCRLF(input));
   }
 
   clear() {
-    if (this.child)
-      this.child.underlying?.reset();
+    this.child?.underlying?.reset();
   }
 }
 

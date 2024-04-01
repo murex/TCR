@@ -19,9 +19,7 @@ describe('TcrRolesComponent', () => {
         {provide: TcrRoleComponent, useClass: FakeTcrRoleComponent},
       ]
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(TcrRolesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

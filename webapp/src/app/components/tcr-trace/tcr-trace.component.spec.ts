@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TcrTraceComponent, toCRLF} from './tcr-trace.component';
+import {Subject} from "rxjs";
 
 describe('TcrTraceComponent', () => {
   let component: TcrTraceComponent;
@@ -27,6 +28,38 @@ describe('TcrTraceComponent', () => {
     it('should have ng-terminal child.underlying component', () => {
       expect(component.child.underlying).toBeTruthy();
     });
+
+    it('should clear the terminal upon reception of clearTrace observable', () => {
+      let cleared = false;
+      component.child.underlying!.reset = () => {
+        cleared = true;
+      }
+
+      const clearTrace = new Subject<void>();
+      component.clearTrace = clearTrace.asObservable();
+
+      component.ngAfterViewInit();
+      clearTrace.next();
+
+      expect(cleared).toBeTruthy();
+    });
+
+    it('should print text upon reception of text observable', () => {
+      let written = "";
+      component.child.write = (input: string) => {
+        written = input;
+      }
+      const text = new Subject<string>();
+
+      const input = "Hello World";
+      component.text = text.asObservable();
+
+      component.ngAfterViewInit();
+      text.next(input);
+
+      expect(written).toEqual(input + "\r\n");
+    });
+
   });
 
   describe('toCRLF function', () => {

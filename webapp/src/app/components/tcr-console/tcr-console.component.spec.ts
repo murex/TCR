@@ -2,7 +2,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   formatRoleMessage,
   getRoleAction,
-  getRoleName, isRoleStartMessage,
+  getRoleName,
+  isRoleStartMessage,
   TcrConsoleComponent
 } from './tcr-console.component';
 import {Observable} from "rxjs";
@@ -11,22 +12,30 @@ import {TcrMessageService} from "../../services/tcr-message.service";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
+import {
+  bgDarkGray,
+  cyan,
+  green,
+  lightCyan,
+  lightYellow,
+  red,
+  yellow
+} from "ansicolor";
 
 class TcrMessageServiceFake implements Partial<TcrMessageService> {
-  constructor(public message$ = new Observable<TcrMessage>()) {
-  }
+  message$ = new Observable<TcrMessage>()
 }
 
-class TcrRolesComponentFake implements Partial<TcrRolesComponent> {
+class TcrRolesComponentFake {
 }
 
-class TcrTraceComponentFake implements Partial<TcrTraceComponent> {
+class TcrTraceComponentFake {
 }
 
 describe('TcrConsoleComponent', () => {
   let component: TcrConsoleComponent;
   let fixture: ComponentFixture<TcrConsoleComponent>;
-  let serviceFake: TcrMessageService;
+  // let serviceFake: TcrMessageService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -38,16 +47,23 @@ describe('TcrConsoleComponent', () => {
       ]
     }).compileComponents();
 
-    serviceFake = TestBed.inject(TcrMessageService);
+    TestBed.inject(TcrMessageService);
+    TestBed.inject(TcrRolesComponent);
+    TestBed.inject(TcrTraceComponent);
     fixture = TestBed.createComponent(TcrConsoleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   describe('component instance', () => {
     it('should be created', () => {
       expect(component).toBeTruthy();
     });
+
   });
 
   describe('component DOM', () => {
@@ -64,8 +80,8 @@ describe('TcrConsoleComponent', () => {
         selector: 'app-tcr-roles',
       },
       {
-        description: 'a terminal',
-        selector: 'ng-terminal'
+        description: 'a trace component',
+        selector: 'app-tcr-trace',
       },
     ].forEach(testCase => {
       it(`should contain ${testCase.description}`, () => {
@@ -124,7 +140,7 @@ describe('TcrConsoleComponent', () => {
       {message: "", expected: ""},
       {message: undefined, expected: ""},
     ].forEach(testCase => {
-      it(`should format the message \'${testCase.message}\'`, () => {
+      it(`should format the message '${testCase.message}'`, () => {
         const result = formatRoleMessage(testCase.message!);
         expect(result).toEqual(testCase.expected);
       });
@@ -139,10 +155,141 @@ describe('TcrConsoleComponent', () => {
       {message: "navigator:end", expected: false},
       {message: "other", expected: false},
     ].forEach(testCase => {
-      it(`should return ${testCase.expected} for \'${testCase.message}\' messages`, () => {
+      it(`should return ${testCase.expected} for '${testCase.message}' messages`, () => {
         const result = isRoleStartMessage(testCase.message);
         expect(result).toEqual(testCase.expected);
       });
     });
   });
+
+  describe('printSimple function', () => {
+    it('should print a simple text', () => {
+      const text = "some simple text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printSimple(text);
+      expect(actual).toEqual(text);
+    });
+  });
+
+  describe('printInfo function', () => {
+    it('should format and print an info text', () => {
+      const text = "some info text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printInfo(text);
+      expect(actual).toEqual(cyan(text));
+    });
+  });
+
+  describe('printTitle function', () => {
+    it('should format and print a title text', () => {
+      const text = "some title text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printTitle(text);
+      const lineSep = lightCyan("─".repeat(80));
+      expect(actual).toEqual(lineSep + "\n" + lightCyan(text));
+    });
+  });
+
+  describe('printRole function', () => {
+    it('should format and print a role text', () => {
+      const text = "driver:start";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printRole(text);
+      const lineSep = yellow("─".repeat(80));
+      expect(actual).toEqual(lineSep
+        + "\n" + lightYellow("Starting driver role")
+        + "\n" + lineSep);
+    });
+  });
+
+  describe('printSuccess function', () => {
+    it('should format and print a success text', () => {
+      const text = "some success text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printSuccess(text);
+      expect(actual).toEqual("🟢- " + green(text));
+    });
+  });
+
+  describe('printWarning function', () => {
+    it('should format and print a warning text', () => {
+      const text = "some warning text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printWarning(text);
+      expect(actual).toEqual("🔶- " + yellow(text));
+    });
+  });
+
+  describe('printError function', () => {
+    it('should format and print an error text', () => {
+      const text = "some error text";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printError(text);
+      expect(actual).toEqual("🟥- " + red(text));
+    });
+  });
+
+  describe('printUnhandled function', () => {
+    it('should format and print an unhandled message', () => {
+      const text = "some unhandled text";
+      const type = "xxx";
+
+      let actual: string | undefined;
+      component.text.subscribe((value) => {
+        actual = value;
+      });
+
+      component.printUnhandled(type, text);
+      expect(actual).toEqual(bgDarkGray("[xxx]") + " " + text);
+    });
+  });
+
+  xdescribe('clear function', () => {
+    it('should update clearTrace subject (disabled due to side effect on xterm.js)', () => {
+
+      let actual: boolean = false;
+      component.clearTrace.subscribe(() => {
+        actual = true;
+      });
+
+      component.clear();
+      expect(actual).toBeTruthy();
+    });
+  });
 });
+

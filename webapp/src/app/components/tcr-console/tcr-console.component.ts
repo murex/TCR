@@ -1,8 +1,7 @@
-import {Component, effect, signal, Signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 import {TcrMessageService} from "../../services/tcr-message.service";
-import {toSignal} from "@angular/core/rxjs-interop";
 import {
   bgDarkGray,
   cyan,
@@ -27,21 +26,15 @@ import {Subject} from "rxjs";
 })
 export class TcrConsoleComponent {
   title = "TCR Console";
-  tcrMessage: Signal<TcrMessage | undefined>;
-  text = signal("");
+  message$ = this.messageService.message$;
+  text: Subject<string> = new Subject<string>();
   clearTrace: Subject<void> = new Subject<void>();
 
   constructor(private messageService: TcrMessageService) {
-    this.tcrMessage = toSignal(this.messageService.message$);
-
-    effect(() => {
-      // When receiving a message from the server
-      // print it in the terminal
-      this.printMessage(this.tcrMessage()!);
-    }, {allowSignalWrites: true});
+    this.messageService.message$.subscribe(msg => this.printMessage(msg));
   }
 
-  private printMessage(message: TcrMessage): void {
+  printMessage(message: TcrMessage): void {
     if (message === undefined) {
       return;
     }
@@ -73,46 +66,46 @@ export class TcrConsoleComponent {
         this.printError(message.text);
         break;
       default:
-        this.printUnhandled(message);
+        this.printUnhandled(message.type, message.text);
     }
   }
 
-  private printSimple(text: string) {
+  printSimple(text: string) {
     this.print(text);
   }
 
-  private printInfo(text: string) {
+  printInfo(text: string) {
     this.print(cyan(text));
   }
 
-  private printTitle(text: string) {
+  printTitle(text: string) {
     const lineSep = lightCyan("─".repeat(80));
     this.print(lineSep + "\n" + lightCyan(text));
   }
 
-  private printRole(text: string) {
+  printRole(text: string) {
     const sepLine = yellow("─".repeat(80));
     this.print(sepLine + "\n" + lightYellow(formatRoleMessage(text)) + "\n" + sepLine);
   }
 
-  private printSuccess(text: string) {
+  printSuccess(text: string) {
     this.print("🟢- " + green(text));
   }
 
-  private printWarning(text: string) {
+  printWarning(text: string) {
     this.print("🔶- " + yellow(text));
   }
 
-  private printError(text: string) {
+  printError(text: string) {
     this.print("🟥- " + red(text));
   }
 
-  private printUnhandled(message: TcrMessage) {
-    this.print(bgDarkGray("[" + message.type + "]") + " " + message.text);
+  printUnhandled(type: string, text: string) {
+    this.print(bgDarkGray("[" + type + "]") + " " + text);
   }
 
   print(input: string): void {
-    this.text.set(input);
+    this.text.next(input);
   }
 
   clear() {
