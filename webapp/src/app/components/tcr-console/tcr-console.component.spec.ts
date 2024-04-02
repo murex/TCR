@@ -9,9 +9,6 @@ import {
 import {Observable} from "rxjs";
 import {TcrMessage} from "../../interfaces/tcr-message";
 import {TcrMessageService} from "../../services/tcr-message.service";
-import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
 import {
   bgDarkGray,
   cyan,
@@ -21,49 +18,40 @@ import {
   red,
   yellow
 } from "ansicolor";
+import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
+import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
+import {MockComponent} from "ng-mocks";
 
-class TcrMessageServiceFake implements Partial<TcrMessageService> {
+class TcrMessageServiceFake {
   message$ = new Observable<TcrMessage>()
-}
-
-class TcrRolesComponentFake {
-}
-
-class TcrTraceComponentFake {
 }
 
 describe('TcrConsoleComponent', () => {
   let component: TcrConsoleComponent;
   let fixture: ComponentFixture<TcrConsoleComponent>;
-  // let serviceFake: TcrMessageService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrConsoleComponent, HttpClientTestingModule],
+      imports: [
+        TcrConsoleComponent,
+        MockComponent(TcrRolesComponent),
+        MockComponent(TcrTraceComponent),
+      ],
       providers: [
         {provide: TcrMessageService, useClass: TcrMessageServiceFake},
-        {provide: TcrRolesComponent, useClass: TcrRolesComponentFake},
-        {provide: TcrTraceComponent, useClass: TcrTraceComponentFake},
-      ]
+      ],
     }).compileComponents();
 
     TestBed.inject(TcrMessageService);
-    TestBed.inject(TcrRolesComponent);
-    TestBed.inject(TcrTraceComponent);
     fixture = TestBed.createComponent(TcrConsoleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    fixture.destroy();
   });
 
   describe('component instance', () => {
     it('should be created', () => {
       expect(component).toBeTruthy();
     });
-
   });
 
   describe('component DOM', () => {
@@ -279,7 +267,7 @@ describe('TcrConsoleComponent', () => {
     });
   });
 
-  xdescribe('clear function', () => {
+  describe('clear function', () => {
     it('should update clearTrace subject (disabled due to side effect on xterm.js)', () => {
 
       let actual: boolean = false;
@@ -289,6 +277,75 @@ describe('TcrConsoleComponent', () => {
 
       component.clear();
       expect(actual).toBeTruthy();
+    });
+  });
+
+  // test cases for printMessage function
+  describe('printMessage function', () => {
+    [
+      {
+        type: "simple",
+        text: "some simple text",
+        expectedFunction: 'printSimple',
+      },
+      {
+        type: "info",
+        text: "some info text",
+        expectedFunction: 'printInfo',
+      },
+      {
+        type: "title",
+        text: "some title text",
+        expectedFunction: 'printTitle',
+      },
+      {
+        type: "role",
+        text: "driver:start",
+        expectedFunction: 'printRole',
+      },
+      {
+        type: "success",
+        text: "some success text",
+        expectedFunction: 'printSuccess',
+      },
+      {
+        type: "warning",
+        text: "some warning text",
+        expectedFunction: 'printWarning',
+      },
+      {
+        type: "error",
+        text: "some error text",
+        expectedFunction: 'printError',
+      },
+      {
+        type: "unhandled",
+        text: "some unhandled text",
+        expectedFunction: 'printUnhandled',
+      },
+    ].forEach(testCase => {
+      it(`should format and print ${testCase.type} messages`, () => {
+        // @ts-expect-error - to prevent useless complex cast
+        const printFunction = spyOn(component, testCase.expectedFunction).and.callThrough();
+
+        component.printMessage({
+          type: testCase.type,
+          text: testCase.text
+        } as TcrMessage);
+
+        expect(printFunction).toHaveBeenCalled();
+      });
+    });
+
+    it('should ignore timer messages', () => {
+      const printFunction = spyOn(component, 'print').and.callThrough();
+
+      component.printMessage({
+        type: "timer",
+        text: "some timer text"
+      } as TcrMessage);
+
+      expect(printFunction).not.toHaveBeenCalled();
     });
   });
 });

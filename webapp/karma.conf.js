@@ -30,8 +30,8 @@ module.exports = function (config) {
       subdir: '.',
       check: {
         global: {
-          statements: 85,
-          branches: 75,
+          statements: 90,
+          branches: 90,
           functions: 90,
           lines: 90,
         },
@@ -51,7 +51,7 @@ module.exports = function (config) {
       properties: {}, // key value pairs of properties to add to the <properties> section of the report
       xmlVersion: null, // use '1' if reporting to be per SonarQube 6.2 XML format
     },
-    reporters: ['progress', 'kjhtml', 'junit'],
+    reporters: ['progress', 'kjhtml', 'junit', 'coverage'],
     browsers: ['Chrome'],
     restartOnFileChange: true
   });

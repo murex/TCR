@@ -4,12 +4,13 @@ import {Subject} from "rxjs";
 import {Component} from "@angular/core";
 import {NgTerminal} from "ng-terminal";
 
+
 @Component({
-  selector: 'ng-terminal',
+  selector: 'ng-terminal', // eslint-disable-line @angular-eslint/component-selector
   template: '',
 })
-class NgTerminalFake {
-  underlying: any;
+class NgTerminalStub { // eslint-disable-line @angular-eslint/component-class-suffix
+  underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   write(_data: string): void {
   }
@@ -22,14 +23,14 @@ describe('TcrTraceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTraceComponent],
-      declarations: [NgTerminalFake],
+      declarations: [NgTerminalStub],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
-    component.ngTerminal = TestBed.createComponent(NgTerminalFake).componentInstance as NgTerminal;
+    component.ngTerminal = TestBed.createComponent(NgTerminalStub).componentInstance as NgTerminal;
     fixture.detectChanges();
   });
 

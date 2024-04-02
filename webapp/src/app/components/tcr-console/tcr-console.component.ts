@@ -14,6 +14,7 @@ import {
 import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
 import {Subject} from "rxjs";
 
+
 @Component({
   selector: 'app-tcr-console',
   standalone: true,
@@ -35,9 +36,6 @@ export class TcrConsoleComponent {
   }
 
   printMessage(message: TcrMessage): void {
-    if (message === undefined) {
-      return;
-    }
     switch (message.type) {
       case TcrMessageType.SIMPLE:
         this.printSimple(message.text);
