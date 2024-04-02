@@ -1,6 +1,19 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TcrTraceComponent, toCRLF} from './tcr-trace.component';
 import {Subject} from "rxjs";
+import {Component} from "@angular/core";
+import {NgTerminal} from "ng-terminal";
+
+@Component({
+  selector: 'ng-terminal',
+  template: '',
+})
+class NgTerminalFake {
+  underlying: any;
+
+  write(_data: string): void {
+  }
+}
 
 describe('TcrTraceComponent', () => {
   let component: TcrTraceComponent;
@@ -9,10 +22,14 @@ describe('TcrTraceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTraceComponent],
+      declarations: [NgTerminalFake],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
+    component.ngTerminal = TestBed.createComponent(NgTerminalFake).componentInstance as NgTerminal;
     fixture.detectChanges();
   });
 
