@@ -33,7 +33,7 @@ module.exports = function (config) {
           statements: 85,
           branches: 75,
           functions: 90,
-          lines: 85,
+          lines: 90,
         },
       },
       reporters: [

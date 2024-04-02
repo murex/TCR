@@ -22,16 +22,16 @@ describe('TcrTraceComponent', () => {
     });
 
     it('should have ng-terminal child component', () => {
-      expect(component.child).toBeTruthy();
+      expect(component.ngTerminal).toBeTruthy();
     });
 
     it('should have ng-terminal child.underlying component', () => {
-      expect(component.child.underlying).toBeTruthy();
+      expect(component.ngTerminal.underlying).toBeTruthy();
     });
 
     it('should clear the terminal upon reception of clearTrace observable', () => {
       let cleared = false;
-      component.child.underlying!.reset = () => {
+      component.ngTerminal.underlying!.reset = () => {
         cleared = true;
       }
 
@@ -46,7 +46,7 @@ describe('TcrTraceComponent', () => {
 
     it('should print text upon reception of text observable', () => {
       let written = "";
-      component.child.write = (input: string) => {
+      component.ngTerminal.write = (input: string) => {
         written = input;
       }
       const text = new Subject<string>();
@@ -91,7 +91,7 @@ describe('TcrTraceComponent', () => {
   describe('print function', () => {
     it('should send text to the terminal', () => {
       let written = "";
-      component.child.write = (input: string) => {
+      component.ngTerminal.write = (input: string) => {
         written = input;
       }
       const input = "Hello World";
@@ -103,7 +103,7 @@ describe('TcrTraceComponent', () => {
   describe('clear function', () => {
     it('should clear the terminal contents', () => {
       let cleared = false;
-      component.child.underlying!.reset = () => {
+      component.ngTerminal.underlying!.reset = () => {
         cleared = true;
       }
       component.clear();
