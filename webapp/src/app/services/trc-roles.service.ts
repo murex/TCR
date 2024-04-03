@@ -10,7 +10,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   providedIn: 'root'
 })
 export class TcrRolesService {
-  private apiUrl = `/api`; // URL to web api
+  private apiUrl: string = `/api`; // URL to web api
   public message$: Observable<TcrMessage>;
 
   constructor(private http: HttpClient, private ws: WebsocketService) {
@@ -22,7 +22,7 @@ export class TcrRolesService {
   }
 
   getRole(name: string): Observable<TcrRole> {
-    const url = `${this.apiUrl}/roles/${name}`;
+    const url: string = `${this.apiUrl}/roles/${name}`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',
@@ -35,7 +35,7 @@ export class TcrRolesService {
   }
 
   activateRole(name: string, state: boolean): Observable<TcrRole> {
-    const url = `${this.apiUrl}/roles/${name}/${state ? "start" : "stop"}`;
+    const url: string = `${this.apiUrl}/roles/${name}/${state ? "start" : "stop"}`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',

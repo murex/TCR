@@ -9,12 +9,12 @@ import {Router} from "@angular/router";
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
-  title = 'TCR - Test && Commit || Revert';
+  title: string = 'TCR - Test && Commit || Revert';
 
   constructor(private router: Router) {
   }
 
-  async navigateTo(url: string) {
+  async navigateTo(url: string): Promise<void> {
     this.router.navigateByUrl(url)
       .then(r => {
         if (!r)

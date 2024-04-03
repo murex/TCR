@@ -14,7 +14,7 @@ import {DatePipe, NgIf} from "@angular/common";
   styleUrl: './tcr-about.component.css'
 })
 export class TcrAboutComponent implements OnInit {
-  title = "About TCR";
+  title: string = "About TCR";
   @Input() buildInfo?: TcrBuildInfo;
 
   constructor(

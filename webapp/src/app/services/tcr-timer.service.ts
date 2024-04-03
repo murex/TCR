@@ -10,7 +10,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   providedIn: 'root'
 })
 export class TcrTimerService {
-  private apiUrl = `/api`; // URL to web api
+  private apiUrl: string = `/api`; // URL to web api
   public message$: Observable<TcrMessage>;
 
   constructor(private http: HttpClient, private ws: WebsocketService) {
@@ -22,7 +22,7 @@ export class TcrTimerService {
   }
 
   getTimer(): Observable<TcrTimer> {
-    const url = `${this.apiUrl}/timer`;
+    const url: string = `${this.apiUrl}/timer`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',

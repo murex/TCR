@@ -27,7 +27,7 @@ export class TcrTraceComponent implements AfterViewInit {
     this.clearTrace?.subscribe(() => this.clear());
   }
 
-  private setupTerminal() {
+  private setupTerminal(): void {
     this.xterm = this.ngTerminal.underlying;
     this.xterm?.loadAddon(new WebLinksAddon());
     this.ngTerminal.setXtermOptions({
@@ -52,11 +52,11 @@ export class TcrTraceComponent implements AfterViewInit {
     this.ngTerminal?.write(toCRLF(input));
   }
 
-  clear() {
+  clear(): void {
     this.xterm?.reset();
   }
 }
 
-export function toCRLF(input: string) {
+export function toCRLF(input: string): string {
   return input ? (input.replace(/\n/g, "\r\n") + "\r\n") : "";
 }

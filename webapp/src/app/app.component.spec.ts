@@ -1,7 +1,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {RouterModule} from "@angular/router";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {MockComponent, MockDirective} from "ng-mocks";
+import {HeaderComponent} from "./components/header/header.component";
+import {FooterComponent} from "./components/footer/footer.component";
+import {RouterOutlet} from "@angular/router";
 
 describe('AppComponent', () => {
   let app: AppComponent;
@@ -9,9 +11,16 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, HttpClientTestingModule, RouterModule.forRoot([])],
+      imports: [
+        AppComponent,
+        MockComponent(HeaderComponent),
+        MockDirective(RouterOutlet),
+        MockComponent(FooterComponent),
+      ],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
     fixture.detectChanges();
@@ -28,13 +37,11 @@ describe('AppComponent', () => {
   });
 
   describe('component DOM', () => {
-    const testCases = [
+    [
       {selector: 'app-header', description: 'a header element'},
       {selector: 'router-outlet', description: 'a router outlet element'},
       {selector: 'app-footer', description: 'a footer element'},
-    ];
-
-    testCases.forEach(({selector, description}) => {
+    ].forEach(({selector, description}) => {
       it(`should have ${description}`, () => {
         expect(fixture.nativeElement.querySelector(selector)).toBeTruthy();
       });

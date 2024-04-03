@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {RouterLink, RouterModule, RouterOutlet} from '@angular/router';
-import {HttpClientModule} from "@angular/common/http";
+import {RouterOutlet} from '@angular/router';
 import {HeaderComponent} from "./components/header/header.component";
 import {FooterComponent} from "./components/footer/footer.component";
 
@@ -11,9 +10,6 @@ import {FooterComponent} from "./components/footer/footer.component";
   imports: [
     CommonModule,
     RouterOutlet,
-    RouterLink,
-    RouterModule,
-    HttpClientModule,
     HeaderComponent,
     FooterComponent,
   ],
@@ -21,5 +17,5 @@ import {FooterComponent} from "./components/footer/footer.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'TCR';
+  title: string = 'TCR';
 }

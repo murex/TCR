@@ -7,14 +7,14 @@ import {TcrBuildInfo} from "../interfaces/tcr-build-info";
   providedIn: 'root'
 })
 export class TcrBuildInfoService {
-  private apiUrl = `/api`// URL to web api
+  private apiUrl: string = `/api` // URL to web api
 
   constructor(
     private http: HttpClient) {
   }
 
   getBuildInfo(): Observable<TcrBuildInfo> {
-    const url = `${this.apiUrl}/build-info`;
+    const url: string = `${this.apiUrl}/build-info`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',

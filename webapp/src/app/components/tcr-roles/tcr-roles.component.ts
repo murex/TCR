@@ -13,7 +13,7 @@ import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
   styleUrl: './tcr-roles.component.css'
 })
 export class TcrRolesComponent {
-  roles = ['driver', 'navigator'];
+  roles: string[] = ['driver', 'navigator'];
 
   constructor() {
   }

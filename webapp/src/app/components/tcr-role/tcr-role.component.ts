@@ -16,7 +16,7 @@ import {toSignal} from "@angular/core/rxjs-interop";
   styleUrl: './tcr-role.component.css'
 })
 export class TcrRoleComponent implements OnInit {
-  @Input({required: true}) name = "";
+  @Input({required: true}) name: string = "";
   role?: TcrRole;
   roleMessage: Signal<TcrMessage | undefined>;
 
@@ -50,7 +50,7 @@ export class TcrRoleComponent implements OnInit {
       });
   }
 
-  toggleRole(role: TcrRole) {
+  toggleRole(role: TcrRole): void {
     this.rolesService.activateRole(role.name, !role.active)
       .subscribe(r => {
         console.log(r.name + ' set to ' + r.active);

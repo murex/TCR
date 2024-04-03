@@ -7,14 +7,14 @@ import {TcrSessionInfo} from "../interfaces/tcr-session-info";
   providedIn: 'root'
 })
 export class TcrSessionInfoService {
-  private apiUrl = `/api`// URL to web api
+  private apiUrl: string = `/api` // URL to web api
 
   constructor(
     private http: HttpClient) {
   }
 
   getSessionInfo(): Observable<TcrSessionInfo> {
-    const url = `${this.apiUrl}/session-info`;
+    const url: string = `${this.apiUrl}/session-info`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Accept': 'application/json',

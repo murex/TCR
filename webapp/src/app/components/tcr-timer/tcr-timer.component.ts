@@ -25,8 +25,8 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   timeout: number | undefined;
   fgColor: string | undefined;
   timerMessage: Signal<TcrMessage | undefined>;
-  private syncCounter = 0;
-  private SYNC_INTERVAL = 10;
+  private syncCounter: number = 0;
+  private SYNC_INTERVAL: number = 10;
 
   constructor(private timerService: TcrTimerService) {
     this.timerMessage = toSignal(this.timerService.message$);
@@ -47,7 +47,7 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   }
 
   // Timer periodic update. We re-sync with the server every SYNC_INTERVAL seconds
-  periodicUpdate() {
+  periodicUpdate(): void {
     const activeStates = [TcrTimerState.RUNNING, TcrTimerState.TIMEOUT];
     if (this.syncCounter++ >= this.SYNC_INTERVAL) {
       this.getTimer();

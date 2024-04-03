@@ -7,11 +7,10 @@ import {TcrTimerComponent} from "../tcr-timer/tcr-timer.component";
   standalone: true,
   imports: [
     RouterLink,
-    TcrTimerComponent
+    TcrTimerComponent,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-
 }

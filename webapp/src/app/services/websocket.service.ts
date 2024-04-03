@@ -16,7 +16,7 @@ export const WEBSOCKET_CTOR = new InjectionToken<typeof webSocket>(
   providedIn: 'root'
 })
 export class WebsocketService implements OnDestroy {
-  private readonly url = "ws://" + window.location.host + "/ws";
+  private readonly url: string = "ws://" + window.location.host + "/ws";
   public webSocket$: WebSocketSubject<TcrMessage>;
 
   constructor(@Inject(WEBSOCKET_CTOR) private webSocketSubject: typeof webSocket) {

@@ -12,8 +12,7 @@ import {
   yellow
 } from "ansicolor";
 import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
-import {Subject} from "rxjs";
-
+import {Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-tcr-console',
@@ -26,8 +25,8 @@ import {Subject} from "rxjs";
   styleUrl: './tcr-console.component.css'
 })
 export class TcrConsoleComponent {
-  title = "TCR Console";
-  message$ = this.messageService.message$;
+  title: string = "TCR Console";
+  message$: Observable<TcrMessage> = this.messageService.message$;
   text: Subject<string> = new Subject<string>();
   clearTrace: Subject<void> = new Subject<void>();
 
@@ -70,37 +69,37 @@ export class TcrConsoleComponent {
     }
   }
 
-  printSimple(text: string) {
+  printSimple(text: string): void {
     this.print(text);
   }
 
-  printInfo(text: string) {
+  printInfo(text: string): void {
     this.print(cyan(text));
   }
 
-  printTitle(text: string) {
+  printTitle(text: string): void {
     const lineSep = lightCyan("─".repeat(80));
     this.print(lineSep + "\n" + lightCyan(text));
   }
 
-  printRole(text: string) {
+  printRole(text: string): void {
     const sepLine = yellow("─".repeat(80));
     this.print(sepLine + "\n" + lightYellow(formatRoleMessage(text)) + "\n" + sepLine);
   }
 
-  printSuccess(text: string) {
+  printSuccess(text: string): void {
     this.print("🟢- " + green(text));
   }
 
-  printWarning(text: string) {
+  printWarning(text: string): void {
     this.print("🔶- " + yellow(text));
   }
 
-  printError(text: string) {
+  printError(text: string): void {
     this.print("🟥- " + red(text));
   }
 
-  printUnhandled(type: string, text: string) {
+  printUnhandled(type: string, text: string): void {
     this.print(bgDarkGray("[" + type + "]") + " " + text);
   }
 
@@ -108,7 +107,7 @@ export class TcrConsoleComponent {
     this.text.next(input);
   }
 
-  clear() {
+  clear(): void {
     this.clearTrace.next();
   }
 }
@@ -132,6 +131,6 @@ function capitalize(text: string): string {
 
 const ROLE_START = "start";
 
-export function isRoleStartMessage(msg: TcrMessage) {
+export function isRoleStartMessage(msg: TcrMessage): boolean {
   return msg.type === TcrMessageType.ROLE && getRoleAction(msg.text) === ROLE_START;
 }
