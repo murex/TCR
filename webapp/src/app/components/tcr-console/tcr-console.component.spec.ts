@@ -22,7 +22,7 @@ import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
 import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
 import {MockComponent} from "ng-mocks";
 
-class TcrMessageServiceFake {
+class FakeTcrMessageService {
   message$ = new Observable<TcrMessage>()
 }
 
@@ -38,11 +38,12 @@ describe('TcrConsoleComponent', () => {
         MockComponent(TcrTraceComponent),
       ],
       providers: [
-        {provide: TcrMessageService, useClass: TcrMessageServiceFake},
+        {provide: TcrMessageService, useClass: FakeTcrMessageService},
       ],
     }).compileComponents();
+  });
 
-    TestBed.inject(TcrMessageService);
+  beforeEach(() => {
     fixture = TestBed.createComponent(TcrConsoleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

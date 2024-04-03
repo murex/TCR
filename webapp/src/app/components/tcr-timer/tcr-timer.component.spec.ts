@@ -7,9 +7,8 @@ import {TcrTimerService} from "../../services/tcr-timer.service";
 import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
 import {By} from "@angular/platform-browser";
 
-class TcrTimerServiceFake implements Partial<TcrTimerService> {
-  constructor(public message$ = new Observable<TcrMessage>()) {
-  }
+class FakeTcrTimerService {
+  message$ = new Observable<TcrMessage>();
 
   getTimer(): Observable<TcrTimer> {
     return of({
@@ -30,10 +29,12 @@ describe('TcrTimerComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrTimerComponent],
       providers: [
-        {provide: TcrTimerService, useClass: TcrTimerServiceFake},
+        {provide: TcrTimerService, useClass: FakeTcrTimerService},
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     serviceFake = TestBed.inject(TcrTimerService);
     fixture = TestBed.createComponent(TcrTimerComponent);
     component = fixture.componentInstance;

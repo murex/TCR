@@ -1,4 +1,7 @@
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 import {TcrTimerService} from './tcr-timer.service';
 import {TcrTimer} from '../interfaces/tcr-timer';
@@ -6,7 +9,7 @@ import {WebsocketService} from './websocket.service';
 import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {Subject} from "rxjs";
 
-class WebsocketServiceFake {
+class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
 }
 
@@ -20,7 +23,7 @@ describe('TcrTimerService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         TcrTimerService,
-        {provide: WebsocketService, useClass: WebsocketServiceFake},
+        {provide: WebsocketService, useClass: FakeWebsocketService},
       ]
     });
 
@@ -68,20 +71,17 @@ describe('TcrTimerService', () => {
 
       const req = httpMock.expectOne(`/api/timer`);
       expect(req.request.method).toBe('GET');
-      req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server Error'});
+      req.flush({message: 'Some network error'}, {
+        status: 500,
+        statusText: 'Server Error'
+      });
       expect(actual).toBeUndefined();
     });
   });
 
   describe('websocket message handler', () => {
     it('should forward timer messages', (done) => {
-      const sampleMessage: TcrMessage = {
-        type: TcrMessageType.TIMER,
-        emphasis: false,
-        severity: "",
-        text: "",
-        timestamp: "",
-      };
+      const sampleMessage = {type: TcrMessageType.TIMER} as TcrMessage;
       let actual: TcrMessage | undefined;
       service.message$.subscribe((msg) => {
         actual = msg;
@@ -92,13 +92,7 @@ describe('TcrTimerService', () => {
     });
 
     it('should drop non-timer messages', (done) => {
-      const sampleMessage: TcrMessage = {
-        type: TcrMessageType.INFO,
-        emphasis: false,
-        severity: "",
-        text: "",
-        timestamp: "",
-      };
+      const sampleMessage = {type: TcrMessageType.INFO} as TcrMessage;
       let actual: TcrMessage | undefined;
       service.message$.subscribe((msg) => {
         actual = msg;

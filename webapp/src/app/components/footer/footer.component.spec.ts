@@ -1,7 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FooterComponent} from './footer.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
 import {TcrBuildInfoService} from "../../services/tcr-build-info.service";
 import {Observable, of} from "rxjs";
@@ -16,7 +15,7 @@ const sample: TcrBuildInfo = {
   author: "",
 };
 
-class FakeTcrBuildInfoService implements Partial<TcrBuildInfoService> {
+class FakeTcrBuildInfoService {
   buildInfo: TcrBuildInfo = sample;
 
   getBuildInfo(): Observable<TcrBuildInfo> {
@@ -30,12 +29,14 @@ describe('FooterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FooterComponent, HttpClientTestingModule],
+      imports: [FooterComponent],
       providers: [
         {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService}
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(FooterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

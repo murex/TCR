@@ -14,7 +14,7 @@ const sample: TcrBuildInfo = {
   author: "some-author",
 };
 
-class FakeTcrBuildInfoService implements Partial<TcrBuildInfoService> {
+class FakeTcrBuildInfoService {
   buildInfo: TcrBuildInfo = sample;
 
   getBuildInfo(): Observable<TcrBuildInfo> {
@@ -33,7 +33,9 @@ describe('TcrAboutComponent', () => {
         {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService}
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(TcrAboutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

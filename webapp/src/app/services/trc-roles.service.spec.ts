@@ -3,11 +3,14 @@ import {TestBed} from '@angular/core/testing';
 import {TcrRolesService} from './trc-roles.service';
 import {Subject} from "rxjs";
 import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {
+  HttpClientTestingModule,
+  HttpTestingController
+} from "@angular/common/http/testing";
 import {WebsocketService} from "./websocket.service";
 import {TcrRole} from "../interfaces/tcr-role";
 
-class WebsocketServiceFake {
+class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
 }
 
@@ -21,7 +24,7 @@ describe('TcrRolesService', () => {
       imports: [HttpClientTestingModule],
       providers: [
         TcrRolesService,
-        {provide: WebsocketService, useClass: WebsocketServiceFake},
+        {provide: WebsocketService, useClass: FakeWebsocketService},
       ]
     });
 
@@ -70,7 +73,10 @@ describe('TcrRolesService', () => {
 
       const req = httpMock.expectOne(`/api/roles/${roleName}`);
       expect(req.request.method).toBe('GET');
-      req.flush({message: 'Bad Request'}, {status: 400, statusText: 'Bad Request'});
+      req.flush({message: 'Bad Request'}, {
+        status: 400,
+        statusText: 'Bad Request'
+      });
       expect(actual).toBeUndefined();
     });
 
@@ -113,7 +119,10 @@ describe('TcrRolesService', () => {
 
       const req = httpMock.expectOne(`/api/roles/${roleName}/start`);
       expect(req.request.method).toBe('POST');
-      req.flush({message: 'Bad Request'}, {status: 400, statusText: 'Bad Request'});
+      req.flush({message: 'Bad Request'}, {
+        status: 400,
+        statusText: 'Bad Request'
+      });
       expect(actual).toBeUndefined();
     });
 
@@ -121,13 +130,7 @@ describe('TcrRolesService', () => {
 
   describe('websocket message handler', () => {
     it('should forward role messages', (done) => {
-      const sampleMessage: TcrMessage = {
-        type: TcrMessageType.ROLE,
-        emphasis: false,
-        severity: "",
-        text: "",
-        timestamp: "",
-      };
+      const sampleMessage = {type: TcrMessageType.ROLE} as TcrMessage;
       let actual: TcrMessage | undefined;
       service.message$.subscribe((msg) => {
         actual = msg;
@@ -138,13 +141,7 @@ describe('TcrRolesService', () => {
     });
 
     it('should drop non-role messages', (done) => {
-      const sampleMessage: TcrMessage = {
-        type: TcrMessageType.INFO,
-        emphasis: false,
-        severity: "",
-        text: "",
-        timestamp: "",
-      };
+      const sampleMessage = {type: TcrMessageType.INFO} as TcrMessage;
       let actual: TcrMessage | undefined;
       service.message$.subscribe((msg) => {
         actual = msg;

@@ -1,6 +1,5 @@
 import {Observable, of} from 'rxjs';
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
 import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
 import {TcrSessionInfoComponent} from "./tcr-session-info.component";
@@ -17,7 +16,7 @@ const sample: TcrSessionInfo = {
   workDir: "/my/work/dir"
 };
 
-class FakeTcrSessionInfoService implements Partial<TcrSessionInfoService> {
+class FakeTcrSessionInfoService {
   sessionInfo: TcrSessionInfo = sample;
 
   getSessionInfo(): Observable<TcrSessionInfo> {
@@ -31,12 +30,14 @@ describe('TcrSessionInfoComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrSessionInfoComponent, HttpClientTestingModule],
+      imports: [TcrSessionInfoComponent],
       providers: [
         {provide: TcrSessionInfoService, useClass: FakeTcrSessionInfoService}
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(TcrSessionInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

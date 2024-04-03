@@ -1,12 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TcrRolesComponent} from './tcr-roles.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
 import {By} from "@angular/platform-browser";
-
-class FakeTcrRoleComponent implements Partial<TcrRoleComponent> {
-  name = '';
-}
+import {MockComponent} from "ng-mocks";
 
 describe('TcrRolesComponent', () => {
   let component: TcrRolesComponent;
@@ -14,12 +10,15 @@ describe('TcrRolesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrRolesComponent, HttpClientTestingModule],
-      providers: [
-        {provide: TcrRoleComponent, useClass: FakeTcrRoleComponent},
-      ]
+      imports: [
+        TcrRolesComponent,
+        MockComponent(TcrRoleComponent),
+      ],
+      providers: [],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(TcrRolesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

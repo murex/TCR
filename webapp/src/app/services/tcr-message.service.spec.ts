@@ -4,7 +4,7 @@ import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {Subject} from "rxjs";
 import {TcrMessageService} from "./tcr-message.service";
 
-class WebsocketServiceFake {
+class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
 }
 
@@ -17,7 +17,7 @@ describe('TcrMessageService', () => {
       imports: [],
       providers: [
         TcrMessageService,
-        {provide: WebsocketService, useClass: WebsocketServiceFake},
+        {provide: WebsocketService, useClass: FakeWebsocketService},
       ]
     });
 

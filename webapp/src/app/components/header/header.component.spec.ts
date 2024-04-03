@@ -1,12 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {HeaderComponent} from './header.component';
 import {RouterModule} from "@angular/router";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TcrTimerComponent} from "../tcr-timer/tcr-timer.component";
-
-class FakeTcrTimerComponent implements Partial<TcrTimerComponent> {
-}
+import {MockComponent} from "ng-mocks";
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -14,12 +10,16 @@ describe('HeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderComponent, HttpClientTestingModule, RouterModule.forRoot([])],
-      providers: [
-        {provide: TcrTimerComponent, useClass: FakeTcrTimerComponent},
-      ]
+      imports: [
+        HeaderComponent,
+        MockComponent(TcrTimerComponent),
+        RouterModule.forRoot([]),
+      ],
+      providers: [],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

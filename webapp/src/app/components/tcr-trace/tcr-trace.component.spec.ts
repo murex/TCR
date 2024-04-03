@@ -9,7 +9,7 @@ import {NgTerminal} from "ng-terminal";
   selector: 'ng-terminal', // eslint-disable-line @angular-eslint/component-selector
   template: '',
 })
-class NgTerminalStub { // eslint-disable-line @angular-eslint/component-class-suffix
+class StubNgTerminal { // eslint-disable-line @angular-eslint/component-class-suffix
   underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   write(_data: string): void {
@@ -23,14 +23,14 @@ describe('TcrTraceComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTraceComponent],
-      declarations: [NgTerminalStub],
+      declarations: [StubNgTerminal],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
-    component.ngTerminal = TestBed.createComponent(NgTerminalStub).componentInstance as NgTerminal;
+    component.ngTerminal = TestBed.createComponent(StubNgTerminal).componentInstance as NgTerminal;
     fixture.detectChanges();
   });
 

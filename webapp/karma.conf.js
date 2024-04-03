@@ -51,7 +51,7 @@ module.exports = function (config) {
       properties: {}, // key value pairs of properties to add to the <properties> section of the report
       xmlVersion: null, // use '1' if reporting to be per SonarQube 6.2 XML format
     },
-    reporters: ['progress', 'kjhtml', 'junit', 'coverage'],
+    reporters: ['progress', 'kjhtml', 'junit'],
     browsers: ['Chrome'],
     restartOnFileChange: true
   });

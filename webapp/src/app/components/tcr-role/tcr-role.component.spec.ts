@@ -7,9 +7,8 @@ import {TcrRolesService} from "../../services/trc-roles.service";
 import {TcrRole} from "../../interfaces/tcr-role";
 import {By} from "@angular/platform-browser";
 
-class TcrRolesServiceFake implements Partial<TcrRolesService> {
-  constructor(public message$ = new Observable<TcrMessage>()) {
-  }
+class FakeTcrRolesService {
+  message$ = new Observable<TcrMessage>();
 
   getRole(): Observable<TcrRole> {
     return of({name: "", description: "", active: false});
@@ -29,10 +28,12 @@ describe('TcrRoleComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrRoleComponent],
       providers: [
-        {provide: TcrRolesService, useClass: TcrRolesServiceFake},
+        {provide: TcrRolesService, useClass: FakeTcrRolesService},
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     serviceFake = TestBed.inject(TcrRolesService);
     fixture = TestBed.createComponent(TcrRoleComponent);
     component = fixture.componentInstance;
@@ -76,7 +77,7 @@ describe('TcrRoleComponent', () => {
         iconClass: 'fa-compass'
       }
     ].forEach(testCase => {
-      it(`should work with ${testCase.name} role ${testCase.active ? "on" : "off"}`, (done) => {
+      it(`should work with ${testCase.name} role ${testCase.active ? "on" : "off"}`, () => {
         const role: TcrRole = {
           name: testCase.name,
           description: testCase.description,
@@ -89,7 +90,6 @@ describe('TcrRoleComponent', () => {
         component = fixture.componentInstance;
         component.name = testCase.name;
         fixture.detectChanges();
-        done()
 
         // Verify that the component's role attribute is set correctly
         expect(component.role).toEqual(role);
@@ -150,7 +150,7 @@ describe('TcrRoleComponent', () => {
         activeAfter: true,
       },
     ].forEach(testCase => {
-      it(`${testCase.expectation}`, (done) => {
+      it(`${testCase.expectation}`, () => {
         // Have the service fake's getRole method return the starting role
         const roleBefore: TcrRole = {
           name: testCase.name,
@@ -184,7 +184,6 @@ describe('TcrRoleComponent', () => {
         // Verify that the component's role active attribute was updated
         fixture.detectChanges();
         expect(component.role?.active).toEqual(testCase.activeAfter);
-        done()
       });
     });
   });

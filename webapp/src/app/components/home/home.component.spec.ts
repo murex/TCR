@@ -4,7 +4,7 @@ import {HomeComponent} from './home.component';
 import {NavigationBehaviorOptions, Router, UrlTree} from "@angular/router";
 import {By} from "@angular/platform-browser";
 
-class RouterFake {
+class FakeRouter {
   url: string = '';
 
   navigateByUrl(url: string | UrlTree, _extras?: NavigationBehaviorOptions): Promise<boolean> {
@@ -22,13 +22,15 @@ describe('HomeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
       providers: [
-        {provide: Router, useClass: RouterFake}
+        {provide: Router, useClass: FakeRouter}
       ]
     }).compileComponents();
+  });
 
+  beforeEach(() => {
+    router = TestBed.inject(Router);
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
-    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -60,7 +62,7 @@ describe('HomeComponent', () => {
       });
     });
 
-    it('should alert the user when the router does not navigate', async () => {
+    it('should alert the user on invalid path', async () => {
       spyOn(window, 'alert');
       router.navigateByUrl = () => Promise.resolve(false);
       await component.navigateTo('/invalid-path');
