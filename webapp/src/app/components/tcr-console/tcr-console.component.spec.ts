@@ -7,7 +7,7 @@ import {
   TcrConsoleComponent
 } from './tcr-console.component';
 import {Observable} from "rxjs";
-import {TcrMessage} from "../../interfaces/tcr-message";
+import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {TcrMessageService} from "../../services/tcr-message.service";
 import {
   bgDarkGray,
@@ -138,14 +138,19 @@ describe('TcrConsoleComponent', () => {
 
   describe('isRoleStartMessage function', () => {
     [
-      {message: "driver:start", expected: true},
-      {message: "driver:end", expected: false},
-      {message: "navigator:start", expected: true},
-      {message: "navigator:end", expected: false},
-      {message: "other", expected: false},
+      {type: TcrMessageType.ROLE, message: "driver:start", expected: true},
+      {type: TcrMessageType.ROLE, message: "driver:end", expected: false},
+      {type: TcrMessageType.ROLE, message: "navigator:start", expected: true},
+      {type: TcrMessageType.ROLE, message: "navigator:end", expected: false},
+      {type: TcrMessageType.ROLE, message: "other", expected: false},
+      {type: TcrMessageType.INFO, message: "other", expected: false},
     ].forEach(testCase => {
-      it(`should return ${testCase.expected} for '${testCase.message}' messages`, () => {
-        const result = isRoleStartMessage(testCase.message);
+      const expectation = `should return ${testCase.expected} for '${testCase.type}:${testCase.message}' messages`;
+      it(expectation, () => {
+        const result = isRoleStartMessage({
+          type: testCase.type,
+          text: testCase.message
+        } as TcrMessage);
         expect(result).toEqual(testCase.expected);
       });
     });

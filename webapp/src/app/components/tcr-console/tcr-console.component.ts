@@ -36,6 +36,10 @@ export class TcrConsoleComponent {
   }
 
   printMessage(message: TcrMessage): void {
+    // clear the console every time a role is starting
+    if (isRoleStartMessage(message))
+      this.clear();
+
     switch (message.type) {
       case TcrMessageType.SIMPLE:
         this.printSimple(message.text);
@@ -47,8 +51,6 @@ export class TcrConsoleComponent {
         this.printTitle(message.text);
         break;
       case TcrMessageType.ROLE:
-        if (isRoleStartMessage(message.text))
-          this.clear();
         this.printRole(message.text);
         break;
       case TcrMessageType.TIMER:
@@ -130,6 +132,6 @@ function capitalize(text: string): string {
 
 const ROLE_START = "start";
 
-export function isRoleStartMessage(text: string) {
-  return getRoleAction(text) === ROLE_START;
+export function isRoleStartMessage(msg: TcrMessage) {
+  return msg.type === TcrMessageType.ROLE && getRoleAction(msg.text) === ROLE_START;
 }
