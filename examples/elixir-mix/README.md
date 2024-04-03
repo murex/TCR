@@ -16,7 +16,17 @@
 > Use a **git bash** terminal for running the commands below.
 > _Windows CMD and PowerShell are not supported_
 
-### 2 - Launch TCR
+### 2 - Install dependencies
+
+> ***Reminder***: the command below should be run from
+> [examples/elixir-mix](.)
+> directory
+
+```shell
+mix deps.get
+```
+
+### 3 - Launch TCR
 
 > ***Reminder***: the command below should be run from
 > [examples/elixir-mix](.)
