@@ -20,8 +20,9 @@
               "zone.js"
             ],
             "allowedCommonJsDependencies": [
-              "xterm",
-              "xterm-addon-fit"
+              "@xterm/xterm",
+              "@xterm/addon-fit",
+              "xterm-addon-web-links"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
