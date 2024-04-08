@@ -22,7 +22,8 @@
             "allowedCommonJsDependencies": [
               "@xterm/xterm",
               "@xterm/addon-fit",
-              "xterm-addon-web-links"
+              "@xterm/addon-web-links",
+              "@xterm/addon-unicode11"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [

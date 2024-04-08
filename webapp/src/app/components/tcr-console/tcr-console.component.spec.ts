@@ -226,7 +226,7 @@ describe('TcrConsoleComponent', () => {
       });
 
       component.printSuccess(text);
-      expect(actual).toEqual("🟢- " + green(text));
+      expect(actual).toEqual("🟢 " + green(text));
     });
   });
 
@@ -240,7 +240,7 @@ describe('TcrConsoleComponent', () => {
       });
 
       component.printWarning(text);
-      expect(actual).toEqual("🔶- " + yellow(text));
+      expect(actual).toEqual("🔶 " + yellow(text));
     });
   });
 
@@ -254,7 +254,7 @@ describe('TcrConsoleComponent', () => {
       });
 
       component.printError(text);
-      expect(actual).toEqual("🟥- " + red(text));
+      expect(actual).toEqual("🟥 " + red(text));
     });
   });
 

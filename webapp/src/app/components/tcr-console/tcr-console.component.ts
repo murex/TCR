@@ -88,15 +88,15 @@ export class TcrConsoleComponent {
   }
 
   printSuccess(text: string): void {
-    this.print("🟢- " + green(text));
+    this.print("🟢 " + green(text));
   }
 
   printWarning(text: string): void {
-    this.print("🔶- " + yellow(text));
+    this.print("🔶 " + yellow(text));
   }
 
   printError(text: string): void {
-    this.print("🟥- " + red(text));
+    this.print("🟥 " + red(text));
   }
 
   printUnhandled(type: string, text: string): void {

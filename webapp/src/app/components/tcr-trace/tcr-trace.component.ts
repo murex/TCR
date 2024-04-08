@@ -1,8 +1,9 @@
 import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
 import {NgTerminal, NgTerminalModule} from "ng-terminal";
 import {Observable} from "rxjs";
-import {Terminal} from 'xterm';
-import {WebLinksAddon} from 'xterm-addon-web-links';
+import {Terminal} from '@xterm/xterm';
+import {WebLinksAddon} from '@xterm/addon-web-links';
+import {Unicode11Addon} from '@xterm/addon-unicode11';
 
 @Component({
   selector: 'app-tcr-trace',
@@ -28,8 +29,10 @@ export class TcrTraceComponent implements AfterViewInit {
   }
 
   private setupTerminal(): void {
-    this.xterm = this.ngTerminal.underlying;
-    this.xterm?.loadAddon(new WebLinksAddon());
+    this.xterm = this.ngTerminal.underlying!;
+    this.xterm.loadAddon(new WebLinksAddon());
+    this.xterm.loadAddon(new Unicode11Addon());
+    this.xterm.unicode.activeVersion = '11';
     this.ngTerminal.setXtermOptions({
       fontFamily: '"Cascadia Code", Menlo, monospace',
       theme: {
