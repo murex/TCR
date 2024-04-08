@@ -14,7 +14,7 @@ cd TCR
 
 TCR is written in Go. This implies having Go compiler and tools installed on your machine.
 
-Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.21** or higher.
+Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.22** or higher.
 
 ## Install additional Go tools and utility packages
 
