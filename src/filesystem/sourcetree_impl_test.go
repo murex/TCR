@@ -23,6 +23,7 @@ SOFTWARE.
 package filesystem
 
 import (
+	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -103,13 +104,13 @@ func Test_watch_can_detect_changes_on_matching_files(t *testing.T) {
 
 	tree, _ := New(baseDir)
 	stopWatching := make(chan bool)
+	changeDetected := make(chan bool)
 	go func() {
-		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
-		time.Sleep(1 * time.Second)
-		assert.True(t, caughtFileUpdate)
+		changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
 	}()
-
+	time.Sleep(1 * time.Millisecond)
 	_ = os.WriteFile(file, []byte("some other contents\n"), 0600)
+	assert.True(t, <-changeDetected)
 }
 
 func Test_watch_ignores_changes_on_non_matching_files(t *testing.T) {
@@ -123,14 +124,14 @@ func Test_watch_ignores_changes_on_non_matching_files(t *testing.T) {
 
 	tree, _ := New(baseDir)
 	stopWatching := make(chan bool)
+	changeDetected := make(chan bool)
 	go func() {
-		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
-		time.Sleep(1 * time.Second)
-		assert.False(t, caughtFileUpdate)
+		changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
 	}()
-
+	time.Sleep(1 * time.Millisecond)
 	_ = os.WriteFile(file, []byte("some other contents\n"), 0600)
 	stopWatching <- true
+	assert.False(t, <-changeDetected)
 }
 
 func Test_watch_can_be_stopped_on_request(t *testing.T) {
@@ -144,26 +145,38 @@ func Test_watch_can_be_stopped_on_request(t *testing.T) {
 
 	tree, _ := New(baseDir)
 	stopWatching := make(chan bool)
+	changeDetected := make(chan bool)
 	go func() {
-		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
-		time.Sleep(1 * time.Millisecond)
-		assert.False(t, caughtFileUpdate)
+		changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
 	}()
-
+	time.Sleep(1 * time.Millisecond)
 	stopWatching <- true
+	assert.False(t, <-changeDetected)
 }
 
-func Test_watch_exits_if_missing_directory(t *testing.T) {
+func Test_watch_reports_a_warning_on_missing_directory(t *testing.T) {
 	baseDir, _ := os.MkdirTemp("", "tcr-test-watch")
 	defer func(path string) { _ = os.RemoveAll(path) }(baseDir)
 
 	srcDir := filepath.Join(baseDir, "src")
 
 	tree, _ := New(baseDir)
+
+	sniffer := report.NewSniffer(func(msg report.Message) bool {
+		return msg.Type.Category == report.Warning
+	})
+
 	stopWatching := make(chan bool)
+	changeDetected := make(chan bool)
 	go func() {
-		caughtFileUpdate := tree.Watch([]string{srcDir}, func(_ string) bool { return true }, stopWatching)
-		time.Sleep(1 * time.Millisecond)
-		assert.False(t, caughtFileUpdate)
+		changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
 	}()
+	time.Sleep(1 * time.Millisecond)
+	stopWatching <- true
+	<-changeDetected
+	sniffer.Stop()
+
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, report.Warning, sniffer.GetAllMatches()[0].Type.Category)
+	assert.NotEmpty(t, sniffer.GetAllMatches()[0].Payload.ToString())
 }
