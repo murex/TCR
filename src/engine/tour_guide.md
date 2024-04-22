@@ -11,7 +11,7 @@ func (tcr *TCREngine) RunAsDriver() {
 	}
 	// Prepare the timer
 ```
-[Link to code](./tcr.go#L403-L410)
+[Link to code](https://github.com/murex/TCR/blob/main/src/engine/././tcr.go#L403-L410)
 
 ## We made some code changes, let's see what happens ⏳
 
