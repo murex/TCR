@@ -393,6 +393,7 @@ func (tcr *TCREngine) GetCurrentRole() role.Role {
 	return tcr.currentRole
 }
 
+// LivingDoc:TourGuide("Driver Round", 1, "Let's start as a driver")
 // RunAsDriver tells TCR engine to start running with driver role
 func (tcr *TCREngine) RunAsDriver() {
 	// Force previous role to quit if needed
@@ -506,6 +507,8 @@ func (tcr *TCREngine) waitForChange(interrupt <-chan bool) bool {
 		interrupt)
 }
 
+// LivingDoc:TourGuide("Driver Round", 2, "We made some code changes, let's see what happens ⏳")
+// LivingDoc:TourGuide("Driver Round", 5, "Let's try again, hopefully it will work this time ⏳")
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle
 func (tcr *TCREngine) RunTCRCycle() {
 	status.RecordState(status.Ok)
@@ -557,6 +560,7 @@ func (tcr *TCREngine) build() (result toolchain.CommandResult) {
 	return result
 }
 
+// LivingDoc:TourGuide("Driver Round", 3, "The tests are running, fingers crossed! 🤞")
 func (tcr *TCREngine) test() (result toolchain.TestCommandResult) {
 	report.PostInfo("Running Tests")
 	result = tcr.toolchain.RunTests()
@@ -569,6 +573,7 @@ func (tcr *TCREngine) test() (result toolchain.TestCommandResult) {
 	return result
 }
 
+// LivingDoc:TourGuide("Driver Round", 6, "Great! The tests are passing this time. The changes are committed 😀")
 func (tcr *TCREngine) commit(event events.TCREvent) {
 	report.PostInfo("Committing changes on ", tcr.vcs.SessionSummary())
 	var err error
@@ -632,6 +637,7 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 	return err
 }
 
+// LivingDoc:TourGuide("Driver Round", 4, "Damned, the tests failed, the code is reverted! 😭")
 func (tcr *TCREngine) revertSrcFiles() {
 	diffs, err := tcr.vcs.Diff()
 	tcr.handleError(err, false, status.VCSError)
