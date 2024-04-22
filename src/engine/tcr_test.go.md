@@ -1,4 +1,4 @@
-/*
+
 Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,7 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 # TCR Engine
-*/
+```go
+
 
 package engine
 
@@ -46,15 +47,17 @@ import (
 	"time"
 )
 
-// ## Statuses after test run
-// Depending on the outcome of the test run, the status of the application should be updated accordingly.
-//
-// | Test description | Expected command status | Expected application status |
-// |------------------|-------------------------|------------------------------|
-// | build with no failure | Pass | Ok |
-// | build with failure | Fail | BuildFailed |
-// | test with no failure | Pass | Ok |
-// | test with failure | Fail | TestFailed |
+```
+ ## Statuses after test run
+ Depending on the outcome of the test run, the status of the application should be updated accordingly.
+
+ | Test description | Expected command status | Expected application status |
+ |------------------|-------------------------|------------------------------|
+ | build with no failure | Pass | Ok |
+ | build with failure | Fail | BuildFailed |
+ | test with no failure | Pass | Ok |
+ | test with failure | Fail | TestFailed |
+```go
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
@@ -553,7 +556,6 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 				params.WithRunMode(runmode.Mob{}),
 				params.WithMobTimerDuration(tt.timer),
 			), nil, nil, nil)
-
 			tcr.RunAsDriver()
 			time.Sleep(1 * time.Millisecond)
 			tcr.Stop()
@@ -899,3 +901,4 @@ func Test_count_files(t *testing.T) {
 		})
 	}
 }
+```
