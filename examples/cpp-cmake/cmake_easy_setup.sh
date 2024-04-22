@@ -39,7 +39,7 @@ esac
 base_dir=$(dirname -- "$0")
 cd "${base_dir}"
 
-cmake_version="3.25.0"
+cmake_version="3.29.2"
 cmake_expected_dir="cmake-${cmake_version}-${os}-${arch}"
 cmake_expected_archive_file="${cmake_expected_dir}.${archive_extension}"
 cmake_archive_url="http://github.com/Kitware/CMake/releases/download/v${cmake_version}/${cmake_expected_archive_file}"
