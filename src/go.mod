@@ -33,7 +33,7 @@ require (
 
 require (
 	github.com/gin-contrib/cors v1.7.2
-	github.com/gin-contrib/static v1.1.1
+	github.com/gin-contrib/static v1.1.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/gorilla/websocket v1.5.1
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
@@ -408,7 +408,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	gocloud.dev v0.37.0 // indirect
-	golang.org/x/arch v0.7.0 // indirect
+	golang.org/x/arch v0.8.0 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
 	golang.org/x/exp/typeparams v0.0.0-20240416160154-fe59bbe5cc7f // indirect
