@@ -12,7 +12,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golangci/golangci-lint v1.58.1
-	github.com/goreleaser/goreleaser v1.26.0
+	github.com/goreleaser/goreleaser v1.26.1
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mengdaming/go-junit v0.1.3
@@ -246,7 +246,7 @@ require (
 	github.com/golangci/unconvert v0.0.0-20240309020433-c5143eacb3ed // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/go-containerregistry v0.19.1 // indirect
-	github.com/google/go-github/v61 v61.0.0 // indirect
+	github.com/google/go-github/v62 v62.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/ko v0.15.2 // indirect
 	github.com/google/rpmpack v0.6.1-0.20240329070804-c2247cbb881a // indirect
