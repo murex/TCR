@@ -134,7 +134,7 @@ func createConfigDir() {
 	_, err := os.Stat(configDirPath)
 	if os.IsNotExist(err) {
 		utils.Trace("Creating TCR configuration directory: ", configDirPath)
-		err := os.MkdirAll(configDirPath, os.ModePerm)
+		err := os.MkdirAll(configDirPath, 0750)
 		if err != nil {
 			utils.Trace("Error creating TCR configuration directory: ", err)
 		}
