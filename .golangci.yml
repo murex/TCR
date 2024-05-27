@@ -18,11 +18,7 @@ linters:
     - unparam
     - unused
   disable:
-    - deadcode
-    - golint
     - goimports
-    - structcheck
-    - varcheck
 run:
   go: "1.22"
   timeout: 5m
