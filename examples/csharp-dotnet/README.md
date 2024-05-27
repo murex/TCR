@@ -5,7 +5,7 @@
 - macOS, Linux or Windows
 - [git](https://git-scm.com/) client
 - [curl](https://curl.se/download.html) command line utility
-- a working build environment (.NET 6.0) for C#
+- a working build environment (.NET 8.0) for C#
 
 ## Instructions
 
