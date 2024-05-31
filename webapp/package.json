@@ -17,6 +17,10 @@
     "rebuild-prod": "npm run reinstall && npm run build-prod"
   },
   "private": true,
+  "engines" : {
+    "npm" : ">=10.8.1",
+    "node" : ">=21.0.0 <=22.2.0"
+  },
   "dependencies": {
     "@angular/animations": "^17.0.0",
     "@angular/common": "^17.0.0",
