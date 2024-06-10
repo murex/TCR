@@ -264,6 +264,8 @@ cloud.google.com/go/batch v1.8.5 h1:i8shmhASiPJ/DFHhqwBcNQep+uFlHt53Txal/wsc9ko=
 cloud.google.com/go/batch v1.8.5/go.mod h1:YSWU2RTIeoHWVwieZJDTLEfWWUsuk10uhAr5K1dTMiw=
 cloud.google.com/go/batch v1.8.6 h1:yjAV0wkKYqO5Lh20dGdq5HDzQDG2qWWfbirLohNbpn0=
 cloud.google.com/go/batch v1.8.6/go.mod h1:rQovrciYbtuY40Uprg/IWLlhmUR1GZYzX9xnymUdfBU=
+cloud.google.com/go/batch v1.8.7 h1:zaQwOAd7TlE84pwPHavNMsnv5zRyRV8ym2DJ4iQ2cV0=
+cloud.google.com/go/batch v1.8.7/go.mod h1:O5/u2z8Wc7E90Bh4yQVLQIr800/0PM5Qzvjac3Jxt4k=
 cloud.google.com/go/beyondcorp v1.0.0 h1:VPg+fZXULQjs8LiMeWdLaB5oe8G9sEoZ0I0j6IMiG1Q=
 cloud.google.com/go/beyondcorp v1.0.0/go.mod h1:YhxDWw946SCbmcWo3fAhw3V4XZMSpQ/VYfcKGAEU8/4=
 cloud.google.com/go/beyondcorp v1.0.1 h1:uQpsXwttlV0+AXHdB5qaZl1mz2SsyYV1PKgTR74noaQ=
@@ -754,6 +756,8 @@ cloud.google.com/go/documentai v1.28.1 h1:UrEp5LASw0zIxBJaVsXSCHYpsMB9YcVZ66CPOm
 cloud.google.com/go/documentai v1.28.1/go.mod h1:dOMSDsZQoyguECOiT1XeR4PoJeALsXqlJjLIEk+QneY=
 cloud.google.com/go/documentai v1.29.0 h1:Hey8tqO6q4bF0vG9gQTzHeP9bjitJ0rILNYWDanZVlE=
 cloud.google.com/go/documentai v1.29.0/go.mod h1:3Qt8PMt3S8W6w3VeoYFraaMS2GJRrXFnvkyn+GpB1n0=
+cloud.google.com/go/documentai v1.30.0 h1:6KI6P04WExzrfbciW5RTEQScBEY98Fc4VtS04ufT3Js=
+cloud.google.com/go/documentai v1.30.0/go.mod h1:3Qt8PMt3S8W6w3VeoYFraaMS2GJRrXFnvkyn+GpB1n0=
 cloud.google.com/go/domains v0.9.1 h1:rqz6KY7mEg7Zs/69U6m6LMbB7PxFDWmT3QWNXIqhHm0=
 cloud.google.com/go/domains v0.9.1/go.mod h1:aOp1c0MbejQQ2Pjf1iJvnVyT+z6R6s8pX66KaCSDYfE=
 cloud.google.com/go/domains v0.9.2 h1:SjpTtaTNRPPajrGiZEtxz9dpElO4PxuDWFvU4JpV1gk=
@@ -1351,6 +1355,8 @@ cloud.google.com/go/pubsub v1.38.0 h1:J1OT7h51ifATIedjqk/uBNPh+1hkvUaH4VKbz4UuAs
 cloud.google.com/go/pubsub v1.38.0/go.mod h1:IPMJSWSus/cu57UyR01Jqa/bNOQA+XnPF6Z4dKW4fAA=
 cloud.google.com/go/pubsublite v1.8.1 h1:pX+idpWMIH30/K7c0epN6V703xpIcMXWRjKJsz0tYGY=
 cloud.google.com/go/pubsublite v1.8.1/go.mod h1:fOLdU4f5xldK4RGJrBMm+J7zMWNj/k4PxwEZXy39QS0=
+cloud.google.com/go/pubsublite v1.8.2 h1:jLQozsEVr+c6tOU13vDugtnaBSUy/PD5zK6mhm+uF1Y=
+cloud.google.com/go/pubsublite v1.8.2/go.mod h1:4r8GSa9NznExjuLPEJlF1VjOPOpgf3IT6k8x/YgaOPI=
 cloud.google.com/go/recaptchaenterprise/v2 v2.7.2 h1:IGkbudobsTXAwmkEYOzPCQPApUCsN4Gbq3ndGVhHQpI=
 cloud.google.com/go/recaptchaenterprise/v2 v2.7.2/go.mod h1:kR0KjsJS7Jt1YSyWFkseQ756D45kaYNTlDPPaRAvDBU=
 cloud.google.com/go/recaptchaenterprise/v2 v2.8.0 h1:4qPn0UZ1LUZje+JcmJcVRtsR2qbCMwCFU+MmsCRzDbk=
@@ -1425,6 +1431,8 @@ cloud.google.com/go/redis v1.14.4 h1:vXRKu2ekEBqiTSdm4Qu39MqMob0PP6IQwPyQUpEgue4
 cloud.google.com/go/redis v1.14.4/go.mod h1:EnHDflqTNQmCBPCN4FQPZdM28vLdweAgxe6avAZpqug=
 cloud.google.com/go/redis v1.15.0 h1:YB4i013/3jdHgQf+MVUOX4GLNcuHPSWI94QMVc1pSIU=
 cloud.google.com/go/redis v1.15.0/go.mod h1:X9Fp3vG5kqr5ho+5YM6AgJxypn+I9Ea5ANCuFKXLdX0=
+cloud.google.com/go/redis v1.16.0 h1:1veL/h/x5bgzG2CLK2cdG3plWdgO0p1qoHgwFBqG7+c=
+cloud.google.com/go/redis v1.16.0/go.mod h1:NLzG3Ur8ykVIZk+i5ienRnycsvWzQ0uCLcil6Htc544=
 cloud.google.com/go/resourcemanager v1.9.1 h1:QIAMfndPOHR6yTmMUB0ZN+HSeRmPjR/21Smq5/xwghI=
 cloud.google.com/go/resourcemanager v1.9.1/go.mod h1:dVCuosgrh1tINZ/RwBufr8lULmWGOkPS8gL5gqyjdT8=
 cloud.google.com/go/resourcemanager v1.9.2 h1:lC3PjJMHLPlZKqLfan6FkEb3X1F8oCRc1ylY7vRHvDQ=
@@ -1453,6 +1461,8 @@ cloud.google.com/go/resourcesettings v1.6.6 h1:l/IbRDDmGJFlR4bRZGtfYvix1Pu0jAKGL
 cloud.google.com/go/resourcesettings v1.6.6/go.mod h1:t1+N03/gwNuKyOqpnACg/hWNL7ujT8mQYGqOzxOjFVE=
 cloud.google.com/go/resourcesettings v1.6.7 h1:88SlpWtogkwjMuYTEl//qm36azX1OpawThAyvXT/hHw=
 cloud.google.com/go/resourcesettings v1.6.7/go.mod h1:zwRL5ZoNszs1W6+eJYMk6ILzgfnTj13qfU4Wvfupuqk=
+cloud.google.com/go/resourcesettings v1.7.0 h1:yEuByg5XBHhTG9wPEU7GiEtC9Orp1wSEyiiX4IPqoSY=
+cloud.google.com/go/resourcesettings v1.7.0/go.mod h1:pFzZYOQMyf1hco9pbNWGEms6N/2E7nwh0oVU1Tz+4qA=
 cloud.google.com/go/retail v1.14.1 h1:gYBrb9u/Hc5s5lUTFXX1Vsbc/9BEvgtioY6ZKaK0DK8=
 cloud.google.com/go/retail v1.14.1/go.mod h1:y3Wv3Vr2k54dLNIrCzenyKG8g8dhvhncT2NcNjb/6gE=
 cloud.google.com/go/retail v1.14.2 h1:ed5hWjpOwfsi6E9kj2AFzkz5ScT3aZs7o3MUM0YITUM=
