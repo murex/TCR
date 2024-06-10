@@ -33,7 +33,7 @@ require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-contrib/static v1.1.2
 	github.com/gin-gonic/gin v1.10.0
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.2
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 )
 
