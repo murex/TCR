@@ -5,7 +5,7 @@ go 1.22.3
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v1.0.0
+	github.com/murex/tcr v1.1.0
 	github.com/spf13/cobra v1.8.0
 )
 
@@ -41,7 +41,7 @@ require (
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
+	github.com/gorilla/websocket v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.1-vault-5 // indirect
 	github.com/imkira/go-observer v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
