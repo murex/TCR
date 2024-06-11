@@ -32,7 +32,7 @@ will not need to worry about installing it.
 
 In case you need to add or modify subcommands, options or parameters, you may want to use the Cobra Generator. In this
 situation you can refer to
-[Cobra Generator documentation](https://github.com/spf13/cobra/blob/master/user_guide.md#using-the-cobra-generator)
+[Cobra Generator documentation](https://github.com/spf13/cobra/blob/main/site/content/user_guide.md)
 
 ### GoReleaser utility - `Optional`
 
@@ -55,7 +55,7 @@ A [dedicated GitHub action](../.github/workflows/go_releaser.yml) triggers execu
 TCR-Go version is being released.
 
 Although not mandatory, we advise you to install it locally on your machine to check that your changes comply with
-golangci-lint rules. Refer to [golangci-lint installation instructions](https://golangci-lint.run/usage/install/)
+golangci-lint rules. Refer to [golangci-lint installation instructions](https://golangci-lint.run/welcome/install/)
 for installation.
 
 Once golangci-lint is installed, you can run it from the root directory:
