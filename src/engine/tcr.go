@@ -70,6 +70,7 @@ type (
 		PrintStats(p params.Params)
 		VCSPull()
 		VCSPush()
+		AbortCommand()
 		Quit()
 	}
 
@@ -519,6 +520,12 @@ func (tcr *TCREngine) RunTCRCycle() {
 	} else {
 		tcr.revert(event)
 	}
+}
+
+// AbortCommand triggers interruption of an ongoing TCR cycle operation
+func (tcr *TCREngine) AbortCommand() {
+	//TODO implement me
+	report.PostError("received abort request!")
 }
 
 func (tcr *TCREngine) createTCREvent(testResult toolchain.TestCommandResult) (event events.TCREvent) {

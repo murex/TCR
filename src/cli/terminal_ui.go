@@ -62,6 +62,7 @@ const (
 	enterNavigatorRoleMenuHelper = "Navigator role"
 	openBrowserMenuHelper        = "Open in browser"
 	gitAutoPushMenuHelper        = "Turn on/off git auto-push"
+	abortCommandMenuHelper       = "Abort current command"
 	quitMenuHelper               = "Quit"
 	optionsMenuHelper            = "List available options"
 	timerStatusMenuHelper        = "Timer status"
@@ -283,6 +284,10 @@ func (term *TerminalUI) vcsPush() {
 	term.tcr.VCSPush()
 }
 
+func (term *TerminalUI) abortCommand() {
+	term.tcr.AbortCommand()
+}
+
 func (term *TerminalUI) whatShallWeDo() {
 	if term.params.Mode.IsMultiRole() {
 		term.listMenuOptions(term.mobMenu, "What shall we do?")
@@ -441,6 +446,9 @@ func (term *TerminalUI) initSoloMenu() *menu {
 		newMenuOption('Y', syncMenuHelper,
 			term.p4MenuEnabler(),
 			term.vcsPullMenuAction(), false),
+		newMenuOption('A', abortCommandMenuHelper,
+			term.abortCommandEnabler(),
+			term.abortCommandMenuAction(), false),
 		newMenuOption('Q', quitTCRMenuHelper,
 			term.quitRoleMenuEnabler(role.Driver{}),
 			term.quitRoleMenuAction(), true),
@@ -477,6 +485,9 @@ func (term *TerminalUI) initMobMenu() *menu {
 		newMenuOption('Y', syncMenuHelper,
 			term.p4MenuEnabler(),
 			term.vcsPullMenuAction(), false),
+		newMenuOption('A', abortCommandMenuHelper,
+			term.abortCommandEnabler(),
+			term.abortCommandMenuAction(), false),
 		newMenuOption('Q', quitMenuHelper,
 			term.quitRoleMenuEnabler(nil),
 			term.quitMenuAction(), true),
@@ -544,6 +555,12 @@ func (term *TerminalUI) vcsPullMenuAction() menuAction {
 	}
 }
 
+func (term *TerminalUI) abortCommandMenuAction() menuAction {
+	return func() {
+		term.abortCommand()
+	}
+}
+
 func (term *TerminalUI) vcsPushMenuAction() menuAction {
 	return func() {
 		term.vcsPush()
@@ -579,6 +596,13 @@ func (term *TerminalUI) timerStatusMenuAction() menuAction {
 func (term *TerminalUI) quitRoleMenuEnabler(r role.Role) menuEnabler {
 	return func() bool {
 		return term.tcr.GetCurrentRole() == r
+	}
+}
+
+func (term *TerminalUI) abortCommandEnabler() menuEnabler {
+	return func() bool {
+		// TODO always on for now -- should be turned on only when a command is actually running
+		return true
 	}
 }
 
