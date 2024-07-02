@@ -1,6 +1,6 @@
 class Dummy {
     static int doSomething() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             System.out.println("doing something...");
             try {
                 Thread.sleep(100);
