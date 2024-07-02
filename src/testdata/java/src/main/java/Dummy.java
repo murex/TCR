@@ -11,3 +11,4 @@ class Dummy {
         return 42;
     }
 }
+
