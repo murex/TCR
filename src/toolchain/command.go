@@ -24,8 +24,6 @@ package toolchain
 
 import (
 	"errors"
-	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/report"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -127,26 +125,6 @@ func (command Command) runsWithArch(archName ArchName) bool {
 		}
 	}
 	return false
-}
-
-func (command Command) run() (result CommandResult) {
-	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
-	report.PostText(command.asCommandLine())
-
-	session := sh.NewSession().SetDir(GetWorkDir())
-	outputBytes, err := session.Command(command.Path, command.Arguments).CombinedOutput()
-
-	if err == nil {
-		result.Status = CommandStatusPass
-	} else {
-		result.Status = CommandStatusFail
-	}
-
-	if outputBytes != nil {
-		result.Output = string(outputBytes)
-		report.PostText(result.Output)
-	}
-	return result
 }
 
 func (command Command) check() error {
