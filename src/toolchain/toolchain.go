@@ -150,12 +150,14 @@ func (tchn Toolchain) GetTestCommands() []Command {
 
 // RunBuild runs the build with this toolchain
 func (tchn Toolchain) RunBuild() CommandResult {
-	return findCompatibleCommand(tchn.buildCommands).run()
+	cmd := findCompatibleCommand(tchn.buildCommands)
+	return commandRunner.Run(cmd)
 }
 
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() TestCommandResult {
-	result := findCompatibleCommand(tchn.testCommands).run()
+	cmd := findCompatibleCommand(tchn.testCommands)
+	result := commandRunner.Run(cmd)
 	testStats, _ := tchn.parseTestReport()
 	return TestCommandResult{result, testStats}
 }

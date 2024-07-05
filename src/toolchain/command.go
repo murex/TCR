@@ -24,8 +24,6 @@ package toolchain
 
 import (
 	"errors"
-	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/report"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -50,33 +48,6 @@ type (
 		Path      string
 		Arguments []string
 	}
-
-	// CommandStatus is the result status of a Command execution
-	CommandStatus string
-
-	// CommandResult contains the result from running a Command
-	// - Status
-	CommandResult struct {
-		Status CommandStatus
-		Output string
-	}
-)
-
-// Failed indicates is a Command failed
-func (r CommandResult) Failed() bool {
-	return r.Status == CommandStatusFail
-}
-
-// Passed indicates is a Command passed
-func (r CommandResult) Passed() bool {
-	return r.Status == CommandStatusPass
-}
-
-// List of possible values for CommandStatus
-const (
-	CommandStatusPass    CommandStatus = "pass"
-	CommandStatusFail    CommandStatus = "fail"
-	CommandStatusUnknown CommandStatus = "unknown"
 )
 
 // List of possible values for OsName
@@ -127,26 +98,6 @@ func (command Command) runsWithArch(archName ArchName) bool {
 		}
 	}
 	return false
-}
-
-func (command Command) run() (result CommandResult) {
-	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
-	report.PostText(command.asCommandLine())
-
-	session := sh.NewSession().SetDir(GetWorkDir())
-	outputBytes, err := session.Command(command.Path, command.Arguments).CombinedOutput()
-
-	if err == nil {
-		result.Status = CommandStatusPass
-	} else {
-		result.Status = CommandStatusFail
-	}
-
-	if outputBytes != nil {
-		result.Output = string(outputBytes)
-		report.PostText(result.Output)
-	}
-	return result
 }
 
 func (command Command) check() error {
