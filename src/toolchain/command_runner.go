@@ -91,6 +91,12 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 	errStart := r.command.Start()
 	if errStart != nil {
 		report.PostError("Failed to run command: ", errStart.Error())
+		// We currently return fail status when command cannot be launched.
+		// This is to replicate previous implementation's behaviour where
+		// we could not differentiate between failure to launch and failure from execution.
+		// We could later on use a different return value in this situation,
+		// but we need to ensure first that TCR engine can handle it correctly.
+		result.Status = CommandStatusFail
 		r.command = nil
 		return result
 	}
