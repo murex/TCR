@@ -316,7 +316,7 @@ func (g *gitImpl) UnStash(keep bool) error {
 func (g *gitImpl) Diff() (diffs vcs.FileDiffs, err error) {
 	var gitOutput []byte
 	gitOutput, err = g.runGit("diff", "--numstat", "--ignore-cr-at-eol",
-		"--ignore-all-space", "--ignore-blank-lines", "HEAD")
+		"--ignore-blank-lines", "HEAD")
 	if err != nil {
 		return nil, err
 	}

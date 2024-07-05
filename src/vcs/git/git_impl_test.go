@@ -109,7 +109,7 @@ func Test_git_diff(t *testing.T) {
 			nil,
 			false,
 			[]string{
-				"diff", "--numstat", "--ignore-cr-at-eol", "--ignore-all-space", "--ignore-blank-lines", "HEAD"},
+				"diff", "--numstat", "--ignore-cr-at-eol", "--ignore-blank-lines", "HEAD"},
 			nil,
 		},
 		{"git diff command call fails",
