@@ -211,7 +211,7 @@ func (*p4Impl) UnStash(_ bool) error {
 // Diff returns the list of files modified since last commit with diff info for each file
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
 	var p4Output []byte
-	p4Output, err = p.runP4("diff", "-f", "-Od", "-dw", "-ds", filepath.Join(p.baseDir, "/..."))
+	p4Output, err = p.runP4("diff", "-f", "-Od", "-dl", "-ds", filepath.Join(p.baseDir, "/..."))
 	if err != nil {
 		return nil, err
 	}
