@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,8 +31,27 @@ const (
 	toolchainName = "gradle-wrapper"
 )
 
-func Test_toolchain_returns_error_when_build_fails(t *testing.T) {
+func Test_toolchain_returns_error_when_build_command_is_not_found(t *testing.T) {
+	// Command does not exist in testDataRootDir
 	assertErrorWhenBuildFails(t, toolchainName, testDataRootDir)
+}
+
+func Test_toolchain_returns_error_when_build_command_fails(t *testing.T) {
+	tchn, _ := Get(toolchainName)
+	// Add a built-in toolchain from a valid one, but with invalid build command arguments.
+	// This allows to actually run the build command and get an execution error out of it
+	failingName := tchn.GetName() + "-failing-build"
+	var failingCommands []Command
+	for _, cmd := range tchn.GetBuildCommands() {
+		failingCommands = append(failingCommands, Command{
+			Os:        cmd.Os,
+			Arch:      cmd.Arch,
+			Path:      cmd.Path,
+			Arguments: []string{"-invalid-argument"},
+		})
+	}
+	_ = addBuiltIn(New(failingName, failingCommands, tchn.GetTestCommands(), tchn.GetTestResultDir()))
+	assertErrorWhenBuildFails(t, failingName, testDataDirJava)
 }
 
 func Test_toolchain_returns_ok_when_build_passes(t *testing.T) {
@@ -40,8 +59,27 @@ func Test_toolchain_returns_ok_when_build_passes(t *testing.T) {
 	assertNoErrorWhenBuildPasses(t, toolchainName, testDataDirJava)
 }
 
-func Test_toolchain_returns_error_when_tests_fail(t *testing.T) {
+func Test_toolchain_returns_error_when_test_command_is_not_found(t *testing.T) {
+	// Command does not exist in testDataRootDir
 	assertErrorWhenTestFails(t, toolchainName, testDataRootDir)
+}
+
+func Test_toolchain_returns_error_when_test_command_fails(t *testing.T) {
+	// Add a built-in toolchain from a valid one, but with invalid test command arguments.
+	// This allows to actually run the test command and get an execution error out of it
+	tchn, _ := Get(toolchainName)
+	failingName := tchn.GetName() + "-failing-test"
+	var failingCommands []Command
+	for _, cmd := range tchn.GetTestCommands() {
+		failingCommands = append(failingCommands, Command{
+			Os:        cmd.Os,
+			Arch:      cmd.Arch,
+			Path:      cmd.Path,
+			Arguments: []string{"-invalid-argument"},
+		})
+	}
+	_ = addBuiltIn(New(failingName, tchn.GetBuildCommands(), failingCommands, tchn.GetTestResultDir()))
+	assertErrorWhenTestFails(t, failingName, testDataDirJava)
 }
 
 func Test_toolchain_returns_ok_when_tests_pass(t *testing.T) {
