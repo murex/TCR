@@ -1,6 +1,6 @@
 module github.com/murex/tcr
 
-go 1.22.3
+go 1.22.5
 
 require (
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
