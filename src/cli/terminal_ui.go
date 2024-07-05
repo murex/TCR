@@ -253,6 +253,10 @@ func (term *TerminalUI) runTCR(r role.Role) error {
 }
 
 func (term *TerminalUI) runMenuLoop(m *menu) {
+	if term.params.Mode.IsInteractive() {
+		_ = SetRaw()
+		defer Restore()
+	}
 	for {
 		input := term.readKeyboardInput()
 		matched, quit := m.matchAndRun(input)
@@ -267,6 +271,9 @@ func (term *TerminalUI) runMenuLoop(m *menu) {
 }
 
 func (term *TerminalUI) readKeyboardInput() byte {
+	// setupTerminal() is called every time to enforce expected behaviour
+	// in some terminal implementations such as JetBrains' embedded terminal
+	setupTerminal()
 	keyboardInput := make([]byte, 1)
 	_, err := os.Stdin.Read(keyboardInput)
 	if err != nil {
@@ -357,6 +364,7 @@ func (term *TerminalUI) Confirm(message string, defaultAnswer bool) bool {
 
 	keyboardInput := make([]byte, 1)
 	for {
+		setupTerminal()
 		_, _ = os.Stdin.Read(keyboardInput)
 		switch keyboardInput[0] {
 		case 'y', 'Y':
@@ -378,11 +386,6 @@ func yesOrNoAdvice(defaultAnswer bool) string {
 
 // Start runs the terminal session
 func (term *TerminalUI) Start() {
-	if term.params.Mode.IsInteractive() {
-		_ = SetRaw()
-		defer Restore()
-	}
-
 	switch term.params.Mode {
 	case runmode.Solo{}:
 		// When running TCR in solo mode, there's no selection menu:
