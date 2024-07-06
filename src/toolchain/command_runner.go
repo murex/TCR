@@ -25,6 +25,7 @@ package toolchain
 import (
 	"bufio"
 	"github.com/murex/tcr/report"
+	"io"
 	"os/exec"
 )
 
@@ -83,9 +84,8 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 	// Allow simultaneous trace and capture of command's stdout and stderr
 	outReader, _ := r.command.StdoutPipe()
 	errReader, _ := r.command.StderrPipe()
-	doneOut, doneErr := make(chan bool), make(chan bool)
-	r.reportCommandTrace(bufio.NewScanner(outReader), doneOut)
-	r.reportCommandTrace(bufio.NewScanner(errReader), doneErr)
+	r.reportCommandTrace(outReader)
+	r.reportCommandTrace(errReader)
 
 	// Start the command asynchronously
 	errStart := r.command.Start()
@@ -113,11 +113,11 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 	return result
 }
 
-func (*CommandRunner) reportCommandTrace(scanner *bufio.Scanner, done chan bool) {
+func (*CommandRunner) reportCommandTrace(readCloser io.ReadCloser) {
+	scanner := bufio.NewScanner(readCloser)
 	go func() {
 		for scanner.Scan() {
 			report.PostText(scanner.Text())
 		}
-		done <- true
 	}()
 }
