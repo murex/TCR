@@ -43,6 +43,7 @@ const (
 	TCRCallRunAsDriver       TCRCall = "run-as-driver"
 	TCRCallRunAsNavigator    TCRCall = "run-as-navigator"
 	TCRCallStop              TCRCall = "stop"
+	TCRCallAbortCommand      TCRCall = "abort-command"
 	TCRCallGetMobTimerStatus TCRCall = "get-mob-timer-status"
 	TCRCallRunTcrCycle       TCRCall = "run-tcr-cycle"
 	TCRCallRunCheck          TCRCall = "run-check"
@@ -147,6 +148,11 @@ func (fake *FakeTCREngine) GetMobTimerStatus() timer.CurrentState {
 // SetMobTimerStatus sets the status of the mob timer
 func (fake *FakeTCREngine) SetMobTimerStatus(state timer.CurrentState) {
 	fake.timerStatus = state
+}
+
+// AbortCommand triggers interruption of an ongoing TCR cycle operation
+func (fake *FakeTCREngine) AbortCommand() {
+	fake.recordCall(TCRCallAbortCommand)
 }
 
 // RunTCRCycle is the core of TCR engine: e.g. it runs one test && commit || revert cycle

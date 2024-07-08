@@ -705,6 +705,12 @@ func Test_solo_menu_actions(t *testing.T) {
 			},
 		},
 		{
+			"A key is actionable", git.Name, []byte{'a'}, []byte{'A'},
+			[]engine.TCRCall{
+				engine.TCRCallAbortCommand,
+			},
+		},
+		{
 			"D key has no action", git.Name, []byte{'d'}, []byte{'D'},
 			engine.NoTCRCall,
 		},
@@ -818,14 +824,40 @@ func Test_mob_menu_actions(t *testing.T) {
 			},
 		},
 		{
-			"D+Q keys", git.Name, []byte{'d', 'q'}, []byte{'D', 'Q'},
+			"D+Q keys allow entering and leaving driver role", git.Name,
+			[]byte{'d', 'q'}, []byte{'D', 'Q'},
 			[]engine.TCRCall{
 				engine.TCRCallRunAsDriver,
 				engine.TCRCallStop,
 			},
 		},
 		{
-			"N+Q keys", git.Name, []byte{'n', 'q'}, []byte{'N', 'Q'},
+			"N+Q keys allow entering and leaving navigator role", git.Name,
+			[]byte{'n', 'q'}, []byte{'N', 'Q'},
+			[]engine.TCRCall{
+				engine.TCRCallRunAsNavigator,
+				engine.TCRCallStop,
+			},
+		},
+		{
+			"A key has no action when not in a role", git.Name,
+			[]byte{'a'}, []byte{'A'},
+			engine.NoTCRCall,
+		},
+		{
+			"A key is actionable when in driver role", git.Name,
+			[]byte{'d', 'a', 'q'},
+			[]byte{'D', 'A', 'Q'},
+			[]engine.TCRCall{
+				engine.TCRCallRunAsDriver,
+				engine.TCRCallAbortCommand,
+				engine.TCRCallStop,
+			},
+		},
+		{
+			"A key has no action when in navigator role", git.Name,
+			[]byte{'n', 'a', 'q'},
+			[]byte{'N', 'A', 'Q'},
 			[]engine.TCRCall{
 				engine.TCRCallRunAsNavigator,
 				engine.TCRCallStop,

@@ -524,7 +524,6 @@ func (tcr *TCREngine) RunTCRCycle() {
 
 // AbortCommand triggers interruption of an ongoing TCR cycle operation
 func (tcr *TCREngine) AbortCommand() {
-	//report.PostWarning("Aborting current command")
 	tcr.toolchain.AbortExecution()
 }
 
