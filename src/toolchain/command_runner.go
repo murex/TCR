@@ -121,3 +121,15 @@ func (*CommandRunner) reportCommandTrace(readCloser io.ReadCloser) {
 		}
 	}()
 }
+
+// AbortRunningCommand triggers aborting of any command that is currently running
+func (r *CommandRunner) AbortRunningCommand() {
+	if r.command == nil || r.command.Process == nil {
+		report.PostWarning("There is no command running at this time")
+		return
+	}
+	report.PostWarning("Aborting command: \"", r.command.String(), "\"")
+	_ = r.command.Process.Kill()
+	// Calling Kill() may be a bit too brutal (may leave children process alive)
+	//_ = r.command.Process.Signal(os.Kill)
+}

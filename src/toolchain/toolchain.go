@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,6 +70,7 @@ type (
 		checkTestCommand() error
 		runsOnPlatform(osName OsName, archName ArchName) bool
 		CheckCommandAccess(cmdPath string) (string, error)
+		AbortExecution()
 	}
 )
 
@@ -160,6 +161,11 @@ func (tchn Toolchain) RunTests() TestCommandResult {
 	result := commandRunner.Run(cmd)
 	testStats, _ := tchn.parseTestReport()
 	return TestCommandResult{result, testStats}
+}
+
+// AbortExecution asks the toolchain to abort any command currently executing
+func (Toolchain) AbortExecution() {
+	commandRunner.AbortRunningCommand()
 }
 
 // BuildCommandPath returns the build command path for this toolchain
