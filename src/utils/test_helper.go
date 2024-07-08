@@ -27,6 +27,8 @@ package utils
 import (
 	"bytes"
 	"github.com/stretchr/testify/assert"
+	"os"
+	"runtime"
 	"testing"
 )
 
@@ -49,4 +51,11 @@ func AssertSimpleTrace(t *testing.T, expected []string, operation func()) {
 		expectedWithWrapping += "[TCR] " + line + "\n"
 	}
 	assert.Equal(t, expectedWithWrapping, output.String())
+}
+
+// SkipOnWindowsCI allows to prevent running a test when on Windows CI when called at the beginning of the test
+func SkipOnWindowsCI(t *testing.T) {
+	if os.Getenv("GITHUB_ACTIONS") == "true" && runtime.GOOS == "windows" {
+		t.Skip("test skipped on windows CI")
+	}
 }
