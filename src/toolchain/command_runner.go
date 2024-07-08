@@ -27,12 +27,15 @@ import (
 	"github.com/murex/tcr/report"
 	"io"
 	"os/exec"
+	"sync"
 )
 
 type (
 	// CommandRunner is in charge of managing the lifecycle of a command
 	CommandRunner struct {
 		command *exec.Cmd
+		// commandMutex is here to enforce that commands run in sequence
+		commandMutex sync.Mutex
 	}
 
 	// CommandStatus is the result status of a Command execution
@@ -64,16 +67,17 @@ const (
 )
 
 // commandRunner singleton instance
-var commandRunner = getCommandRunner()
+var commandRunner = &CommandRunner{
+	command: nil,
+}
 
 func getCommandRunner() *CommandRunner {
-	return &CommandRunner{
-		command: nil,
-	}
+	return commandRunner
 }
 
 // Run launches the execution of the provided command
 func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
+	commandRunner.commandMutex.Lock()
 	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
 	report.PostText(cmd.asCommandLine())
 
@@ -98,6 +102,7 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 		// but we need to ensure first that TCR engine can handle it correctly.
 		result.Status = CommandStatusFail
 		r.command = nil
+		commandRunner.commandMutex.Unlock()
 		return result
 	}
 
@@ -110,6 +115,7 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 	}
 
 	r.command = nil
+	commandRunner.commandMutex.Unlock()
 	return result
 }
 
@@ -123,13 +129,14 @@ func (*CommandRunner) reportCommandTrace(readCloser io.ReadCloser) {
 }
 
 // AbortRunningCommand triggers aborting of any command that is currently running
-func (r *CommandRunner) AbortRunningCommand() {
+func (r *CommandRunner) AbortRunningCommand() bool {
 	if r.command == nil || r.command.Process == nil {
 		report.PostWarning("There is no command running at this time")
-		return
+		return false
 	}
 	report.PostWarning("Aborting command: \"", r.command.String(), "\"")
 	_ = r.command.Process.Kill()
 	// Calling Kill() may be a bit too brutal (may leave children process alive)
 	//_ = r.command.Process.Signal(os.Kill)
+	return true
 }

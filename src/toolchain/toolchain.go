@@ -70,7 +70,7 @@ type (
 		checkTestCommand() error
 		runsOnPlatform(osName OsName, archName ArchName) bool
 		CheckCommandAccess(cmdPath string) (string, error)
-		AbortExecution()
+		AbortExecution() bool
 	}
 )
 
@@ -164,8 +164,8 @@ func (tchn Toolchain) RunTests() TestCommandResult {
 }
 
 // AbortExecution asks the toolchain to abort any command currently executing
-func (Toolchain) AbortExecution() {
-	commandRunner.AbortRunningCommand()
+func (Toolchain) AbortExecution() bool {
+	return commandRunner.AbortRunningCommand()
 }
 
 // BuildCommandPath returns the build command path for this toolchain

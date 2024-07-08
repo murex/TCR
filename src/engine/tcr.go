@@ -524,7 +524,7 @@ func (tcr *TCREngine) RunTCRCycle() {
 
 // AbortCommand triggers interruption of an ongoing TCR cycle operation
 func (tcr *TCREngine) AbortCommand() {
-	tcr.toolchain.AbortExecution()
+	_ = tcr.toolchain.AbortExecution()
 }
 
 func (tcr *TCREngine) createTCREvent(testResult toolchain.TestCommandResult) (event events.TCREvent) {
