@@ -434,9 +434,8 @@ func (term *TerminalUI) listMenuOptions(m *menu, title string) {
 	}
 }
 
-func (term *TerminalUI) initSoloMenu() *menu {
-	m := newMenu("Solo menu")
-	m.addOptions(
+func (term *TerminalUI) initCommonMenuOptions() []*menuOption {
+	return []*menuOption{
 		newMenuOption('P', gitAutoPushMenuHelper,
 			term.gitMenuEnabler(),
 			term.autoPushMenuAction(), false),
@@ -452,6 +451,13 @@ func (term *TerminalUI) initSoloMenu() *menu {
 		newMenuOption('A', abortCommandMenuHelper,
 			term.abortCommandEnabler(),
 			term.abortCommandMenuAction(), false),
+	}
+}
+
+func (term *TerminalUI) initSoloMenu() *menu {
+	m := newMenu("Solo menu")
+	m.addOptions(term.initCommonMenuOptions()...)
+	m.addOptions(
 		newMenuOption('Q', quitTCRMenuHelper,
 			term.quitRoleMenuEnabler(role.Driver{}),
 			term.quitRoleMenuAction(), true),
@@ -475,22 +481,9 @@ func (term *TerminalUI) initMobMenu() *menu {
 			term.enterRoleMenuAction(role.Navigator{}), false),
 		newMenuOption('T', timerStatusMenuHelper,
 			term.timerStatusMenuEnabler(),
-			term.timerStatusMenuAction(), false),
-		newMenuOption('P', gitAutoPushMenuHelper,
-			term.gitMenuEnabler(),
-			term.autoPushMenuAction(), false),
-		newMenuOption('L', pullMenuHelper,
-			term.gitMenuEnabler(),
-			term.vcsPullMenuAction(), false),
-		newMenuOption('S', pushMenuHelper,
-			term.gitMenuEnabler(),
-			term.vcsPushMenuAction(), false),
-		newMenuOption('Y', syncMenuHelper,
-			term.p4MenuEnabler(),
-			term.vcsPullMenuAction(), false),
-		newMenuOption('A', abortCommandMenuHelper,
-			term.abortCommandEnabler(),
-			term.abortCommandMenuAction(), false),
+			term.timerStatusMenuAction(), false))
+	m.addOptions(term.initCommonMenuOptions()...)
+	m.addOptions(
 		newMenuOption('Q', quitMenuHelper,
 			term.quitRoleMenuEnabler(nil),
 			term.quitMenuAction(), true),
