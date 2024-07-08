@@ -62,6 +62,7 @@ type (
 		RunAsNavigator()
 		Stop()
 		RunTCRCycle()
+		AbortCommand()
 		GetSessionInfo() SessionInfo
 		GetMobTimerStatus() timer.CurrentState
 		SetRunMode(m runmode.RunMode)
@@ -519,6 +520,12 @@ func (tcr *TCREngine) RunTCRCycle() {
 	} else {
 		tcr.revert(event)
 	}
+}
+
+// AbortCommand triggers interruption of an ongoing TCR cycle operation
+func (tcr *TCREngine) AbortCommand() {
+	//report.PostWarning("Aborting current command")
+	tcr.toolchain.AbortExecution()
 }
 
 func (tcr *TCREngine) createTCREvent(testResult toolchain.TestCommandResult) (event events.TCREvent) {

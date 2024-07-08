@@ -62,6 +62,7 @@ const (
 	enterNavigatorRoleMenuHelper = "Navigator role"
 	openBrowserMenuHelper        = "Open in browser"
 	gitAutoPushMenuHelper        = "Turn on/off git auto-push"
+	abortCommandMenuHelper       = "Abort current command"
 	quitMenuHelper               = "Quit"
 	optionsMenuHelper            = "List available options"
 	timerStatusMenuHelper        = "Timer status"
@@ -290,6 +291,10 @@ func (term *TerminalUI) vcsPush() {
 	term.tcr.VCSPush()
 }
 
+func (term *TerminalUI) abortCommand() {
+	term.tcr.AbortCommand()
+}
+
 func (term *TerminalUI) whatShallWeDo() {
 	if term.params.Mode.IsMultiRole() {
 		term.listMenuOptions(term.mobMenu, "What shall we do?")
@@ -444,6 +449,9 @@ func (term *TerminalUI) initSoloMenu() *menu {
 		newMenuOption('Y', syncMenuHelper,
 			term.p4MenuEnabler(),
 			term.vcsPullMenuAction(), false),
+		newMenuOption('A', abortCommandMenuHelper,
+			term.abortCommandEnabler(),
+			term.abortCommandMenuAction(), false),
 		newMenuOption('Q', quitTCRMenuHelper,
 			term.quitRoleMenuEnabler(role.Driver{}),
 			term.quitRoleMenuAction(), true),
@@ -480,6 +488,9 @@ func (term *TerminalUI) initMobMenu() *menu {
 		newMenuOption('Y', syncMenuHelper,
 			term.p4MenuEnabler(),
 			term.vcsPullMenuAction(), false),
+		newMenuOption('A', abortCommandMenuHelper,
+			term.abortCommandEnabler(),
+			term.abortCommandMenuAction(), false),
 		newMenuOption('Q', quitMenuHelper,
 			term.quitRoleMenuEnabler(nil),
 			term.quitMenuAction(), true),
@@ -554,6 +565,12 @@ func (term *TerminalUI) vcsPushMenuAction() menuAction {
 	}
 }
 
+func (term *TerminalUI) abortCommandMenuAction() menuAction {
+	return func() {
+		term.abortCommand()
+	}
+}
+
 func (term *TerminalUI) optionsMenuAction(m *menu) menuAction {
 	return func() {
 		term.listMenuOptions(m, "Available Options:")
@@ -576,6 +593,14 @@ func (*TerminalUI) timerStatusMenuEnabler() menuEnabler {
 func (term *TerminalUI) timerStatusMenuAction() menuAction {
 	return func() {
 		term.showTimerStatus()
+	}
+}
+
+func (term *TerminalUI) abortCommandEnabler() menuEnabler {
+	return func() bool {
+		// For now we only enable this shortcut when in driver role.
+		// We may need to enable it more widely when we extend abort to VCS commands as well
+		return term.tcr.GetCurrentRole() == role.Driver{}
 	}
 }
 

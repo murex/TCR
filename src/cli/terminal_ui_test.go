@@ -219,6 +219,7 @@ func Test_list_role_menu_options(t *testing.T) {
 				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
 				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
 				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
+				asCyanTrace("\tA "+menuArrow+" "+abortCommandMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitTCRMenuHelper) +
 				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
@@ -231,6 +232,7 @@ func Test_list_role_menu_options(t *testing.T) {
 				asCyanTrace("\tP "+menuArrow+" "+gitAutoPushMenuHelper) +
 				asCyanTrace("\tL "+menuArrow+" "+pullMenuHelper) +
 				asCyanTrace("\tS "+menuArrow+" "+pushMenuHelper) +
+				asCyanTrace("\tA "+menuArrow+" "+abortCommandMenuHelper) +
 				asCyanTrace("\tQ "+menuArrow+" "+quitDriverRoleMenuHelper) +
 				asCyanTrace("\t? "+menuArrow+" "+optionsMenuHelper),
 		},
