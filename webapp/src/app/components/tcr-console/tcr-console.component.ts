@@ -13,13 +13,15 @@ import {
 } from "ansicolor";
 import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
 import {Observable, Subject} from "rxjs";
+import {TcrControlsComponent} from "../tcr-controls/tcr-controls.component";
 
 @Component({
   selector: 'app-tcr-console',
   standalone: true,
   imports: [
     TcrRolesComponent,
-    TcrTraceComponent
+    TcrTraceComponent,
+    TcrControlsComponent
   ],
   templateUrl: './tcr-console.component.html',
   styleUrl: './tcr-console.component.css'
