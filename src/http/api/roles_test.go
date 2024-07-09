@@ -129,7 +129,7 @@ func Test_roles_post_handler(t *testing.T) {
 	}{
 		{
 			role:   role.Navigator{}.Name(),
-			action: startAction,
+			action: startRoleAction,
 			expected: roleData{
 				Name:        role.Navigator{}.Name(),
 				Description: role.Navigator{}.LongName(),
@@ -138,7 +138,7 @@ func Test_roles_post_handler(t *testing.T) {
 		},
 		{
 			role:   role.Navigator{}.Name(),
-			action: stopAction,
+			action: stopRoleAction,
 			expected: roleData{
 				Name:        role.Navigator{}.Name(),
 				Description: role.Navigator{}.LongName(),
@@ -147,7 +147,7 @@ func Test_roles_post_handler(t *testing.T) {
 		},
 		{
 			role:   role.Driver{}.Name(),
-			action: startAction,
+			action: startRoleAction,
 			expected: roleData{
 				Name:        role.Driver{}.Name(),
 				Description: role.Driver{}.LongName(),
@@ -156,7 +156,7 @@ func Test_roles_post_handler(t *testing.T) {
 		},
 		{
 			role:   role.Driver{}.Name(),
-			action: stopAction,
+			action: stopRoleAction,
 			expected: roleData{
 				Name:        role.Driver{}.Name(),
 				Description: role.Driver{}.LongName(),
@@ -198,8 +198,8 @@ func Test_roles_post_handler_with_invalid_params(t *testing.T) {
 		role   string
 		action string
 	}{
-		{role: invalidRole, action: startAction},
-		{role: invalidRole, action: stopAction},
+		{role: invalidRole, action: startRoleAction},
+		{role: invalidRole, action: stopRoleAction},
 		{role: role.Navigator{}.Name(), action: invalidAction},
 		{role: role.Driver{}.Name(), action: invalidAction},
 	}
