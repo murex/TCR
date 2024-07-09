@@ -7,9 +7,11 @@
       <div class="col-lg-10 mbr-col-md-10">
         <div class="wrap">
           <div class="text-wrap vcenter">
-            <app-tcr-roles></app-tcr-roles>
+            <app-tcr-roles/>
             <br>
             <app-tcr-trace [text]="text.asObservable()" [clearTrace]="clearTrace.asObservable()"/>
+            <br>
+            <app-tcr-controls/>
           </div>
         </div>
       </div>

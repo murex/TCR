@@ -1,0 +1,56 @@
+
+.wrap {
+  display: flex;
+  border-radius: 0.3rem;
+  box-shadow: 7px 7px 30px -5px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.control-button {
+  background: white;
+}
+
+.control-button:hover {
+  background: indianred;
+  color: white;
+}
+
+.ico-wrap {
+  margin: auto;
+}
+
+.mbr-iconfont {
+  font-size: 4.5rem !important;
+  color: #313131;
+  margin: 1rem;
+  padding-right: 1rem;
+}
+
+.vcenter {
+  margin: auto;
+}
+
+h2 {
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.display-5 {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1.0rem;
+}
+
+.mbr-bold {
+  font-weight: 700;
+}
+
+p {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  line-height: 25px;
+}
+
+.display-6 {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1rem;
+}
