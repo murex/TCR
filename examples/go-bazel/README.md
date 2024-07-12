@@ -42,6 +42,7 @@ Here are the main shortcuts available once TCR utility is running:
 | `p` / `P` | Toggle on/off git auto-push                  |
 | `l` / `L` | Pull from remote                             |
 | `s` / `S` | Push to remote                               |
+| `a` / `A` | Abort current command (when in driver role)  |
 | `q` / `Q` | Quit current role / Quit TCR                 |
 | `?`       | List available options                       |
 
