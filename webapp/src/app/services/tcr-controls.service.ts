@@ -11,7 +11,7 @@ export class TcrControlsService {
   constructor(private http: HttpClient) {
   }
 
-  abortCommand(): Observable<Object> {
+  abortCommand(): Observable<unknown> {
     return this.sendControl(`abort-command`);
   }
 
@@ -24,7 +24,7 @@ export class TcrControlsService {
     };
 
     return this.http.post(url, httpOptions).pipe(
-      catchError(this.handleError<Object>(command)),
+      catchError(this.handleError<unknown>(command)),
     );
   }
 

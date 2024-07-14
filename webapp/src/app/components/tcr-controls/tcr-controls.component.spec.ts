@@ -5,7 +5,7 @@ import {TcrControlsService} from "../../services/tcr-controls.service";
 import {Observable, of} from "rxjs";
 
 class FakeTcrControlsService {
-  abortCommand(): Observable<Object> {
+  abortCommand(): Observable<unknown> {
     return of({});
   }
 }

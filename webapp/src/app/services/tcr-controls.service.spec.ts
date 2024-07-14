@@ -45,7 +45,7 @@ describe('TcrControlsService', () => {
     });
 
     it('should return undefined when receiving an error response', () => {
-      let actual: Object | undefined;
+      let actual: unknown | undefined;
       service.abortCommand().subscribe(other => {
         actual = other;
       });

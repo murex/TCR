@@ -21,7 +21,7 @@ export class TcrControlsComponent {
   }
 
   abortCommand() {
-    this.controlsService.abortCommand().subscribe(o => {
+    this.controlsService.abortCommand().subscribe(_ => {
       console.log(`Sent abort command request`);
     })
   }
