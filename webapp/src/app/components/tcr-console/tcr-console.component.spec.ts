@@ -9,6 +9,7 @@ import {
 import {Observable} from "rxjs";
 import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
 import {TcrMessageService} from "../../services/tcr-message.service";
+import {TcrControlsService} from "../../services/tcr-controls.service";
 import {
   bgDarkGray,
   cyan,
@@ -26,6 +27,9 @@ class FakeTcrMessageService {
   message$ = new Observable<TcrMessage>()
 }
 
+class FakeTcrControlsService {
+}
+
 describe('TcrConsoleComponent', () => {
   let component: TcrConsoleComponent;
   let fixture: ComponentFixture<TcrConsoleComponent>;
@@ -39,6 +43,7 @@ describe('TcrConsoleComponent', () => {
       ],
       providers: [
         {provide: TcrMessageService, useClass: FakeTcrMessageService},
+        {provide: TcrControlsService, useClass: FakeTcrControlsService},
       ],
     }).compileComponents();
   });
