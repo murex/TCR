@@ -19,7 +19,7 @@
   "private": true,
   "engines" : {
     "npm" : ">=10.8.1",
-    "node" : ">=21.0.0 <=22.4.0"
+    "node" : ">=21.0.0 <=22.4.1"
   },
   "dependencies": {
     "@angular/animations": "^17.0.0",
@@ -51,7 +51,7 @@
     "@angular-eslint/builder": "17.2.1",
     "@angular-eslint/eslint-plugin": "17.2.1",
     "@angular-eslint/eslint-plugin-template": "17.2.1",
-    "@angular-eslint/schematics": "17.2.1",
+    "@angular-eslint/schematics": "18.1.0",
     "@angular-eslint/template-parser": "17.2.1",
     "@angular/cli": "^17.0.6",
     "@angular/compiler-cli": "^17.0.0",
