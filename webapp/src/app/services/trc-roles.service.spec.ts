@@ -4,11 +4,12 @@ import {TcrRolesService} from './trc-roles.service';
 import {Subject} from "rxjs";
 import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {
-  HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController,
+  provideHttpClientTesting
 } from "@angular/common/http/testing";
 import {WebsocketService} from "./websocket.service";
 import {TcrRole} from "../interfaces/tcr-role";
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
@@ -21,10 +22,12 @@ describe('TcrRolesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         TcrRolesService,
         {provide: WebsocketService, useClass: FakeWebsocketService},
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     });
 

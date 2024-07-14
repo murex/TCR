@@ -1,7 +1,11 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting
+} from '@angular/common/http/testing';
 import {TcrBuildInfoService} from './tcr-build-info.service';
 import {TcrBuildInfo} from '../interfaces/tcr-build-info';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 describe('TcrBuildInfoService', () => {
   let service: TcrBuildInfoService;
@@ -9,8 +13,8 @@ describe('TcrBuildInfoService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TcrBuildInfoService]
+      imports: [],
+      providers: [TcrBuildInfoService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(TcrBuildInfoService);
@@ -61,7 +65,10 @@ describe('TcrBuildInfoService', () => {
 
       const req = httpMock.expectOne(`/api/build-info`);
       expect(req.request.method).toBe('GET');
-      req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server Error'});
+      req.flush({message: 'Some network error'}, {
+        status: 500,
+        statusText: 'Server Error'
+      });
       expect(actual).toBeUndefined();
     });
 

@@ -1,7 +1,11 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting
+} from '@angular/common/http/testing';
 import {TcrSessionInfoService} from './tcr-session-info.service';
 import {TcrSessionInfo} from '../interfaces/tcr-session-info';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 describe('TcrSessionInfoService', () => {
   let service: TcrSessionInfoService;
@@ -9,8 +13,8 @@ describe('TcrSessionInfoService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TcrSessionInfoService]
+      imports: [],
+      providers: [TcrSessionInfoService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(TcrSessionInfoService);
@@ -61,7 +65,10 @@ describe('TcrSessionInfoService', () => {
 
       const req = httpMock.expectOne(`/api/session-info`);
       expect(req.request.method).toBe('GET');
-      req.flush({message: 'Some network error'}, {status: 500, statusText: 'Server error'});
+      req.flush({message: 'Some network error'}, {
+        status: 500,
+        statusText: 'Server error'
+      });
       expect(actual).toBeUndefined();
     });
   });

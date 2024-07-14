@@ -2,8 +2,9 @@ import {Observable, of} from 'rxjs';
 import {TcrBuildInfoService} from '../../services/tcr-build-info.service';
 import {TcrAboutComponent} from "./tcr-about.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 const sample: TcrBuildInfo = {
   version: "1.0.0",
@@ -28,9 +29,11 @@ describe('TcrAboutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrAboutComponent, HttpClientTestingModule],
+      imports: [TcrAboutComponent],
       providers: [
-        {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService}
+        {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService},
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

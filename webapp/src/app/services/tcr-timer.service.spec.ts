@@ -1,6 +1,6 @@
 import {
-  HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController,
+  provideHttpClientTesting
 } from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 import {TcrTimerService} from './tcr-timer.service';
@@ -8,6 +8,7 @@ import {TcrTimer} from '../interfaces/tcr-timer';
 import {WebsocketService} from './websocket.service';
 import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
 import {Subject} from "rxjs";
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
@@ -20,10 +21,12 @@ describe('TcrTimerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         TcrTimerService,
         {provide: WebsocketService, useClass: FakeWebsocketService},
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     });
 
