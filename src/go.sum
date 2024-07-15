@@ -180,8 +180,8 @@ github.com/alexkohler/prealloc v1.0.0 h1:Hbq0/3fJPQhNkN0dR95AVrr6R7tou91y0uHG5pO
 github.com/alexkohler/prealloc v1.0.0/go.mod h1:VetnK3dIgFBBKmg0YnD9F9x6Icjd+9cvfHR56wJVlKE=
 github.com/alingse/asasalint v0.0.11 h1:SFwnQXJ49Kx/1GghOFz1XGqHYKp21Kq1nHad/0WQRnw=
 github.com/alingse/asasalint v0.0.11/go.mod h1:nCaoMhw7a9kSJObvQyVzNTPBDbNpdocqrSP7t/cW5+I=
-github.com/anchore/bubbly v0.0.0-20240712054857-be6f50e014a8 h1:IoO0nu+PZXsT+4pp6teIcJs7M7Ft9ln+Bd+oohMRuqA=
-github.com/anchore/bubbly v0.0.0-20240712054857-be6f50e014a8/go.mod h1:e0YTC4InlU1Iw7BPxQ7tbT/eJMFnqLg+RSZdgXuDFx4=
+github.com/anchore/bubbly v0.0.0-20240715051637-cb507fa65681 h1:JwWaS+T0yWhwDt9yAW4kA8P9BwD9tZYYvkcdwjjrmeE=
+github.com/anchore/bubbly v0.0.0-20240715051637-cb507fa65681/go.mod h1:AuJNgXh6Czb0goKaJTRZTowCvvsB5MprKpYp4DollKk=
 github.com/anchore/go-logger v0.0.0-20240217160628-ee28a485904f h1:qRQCz19ioRN2FtAct4j6Lb3Nl0VolFiuHtYMezGYBn0=
 github.com/anchore/go-logger v0.0.0-20240217160628-ee28a485904f/go.mod h1:ErB21zunlmQOE/aFPkt4Tv2Q00ttFxPZ2l87gSXxSec=
 github.com/anchore/go-macholibre v0.0.0-20240116161251-5df1434a0b50 h1:HqAfjHHdD6P+U6iVcJl1cGYOh5YNUIffZ12fZfwMWpw=
