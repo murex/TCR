@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package commit_messages //nolint:revive
+package commit
 
 import (
 	"github.com/murex/tcr/events"
@@ -72,7 +72,8 @@ func Test_simple_message_builder(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			builder := NewSimpleMessageBuilder(test.header, test.event, test.suffix)
-			assert.Equal(t, builder.GenerateMessage(), test.expected)
+			message, _ := builder.GenerateMessage()
+			assert.Equal(t, test.expected, message)
 		})
 	}
 }

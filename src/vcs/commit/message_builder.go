@@ -20,37 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package commit_messages //nolint:revive
+package commit
 
-import (
-	"github.com/murex/tcr/events"
-)
-
-// SimpleMessageBuilder provides implementation for a simple commit message builder. This
-// is the default message builder used by TCR.
-type SimpleMessageBuilder struct {
-	header string
-	event  *events.TCREvent
-	suffix string
-}
-
-// NewSimpleMessageBuilder creates a new SimpleMessageBuilder instance
-func NewSimpleMessageBuilder(header string, event *events.TCREvent, suffix string) *SimpleMessageBuilder {
-	return &SimpleMessageBuilder{
-		header: header,
-		event:  event,
-		suffix: suffix,
-	}
-}
-
-// GenerateMessage generates a commit message based on event information
-func (smb *SimpleMessageBuilder) GenerateMessage() []string {
-	messages := []string{smb.header}
-	if smb.event != nil {
-		messages = append(messages, smb.event.ToYAML())
-	}
-	if smb.suffix != "" {
-		messages = append(messages, "\n"+smb.suffix)
-	}
-	return messages
+// MessageBuilder defines the interface that a commit message builder must implement
+type MessageBuilder interface {
+	GenerateMessage() ([]string, error)
 }
