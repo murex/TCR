@@ -40,6 +40,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
+	"github.com/murex/tcr/vcs/commit_messages"
 	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
 	"os"
@@ -300,14 +301,8 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 }
 
 func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
-	messages := []string{statusMessage}
-	if event != nil {
-		messages = append(messages, event.ToYAML())
-	}
-	if tcr.messageSuffix != "" {
-		messages = append(messages, "\n"+tcr.messageSuffix)
-	}
-	return messages
+	builder := commit_messages.NewSimpleMessageBuilder(statusMessage, event, tcr.messageSuffix)
+	return builder.GenerateMessage()
 }
 
 func (tcr *TCREngine) initVCS(vcsName string, trace string) {
