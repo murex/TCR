@@ -303,9 +303,14 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
 	msgBuilder := commit.NewMessageBuilder(statusMessage, event, tcr.messageSuffix)
 	msg, err := msgBuilder.GenerateMessage()
-	// Current error potential cause: unsuccessful call to external message builder (command not found or failing)
-	// We handle it as a fatal for now. May refine it later once we have a clearer picture
-	tcr.handleError(err, true, status.OtherError)
+	if err != nil {
+		// if external builder fails, we fallback to the default builder
+		tcr.handleError(err, false, status.OtherError)
+		report.PostWarning("Failed to run external commit message generator")
+		report.PostWarning("Using built-in TCR commit message format instead")
+		defaultBuilder := commit.NewSimpleMessageBuilder(statusMessage, event, tcr.messageSuffix)
+		msg, _ = defaultBuilder.GenerateMessage()
+	}
 	return msg
 }
 

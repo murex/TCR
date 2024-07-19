@@ -25,6 +25,7 @@ package commit
 import (
 	"bufio"
 	"bytes"
+	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs/shell"
 )
 
@@ -47,6 +48,7 @@ func NewExternalMessageBuilder(commandPath string, commandArgs ...string) *Exter
 // GenerateMessage generates a commit message
 func (emb *ExternalMessageBuilder) GenerateMessage() (message []string, err error) {
 	cmd := shell.NewCommand(emb.commandPath, emb.commandArgs...)
+	report.PostInfo("Message generator: ", cmd.String())
 	output, err := cmd.Run()
 	if err != nil || output == nil || len(bytes.Trim(output, "\r\n")) == 0 {
 		return []string{}, err
