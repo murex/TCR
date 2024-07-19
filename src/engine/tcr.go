@@ -40,7 +40,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
-	"github.com/murex/tcr/vcs/commit_messages"
+	"github.com/murex/tcr/vcs/commit"
 	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
 	"os"
@@ -301,8 +301,12 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 }
 
 func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
-	builder := commit_messages.NewSimpleMessageBuilder(statusMessage, event, tcr.messageSuffix)
-	return builder.GenerateMessage()
+	msgBuilder := commit.NewMessageBuilder(statusMessage, event, tcr.messageSuffix)
+	msg, err := msgBuilder.GenerateMessage()
+	// Current error potential cause: unsuccessful call to external message builder (command not found or failing)
+	// We handle it as a fatal for now. May refine it later once we have a clearer picture
+	tcr.handleError(err, true, status.OtherError)
+	return msg
 }
 
 func (tcr *TCREngine) initVCS(vcsName string, trace string) {
