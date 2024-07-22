@@ -86,6 +86,7 @@ provided as built-in.
 | php        | phpunit           | phpunit                                               |
 | python     | pytest            | pytest bazel make                                     |
 | rust       | cargo             | cargo nextest                                         |
+| scala      | sbt               | sbt                                                   |
 | typescript | yarn              | yarn bazel make                                       |
 
 ### Base directory
