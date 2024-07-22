@@ -1,0 +1,9 @@
+toolchains:
+  default: stack
+  compatible-with: [ stack ]
+source-files:
+  directories: [ src ]
+  patterns: [ '(?i)^.*\.hs$' ]
+test-files:
+  directories: [ test ]
+  patterns: [ '(?i)^.*\.hs$' ]
