@@ -55,7 +55,7 @@ func AssertSimpleTrace(t *testing.T, expected []string, operation func()) {
 
 // SkipOnWindowsCI allows to prevent running a test when on Windows CI when called at the beginning of the test
 func SkipOnWindowsCI(t *testing.T) {
-	if os.Getenv("GITHUB_ACTIONS") == "true" && runtime.GOOS == "windows" {
+	if runtime.GOOS == "windows" && os.Getenv("GITHUB_ACTIONS") == "true" {
 		t.Skip("test skipped on windows CI")
 	}
 }
