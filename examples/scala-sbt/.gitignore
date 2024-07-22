@@ -1,0 +1,9 @@
+.metals/
+.bloop/
+.bsp/
+project/
+target/
+.scalafmt.conf
+*.class
+*.tasty
+

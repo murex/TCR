@@ -57,6 +57,10 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [cargo](rust-cargo/README.md)
 - With [nextest](rust-nextest/README.md)
 
+## Scala
+
+- With [sbt](scala-sbt/README.md)
+
 ## TypeScript
 
 - With [yarn](typescript-yarn/README.md)
