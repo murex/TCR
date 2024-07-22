@@ -1,0 +1,11 @@
+build:
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
+    command: stack
+    arguments: [ build ]
+test:
+  - os: [ darwin, linux, windows ]
+    arch: [ "386", amd64, arm64 ]
+    command: stack
+    arguments: [ test, --color, always, --test-arguments=--format=progress ]
+test-result-dir: .stack-work/report

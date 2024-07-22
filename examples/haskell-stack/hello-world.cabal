@@ -1,0 +1,34 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           hello-world
+version:        1.0.0.0
+build-type:     Simple
+
+library
+  exposed-modules:
+      HelloWorld
+  other-modules:
+      Paths_hello_world
+  hs-source-dirs:
+      src
+  ghc-options: -Wall
+  build-depends:
+      base
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Tests.hs
+  other-modules:
+      Paths_hello_world
+  hs-source-dirs:
+      test
+  build-depends:
+      base
+    , hello-world
+    , hspec
+  default-language: Haskell2010

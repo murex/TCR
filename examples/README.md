@@ -22,6 +22,10 @@ Here are some simple examples for using TCR with various languages & toolchains 
 - With [make](go-make/README.md)
 - With [bazel](go-bazel/README.md)
 
+## Haskell
+
+- With [stack](haskell-stack/README.md)
+
 ## Java
 
 - With [gradle](java-gradle/README.md)
