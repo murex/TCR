@@ -80,6 +80,7 @@ provided as built-in.
 | csharp     | dotnet            | dotnet bazel make                                     |
 | elixir     | mix               | mix                                                   |
 | go         | go-tools          | go-tools gotestsum bazel make                         |
+| haskell    | stack             | stack                                                 |
 | java       | gradle-wrapper    | gradle gradle-wrapper maven maven-wrapper bazel make  |
 | javascript | yarn              | yarn bazel make                                       |
 | kotlin     | gradle-wrapper    | gradle gradle-wrapper maven, maven-wrapper bazel make |
