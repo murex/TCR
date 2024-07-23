@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"runtime"
@@ -187,8 +188,8 @@ func Test_check_toolchain_platform(t *testing.T) {
 			"with toolchain", toolchain.AToolchain(),
 			[]model.CheckPoint{
 				model.OkCheckPoint("local platform is ",
-					toolchain.OsName(runtime.GOOS), "/",
-					toolchain.ArchName(runtime.GOARCH)),
+					command.OsName(runtime.GOOS), "/",
+					command.ArchName(runtime.GOARCH)),
 			},
 		},
 	}

@@ -25,8 +25,10 @@ package toolchain
 import (
 	"errors"
 	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/xunit"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -39,25 +41,25 @@ type (
 	// matching the current OS and configuration will be the one to be called.
 	Toolchain struct {
 		name          string
-		buildCommands []Command
-		testCommands  []Command
+		buildCommands []command.Command
+		testCommands  []command.Command
 		testResultDir string
 	}
 
-	// TestCommandResult is a CommandResult enriched with test Stats
+	// TestCommandResult is a Result enriched with test Stats
 	TestCommandResult struct {
-		CommandResult
+		command.Result
 		Stats TestStats
 	}
 
 	// TchnInterface provides the interface for interacting with a toolchain
 	TchnInterface interface {
 		GetName() string
-		GetBuildCommands() []Command
-		GetTestCommands() []Command
+		GetBuildCommands() []command.Command
+		GetTestCommands() []command.Command
 		GetTestResultDir() string
 		GetTestResultPath() string
-		RunBuild() CommandResult
+		RunBuild() command.Result
 		RunTests() TestCommandResult
 		checkName() error
 		BuildCommandLine() string
@@ -68,7 +70,7 @@ type (
 		TestCommandPath() string
 		TestCommandArgs() []string
 		checkTestCommand() error
-		runsOnPlatform(osName OsName, archName ArchName) bool
+		runsOnPlatform(osName command.OsName, archName command.ArchName) bool
 		CheckCommandAccess(cmdPath string) (string, error)
 		AbortExecution() bool
 	}
@@ -104,7 +106,7 @@ func GetWorkDir() string {
 }
 
 // New creates a new Toolchain instance with the provided name, buildCommands and testCommands
-func New(name string, buildCommands, testCommands []Command, testResultDir string) *Toolchain {
+func New(name string, buildCommands, testCommands []command.Command, testResultDir string) *Toolchain {
 	return &Toolchain{
 		name:          name,
 		buildCommands: buildCommands,
@@ -140,74 +142,74 @@ func (tchn Toolchain) GetName() string {
 }
 
 // GetBuildCommands returns the toolchain's build commands
-func (tchn Toolchain) GetBuildCommands() []Command {
+func (tchn Toolchain) GetBuildCommands() []command.Command {
 	return tchn.buildCommands
 }
 
 // GetTestCommands returns the toolchain's test commands
-func (tchn Toolchain) GetTestCommands() []Command {
+func (tchn Toolchain) GetTestCommands() []command.Command {
 	return tchn.testCommands
 }
 
 // RunBuild runs the build with this toolchain
-func (tchn Toolchain) RunBuild() CommandResult {
-	cmd := findCompatibleCommand(tchn.buildCommands)
-	return commandRunner.Run(cmd)
+func (tchn Toolchain) RunBuild() command.Result {
+	cmd := command.FindCompatibleCommand(tchn.buildCommands)
+	return command.GetRunner().Run(GetWorkDir(), cmd)
 }
 
 // RunTests runs the tests with this toolchain
 func (tchn Toolchain) RunTests() TestCommandResult {
-	cmd := findCompatibleCommand(tchn.testCommands)
-	result := commandRunner.Run(cmd)
+	cmd := command.FindCompatibleCommand(tchn.testCommands)
+	result := command.GetRunner().Run(GetWorkDir(), cmd)
 	testStats, _ := tchn.parseTestReport()
 	return TestCommandResult{result, testStats}
 }
 
 // AbortExecution asks the toolchain to abort any command currently executing
 func (Toolchain) AbortExecution() bool {
-	return commandRunner.AbortRunningCommand()
+	return command.GetRunner().AbortRunningCommand()
 }
 
 // BuildCommandPath returns the build command path for this toolchain
 func (tchn Toolchain) BuildCommandPath() string {
-	return findCompatibleCommand(tchn.buildCommands).Path
+	return command.FindCompatibleCommand(tchn.buildCommands).Path
 }
 
 // BuildCommandArgs returns a table with the list of build command arguments for this toolchain
 func (tchn Toolchain) BuildCommandArgs() []string {
-	return findCompatibleCommand(tchn.buildCommands).Arguments
+	return command.FindCompatibleCommand(tchn.buildCommands).Arguments
 }
 
 // BuildCommandLine returns the toolchain's build command line as a string
 func (tchn Toolchain) BuildCommandLine() string {
-	return findCompatibleCommand(tchn.buildCommands).asCommandLine()
+	return command.FindCompatibleCommand(tchn.buildCommands).AsCommandLine()
 }
 
 // TestCommandPath returns the test command path for this toolchain
 func (tchn Toolchain) TestCommandPath() string {
-	return findCompatibleCommand(tchn.testCommands).Path
+	return command.FindCompatibleCommand(tchn.testCommands).Path
 }
 
 // TestCommandArgs returns a table with the list of test command arguments for this toolchain
 func (tchn Toolchain) TestCommandArgs() []string {
-	return findCompatibleCommand(tchn.testCommands).Arguments
+	return command.FindCompatibleCommand(tchn.testCommands).Arguments
 }
 
 // TestCommandLine returns the toolchain's test command line as a string
 func (tchn Toolchain) TestCommandLine() string {
-	return findCompatibleCommand(tchn.testCommands).asCommandLine()
+	return command.FindCompatibleCommand(tchn.testCommands).AsCommandLine()
 }
 
-func (tchn Toolchain) runsOnPlatform(osName OsName, archName ArchName) bool {
+func (tchn Toolchain) runsOnPlatform(osName command.OsName, archName command.ArchName) bool {
 	return tchn.findBuildCommandFor(osName, archName) != nil && tchn.findTestCommandFor(osName, archName) != nil
 }
 
-func (tchn Toolchain) findBuildCommandFor(osName OsName, archName ArchName) *Command {
-	return findCommand(tchn.buildCommands, osName, archName)
+func (tchn Toolchain) findBuildCommandFor(osName command.OsName, archName command.ArchName) *command.Command {
+	return command.FindCommand(tchn.buildCommands, osName, archName)
 }
 
-func (tchn Toolchain) findTestCommandFor(osName OsName, archName ArchName) *Command {
-	return findCommand(tchn.testCommands, osName, archName)
+func (tchn Toolchain) findTestCommandFor(osName command.OsName, archName command.ArchName) *command.Command {
+	return command.FindCommand(tchn.testCommands, osName, archName)
 }
 
 // CheckCommandAccess verifies if the provided command path can be accessed. Returns the path as
@@ -241,4 +243,27 @@ func (tchn Toolchain) GetTestResultPath() string {
 // GetTestResultDir returns the directory where to retrieve test results (in xUnit format)
 func (tchn Toolchain) GetTestResultDir() string {
 	return tchn.testResultDir
+}
+
+func adjustCommandPath(cmdPath string) string {
+	// If this is an absolute path, we return it after cleaning it up
+	if filepath.IsAbs(cmdPath) {
+		return filepath.Clean(cmdPath)
+	}
+	// If not, we check if it can be a relative path from the work directory.
+	// If the file is found, we return it
+	pathFromWorkDir := filepath.Join(GetWorkDir(), cmdPath)
+	info, err := os.Stat(pathFromWorkDir)
+	if err == nil && !info.IsDir() {
+		return pathFromWorkDir
+	}
+	// As a last resort, we assume it's available in the $PATH
+	return filepath.Clean(cmdPath)
+}
+
+func checkCommandPath(cmdPath string) (string, error) {
+	if cmdPath == "" {
+		return "", errors.New("command path is empty")
+	}
+	return exec.LookPath(adjustCommandPath(cmdPath))
 }

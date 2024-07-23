@@ -38,6 +38,7 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
@@ -553,7 +554,7 @@ func (tcr *TCREngine) createTCREvent(testResult toolchain.TestCommandResult) (ev
 	)
 }
 
-func (tcr *TCREngine) build() (result toolchain.CommandResult) {
+func (tcr *TCREngine) build() (result command.Result) {
 	report.PostInfo("Launching Build")
 	result = tcr.toolchain.RunBuild()
 	if result.Failed() {

@@ -25,6 +25,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -80,7 +81,7 @@ func assertErrorWhenBuildFails(t *testing.T, toolchainName string, workDir strin
 	toolchain, _ := Get(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusFail)
+			assert.Equal(t, toolchain.RunBuild().Status, command.StatusFail)
 		})
 }
 
@@ -89,7 +90,7 @@ func assertNoErrorWhenBuildPasses(t *testing.T, toolchainName string, workDir st
 	toolchain, _ := Get(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.Equal(t, toolchain.RunBuild().Status, CommandStatusPass)
+			assert.Equal(t, toolchain.RunBuild().Status, command.StatusPass)
 		})
 }
 
@@ -98,7 +99,7 @@ func assertErrorWhenTestFails(t *testing.T, toolchainName string, workDir string
 	toolchain, _ := Get(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.Equal(t, toolchain.RunTests().Status, CommandStatusFail)
+			assert.Equal(t, toolchain.RunTests().Status, command.StatusFail)
 		})
 }
 
@@ -107,7 +108,7 @@ func assertNoErrorWhenTestPasses(t *testing.T, toolchainName string, workDir str
 	toolchain, _ := Get(toolchainName)
 	runFromDir(t, workDir,
 		func(t *testing.T) {
-			assert.Equal(t, toolchain.RunTests().Status, CommandStatusPass)
+			assert.Equal(t, toolchain.RunTests().Status, command.StatusPass)
 		})
 }
 
@@ -131,15 +132,15 @@ func runFromDir(t *testing.T, workDir string, testFunction func(t *testing.T)) {
 func assertRunsOnAllOsWithAmd64(t *testing.T, name string) {
 	// We don't check all platforms, just verifying that at least all OS's with amd64 are supported
 	t.Helper()
-	for _, osName := range GetAllOsNames() {
+	for _, osName := range command.GetAllOsNames() {
 		t.Run(string(osName), func(t *testing.T) {
-			assertRunsOnPlatform(t, name, osName, ArchAmd64)
+			assertRunsOnPlatform(t, name, osName, command.ArchAmd64)
 		})
 	}
 }
 
-func assertRunsOnPlatform(t *testing.T, toolchainName string, osName OsName, archName ArchName) {
+func assertRunsOnPlatform(t *testing.T, name string, osName command.OsName, archName command.ArchName) {
 	t.Helper()
-	toolchain, _ := Get(toolchainName)
+	toolchain, _ := Get(name)
 	assert.True(t, toolchain.runsOnPlatform(osName, archName))
 }

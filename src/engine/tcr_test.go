@@ -33,6 +33,7 @@ import (
 	"github.com/murex/tcr/settings"
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/ui"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
@@ -47,43 +48,43 @@ import (
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
-		command           func() toolchain.CommandResult
-		expectedCmdStatus toolchain.CommandStatus
+		command           func() command.Result
+		expectedCmdStatus command.Status
 		expectedAppStatus status.Status
 	}{
 		{
 			"build with no failure",
-			func() toolchain.CommandResult {
+			func() command.Result {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
 				return tcr.build()
 			},
-			toolchain.CommandStatusPass, status.Ok,
+			command.StatusPass, status.Ok,
 		},
 		{
 			"build with failure",
-			func() toolchain.CommandResult {
+			func() command.Result {
 				tcr, _ := initTCREngineWithFakes(nil, toolchain.Operations{toolchain.BuildOperation}, nil, nil)
 				return tcr.build()
 			},
-			toolchain.CommandStatusFail, status.BuildFailed,
+			command.StatusFail, status.BuildFailed,
 		},
 		{
 			"test with no failure",
-			func() toolchain.CommandResult {
+			func() command.Result {
 				tcr, _ := initTCREngineWithFakes(nil, nil, nil, nil)
 				result := tcr.test()
-				return result.CommandResult
+				return result.Result
 			},
-			toolchain.CommandStatusPass, status.Ok,
+			command.StatusPass, status.Ok,
 		},
 		{
 			"test with failure",
-			func() toolchain.CommandResult {
+			func() command.Result {
 				tcr, _ := initTCREngineWithFakes(nil, toolchain.Operations{toolchain.TestOperation}, nil, nil)
 				result := tcr.test()
-				return result.CommandResult
+				return result.Result
 			},
-			toolchain.CommandStatusFail, status.TestFailed,
+			command.StatusFail, status.TestFailed,
 		},
 	}
 

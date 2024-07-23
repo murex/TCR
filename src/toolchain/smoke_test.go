@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/utils"
 	"testing"
 )
@@ -41,9 +42,9 @@ func Test_toolchain_returns_error_when_build_command_fails(t *testing.T) {
 	// Add a built-in toolchain from a valid one, but with invalid build command arguments.
 	// This allows to actually run the build command and get an execution error out of it
 	failingName := tchn.GetName() + "-failing-build"
-	var failingCommands []Command
+	var failingCommands []command.Command
 	for _, cmd := range tchn.GetBuildCommands() {
-		failingCommands = append(failingCommands, Command{
+		failingCommands = append(failingCommands, command.Command{
 			Os:        cmd.Os,
 			Arch:      cmd.Arch,
 			Path:      cmd.Path,
@@ -69,9 +70,9 @@ func Test_toolchain_returns_error_when_test_command_fails(t *testing.T) {
 	// This allows to actually run the test command and get an execution error out of it
 	tchn, _ := Get(toolchainName)
 	failingName := tchn.GetName() + "-failing-test"
-	var failingCommands []Command
+	var failingCommands []command.Command
 	for _, cmd := range tchn.GetTestCommands() {
-		failingCommands = append(failingCommands, Command{
+		failingCommands = append(failingCommands, command.Command{
 			Os:        cmd.Os,
 			Arch:      cmd.Arch,
 			Path:      cmd.Path,

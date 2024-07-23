@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package command
 
 // ACommand is a test data builder for type Command
 func ACommand(commandBuilders ...func(command *Command)) *Command {

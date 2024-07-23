@@ -24,6 +24,7 @@ package toolchain
 
 import (
 	"errors"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -104,7 +105,7 @@ func Test_update_then_reset_a_built_in_toolchain(t *testing.T) {
 
 	// 2 - Register a new toolchain with the same name
 	updated := AToolchain(WithName("built-in"),
-		WithBuildCommand(ACommand(WithPath("other-path"))))
+		WithBuildCommand(command.ACommand(command.WithPath("other-path"))))
 	assert.NoError(t, Register(updated))
 	t2, err2 := Get("built-in")
 	assert.Equal(t, updated, t2)

@@ -24,9 +24,14 @@ SOFTWARE.
 
 package toolchain
 
+import "github.com/murex/tcr/toolchain/command"
+
 // AToolchain is a test data builder for type Toolchain
 func AToolchain(toolchainBuilders ...func(tchn *Toolchain)) *Toolchain {
-	tchn := New("default-toolchain", []Command{*ACommand()}, []Command{*ACommand()}, "")
+	tchn := New("default-toolchain",
+		[]command.Command{*command.ACommand()},
+		[]command.Command{*command.ACommand()},
+		"")
 
 	for _, build := range toolchainBuilders {
 		build(tchn)
@@ -45,7 +50,7 @@ func WithNoBuildCommand() func(tchn *Toolchain) {
 }
 
 // WithBuildCommand adds the provided command as a build command
-func WithBuildCommand(command *Command) func(tchn *Toolchain) {
+func WithBuildCommand(command *command.Command) func(tchn *Toolchain) {
 	return func(tchn *Toolchain) {
 		tchn.buildCommands = append(tchn.buildCommands, *command)
 	}
@@ -57,7 +62,7 @@ func WithNoTestCommand() func(tchn *Toolchain) {
 }
 
 // WithTestCommand adds the provided command as a test command
-func WithTestCommand(command *Command) func(tchn *Toolchain) {
+func WithTestCommand(command *command.Command) func(tchn *Toolchain) {
 	return func(tchn *Toolchain) {
 		tchn.testCommands = append(tchn.testCommands, *command)
 	}

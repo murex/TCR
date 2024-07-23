@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/utils"
 	"os"
 	"path/filepath"
@@ -112,16 +113,16 @@ func asToolchain(toolchainCfg configYAML) *Toolchain {
 	)
 }
 
-func asCommandTable(commandsCfg []commandConfigYAML) []Command {
-	var res []Command
+func asCommandTable(commandsCfg []commandConfigYAML) []command.Command {
+	var res []command.Command
 	for _, commandCfg := range commandsCfg {
 		res = append(res, asCommand(commandCfg))
 	}
 	return res
 }
 
-func asCommand(commandCfg commandConfigYAML) Command {
-	return Command{
+func asCommand(commandCfg commandConfigYAML) command.Command {
+	return command.Command{
 		Os:        asOsTable(commandCfg.Os),
 		Arch:      asArchTable(commandCfg.Arch),
 		Path:      commandCfg.Command,
@@ -129,18 +130,18 @@ func asCommand(commandCfg commandConfigYAML) Command {
 	}
 }
 
-func asOsTable(names []string) []OsName {
-	var res []OsName
+func asOsTable(names []string) []command.OsName {
+	var res []command.OsName
 	for _, name := range names {
-		res = append(res, OsName(name))
+		res = append(res, command.OsName(name))
 	}
 	return res
 }
 
-func asArchTable(names []string) []ArchName {
-	var res []ArchName
+func asArchTable(names []string) []command.ArchName {
+	var res []command.ArchName
 	for _, name := range names {
-		res = append(res, ArchName(name))
+		res = append(res, command.ArchName(name))
 	}
 	return res
 }
@@ -164,24 +165,24 @@ func asConfig(tchn TchnInterface) configYAML {
 	}
 }
 
-func asCommandConfigTable(commands []Command) []commandConfigYAML {
+func asCommandConfigTable(commands []command.Command) []commandConfigYAML {
 	var res []commandConfigYAML
-	for _, command := range commands {
-		res = append(res, asCommandConfig(command))
+	for _, c := range commands {
+		res = append(res, asCommandConfig(c))
 	}
 	return res
 }
 
-func asCommandConfig(command Command) commandConfigYAML {
+func asCommandConfig(cmd command.Command) commandConfigYAML {
 	return commandConfigYAML{
-		Os:        asOsTableConfig(command.Os),
-		Arch:      asArchTableConfig(command.Arch),
-		Command:   command.Path,
-		Arguments: command.Arguments,
+		Os:        asOsTableConfig(cmd.Os),
+		Arch:      asArchTableConfig(cmd.Arch),
+		Command:   cmd.Path,
+		Arguments: cmd.Arguments,
 	}
 }
 
-func asOsTableConfig(osNames []OsName) []string {
+func asOsTableConfig(osNames []command.OsName) []string {
 	var res []string
 	for _, osName := range osNames {
 		res = append(res, string(osName))
@@ -189,7 +190,7 @@ func asOsTableConfig(osNames []OsName) []string {
 	return res
 }
 
-func asArchTableConfig(archNames []ArchName) []string {
+func asArchTableConfig(archNames []command.ArchName) []string {
 	var res []string
 	for _, archName := range archNames {
 		res = append(res, string(archName))

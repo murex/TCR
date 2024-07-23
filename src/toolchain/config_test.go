@@ -24,6 +24,7 @@ package toolchain
 
 import (
 	"fmt"
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/utils"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -39,28 +40,28 @@ func Test_convert_toolchain_name_to_config(t *testing.T) {
 }
 
 func Test_convert_toolchain_command_os_name_to_config(t *testing.T) {
-	cmd := ACommand()
+	cmd := command.ACommand()
 	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Os), fmt.Sprint(cfg.Os))
 	assert.Equal(t, fmt.Sprint(cfg.Os), fmt.Sprint(asCommand(cfg).Os))
 }
 
 func Test_convert_toolchain_command_arch_name_to_config(t *testing.T) {
-	cmd := ACommand()
+	cmd := command.ACommand()
 	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Arch), fmt.Sprint(cfg.Arch))
 	assert.Equal(t, fmt.Sprint(cfg.Arch), fmt.Sprint(asCommand(cfg).Arch))
 }
 
 func Test_convert_toolchain_command_path_to_config(t *testing.T) {
-	cmd := ACommand(WithPath("some-command-path"))
+	cmd := command.ACommand(command.WithPath("some-command-path"))
 	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, cmd.Path, cfg.Command)
 	assert.Equal(t, cfg.Command, asCommand(cfg).Path)
 }
 
 func Test_convert_toolchain_command_arguments_to_config(t *testing.T) {
-	cmd := ACommand(WithArgs([]string{"arg1", "arg2"}))
+	cmd := command.ACommand(command.WithArgs([]string{"arg1", "arg2"}))
 	cfg := asCommandConfig(*cmd)
 	assert.Equal(t, fmt.Sprint(cmd.Arguments), fmt.Sprint(cfg.Arguments))
 	assert.Equal(t, fmt.Sprint(cfg.Arguments), fmt.Sprint(asCommand(cfg).Arguments))

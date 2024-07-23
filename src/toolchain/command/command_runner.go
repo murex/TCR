@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package command
 
 import (
 	"bufio"
@@ -31,65 +31,67 @@ import (
 )
 
 type (
-	// CommandRunner is in charge of managing the lifecycle of a command
-	CommandRunner struct {
+	// Runner is in charge of managing the lifecycle of a command
+	Runner struct {
 		command *exec.Cmd
 		// commandMutex is here to enforce that commands run in sequence
 		commandMutex sync.Mutex
 	}
 
-	// CommandStatus is the result status of a Command execution
-	CommandStatus string
+	// Status is the result status of a Command execution
+	Status string
 
-	// CommandResult contains the result from running a Command
-	// - Status
-	CommandResult struct {
-		Status CommandStatus
+	// Result contains the result from running a Command
+	Result struct {
+		Status Status
 		Output string
 	}
 )
 
 // Failed indicates is a Command failed
-func (r CommandResult) Failed() bool {
-	return r.Status == CommandStatusFail
+func (r Result) Failed() bool {
+	return r.Status == StatusFail
 }
 
 // Passed indicates is a Command passed
-func (r CommandResult) Passed() bool {
-	return r.Status == CommandStatusPass
+func (r Result) Passed() bool {
+	return r.Status == StatusPass
 }
 
-// List of possible values for CommandStatus
+// List of possible values for Status
 const (
-	CommandStatusPass    CommandStatus = "pass"
-	CommandStatusFail    CommandStatus = "fail"
-	CommandStatusUnknown CommandStatus = "unknown"
+	StatusPass    Status = "pass"
+	StatusFail    Status = "fail"
+	StatusUnknown Status = "unknown"
 )
 
-// commandRunner singleton instance
-var commandRunner = &CommandRunner{
+// runner singleton instance
+var runner = &Runner{
 	command: nil,
 }
 
-func getCommandRunner() *CommandRunner {
-	return commandRunner
+// GetRunner returns the command runner singleton instance
+func GetRunner() *Runner {
+	return runner
 }
 
 // Run launches the execution of the provided command
-func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
-	commandRunner.commandMutex.Lock()
-	result = CommandResult{Status: CommandStatusUnknown, Output: ""}
-	report.PostText(cmd.asCommandLine())
+func (r *Runner) Run(fromDir string, cmd *Command) (result Result) {
+	runner.commandMutex.Lock()
+	result = Result{Status: StatusUnknown, Output: ""}
+	report.PostText(cmd.AsCommandLine())
 
 	// Prepare the command
 	r.command = exec.Command(cmd.Path, cmd.Arguments...) //nolint:gosec
-	r.command.Dir = GetWorkDir()
+	if fromDir != "" {
+		r.command.Dir = fromDir
+	}
 
 	// Allow simultaneous trace and capture of command's stdout and stderr
 	outReader, _ := r.command.StdoutPipe()
 	errReader, _ := r.command.StderrPipe()
-	r.reportCommandTrace(outReader)
-	r.reportCommandTrace(errReader)
+	r.reportTrace(outReader)
+	r.reportTrace(errReader)
 
 	// Start the command asynchronously
 	errStart := r.command.Start()
@@ -100,26 +102,26 @@ func (r *CommandRunner) Run(cmd *Command) (result CommandResult) {
 		// we could not differentiate between failure to launch and failure from execution.
 		// We could later on use a different return value in this situation,
 		// but we need to ensure first that TCR engine can handle it correctly.
-		result.Status = CommandStatusFail
+		result.Status = StatusFail
 		r.command = nil
-		commandRunner.commandMutex.Unlock()
+		runner.commandMutex.Unlock()
 		return result
 	}
 
 	// Wait for the command to finish
 	errWait := r.command.Wait()
 	if errWait != nil {
-		result.Status = CommandStatusFail
+		result.Status = StatusFail
 	} else {
-		result.Status = CommandStatusPass
+		result.Status = StatusPass
 	}
 
 	r.command = nil
-	commandRunner.commandMutex.Unlock()
+	runner.commandMutex.Unlock()
 	return result
 }
 
-func (*CommandRunner) reportCommandTrace(readCloser io.ReadCloser) {
+func (*Runner) reportTrace(readCloser io.ReadCloser) {
 	scanner := bufio.NewScanner(readCloser)
 	go func() {
 		for scanner.Scan() {
@@ -129,7 +131,7 @@ func (*CommandRunner) reportCommandTrace(readCloser io.ReadCloser) {
 }
 
 // AbortRunningCommand triggers aborting of any command that is currently running
-func (r *CommandRunner) AbortRunningCommand() bool {
+func (r *Runner) AbortRunningCommand() bool {
 	if r.command == nil || r.command.Process == nil {
 		report.PostWarning("There is no command running at this time")
 		return false

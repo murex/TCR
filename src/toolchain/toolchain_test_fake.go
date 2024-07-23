@@ -24,6 +24,8 @@ SOFTWARE.
 
 package toolchain
 
+import "github.com/murex/tcr/toolchain/command"
+
 type commandFunc func() string
 type checkCommandFunc func() (string, error)
 
@@ -146,7 +148,7 @@ func (*FakeToolchain) checkTestCommand() error {
 
 // RunBuild returns an error if build is part of failingOperations, nil otherwise.
 // This method does not call any real command
-func (ft *FakeToolchain) RunBuild() CommandResult {
+func (ft *FakeToolchain) RunBuild() command.Result {
 	return ft.fakeOperation(BuildOperation)
 }
 
@@ -156,11 +158,17 @@ func (ft *FakeToolchain) RunTests() TestCommandResult {
 	return TestCommandResult{ft.fakeOperation(TestOperation), ft.testStats}
 }
 
-func (ft *FakeToolchain) fakeOperation(operation Operation) (result CommandResult) {
+func (ft *FakeToolchain) fakeOperation(operation Operation) (result command.Result) {
 	if ft.failingOperations.contains(operation) {
-		result = CommandResult{Status: CommandStatusFail, Output: "toolchain " + string(operation) + " fake error"}
+		result = command.Result{
+			Status: command.StatusFail,
+			Output: "toolchain " + string(operation) + " fake error",
+		}
 	} else {
-		result = CommandResult{Status: CommandStatusPass, Output: ""}
+		result = command.Result{
+			Status: command.StatusPass,
+			Output: "",
+		}
 	}
 	return
 }

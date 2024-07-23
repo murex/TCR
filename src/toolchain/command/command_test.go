@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package command
 
 import (
 	"fmt"
@@ -105,7 +105,7 @@ func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 
 	for _, tt := range cases {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expected, findCommand(commands, tt.os, tt.arch))
+			assert.Equal(t, tt.expected, FindCommand(commands, tt.os, tt.arch))
 		})
 	}
 }

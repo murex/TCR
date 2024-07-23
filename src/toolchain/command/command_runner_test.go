@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package command
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ import (
 
 func Test_command_result_outcome(t *testing.T) {
 	testCases := []struct {
-		status         CommandStatus
+		status         Status
 		expectedPassed bool
 		expectedFailed bool
 	}{
@@ -42,7 +42,7 @@ func Test_command_result_outcome(t *testing.T) {
 	}
 	for _, tt := range testCases {
 		t.Run(fmt.Sprint(tt.status, "_status"), func(t *testing.T) {
-			result := CommandResult{Status: tt.status}
+			result := Result{Status: tt.status}
 			assert.Equal(t, tt.expectedPassed, result.Passed())
 			assert.Equal(t, tt.expectedFailed, result.Failed())
 		})
@@ -53,28 +53,28 @@ func Test_run_command(t *testing.T) {
 	testCases := []struct {
 		desc           string
 		command        Command
-		expectedStatus CommandStatus
+		expectedStatus Status
 	}{
 		{
 			"unknown command",
 			Command{Path: "unknown-command"},
-			CommandStatusFail,
+			StatusFail,
 		},
 		{
 			"passing command",
 			Command{Path: "true"},
-			CommandStatusPass,
+			StatusPass,
 		},
 		{
 			"failing command",
 			Command{Path: "false"},
-			CommandStatusFail,
+			StatusFail,
 		},
 	}
 
 	for _, tt := range testCases {
 		t.Run(tt.desc, func(t *testing.T) {
-			result := getCommandRunner().Run(&tt.command)
+			result := GetRunner().Run("", &tt.command)
 			assert.Equal(t, tt.expectedStatus, result.Status)
 		})
 	}
@@ -107,13 +107,13 @@ func Test_abort_command(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.desc, func(t *testing.T) {
 			if tt.command != nil {
-				go getCommandRunner().Run(tt.command)
+				go GetRunner().Run("", tt.command)
 				// wait for the new command process to start
-				for getCommandRunner().command == nil {
+				for GetRunner().command == nil {
 					time.Sleep(10 * time.Millisecond)
 				}
 			}
-			result := getCommandRunner().AbortRunningCommand()
+			result := GetRunner().AbortRunningCommand()
 			assert.Equal(t, tt.expected, result)
 		})
 	}

@@ -20,13 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package toolchain
+package command
 
 import (
 	"errors"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -141,11 +138,13 @@ func (command Command) checkArchTable() error {
 	return nil
 }
 
-func (command Command) asCommandLine() string {
+// AsCommandLine returns a string formatted like if the command was run from the command line
+func (command Command) AsCommandLine() string {
 	return command.Path + " " + strings.Join(command.Arguments, " ")
 }
 
-func findCommand(commands []Command, osName OsName, archName ArchName) *Command {
+// FindCommand retrieves out of a list of commands the first that is compatible with provided OS and Architecture
+func FindCommand(commands []Command, osName OsName, archName ArchName) *Command {
 	for _, cmd := range commands {
 		if cmd.runsOnPlatform(osName, archName) {
 			return &cmd
@@ -154,34 +153,13 @@ func findCommand(commands []Command, osName OsName, archName ArchName) *Command 
 	return nil
 }
 
-func findCompatibleCommand(commands []Command) *Command {
+// FindCompatibleCommand retrieves out of a list of commands one that is compatible
+// with local machine's OS and Architecture
+func FindCompatibleCommand(commands []Command) *Command {
 	for _, command := range commands {
 		if command.runsOnLocalMachine() {
 			return &command
 		}
 	}
 	return nil
-}
-
-func adjustCommandPath(cmdPath string) string {
-	// If this is an absolute path, we return it after cleaning it up
-	if filepath.IsAbs(cmdPath) {
-		return filepath.Clean(cmdPath)
-	}
-	// If not, we check if it can be a relative path from the work directory.
-	// If the file is found, we return it
-	pathFromWorkDir := filepath.Join(GetWorkDir(), cmdPath)
-	info, err := os.Stat(pathFromWorkDir)
-	if err == nil && !info.IsDir() {
-		return pathFromWorkDir
-	}
-	// As a last resort, we assume it's available in the $PATH
-	return filepath.Clean(cmdPath)
-}
-
-func checkCommandPath(cmdPath string) (string, error) {
-	if cmdPath == "" {
-		return "", errors.New("command path is empty")
-	}
-	return exec.LookPath(adjustCommandPath(cmdPath))
 }

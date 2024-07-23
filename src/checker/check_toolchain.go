@@ -25,7 +25,7 @@ package checker
 import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
-	"github.com/murex/tcr/toolchain"
+	"github.com/murex/tcr/toolchain/command"
 	"runtime"
 )
 
@@ -112,7 +112,7 @@ func checkToolchainPlatform(_ params.Params) (cp []model.CheckPoint) {
 		return cp
 	}
 	cp = append(cp, model.OkCheckPoint("local platform is ",
-		toolchain.OsName(runtime.GOOS), "/", toolchain.ArchName(runtime.GOARCH)))
+		command.OsName(runtime.GOOS), "/", command.ArchName(runtime.GOARCH)))
 	return cp
 }
 

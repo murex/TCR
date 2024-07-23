@@ -23,6 +23,7 @@ SOFTWARE.
 package toolchain
 
 import (
+	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
@@ -75,8 +76,8 @@ func Test_set_work_dir(t *testing.T) {
 }
 
 func Test_get_build_commands(t *testing.T) {
-	cmd1 := ACommand(WithPath("build-cmd-1"))
-	cmd2 := ACommand(WithPath("build-cmd-2"))
+	cmd1 := command.ACommand(command.WithPath("build-cmd-1"))
+	cmd2 := command.ACommand(command.WithPath("build-cmd-2"))
 	tchn := AToolchain(WithBuildCommand(cmd1), WithBuildCommand(cmd2))
 	commands := tchn.GetBuildCommands()
 	assert.Contains(t, commands, *cmd1)
@@ -84,8 +85,8 @@ func Test_get_build_commands(t *testing.T) {
 }
 
 func Test_get_test_commands(t *testing.T) {
-	cmd1 := ACommand(WithPath("test-cmd-1"))
-	cmd2 := ACommand(WithPath("test-cmd-2"))
+	cmd1 := command.ACommand(command.WithPath("test-cmd-1"))
+	cmd2 := command.ACommand(command.WithPath("test-cmd-2"))
 	tchn := AToolchain(WithTestCommand(cmd1), WithTestCommand(cmd2))
 	commands := tchn.GetTestCommands()
 	assert.Contains(t, commands, *cmd1)
@@ -93,13 +94,13 @@ func Test_get_test_commands(t *testing.T) {
 }
 
 func Test_build_command_line(t *testing.T) {
-	cmd := ACommand(WithPath("build-cmd"), WithArgs([]string{"arg1", "arg2"}))
+	cmd := command.ACommand(command.WithPath("build-cmd"), command.WithArgs([]string{"arg1", "arg2"}))
 	tchn := AToolchain(WithNoBuildCommand(), WithBuildCommand(cmd))
 	assert.Equal(t, "build-cmd arg1 arg2", tchn.BuildCommandLine())
 }
 
 func Test_test_command_line(t *testing.T) {
-	cmd := ACommand(WithPath("test-cmd"), WithArgs([]string{"arg1", "arg2"}))
+	cmd := command.ACommand(command.WithPath("test-cmd"), command.WithArgs([]string{"arg1", "arg2"}))
 	tchn := AToolchain(WithNoTestCommand(), WithTestCommand(cmd))
 	assert.Equal(t, "test-cmd arg1 arg2", tchn.TestCommandLine())
 }
