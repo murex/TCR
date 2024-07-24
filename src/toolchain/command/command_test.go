@@ -98,7 +98,7 @@ func Test_find_command_must_match_both_os_and_arch(t *testing.T) {
 		expected *Command
 	}{
 		{"both os and arch match", myOs, myArch, myCommand},
-		{"both os and arch do not match", anotherOs, anotherArch, nil},
+		{"neither os and arch match", anotherOs, anotherArch, nil},
 		{"os matches but arch does not match", myOs, anotherArch, nil},
 		{"arch matches but os does not match", anotherOs, myArch, nil},
 	}
