@@ -49,16 +49,16 @@ type (
 
 // List of possible values for OsName
 const (
-	OsDarwin  = "darwin"
-	OsLinux   = "linux"
-	OsWindows = "windows"
+	OsDarwin  OsName = "darwin"
+	OsLinux   OsName = "linux"
+	OsWindows OsName = "windows"
 )
 
-// List of possible values for OsArch
+// List of possible values for ArchName
 const (
-	Arch386   = "386"
-	ArchAmd64 = "amd64"
-	ArchArm64 = "arm64"
+	Arch386   ArchName = "386"
+	ArchAmd64 ArchName = "amd64"
+	ArchArm64 ArchName = "arm64"
 )
 
 // GetAllOsNames return the list of all supported OS Names
