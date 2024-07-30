@@ -95,7 +95,7 @@ require (
 	github.com/ashanbrown/forbidigo v1.6.0 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/atc0005/go-teams-notify/v2 v2.10.0 // indirect
-	github.com/aws/aws-sdk-go v1.55.3 // indirect
+	github.com/aws/aws-sdk-go v1.55.4 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.27 // indirect
@@ -135,7 +135,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/butuzov/ireturn v0.3.0 // indirect
 	github.com/butuzov/mirror v1.2.0 // indirect
-	github.com/bytedance/sonic v1.11.9 // indirect
+	github.com/bytedance/sonic v1.12.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/caarlos0/ctrlc v1.2.0 // indirect
 	github.com/caarlos0/env/v11 v11.1.0 // indirect

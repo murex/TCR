@@ -13,7 +13,7 @@ require (
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
-	github.com/bytedance/sonic v1.11.9 // indirect
+	github.com/bytedance/sonic v1.12.0 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cloudflare/circl v1.3.9 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect

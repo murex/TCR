@@ -207,8 +207,8 @@ github.com/ashanbrown/makezero v1.1.1 h1:iCQ87C0V0vSyO+M9E/FZYbu65auqH0lnsOkf5Fc
 github.com/ashanbrown/makezero v1.1.1/go.mod h1:i1bJLCRSCHOcOa9Y6MyF2FTfMZMFdHvxKHxgO5Z1axI=
 github.com/atc0005/go-teams-notify/v2 v2.10.0 h1:eQvRIkyESQgBvlUdQ/iPol/lj3QcRyrdEQM3+c/nXhM=
 github.com/atc0005/go-teams-notify/v2 v2.10.0/go.mod h1:SIeE1UfCcVRYMqP5b+r1ZteHyA/2UAjzWF5COnZ8q0w=
-github.com/aws/aws-sdk-go v1.55.3 h1:0B5hOX+mIx7I5XPOrjrHlKSDQV/+ypFZpIHOx5LOk3E=
-github.com/aws/aws-sdk-go v1.55.3/go.mod h1:eRwEWoyTWFMVYVQzKMNHWP5/RV4xIUGMQfXQHfHkpNU=
+github.com/aws/aws-sdk-go v1.55.4 h1:u7sFWQQs5ivGuYvCxi7gJI8nN/P9Dq04huLaw39a4lg=
+github.com/aws/aws-sdk-go v1.55.4/go.mod h1:eRwEWoyTWFMVYVQzKMNHWP5/RV4xIUGMQfXQHfHkpNU=
 github.com/aws/aws-sdk-go-v2 v1.30.3 h1:jUeBtG0Ih+ZIFH0F4UkmL9w3cSpaMv9tYYDbzILP8dY=
 github.com/aws/aws-sdk-go-v2 v1.30.3/go.mod h1:nIQjQVp5sfpQcTc9mPSr1B0PaWK5ByX9MOoDadSN4lc=
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 h1:tW1/Rkad38LA15X4UQtjXZXNKsCgkshC3EbmcUmghTg=
@@ -292,8 +292,8 @@ github.com/butuzov/ireturn v0.3.0/go.mod h1:A09nIiwiqzN/IoVo9ogpa0Hzi9fex1kd9PSD
 github.com/butuzov/mirror v1.2.0 h1:9YVK1qIjNspaqWutSv8gsge2e/Xpq1eqEkslEUHy5cs=
 github.com/butuzov/mirror v1.2.0/go.mod h1:DqZZDtzm42wIAIyHXeN8W/qb1EPlb9Qn/if9icBOpdQ=
 github.com/bwesterb/go-ristretto v1.2.3/go.mod h1:fUIoIZaG73pV5biE2Blr2xEzDoMj7NFEuV9ekS419A0=
-github.com/bytedance/sonic v1.11.9 h1:LFHENlIY/SLzDWverzdOvgMztTxcfcF+cqNsz9pK5zg=
-github.com/bytedance/sonic v1.11.9/go.mod h1:LysEHSvpvDySVdC2f87zGWf6CIKJcAvqab1ZaiQtds4=
+github.com/bytedance/sonic v1.12.0 h1:YGPgxF9xzaCNvd/ZKdQ28yRovhfMFZQjuk6fKBzZ3ls=
+github.com/bytedance/sonic v1.12.0/go.mod h1:B8Gt/XvtZ3Fqj+iSKMypzymZxw/FVwgIGKzMzT9r/rk=
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
 github.com/bytedance/sonic/loader v0.2.0 h1:zNprn+lsIP06C/IqCHs3gPQIvnvpKbbxyXQP1iU4kWM=
 github.com/bytedance/sonic/loader v0.2.0/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
@@ -1438,7 +1438,6 @@ go.uber.org/zap v1.27.0 h1:aJMhYGrd5QSmlpLMr2MftRKl7t8J8PTZPA732ud/XR8=
 go.uber.org/zap v1.27.0/go.mod h1:GB2qFLM7cTU87MWRP2mPIjqfIDnGu+VIO4V/SdhGo2E=
 gocloud.dev v0.38.0 h1:SpxfaOc/Fp4PeO8ui7wRcCZV0EgXZ+IWcVSLn6ZMSw0=
 gocloud.dev v0.38.0/go.mod h1:3XjKvd2E5iVNu/xFImRzjN0d/fkNHe4s0RiKidpEUMQ=
-golang.org/x/arch v0.0.0-20210923205945-b76863e36670/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=
 golang.org/x/arch v0.8.0 h1:3wRIsP3pM4yUptoR96otTUOXI367OS0+c9eeRi9doIc=
 golang.org/x/arch v0.8.0/go.mod h1:FEVrYAQjsQXMVJ1nsMoVVXPZg6p2JE2mx8psSWTDQys=
 golang.org/x/crypto v0.0.0-20180904163835-0709b304e793/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
@@ -2049,7 +2048,6 @@ mvdan.cc/unparam v0.0.0-20240528143540-8a5130ca722f h1:lMpcwN6GxNbWtbpI1+xzFLSW8
 mvdan.cc/unparam v0.0.0-20240528143540-8a5130ca722f/go.mod h1:RSLa7mKKCNeTTMHBw5Hsy2rfJmd6O2ivt9Dw9ZqCQpQ=
 nullprogram.com/x/optparse v1.0.0/go.mod h1:KdyPE+Igbe0jQUrVfMqDMeJQIJZEuyV7pjYmp6pbG50=
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
-rsc.io/pdf v0.1.1/go.mod h1:n8OzWcQ6Sp37PL01nO98y4iUCRdTGarVfzxY20ICaU4=
 rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 sigs.k8s.io/kind v0.23.0 h1:8fyDGWbWTeCcCTwA04v4Nfr45KKxbSPH1WO9K+jVrBg=
