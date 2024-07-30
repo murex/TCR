@@ -74,21 +74,21 @@ provided as built-in.
 
 #### Built-in languages and toolchains
 
-| Language   | Default Toolchain | Compatible Toolchains                                 |
-|------------|-------------------|-------------------------------------------------------|
-| cpp        | cmake             | cmake bazel make                                      |
-| csharp     | dotnet            | dotnet bazel make                                     |
-| elixir     | mix               | mix                                                   |
-| go         | go-tools          | go-tools gotestsum bazel make                         |
-| haskell    | stack             | stack                                                 |
-| java       | gradle-wrapper    | gradle gradle-wrapper maven maven-wrapper bazel make  |
-| javascript | yarn              | yarn bazel make                                       |
-| kotlin     | gradle-wrapper    | gradle gradle-wrapper maven, maven-wrapper bazel make |
-| php        | phpunit           | phpunit                                               |
-| python     | pytest            | pytest bazel make                                     |
-| rust       | cargo             | cargo nextest                                         |
-| scala      | sbt               | sbt                                                   |
-| typescript | yarn              | yarn bazel make                                       |
+| Language   | Default Toolchain | Compatible Toolchains                                |
+|------------|-------------------|------------------------------------------------------|
+| cpp        | cmake             | cmake bazel make                                     |
+| csharp     | dotnet            | dotnet bazel make                                    |
+| elixir     | mix               | mix                                                  |
+| go         | go-tools          | go-tools gotestsum bazel make                        |
+| haskell    | stack             | stack                                                |
+| java       | gradle-wrapper    | gradle gradle-wrapper maven maven-wrapper bazel make |
+| javascript | yarn              | yarn bazel make                                      |
+| kotlin     | gradle-wrapper    | gradle gradle-wrapper maven maven-wrapper bazel make |
+| php        | phpunit           | phpunit                                              |
+| python     | pytest            | pytest bazel make                                    |
+| rust       | cargo             | cargo nextest                                        |
+| scala      | sbt               | sbt                                                  |
+| typescript | yarn              | yarn bazel make                                      |
 
 ### Base directory
 
