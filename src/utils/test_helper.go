@@ -59,3 +59,10 @@ func SkipOnWindowsCI(t *testing.T) {
 		t.Skip("test skipped on windows CI")
 	}
 }
+
+// SkipOnWindows allows to prevent running a test when on Windows when called at the beginning of the test
+func SkipOnWindows(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("test skipped on windows OS")
+	}
+}

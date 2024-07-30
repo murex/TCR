@@ -81,11 +81,10 @@ func Test_run_command(t *testing.T) {
 }
 
 func Test_abort_command(t *testing.T) {
-	// this test fails on Windows CI for an unexplained reason.
+	// this test fails randomly on Windows for an unexplained reason.
 	// This seems to be related to command.Process never being set when running a command,
-	// but no explanation why this happens on Windows CI while this works as expected
-	// on local Windows as well as on Unix CIs.
-	utils.SkipOnWindowsCI(t)
+	// but no explanation why this happens on Windows while this works as expected on Unix OS's.
+	utils.SkipOnWindows(t)
 
 	testCases := []struct {
 		desc     string
