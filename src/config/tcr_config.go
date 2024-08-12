@@ -46,6 +46,7 @@ type TcrConfig struct {
 	PollingPeriod    *DurationParam
 	MobTimerDuration *DurationParam
 	AutoPush         *BoolParam
+	Flavor           *StringParam
 	CommitFailures   *BoolParam
 	VCS              *StringParam
 	MessageSuffix    *StringParam
@@ -59,6 +60,7 @@ func (c TcrConfig) reset() {
 	c.PollingPeriod.reset()
 	c.MobTimerDuration.reset()
 	c.AutoPush.reset()
+	c.Flavor.reset()
 	c.CommitFailures.reset()
 	c.VCS.reset()
 	c.MessageSuffix.reset()
@@ -200,6 +202,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.PollingPeriod = AddPollingPeriodParam(cmd)
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
+	Config.Flavor = AddFlavorParam(cmd)
 	Config.CommitFailures = AddCommitFailuresParam(cmd)
 	Config.VCS = AddVCSParam(cmd)
 	Config.MessageSuffix = AddMessageSuffixParam(cmd)
@@ -217,6 +220,7 @@ func UpdateEngineParams(p *params.Params) {
 	p.Toolchain = Config.Toolchain.GetValue()
 	p.PollingPeriod = Config.PollingPeriod.GetValue()
 	p.AutoPush = Config.AutoPush.GetValue()
+	p.Flavor = Config.Flavor.GetValue()
 	p.CommitFailures = Config.CommitFailures.GetValue()
 	p.VCS = Config.VCS.GetValue()
 	p.MessageSuffix = Config.MessageSuffix.GetValue()
