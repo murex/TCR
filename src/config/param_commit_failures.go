@@ -37,7 +37,7 @@ func AddCommitFailuresParam(cmd *cobra.Command) *BoolParam {
 			},
 			cobraSettings: cobraSettings{
 				name:       "commit-failures",
-				shorthand:  "f",
+				shorthand:  "F",
 				usage:      "enable committing reverts on tests failure",
 				persistent: true,
 			},

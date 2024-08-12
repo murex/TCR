@@ -39,6 +39,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		Toolchain:       "",
 		MobTurnDuration: 0,
 		AutoPush:        false,
+		Flavor:          "",
 		PollingPeriod:   0,
 		Mode:            runmode.OneShot{},
 		VCS:             "git",
@@ -104,6 +105,13 @@ func WithMobTimerDuration(duration time.Duration) func(params *Params) {
 func WithAutoPush(value bool) func(params *Params) {
 	return func(params *Params) {
 		params.AutoPush = value
+	}
+}
+
+// WithFlavor sets the provided value as the flavor to be used
+func WithFlavor(flavor string) func(params *Params) {
+	return func(params *Params) {
+		params.Flavor = flavor
 	}
 }
 
