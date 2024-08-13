@@ -79,7 +79,7 @@ func NewFakeTCREngine() *FakeTCREngine {
 			VCSSessionSummary: "VCS session \"fake\"",
 			GitAutoPush:       false,
 			CommitOnFail:      false,
-			Flavor:            "nice",
+			Variant:           "nice",
 		},
 	}
 }
