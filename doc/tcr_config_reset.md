@@ -24,9 +24,10 @@ tcr config reset [flags]
 ```
   -p, --auto-push               enable VCS push after every commit
   -b, --base-dir string         indicate the directory from which TCR is looking for files (default: current directory)
-  -f, --commit-failures         enable committing reverts on tests failure
+  -F, --commit-failures         enable committing reverts on tests failure
   -c, --config-dir string       indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration       set the duration for role rotation countdown timer
+  -f, --flavor string           indicate the flavor to be used by TCR: nice (default) or original
   -l, --language string         indicate the programming language to be used by TCR
   -m, --message-suffix string   indicate text to append at the end of TCR commit messages (ex: "[#1234]")
   -o, --polling duration        set VCS polling period when running as navigator
