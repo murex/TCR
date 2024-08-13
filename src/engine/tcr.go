@@ -58,6 +58,7 @@ type (
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
+		SetFlavor(flavor string)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -92,6 +93,7 @@ type (
 		// before starting a new one
 		roleMutex     sync.Mutex
 		commitOnFail  bool
+		flavor        string
 		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
@@ -105,6 +107,10 @@ type (
 		fsWatchRearmDelay time.Duration
 	}
 )
+
+func (tcr *TCREngine) SetFlavor(flavor string) {
+	tcr.flavor = flavor
+}
 
 const traceReporterWaitingTime = 100 * time.Millisecond
 
@@ -678,6 +684,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
+		Flavor:            tcr.flavor,
 		MessageSuffix:     tcr.messageSuffix,
 	}
 }
