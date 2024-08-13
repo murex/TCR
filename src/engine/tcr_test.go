@@ -366,6 +366,7 @@ func initTCREngineWithFakes(
 			params.WithMobTimerDuration(p.MobTurnDuration),
 			params.WithAutoPush(p.AutoPush),
 			params.WithCommitFailures(p.CommitFailures),
+			params.WithFlavor(p.Flavor),
 			params.WithPollingPeriod(p.PollingPeriod),
 			params.WithRunMode(p.Mode),
 			params.WithVCS(p.VCS),
@@ -535,6 +536,7 @@ func Test_get_session_info(t *testing.T) {
 		ToolchainName:     "fake-toolchain",
 		VCSName:           fake.Name,
 		VCSSessionSummary: "VCS session \"" + fake.Name + "\"",
+		Flavor:            "nice",
 		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())
