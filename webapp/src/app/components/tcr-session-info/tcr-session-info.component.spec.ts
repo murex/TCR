@@ -29,6 +29,7 @@ import {TcrSessionInfoComponent} from "./tcr-session-info.component";
 const sample: TcrSessionInfo = {
   baseDir: "/my/base/dir",
   commitOnFail: false,
+  flavor: "nice",
   gitAutoPush: false,
   language: "java",
   messageSuffix: "my-suffix",

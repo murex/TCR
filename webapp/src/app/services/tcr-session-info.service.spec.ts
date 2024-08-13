@@ -58,6 +58,7 @@ describe('TcrSessionInfoService', () => {
       const sample: TcrSessionInfo = {
         baseDir: "/my/base/dir",
         commitOnFail: false,
+        flavor: "nice",
         gitAutoPush: false,
         language: "java",
         messageSuffix: "my-suffix",
