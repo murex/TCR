@@ -465,6 +465,24 @@ func Test_set_commit_on_fail(t *testing.T) {
 	}
 }
 
+func Test_set_flavor(t *testing.T) {
+	var tcr TCRInterface
+	testFlags := []struct {
+		desc   string
+		flavor string
+	}{
+		{"Nice Flavor", "nice"},
+		{"Original Flavor", "original"},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
+			tcr.SetFlavor(tt.flavor)
+			assert.Equal(t, tt.flavor, tcr.GetSessionInfo().Flavor)
+		})
+	}
+}
+
 func Test_vcs_pull_calls_vcs_command(t *testing.T) {
 	tcr, vcsFake := initTCREngineWithFakes(nil, nil, nil, nil)
 	tcr.VCSPull()
