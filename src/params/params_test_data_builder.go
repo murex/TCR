@@ -39,7 +39,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		Toolchain:       "",
 		MobTurnDuration: 0,
 		AutoPush:        false,
-		Flavor:          "",
+		Flavor:          "nice",
 		PollingPeriod:   0,
 		Mode:            runmode.OneShot{},
 		VCS:             "git",
