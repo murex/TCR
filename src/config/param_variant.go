@@ -26,19 +26,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// AddFlavorParam adds flavor parameter to the provided command
-func AddFlavorParam(cmd *cobra.Command) *StringParam {
+// AddVariantParam adds variant parameter to the provided command
+func AddVariantParam(cmd *cobra.Command) *StringParam {
 	param := StringParam{
 		s: paramSettings{
 			viperSettings: viperSettings{
 				enabled: true,
 				keyPath: "config.tcr",
-				name:    "flavor",
+				name:    "variant",
 			},
 			cobraSettings: cobraSettings{
-				name:       "flavor",
-				shorthand:  "f",
-				usage:      "indicate the flavor to be used by TCR: nice (default) or original",
+				name:       "variant",
+				shorthand:  "r",
+				usage:      "indicate the variant to be used by TCR: nice (default) or original",
 				persistent: true,
 			},
 		},

@@ -334,7 +334,7 @@ func (term *TerminalUI) ShowSessionInfo() {
 	term.printInfo("Work Directory: ", info.WorkDir)
 	term.printInfo("Language=", info.LanguageName, ", Toolchain=", info.ToolchainName)
 	term.printVCSInfo(info)
-	term.printFlavor(info)
+	term.printVariant(info)
 	term.printMessageSuffix(info.MessageSuffix)
 }
 
@@ -353,8 +353,8 @@ func (term *TerminalUI) printVCSInfo(info engine.SessionInfo) {
 	}
 }
 
-func (term *TerminalUI) printFlavor(info engine.SessionInfo) {
-	term.printInfo("Flavor is ", info.Flavor)
+func (term *TerminalUI) printVariant(info engine.SessionInfo) {
+	term.printInfo("Variant is ", info.Variant)
 }
 
 func (term *TerminalUI) printMessageSuffix(suffix string) {

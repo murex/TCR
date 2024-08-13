@@ -36,7 +36,7 @@ type Params struct {
 	Toolchain       string
 	MobTurnDuration time.Duration
 	AutoPush        bool
-	Flavor          string
+	Variant         string
 	CommitFailures  bool
 	PollingPeriod   time.Duration
 	Mode            runmode.RunMode

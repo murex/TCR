@@ -366,7 +366,7 @@ func initTCREngineWithFakes(
 			params.WithMobTimerDuration(p.MobTurnDuration),
 			params.WithAutoPush(p.AutoPush),
 			params.WithCommitFailures(p.CommitFailures),
-			params.WithFlavor(p.Flavor),
+			params.WithVariant(p.Variant),
 			params.WithPollingPeriod(p.PollingPeriod),
 			params.WithRunMode(p.Mode),
 			params.WithVCS(p.VCS),
@@ -466,20 +466,20 @@ func Test_set_commit_on_fail(t *testing.T) {
 	}
 }
 
-func Test_set_flavor(t *testing.T) {
+func Test_set_variant(t *testing.T) {
 	var tcr TCRInterface
 	testFlags := []struct {
-		desc   string
-		flavor string
+		desc    string
+		variant string
 	}{
-		{"Nice Flavor", "nice"},
-		{"Original Flavor", "original"},
+		{"Nice Variant", "nice"},
+		{"Original Variant", "original"},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
-			tcr.SetFlavor(tt.flavor)
-			assert.Equal(t, tt.flavor, tcr.GetSessionInfo().Flavor)
+			tcr.SetVariant(tt.variant)
+			assert.Equal(t, tt.variant, tcr.GetSessionInfo().Variant)
 		})
 	}
 }
@@ -536,7 +536,7 @@ func Test_get_session_info(t *testing.T) {
 		ToolchainName:     "fake-toolchain",
 		VCSName:           fake.Name,
 		VCSSessionSummary: "VCS session \"" + fake.Name + "\"",
-		Flavor:            "nice",
+		Variant:           "nice",
 		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())

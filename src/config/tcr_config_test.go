@@ -241,10 +241,10 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.git.commit-failures: %v", prefix, false),
 		fmt.Sprintf("%v.git.polling-period: %v", prefix, 2*time.Second),
 		fmt.Sprintf("%v.mob-timer.duration: %v", prefix, 5*time.Minute),
-		fmt.Sprintf("%v.tcr.flavor: %v", prefix, "nice"),
 		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.toolchain: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.trace: %v", prefix, "none"),
+		fmt.Sprintf("%v.tcr.variant: %v", prefix, "nice"),
 		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
 	utils.AssertSimpleTrace(t, expected,

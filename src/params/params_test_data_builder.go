@@ -39,7 +39,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		Toolchain:       "",
 		MobTurnDuration: 0,
 		AutoPush:        false,
-		Flavor:          "nice",
+		Variant:         "nice",
 		PollingPeriod:   0,
 		Mode:            runmode.OneShot{},
 		VCS:             "git",
@@ -108,10 +108,10 @@ func WithAutoPush(value bool) func(params *Params) {
 	}
 }
 
-// WithFlavor sets the provided value as the flavor to be used
-func WithFlavor(flavor string) func(params *Params) {
+// WithVariant sets the provided value as the variant to be used
+func WithVariant(variant string) func(params *Params) {
 	return func(params *Params) {
-		params.Flavor = flavor
+		params.Variant = variant
 	}
 }
 

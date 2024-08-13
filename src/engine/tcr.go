@@ -58,7 +58,7 @@ type (
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
-		SetFlavor(flavor string)
+		SetVariant(variant string)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -93,7 +93,7 @@ type (
 		// before starting a new one
 		roleMutex     sync.Mutex
 		commitOnFail  bool
-		flavor        string
+		variant       string
 		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
@@ -108,8 +108,8 @@ type (
 	}
 )
 
-func (tcr *TCREngine) SetFlavor(flavor string) {
-	tcr.flavor = flavor
+func (tcr *TCREngine) SetVariant(variant string) {
+	tcr.variant = variant
 }
 
 const traceReporterWaitingTime = 100 * time.Millisecond
@@ -181,7 +181,7 @@ func (tcr *TCREngine) Init(p params.Params) {
 	tcr.vcs.EnableAutoPush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
-	tcr.SetFlavor(p.Flavor)
+	tcr.SetVariant(p.Variant)
 	tcr.setMobTimerDuration(p.MobTurnDuration)
 
 	tcr.ui.ShowRunningMode(tcr.mode)
@@ -685,7 +685,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
-		Flavor:            tcr.flavor,
+		Variant:           tcr.variant,
 		MessageSuffix:     tcr.messageSuffix,
 	}
 }

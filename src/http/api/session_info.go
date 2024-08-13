@@ -35,7 +35,7 @@ type sessionInfo struct {
 	VCSName           string `json:"vcsName"`
 	VCSSessionSummary string `json:"vcsSession"`
 	CommitOnFail      bool   `json:"commitOnFail"`
-	Flavor            string `json:"flavor"`
+	Variant           string `json:"variant"`
 	GitAutoPush       bool   `json:"gitAutoPush"`
 	MessageSuffix     string `json:"messageSuffix"`
 }
@@ -52,7 +52,7 @@ func SessionInfoGetHandler(c *gin.Context) {
 		VCSName:           info.VCSName,
 		VCSSessionSummary: info.VCSSessionSummary,
 		CommitOnFail:      info.CommitOnFail,
-		Flavor:            info.Flavor,
+		Variant:           info.Variant,
 		GitAutoPush:       info.GitAutoPush,
 		MessageSuffix:     info.MessageSuffix,
 	}
