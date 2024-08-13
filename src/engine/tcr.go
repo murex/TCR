@@ -181,6 +181,7 @@ func (tcr *TCREngine) Init(p params.Params) {
 	tcr.vcs.EnableAutoPush(p.AutoPush)
 
 	tcr.SetCommitOnFail(p.CommitFailures)
+	tcr.SetFlavor(p.Flavor)
 	tcr.setMobTimerDuration(p.MobTurnDuration)
 
 	tcr.ui.ShowRunningMode(tcr.mode)
