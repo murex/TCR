@@ -536,7 +536,7 @@ func Test_get_session_info(t *testing.T) {
 		ToolchainName:     "fake-toolchain",
 		VCSName:           fake.Name,
 		VCSSessionSummary: "VCS session \"" + fake.Name + "\"",
-		Variant:           string(variant.Relaxed),
+		Variant:           variant.Relaxed.Name(),
 		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())

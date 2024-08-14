@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2024 Murex
+Copyright (c) 2023 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package config
+package variant
 
 import (
-	"github.com/murex/tcr/variant"
-	"github.com/spf13/cobra"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// AddVariantParam adds variant parameter to the provided command
-func AddVariantParam(cmd *cobra.Command) *StringParam {
-	param := StringParam{
-		s: paramSettings{
-			viperSettings: viperSettings{
-				enabled: true,
-				keyPath: "config.tcr",
-				name:    "variant",
-			},
-			cobraSettings: cobraSettings{
-				name:       "variant",
-				shorthand:  "r",
-				usage:      "indicate the variant to be used by TCR: relaxed (default) or btcr",
-				persistent: true,
-			},
-		},
-		v: paramValueString{
-			value:        "",
-			defaultValue: variant.Relaxed.Name(),
-		},
+func Test_get_variant_name(t *testing.T) {
+	tests := []struct {
+		desc     string
+		variant  Variant
+		expected string
+	}{
+		{"relaxed", Relaxed, "relaxed"},
+		{"btcr", BTCR, "btcr"},
 	}
-	param.addToCommand(cmd)
-	return &param
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, test.variant.Name())
+		})
+	}
 }
