@@ -40,6 +40,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/variant"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
@@ -58,7 +59,7 @@ type (
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
-		SetVariant(variant string)
+		SetVariant(variant variant.Variant)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -93,7 +94,7 @@ type (
 		// before starting a new one
 		roleMutex     sync.Mutex
 		commitOnFail  bool
-		variant       string
+		variant       variant.Variant
 		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
@@ -108,7 +109,7 @@ type (
 	}
 )
 
-func (tcr *TCREngine) SetVariant(variant string) {
+func (tcr *TCREngine) SetVariant(variant variant.Variant) {
 	tcr.variant = variant
 }
 
@@ -685,7 +686,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
-		Variant:           tcr.variant,
+		Variant:           string(tcr.variant),
 		MessageSuffix:     tcr.messageSuffix,
 	}
 }

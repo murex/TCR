@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package variant
 
-import (
-	"github.com/murex/tcr/runmode"
-	"github.com/murex/tcr/variant"
-	"time"
+// Variant represents the possible values for the TCR Variant
+// https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3
+type Variant string
+
+const (
+	Relaxed Variant = "relaxed"
+	BTCR    Variant = "btcr"
 )
-
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	AutoPush        bool
-	Variant         variant.Variant
-	CommitFailures  bool
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
-	VCS             string
-	MessageSuffix   string
-	Trace           string
-	PortNumber      int
-}

@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/variant"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -244,7 +245,7 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.toolchain: %v", prefix, ""),
 		fmt.Sprintf("%v.tcr.trace: %v", prefix, "none"),
-		fmt.Sprintf("%v.tcr.variant: %v", prefix, "relaxed"),
+		fmt.Sprintf("%v.tcr.variant: %v", prefix, variant.Relaxed),
 		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
 	utils.AssertSimpleTrace(t, expected,
