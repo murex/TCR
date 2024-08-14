@@ -83,7 +83,7 @@ func toSlashedPath(input string) string {
 func (ftf FileTreeFilter) isInFileTree(aPath string, baseDir string) bool {
 	absPath, _ := filepath.Abs(aPath)
 	// If no directory is configured, any path that is under baseDir path is ok
-	if ftf.Directories == nil || len(ftf.Directories) == 0 {
+	if len(ftf.Directories) == 0 {
 		if utils.IsSubPathOf(absPath, baseDir) {
 			return true
 		}
@@ -104,7 +104,7 @@ func (ftf FileTreeFilter) matches(p string, baseDir string) bool {
 	}
 	if ftf.isInFileTree(p, baseDir) {
 		// If no pattern is set, any file matches as long as it's in the file tree
-		if ftf.FilePatterns == nil || len(ftf.FilePatterns) == 0 {
+		if len(ftf.FilePatterns) == 0 {
 			return true
 		}
 		for _, filter := range ftf.FilePatterns {
