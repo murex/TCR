@@ -80,7 +80,7 @@ func NewFakeTCREngine() *FakeTCREngine {
 			VCSSessionSummary: "VCS session \"fake\"",
 			GitAutoPush:       false,
 			CommitOnFail:      false,
-			Variant:           string(variant.Relaxed),
+			Variant:           variant.Relaxed.Name(),
 		},
 	}
 }

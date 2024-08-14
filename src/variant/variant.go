@@ -26,6 +26,10 @@ package variant
 // https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3
 type Variant string
 
+func (v Variant) Name() string {
+	return string(v)
+}
+
 const (
 	Relaxed Variant = "relaxed"
 	BTCR    Variant = "btcr"
