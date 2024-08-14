@@ -23,6 +23,7 @@ SOFTWARE.
 package config
 
 import (
+	"github.com/murex/tcr/variant"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +45,7 @@ func AddVariantParam(cmd *cobra.Command) *StringParam {
 		},
 		v: paramValueString{
 			value:        "",
-			defaultValue: "relaxed",
+			defaultValue: string(variant.Relaxed),
 		},
 	}
 	param.addToCommand(cmd)

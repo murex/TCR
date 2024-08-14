@@ -512,7 +512,7 @@ func Test_show_session_info(t *testing.T) {
 		asCyanTrace("Work Directory: fake") +
 		asCyanTrace("Language=fake, Toolchain=fake") +
 		asYellowTrace("VCS \"fake\" is unknown") +
-		asCyanTrace("Variant is nice")
+		asCyanTrace("Variant is relaxed")
 
 	assert.Equal(t, expected, capturer.CaptureStdout(func() {
 		term, _, _ := terminalSetup(*params.AParamSet())

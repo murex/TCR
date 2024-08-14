@@ -26,6 +26,7 @@ package params
 
 import (
 	"github.com/murex/tcr/runmode"
+	"github.com/murex/tcr/variant"
 	"time"
 )
 
@@ -39,7 +40,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		Toolchain:       "",
 		MobTurnDuration: 0,
 		AutoPush:        false,
-		Variant:         "nice",
+		Variant:         variant.Relaxed,
 		PollingPeriod:   0,
 		Mode:            runmode.OneShot{},
 		VCS:             "git",
@@ -109,7 +110,7 @@ func WithAutoPush(value bool) func(params *Params) {
 }
 
 // WithVariant sets the provided value as the variant to be used
-func WithVariant(variant string) func(params *Params) {
+func WithVariant(variant variant.Variant) func(params *Params) {
 	return func(params *Params) {
 		params.Variant = variant
 	}

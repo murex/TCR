@@ -30,6 +30,7 @@ import (
 	"github.com/murex/tcr/status"
 	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/variant"
 )
 
 // TCRCall is used to track calls to TCR operations
@@ -79,7 +80,7 @@ func NewFakeTCREngine() *FakeTCREngine {
 			VCSSessionSummary: "VCS session \"fake\"",
 			GitAutoPush:       false,
 			CommitOnFail:      false,
-			Variant:           "nice",
+			Variant:           string(variant.Relaxed),
 		},
 	}
 }

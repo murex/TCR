@@ -35,6 +35,7 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/toolchain/command"
 	"github.com/murex/tcr/ui"
+	"github.com/murex/tcr/variant"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
@@ -469,17 +470,16 @@ func Test_set_commit_on_fail(t *testing.T) {
 func Test_set_variant(t *testing.T) {
 	var tcr TCRInterface
 	testFlags := []struct {
-		desc    string
-		variant string
+		variant variant.Variant
 	}{
-		{"Nice Variant", "nice"},
-		{"Original Variant", "original"},
+		{variant.Relaxed},
+		{variant.BTCR},
 	}
 	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(fmt.Sprintf("Variant %v", tt.variant), func(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
 			tcr.SetVariant(tt.variant)
-			assert.Equal(t, tt.variant, tcr.GetSessionInfo().Variant)
+			assert.Equal(t, string(tt.variant), tcr.GetSessionInfo().Variant)
 		})
 	}
 }
@@ -536,7 +536,7 @@ func Test_get_session_info(t *testing.T) {
 		ToolchainName:     "fake-toolchain",
 		VCSName:           fake.Name,
 		VCSSessionSummary: "VCS session \"" + fake.Name + "\"",
-		Variant:           "nice",
+		Variant:           string(variant.Relaxed),
 		GitAutoPush:       false,
 	}
 	assert.Equal(t, expected, tcr.GetSessionInfo())

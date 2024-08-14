@@ -28,6 +28,7 @@ import (
 	"github.com/murex/tcr/settings"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/variant"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"io"
@@ -220,7 +221,7 @@ func UpdateEngineParams(p *params.Params) {
 	p.Toolchain = Config.Toolchain.GetValue()
 	p.PollingPeriod = Config.PollingPeriod.GetValue()
 	p.AutoPush = Config.AutoPush.GetValue()
-	p.Variant = Config.Variant.GetValue()
+	p.Variant = variant.Variant(Config.Variant.GetValue())
 	p.CommitFailures = Config.CommitFailures.GetValue()
 	p.VCS = Config.VCS.GetValue()
 	p.MessageSuffix = Config.MessageSuffix.GetValue()
