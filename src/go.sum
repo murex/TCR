@@ -127,8 +127,8 @@ github.com/Azure/go-autorest/tracing v0.6.0/go.mod h1:+vhtPC754Xsa23ID7GlGsrdKBp
 github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 h1:XHOnouVk1mxXfQidrMEnLlPk9UMeRtyBTnEFtxkV0kU=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2/go.mod h1:wP83P5OoQ5p6ip3ScPr0BAq0BvuPAvacpEuSzyouqAI=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/BurntSushi/toml v1.4.0 h1:kuoIxZQy2WRRk1pttg9asf+WVv6tWQuBNVmK8+nqPr0=
-github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
+github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c h1:pxW6RcqyfI9/kWtOwnv/G+AzdKuy2ZrqINhenH4HyNs=
+github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/Crocmagnon/fatcontext v0.4.0 h1:4ykozu23YHA0JB6+thiuEv7iT6xq995qS1vcuWZq0tg=
 github.com/Crocmagnon/fatcontext v0.4.0/go.mod h1:ZtWrXkgyfsYPzS6K3O88va6t2GEglG93vnII/F94WC0=
@@ -653,8 +653,8 @@ github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a h1:w8hkcTqaFpzKqonE9
 github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a/go.mod h1:ryS0uhF+x9jgbj/N71xsEqODy9BN81/GonCZiOzirOk=
 github.com/golangci/gofmt v0.0.0-20240724082148-399ed8a42d42 h1:AhUw9DWQccFqRvFyM6Zb7zpG+Co5skgw9YS1V0LFijA=
 github.com/golangci/gofmt v0.0.0-20240724082148-399ed8a42d42/go.mod h1:YUrl2t63y0Ofpy74+wu/O18RfPenFkc9I3ntyYuGCtI=
-github.com/golangci/golangci-lint v1.59.1 h1:CRRLu1JbhK5avLABFJ/OHVSQ0Ie5c4ulsOId1h3TTks=
-github.com/golangci/golangci-lint v1.59.1/go.mod h1:jX5Oif4C7P0j9++YB2MMJmoNrb01NJ8ITqKWNLewThg=
+github.com/golangci/golangci-lint v1.60.1 h1:DRKNqNTQRLBJZ1il5u4fvgLQCjQc7QFs0DbhksJtVJE=
+github.com/golangci/golangci-lint v1.60.1/go.mod h1:jDIPN1rYaIA+ijp9OZcUmUCoQOtZ76pOlFbi15FlLJY=
 github.com/golangci/misspell v0.6.0 h1:JCle2HUTNWirNlDIAUO44hUsKhOFqGPoC4LZxlaSXDs=
 github.com/golangci/misspell v0.6.0/go.mod h1:keMNyY6R9isGaSAu+4Q8NMBwMPkh15Gtc8UCVoDtAWo=
 github.com/golangci/modinfo v0.3.4 h1:oU5huX3fbxqQXdfspamej74DFX0kyGLkw1ppvXoJ8GA=
@@ -2054,8 +2054,8 @@ honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc/go.mod h1:rf3lG4BRIbNafJWh
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
 honnef.co/go/tools v0.0.1-2020.1.3/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9vFzvIQ3k=
 honnef.co/go/tools v0.0.1-2020.1.4/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9vFzvIQ3k=
-honnef.co/go/tools v0.4.7 h1:9MDAWxMoSnB6QoSqiVr7P5mtkT9pOc1kSxchzPCnqJs=
-honnef.co/go/tools v0.4.7/go.mod h1:+rnGS1THNh8zMwnd2oVOTL9QF6vmfyG6ZXBULae2uc0=
+honnef.co/go/tools v0.5.0 h1:29uoiIormS3Z6R+t56STz/oI4v+mB51TSmEOdJPgRnE=
+honnef.co/go/tools v0.5.0/go.mod h1:e9irvo83WDG9/irijV44wr3tbhcFeRnfpVlRqVwpzMs=
 lukechampine.com/blake3 v1.3.0 h1:sJ3XhFINmHSrYCgl958hscfIa3bw8x4DqMP3u1YvoYE=
 lukechampine.com/blake3 v1.3.0/go.mod h1:0OFRp7fBtAylGVCO40o87sbupkyIGgbpv1+M1k1LM6k=
 mvdan.cc/gofumpt v0.6.0 h1:G3QvahNDmpD+Aek/bNOLrFR2XC6ZAdo62dZu65gmwGo=
