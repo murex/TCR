@@ -278,8 +278,8 @@ github.com/blang/semver v3.5.1+incompatible h1:cQNTCjp13qL8KC3Nbxr/y2Bqb63oX6wdn
 github.com/blang/semver v3.5.1+incompatible/go.mod h1:kRBLl5iJ+tD4TcOOxsy/0fnwebNt5EWlYSAyrTnjyyk=
 github.com/blizzy78/varnamelen v0.8.0 h1:oqSblyuQvFsW1hbBHh1zfwrKe3kcSj0rnXkKzsQ089M=
 github.com/blizzy78/varnamelen v0.8.0/go.mod h1:V9TzQZ4fLJ1DSrjVDfl89H7aMnTvKkApdHeyESmyR7k=
-github.com/bluesky-social/indigo v0.0.0-20240905024844-a4f38639767f h1:Q9cfCAlYWIWPsSDhg5w6qcutQ7YaJtfTjiRLP/mw+pc=
-github.com/bluesky-social/indigo v0.0.0-20240905024844-a4f38639767f/go.mod h1:Zx9nSWgd/FxMenkJW07VKnzspxpHBdPrPmS+Fspl2I0=
+github.com/bluesky-social/indigo v0.0.0-20240905061254-5f33e2cc2d7a h1:LT43/Mo+wGOrO9fL4IOOuEG2sThY3+x9ndYt4RZlNqY=
+github.com/bluesky-social/indigo v0.0.0-20240905061254-5f33e2cc2d7a/go.mod h1:Zx9nSWgd/FxMenkJW07VKnzspxpHBdPrPmS+Fspl2I0=
 github.com/bombsimon/wsl/v4 v4.4.1 h1:jfUaCkN+aUpobrMO24zwyAMwMAV5eSziCkOKEauOLdw=
 github.com/bombsimon/wsl/v4 v4.4.1/go.mod h1:Xu/kDxGZTofQcDGCtQe9KCzhHphIe0fDuyWTxER9Feo=
 github.com/breml/bidichk v0.2.7 h1:dAkKQPLl/Qrk7hnP6P+E0xOodrq8Us7+U0o4UBOAlQY=
