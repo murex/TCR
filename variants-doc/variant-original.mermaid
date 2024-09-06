@@ -1,20 +1,16 @@
-graph LR
-    START((start))
-    TEST{test}
-    COMMIT["✅ commit src + tests)"]
-    REVERT["❌ revert (src + tests)"]
-    END((end))
-    START --> TEST
-    TEST -->|"pass"| COMMIT
-    TEST -->|"fail"| REVERT
-    COMMIT --> END
-    REVERT --> END
-    classDef boundaryclass fill: #555555
-    classDef testclass fill: #0077CC
-    classDef okclass fill: #006600
-    classDef failclass fill: #660000
-    class START boundaryclass
-    class TEST testclass
-    class COMMIT okclass
-    class REVERT failclass
-    class END boundaryclass
+stateDiagram-v2
+    direction LR
+    state "⚙️ test" as Test
+    state "✅ commit (src + tests)" as Commit
+    state "❌ revert (src + tests)" as Revert
+    [*] --> Test
+    Test --> Commit: pass
+    Test --> Revert: fail
+    Commit --> [*]
+    Revert --> [*]
+    classDef actionClass fill: #0077CC
+    classDef okClass fill: #006600
+    classDef failClass fill: #660000
+    class Test actionClass
+    class Commit okClass
+    class Revert failClass
