@@ -23,7 +23,7 @@ SOFTWARE.
 import {Component, Input, OnInit} from '@angular/core';
 import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
 import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
-import {DatePipe, NgIf} from "@angular/common";
+import {DatePipe, NgIf, NgOptimizedImage} from "@angular/common";
 import {OnOffPipe} from "../../pipes/on-off.pipe";
 import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
 
@@ -34,7 +34,8 @@ import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
     DatePipe,
     NgIf,
     OnOffPipe,
-    ShowEmptyPipe
+    ShowEmptyPipe,
+    NgOptimizedImage
   ],
   templateUrl: './tcr-session-info.component.html',
   styleUrl: './tcr-session-info.component.css'
