@@ -24,7 +24,7 @@ The state diagrams below summarize the behavior of each variant.
 tcr --variant=original
 ```
 
-![TCR Original variant](./variant-original.png)
+![TCR Original variant](../webapp/src/assets/images/variant-original.png)
 
 ## BTCR - Build && Test && Commit || Revert
 
@@ -32,7 +32,7 @@ tcr --variant=original
 tcr --variant=btcr
 ```
 
-![TCR BTCR variant](./variant-btcr.png)
+![TCR BTCR variant](../webapp/src/assets/images/variant-btcr.png)
 
 ## The Relaxed
 
@@ -42,4 +42,4 @@ tcr --variant=relaxed
 
 The above option `--variant=relaxed` may be omitted as this is the default variant.
 
-![TCR Relaxed variant](./variant-relaxed.png)
+![TCR Relaxed variant](../webapp/src/assets/images/variant-relaxed.png)
