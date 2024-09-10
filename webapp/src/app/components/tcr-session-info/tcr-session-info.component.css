@@ -26,6 +26,12 @@ section {
   background-color: #f1f4fa;
 }
 
+.statechart {
+  vertical-align: center;
+  width: auto;
+  height: auto;
+}
+
 .wrap {
   display: flex;
   background: white;
@@ -36,7 +42,7 @@ section {
 }
 
 .ico-wrap {
-  margin: auto;
+  margin: 10px;
 }
 
 .mbr-iconfont {
@@ -47,7 +53,7 @@ section {
 }
 
 .vcenter {
-  margin: auto;
+  margin: 10px;
 }
 
 .mbr-section-title3 {
@@ -77,4 +83,16 @@ p {
 .display-6 {
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 1rem;
+}
+
+.table-header {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: lighter;
+  font-size: 1rem;
+}
+
+.table-value {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: bold;
+  font-size: 1.1rem;
 }

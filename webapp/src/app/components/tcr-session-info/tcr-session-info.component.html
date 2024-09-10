@@ -1,85 +1,88 @@
 <section>
+
   <div class="container" *ngIf="sessionInfo">
     <div class="row mb-3 mbr-justify-content-center">
       <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
     </div>
 
     <div class="row mbr-justify-content-center">
+      <div class="col-lg-12 mbr-col-md-10">
+        <div class="wrap">
+          <div class="ico-wrap">
+            <span class="mbr-iconfont fa-gear fa"></span>
+          </div>
+          <div class="text-wrap vcenter">
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Workflow Variant: {{ sessionInfo.variant | showEmpty }}</h2>
+            <img class="statechart" ngSrc="assets/images/variant-{{ sessionInfo.variant | showEmpty }}.png" alt="{{ sessionInfo.variant | showEmpty }}" width="1" height="1" />
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <div class="col-lg-6 mbr-col-md-10">
+    <div class="row mbr-justify-content-center">
+      <div class="col-lg-12 mbr-col-md-10">
         <div class="wrap">
           <div class="ico-wrap">
             <span class="mbr-iconfont fa-folder-open fa"></span>
           </div>
           <div class="text-wrap vcenter">
             <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Directories</h2>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Base Directory</h3>
-            <ul>
-              <li>{{ sessionInfo.baseDir }}</li>
-            </ul>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Work Directory</h3>
-            <ul>
-              <li>{{ sessionInfo.workDir }}</li>
-            </ul>
+            <table class="mbr-fonts-style text1 mbr-text display-6">
+              <tr>
+                <td class="table-header">Base Directory:</td>
+                <td class="table-value">{{ sessionInfo.baseDir }}</td>
+              </tr>
+              <tr>
+                <td class="table-header">Work Directory:</td>
+                <td class="table-value">{{ sessionInfo.workDir }}</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-6 mbr-col-md-10">
+      <div class="col-lg-12 mbr-col-md-10">
         <div class="wrap">
           <div class="ico-wrap">
             <span class="mbr-iconfont fa-file-code-o fa"></span>
           </div>
           <div class="text-wrap vcenter">
             <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Language and Toolchain</h2>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Language</h3>
-            <ul>
-              <li>{{ sessionInfo.language }}</li>
-            </ul>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Toolchain</h3>
-            <ul>
-              <li>{{ sessionInfo.toolchain }}</li>
-            </ul>
+            <table class="mbr-fonts-style text1 mbr-text display-6">
+              <tr>
+                <td class="table-header">Language:</td>
+                <td class="table-value">{{ sessionInfo.language }}</td>
+              </tr>
+              <tr>
+                <td class="table-header">Toolchain:</td>
+                <td class="table-value">{{ sessionInfo.toolchain }}</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="col-lg-6 mbr-col-md-10">
+      <div class="col-lg-12 mbr-col-md-10">
         <div class="wrap">
           <div class="ico-wrap">
             <span class="mbr-iconfont fa-code-fork fa"></span>
           </div>
           <div class="text-wrap vcenter">
             <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Version Control System</h2>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Used VCS</h3>
-            <ul>
-              <li>{{ sessionInfo.vcsName }}</li>
-            </ul>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Session Summary</h3>
-            <ul>
-              <li>{{ sessionInfo.vcsSession }}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-6 mbr-col-md-10">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-check-square-o fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Options and Flags</h2>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">VCS Commit Message Suffix</h3>
-            <ul>
-              <li>{{ sessionInfo.messageSuffix | showEmpty }}</li>
-            </ul>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">VCS
-              Commit-On-Fail {{ sessionInfo.commitOnFail | onOff }}</h3>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">
-              Variant "{{ sessionInfo.variant | showEmpty }}"</h3>
-            <h3 class="mbr-fonts-style mbr-bold mbr-section-title4 display-6">Git
-              Auto-Push {{ sessionInfo.gitAutoPush | onOff }}</h3>
+            <table class="mbr-fonts-style text1 mbr-text display-6">
+              <tr>
+                <td class="table-header">Used VCS:</td>
+                <td class="table-value">{{ sessionInfo.vcsName }}</td>
+              </tr>
+              <tr>
+                <td class="table-header">Session Summary:</td>
+                <td class="table-value">{{ sessionInfo.vcsSession }}</td>
+              </tr>
+              <tr>
+                <td class="table-header">Git Auto-Push:</td>
+                <td class="table-value">{{ sessionInfo.gitAutoPush | onOff }}</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
