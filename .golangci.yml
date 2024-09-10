@@ -216,7 +216,7 @@ linters-settings:
         severity: warning
         disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#imports-blacklist
-      - name: imports-blacklist
+      - name: imports-blocklist
         severity: warning
         disabled: false
         arguments:
