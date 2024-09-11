@@ -281,6 +281,48 @@ func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
 	}
 }
 
+func Test_relaxed_source_revert(t *testing.T) {
+	tcr, vcsFake := initTCREngineWithFakes(nil, nil, nil, nil)
+	tcr.revert(*events.ATcrEvent())
+	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+}
+
+func Test_relaxed_source_reverts_only_source_files(t *testing.T) {
+	sniffer := report.NewSniffer(
+		func(msg report.Message) bool {
+			return msg.Type.Category == report.Warning &&
+				msg.Payload.ToString() == "1 file(s) reverted"
+		},
+	)
+	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil,
+		vcs.FileDiffs{
+			vcs.NewFileDiff("fake-src", 1, 1),
+			vcs.NewFileDiff("fake-test", 1, 1),
+		})
+	tcr.revert(*events.ATcrEvent())
+	sniffer.Stop()
+	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
+func Test_relaxed_source_reverts_many_source_files(t *testing.T) {
+	sniffer := report.NewSniffer(
+		func(msg report.Message) bool {
+			return msg.Type.Category == report.Warning &&
+				msg.Payload.ToString() == "2 file(s) reverted"
+		},
+	)
+	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil,
+		vcs.FileDiffs{
+			vcs.NewFileDiff("fake-src", 1, 1),
+			vcs.NewFileDiff("fake2-src", 1, 1),
+		})
+	tcr.revert(*events.ATcrEvent())
+	sniffer.Stop()
+	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+	assert.Equal(t, 1, sniffer.GetMatchCount())
+}
+
 func Test_tcr_cycle_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
@@ -342,11 +384,12 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	}
 }
 
-func initTCREngineWithFakes(
+func initTCREngineWithFakesWithFileDiffs(
 	p *params.Params,
 	toolchainFailures toolchain.Operations,
 	vcsFailures fake.Commands,
 	logItems vcs.LogItems,
+	fileDiffs vcs.FileDiffs,
 ) (*TCREngine, *fake.VCSFake) {
 	tchn := registerFakeToolchain(toolchainFailures)
 	lang := registerFakeLanguage(tchn)
@@ -381,7 +424,7 @@ func initTCREngineWithFakes(
 	factory.InitVCS = func(_ string, _ string) (vcs.Interface, error) {
 		fakeSettings := fake.Settings{
 			FailingCommands: vcsFailures,
-			ChangedFiles:    vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)},
+			ChangedFiles:    fileDiffs,
 			Logs:            logItems,
 		}
 		vcsFake = fake.NewVCSFake(fakeSettings)
@@ -393,6 +436,21 @@ func initTCREngineWithFakes(
 	tcr.fsWatchRearmDelay = 0
 	tcr.traceReporterWaitingTime = 0
 	return tcr, vcsFake
+
+}
+
+func initTCREngineWithFakes(
+	p *params.Params,
+	toolchainFailures toolchain.Operations,
+	vcsFailures fake.Commands,
+	logItems vcs.LogItems,
+) (*TCREngine, *fake.VCSFake) {
+	return initTCREngineWithFakesWithFileDiffs(
+		p,
+		toolchainFailures,
+		vcsFailures,
+		logItems,
+		vcs.FileDiffs{vcs.NewFileDiff("fake-src", 1, 1)})
 }
 
 func registerFakeToolchain(failures toolchain.Operations) string {

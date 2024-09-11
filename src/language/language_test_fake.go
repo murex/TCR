@@ -24,7 +24,10 @@ SOFTWARE.
 
 package language
 
-import "github.com/murex/tcr/toolchain"
+import (
+	"github.com/murex/tcr/toolchain"
+	"strings"
+)
 
 type allFilesFunc func() ([]string, error)
 
@@ -84,8 +87,8 @@ func (fl *FakeLanguage) AllTestFiles() (result []string, err error) {
 }
 
 // IsSrcFile returns true if the provided filePath is recognized as a source file for this language
-func (fl *FakeLanguage) IsSrcFile(_ string) bool {
-	return true
+func (fl *FakeLanguage) IsSrcFile(name string) bool {
+	return !strings.Contains(name, "test")
 }
 
 // GetName uses real Language behaviour
