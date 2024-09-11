@@ -299,18 +299,40 @@ func Test_relaxed_doesnt_revert_test_files(t *testing.T) {
 func Test_relaxed_reverts(t *testing.T) {
 	testFlags := []struct {
 		description         string
+		variant             variant.Variant
 		fileDiffs           vcs.FileDiffs
 		expectedRevertCount int
 	}{
 		{
 			description: "One source file and one test file",
+			variant:     variant.Relaxed,
 			fileDiffs: vcs.FileDiffs{
 				vcs.NewFileDiff("fake-src", 1, 1),
 				vcs.NewFileDiff("fake-test", 1, 1),
 			},
 			expectedRevertCount: 1,
-		}, {
+		},
+		{
 			description: "Two source files and no test files",
+			variant:     variant.Relaxed,
+			fileDiffs: vcs.FileDiffs{
+				vcs.NewFileDiff("fake-src", 1, 1),
+				vcs.NewFileDiff("fake2-src", 1, 1),
+			},
+			expectedRevertCount: 2,
+		},
+		{
+			description: "One source file and one test file",
+			variant:     variant.BTCR,
+			fileDiffs: vcs.FileDiffs{
+				vcs.NewFileDiff("fake-src", 1, 1),
+				vcs.NewFileDiff("fake-test", 1, 1),
+			},
+			expectedRevertCount: 2,
+		},
+		{
+			description: "Two source files and no test files",
+			variant:     variant.BTCR,
 			fileDiffs: vcs.FileDiffs{
 				vcs.NewFileDiff("fake-src", 1, 1),
 				vcs.NewFileDiff("fake2-src", 1, 1),
@@ -320,14 +342,16 @@ func Test_relaxed_reverts(t *testing.T) {
 	}
 
 	for _, tt := range testFlags {
-		t.Run(tt.description, func(t *testing.T) {
+		t.Run(tt.description+" in variant "+string(tt.variant), func(t *testing.T) {
 			sniffer := report.NewSniffer(
 				func(msg report.Message) bool {
 					return msg.Type.Category == report.Warning &&
 						msg.Payload.ToString() == fmt.Sprintf("%d file(s) reverted", tt.expectedRevertCount)
 				},
 			)
-			tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil, tt.fileDiffs)
+			tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(
+				params.AParamSet(params.WithVariant(tt.variant)),
+				nil, nil, nil, tt.fileDiffs)
 			tcr.revert(*events.ATcrEvent())
 			sniffer.Stop()
 			assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
