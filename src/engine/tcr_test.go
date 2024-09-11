@@ -287,40 +287,53 @@ func Test_relaxed_source_revert(t *testing.T) {
 	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
 }
 
-func Test_relaxed_source_reverts_only_source_files(t *testing.T) {
-	sniffer := report.NewSniffer(
-		func(msg report.Message) bool {
-			return msg.Type.Category == report.Warning &&
-				msg.Payload.ToString() == "1 file(s) reverted"
-		},
-	)
+func Test_relaxed_doesnt_revert_test_files(t *testing.T) {
 	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil,
 		vcs.FileDiffs{
-			vcs.NewFileDiff("fake-src", 1, 1),
 			vcs.NewFileDiff("fake-test", 1, 1),
 		})
 	tcr.revert(*events.ATcrEvent())
-	sniffer.Stop()
-	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
-	assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.NotEqual(t, fake.RestoreCommand, vcsFake.GetLastCommand())
 }
 
-func Test_relaxed_source_reverts_many_source_files(t *testing.T) {
-	sniffer := report.NewSniffer(
-		func(msg report.Message) bool {
-			return msg.Type.Category == report.Warning &&
-				msg.Payload.ToString() == "2 file(s) reverted"
+func Test_relaxed_reverts(t *testing.T) {
+	testFlags := []struct {
+		description         string
+		fileDiffs           vcs.FileDiffs
+		expectedRevertCount int
+	}{
+		{
+			description: "One source file and one test file",
+			fileDiffs: vcs.FileDiffs{
+				vcs.NewFileDiff("fake-src", 1, 1),
+				vcs.NewFileDiff("fake-test", 1, 1),
+			},
+			expectedRevertCount: 1,
+		}, {
+			description: "Two source files and no test files",
+			fileDiffs: vcs.FileDiffs{
+				vcs.NewFileDiff("fake-src", 1, 1),
+				vcs.NewFileDiff("fake2-src", 1, 1),
+			},
+			expectedRevertCount: 2,
 		},
-	)
-	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil,
-		vcs.FileDiffs{
-			vcs.NewFileDiff("fake-src", 1, 1),
-			vcs.NewFileDiff("fake2-src", 1, 1),
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.description, func(t *testing.T) {
+			sniffer := report.NewSniffer(
+				func(msg report.Message) bool {
+					return msg.Type.Category == report.Warning &&
+						msg.Payload.ToString() == fmt.Sprintf("%d file(s) reverted", tt.expectedRevertCount)
+				},
+			)
+			tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(nil, nil, nil, nil, tt.fileDiffs)
+			tcr.revert(*events.ATcrEvent())
+			sniffer.Stop()
+			assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
-	tcr.revert(*events.ATcrEvent())
-	sniffer.Stop()
-	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
-	assert.Equal(t, 1, sniffer.GetMatchCount())
+	}
 }
 
 func Test_tcr_cycle_end_state(t *testing.T) {
