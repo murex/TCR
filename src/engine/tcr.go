@@ -609,7 +609,38 @@ func (tcr *TCREngine) revert(event events.TCREvent) {
 		}
 		tcr.handleError(tcr.vcsPushAuto(), false, status.VCSError)
 	}
-	tcr.revertSrcFiles()
+
+	diffs, err := tcr.vcs.Diff()
+	tcr.handleError(err, false, status.VCSError)
+	if err != nil {
+		return
+	}
+	var reverted int
+	for _, diff := range diffs {
+		if tcr.shouldRevertFile(diff.Path) {
+			err := tcr.revertFile(diff.Path)
+			tcr.handleError(err, false, status.VCSError)
+			if err == nil {
+				reverted++
+			}
+		}
+	}
+	if reverted > 0 {
+		report.PostWarning(reverted, " file(s) reverted")
+	} else {
+		report.PostInfo(tcr.noFilesRevertedMessage())
+	}
+}
+
+func (tcr *TCREngine) noFilesRevertedMessage() string {
+	if tcr.variant == variant.Relaxed {
+		return "No file reverted (only test files were updated since last commit)"
+	}
+	return "No file reverted"
+}
+
+func (tcr *TCREngine) shouldRevertFile(path string) bool {
+	return tcr.variant == variant.BTCR || tcr.language.IsSrcFile(path)
 }
 
 func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err error) {
@@ -645,29 +676,6 @@ func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err erro
 	// Re-apply changes in the working tree and get rid of stash
 	err = tcr.vcs.UnStash(false)
 	return err
-}
-
-func (tcr *TCREngine) revertSrcFiles() {
-	diffs, err := tcr.vcs.Diff()
-	tcr.handleError(err, false, status.VCSError)
-	if err != nil {
-		return
-	}
-	var reverted int
-	for _, diff := range diffs {
-		if tcr.language.IsSrcFile(diff.Path) {
-			err := tcr.revertFile(diff.Path)
-			tcr.handleError(err, false, status.VCSError)
-			if err == nil {
-				reverted++
-			}
-		}
-	}
-	if reverted > 0 {
-		report.PostWarning(reverted, " file(s) reverted")
-	} else {
-		report.PostInfo("No file reverted (only test files were updated since last commit)")
-	}
 }
 
 func (tcr *TCREngine) revertFile(file string) error {
