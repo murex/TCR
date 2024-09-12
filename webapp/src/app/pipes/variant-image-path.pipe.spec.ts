@@ -20,35 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export interface TcrSessionInfo {
-  baseDir: string;
-  workDir: string;
-  language: string;
-  toolchain: string;
-  vcsName: string;
-  vcsSession: string;
-  commitOnFail: boolean;
-  variant: string;
-  gitAutoPush: boolean;
-  messageSuffix: string;
-}
+import {VariantImagePathPipe} from './variant-image-path.pipe';
 
-export interface TcrVariant {
-  description: string;
-  statechartImageFile: string;
-}
+describe('VariantImagePathPipe', () => {
+  let pipe: VariantImagePathPipe;
 
-export const tcrVariants: { [key: string]: TcrVariant } = {
-  "original": {
-    description: "The Original",
-    statechartImageFile: "variant-original.png",
-  },
-  "btcr": {
-    description: "BTCR -- Build && Test && Commit || Revert",
-    statechartImageFile: "variant-btcr.png",
-  },
-  "relaxed": {
-    description: "The Relaxed",
-    statechartImageFile: "variant-relaxed.png",
-  },
-};
+  beforeEach(() => {
+    pipe = new VariantImagePathPipe();
+  });
+
+  [
+    {input: 'relaxed', expected: 'assets/images/variant-relaxed.png'},
+    {input: 'btcr', expected: 'assets/images/variant-btcr.png'},
+    {input: 'original', expected: 'assets/images/variant-original.png'},
+    {input: null, expected: ''},
+    {input: undefined, expected: ''},
+    {input: '', expected: ''}
+  ].forEach(testCase => {
+    it(`should return "${testCase.expected}" when the variant value is "${testCase.input}"`, () => {
+      expect(pipe.transform(testCase.input)).toEqual(testCase.expected);
+    });
+  });
+});

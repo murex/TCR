@@ -20,35 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export interface TcrSessionInfo {
-  baseDir: string;
-  workDir: string;
-  language: string;
-  toolchain: string;
-  vcsName: string;
-  vcsSession: string;
-  commitOnFail: boolean;
-  variant: string;
-  gitAutoPush: boolean;
-  messageSuffix: string;
-}
+import {Pipe, PipeTransform} from '@angular/core';
+import {tcrVariants} from "../interfaces/tcr-session-info";
 
-export interface TcrVariant {
-  description: string;
-  statechartImageFile: string;
-}
+const IMAGES_PATH = "assets/images"
 
-export const tcrVariants: { [key: string]: TcrVariant } = {
-  "original": {
-    description: "The Original",
-    statechartImageFile: "variant-original.png",
-  },
-  "btcr": {
-    description: "BTCR -- Build && Test && Commit || Revert",
-    statechartImageFile: "variant-btcr.png",
-  },
-  "relaxed": {
-    description: "The Relaxed",
-    statechartImageFile: "variant-relaxed.png",
-  },
-};
+@Pipe({
+  name: 'variantImagePath',
+  standalone: true
+})
+export class VariantImagePathPipe implements PipeTransform {
+
+  transform(value: string | null | undefined, ..._args: unknown[]): string {
+    return (value && value in tcrVariants)
+      ? `${IMAGES_PATH}/${tcrVariants[value].statechartImageFile}` : "";
+  }
+
+}

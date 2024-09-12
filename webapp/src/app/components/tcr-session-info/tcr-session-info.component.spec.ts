@@ -29,7 +29,7 @@ import {TcrSessionInfoComponent} from "./tcr-session-info.component";
 const sample: TcrSessionInfo = {
   baseDir: "/my/base/dir",
   commitOnFail: false,
-  variant: "nice",
+  variant: "relaxed",
   gitAutoPush: false,
   language: "java",
   messageSuffix: "my-suffix",
@@ -66,15 +66,19 @@ describe('TcrSessionInfoComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
+  describe('component instance', () => {
+    it('should be created', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should have title "TCR Session Information"', () => {
+      expect(component.title).toEqual('TCR Session Information');
+    });
   });
 
-  it('should have title "TCR Session Information"', () => {
-    expect(component.title).toEqual('TCR Session Information');
-  });
-
-  it('should fetch TCR session info on init', () => {
-    expect(component.sessionInfo).toEqual(sample);
+  describe('component initialization', () => {
+    it('should fetch TCR session info on init', () => {
+      expect(component.sessionInfo).toEqual(sample);
+    });
   });
 });
