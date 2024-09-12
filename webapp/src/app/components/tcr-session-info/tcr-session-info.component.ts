@@ -26,6 +26,8 @@ import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
 import {DatePipe, NgIf, NgOptimizedImage} from "@angular/common";
 import {OnOffPipe} from "../../pipes/on-off.pipe";
 import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
+import {VariantDescriptionPipe} from "../../pipes/variant-description.pipe";
+import {VariantImagePathPipe} from "../../pipes/variant-image-path.pipe";
 
 @Component({
   selector: 'app-tcr-session-info',
@@ -35,7 +37,9 @@ import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
     NgIf,
     OnOffPipe,
     ShowEmptyPipe,
-    NgOptimizedImage
+    NgOptimizedImage,
+    VariantDescriptionPipe,
+    VariantImagePathPipe
   ],
   templateUrl: './tcr-session-info.component.html',
   styleUrl: './tcr-session-info.component.css'
@@ -56,4 +60,5 @@ export class TcrSessionInfoComponent implements OnInit {
     this.sessionInfoService.getSessionInfo()
       .subscribe(sessionInfo => this.sessionInfo = sessionInfo);
   }
+
 }

@@ -29,8 +29,7 @@ const NOT_SET: string = "[not set]";
   standalone: true
 })
 export class ShowEmptyPipe implements PipeTransform {
-  transform(value: unknown, ..._args: unknown[]): unknown {
+  transform(value: string | null | undefined, ..._args: unknown[]): string {
     return value || NOT_SET;
   }
-
 }

@@ -31,7 +31,8 @@ const SECONDS_PER_HOUR = 3600;
   standalone: true
 })
 export class FormatTimerPipe implements PipeTransform {
-  transform(value: unknown, ..._args: unknown[]): unknown {
+
+  transform(value: number | string | null | undefined, ..._args: unknown[]): string {
     const duration: number = parseInt(value as string, 10);
     if (isNaN(duration)) {
       return `--${SEPARATOR}--`;

@@ -28,7 +28,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class OnOffPipe implements PipeTransform {
 
-  transform(value: unknown, ..._args: unknown[]): unknown {
+  transform(value: boolean | string | null | undefined, ..._args: unknown[]): string {
     return value ? "✅" : "❌";
   }
 

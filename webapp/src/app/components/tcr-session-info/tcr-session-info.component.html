@@ -12,8 +12,13 @@
             <span class="mbr-iconfont fa-gear fa"></span>
           </div>
           <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Workflow Variant: {{ sessionInfo.variant | showEmpty }}</h2>
-            <img class="statechart" ngSrc="assets/images/variant-{{ sessionInfo.variant | showEmpty }}.png" alt="{{ sessionInfo.variant | showEmpty }}" width="1" height="1" />
+            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Workflow Variant: {{ sessionInfo.variant | variantDescription }}</h2>
+            <img class="statechart"
+                 ngSrc="{{ sessionInfo.variant | variantImagePath }}"
+                 alt="{{ sessionInfo.variant | variantDescription }}"
+                 width="1" height="1"/>
+            <p>Refer to <a href="https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3" target="_blank">this blog post</a>
+              for additional information on TCR variants.</p>
           </div>
         </div>
       </div>
