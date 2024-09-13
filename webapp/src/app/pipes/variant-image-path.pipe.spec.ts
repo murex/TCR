@@ -33,6 +33,7 @@ describe('VariantImagePathPipe', () => {
     {input: 'relaxed', expected: 'assets/images/variant-relaxed.png'},
     {input: 'btcr', expected: 'assets/images/variant-btcr.png'},
     {input: 'original', expected: 'assets/images/variant-original.png'},
+    {input: 'introspective', expected: 'assets/images/variant-introspective.png'},
     {input: null, expected: ''},
     {input: undefined, expected: ''},
     {input: '', expected: ''}

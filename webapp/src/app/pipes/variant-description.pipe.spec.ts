@@ -35,6 +35,7 @@ describe('VariantDescriptionPipe', () => {
     {input: 'relaxed', expected: 'The Relaxed'},
     {input: 'btcr', expected: 'BTCR -- Build && Test && Commit || Revert'},
     {input: 'original', expected: 'The Original'},
+    {input: 'introspective', expected: 'The Introspective'},
     {input: null, expected: notSet},
     {input: undefined, expected: notSet},
     {input: '', expected: notSet}
