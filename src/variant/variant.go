@@ -31,6 +31,7 @@ func (v Variant) Name() string {
 }
 
 const (
-	Relaxed Variant = "relaxed"
-	BTCR    Variant = "btcr"
+	Relaxed       Variant = "relaxed"
+	BTCR          Variant = "btcr"
+	Introspective Variant = "introspective"
 )

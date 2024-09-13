@@ -51,4 +51,8 @@ export const tcrVariants: { [key: string]: TcrVariant } = {
     description: "The Relaxed",
     statechartImageFile: "variant-relaxed.png",
   },
+  "introspective": {
+    description: "The Introspective",
+    statechartImageFile: "variant-introspective.png",
+  },
 };

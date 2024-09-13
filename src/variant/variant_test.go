@@ -35,6 +35,7 @@ func Test_get_variant_name(t *testing.T) {
 	}{
 		{"relaxed", Relaxed, "relaxed"},
 		{"btcr", BTCR, "btcr"},
+		{"introspective", Introspective, "introspective"},
 	}
 
 	for _, test := range tests {
