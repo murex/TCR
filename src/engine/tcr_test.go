@@ -296,7 +296,7 @@ func Test_relaxed_doesnt_revert_test_files(t *testing.T) {
 	assert.NotEqual(t, fake.RestoreCommand, vcsFake.GetLastCommand())
 }
 
-func Test_relaxed_reverts(t *testing.T) {
+func Test_variant_specific_reverts(t *testing.T) {
 	testFlags := []struct {
 		description         string
 		variant             variant.Variant
@@ -358,6 +358,22 @@ func Test_relaxed_reverts(t *testing.T) {
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
 	}
+}
+
+func Test_introspective_variant(t *testing.T) {
+	t.Skip("work in progress")
+	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(
+		params.AParamSet(params.WithVariant(variant.Introspective)),
+		nil, nil, nil, vcs.FileDiffs{
+			vcs.NewFileDiff("fake-src", 1, 1),
+			vcs.NewFileDiff("fake-test", 1, 1),
+		})
+
+	tcr.revert(*events.ATcrEvent())
+	//sniffer.Stop()
+	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+	//assert.Equal(t, 1, sniffer.GetMatchCount())
+
 }
 
 func Test_tcr_cycle_end_state(t *testing.T) {
