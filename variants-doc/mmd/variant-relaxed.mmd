@@ -2,8 +2,8 @@ stateDiagram-v2
     direction LR
     state "⚙️ build" as Build
     state "⚙️ test" as Test
-    state "✅ commit (src + tests)" as Commit
-    state "❌ revert (src)" as Revert
+    state "✅ VCS commit (src + tests)" as Commit
+    state "❌ VCS revert (src)" as Revert
     [*] --> Build
     Build --> Test: pass
     Build --> [*]: fail
