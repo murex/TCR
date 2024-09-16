@@ -350,7 +350,7 @@ func Test_variant_specific_reverts(t *testing.T) {
 				},
 			)
 			tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(
-				params.AParamSet(params.WithVariant(tt.variant)),
+				params.AParamSet(params.WithVariant(tt.variant.Name())),
 				nil, nil, nil, tt.fileDiffs)
 			tcr.revert(*events.ATcrEvent())
 			sniffer.Stop()
@@ -363,7 +363,7 @@ func Test_variant_specific_reverts(t *testing.T) {
 func Test_introspective_variant(t *testing.T) {
 	t.Skip("work in progress")
 	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(
-		params.AParamSet(params.WithVariant(variant.Introspective)),
+		params.AParamSet(params.WithVariant(variant.Introspective.Name())),
 		nil, nil, nil, vcs.FileDiffs{
 			vcs.NewFileDiff("fake-src", 1, 1),
 			vcs.NewFileDiff("fake-test", 1, 1),
@@ -589,7 +589,7 @@ func Test_set_variant(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(fmt.Sprintf("Variant %v", tt.variant), func(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
-			tcr.SetVariant(tt.variant)
+			tcr.SetVariant(tt.variant.Name())
 			assert.Equal(t, string(tt.variant), tcr.GetSessionInfo().Variant)
 		})
 	}

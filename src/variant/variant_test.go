@@ -44,3 +44,30 @@ func Test_get_variant_name(t *testing.T) {
 		})
 	}
 }
+
+func Test_select_variant(t *testing.T) {
+	relaxed, btcr, introspective := Relaxed, BTCR, Introspective
+	tests := []struct {
+		name            string
+		expectedVariant *Variant
+		expectedError   error
+	}{
+		{"relaxed", &relaxed, nil},
+		{"btcr", &btcr, nil},
+		{"introspective", &introspective, nil},
+		{"unknown", nil, &UnsupportedVariantError{"unknown"}},
+		{"", nil, &UnsupportedVariantError{""}},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			variant, err := Select(test.name)
+			assert.Equal(t, test.expectedVariant, variant)
+			assert.Equal(t, test.expectedError, err)
+		})
+	}
+}
+
+func Test_unsupported_variant_message_format(t *testing.T) {
+	err := UnsupportedVariantError{"some-variant"}
+	assert.Equal(t, "variant not supported: \"some-variant\"", err.Error())
+}
