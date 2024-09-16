@@ -59,7 +59,7 @@ type (
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
-		SetVariant(variant string)
+		SetVariant(name string)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -197,9 +197,9 @@ func (tcr *TCREngine) SetCommitOnFail(flag bool) {
 }
 
 // SetVariant sets the TCR variant that will be used by TCR engine
-func (tcr *TCREngine) SetVariant(variantName string) {
+func (tcr *TCREngine) SetVariant(name string) {
 	var err error
-	tcr.variant, err = variant.Select(variantName)
+	tcr.variant, err = variant.Select(name)
 	if err != nil {
 		var unsupportedVariantError *variant.UnsupportedVariantError
 		if errors.As(err, &unsupportedVariantError) {
