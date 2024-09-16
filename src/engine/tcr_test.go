@@ -489,7 +489,6 @@ func initTCREngineWithFakesWithFileDiffs(
 	tcr.fsWatchRearmDelay = 0
 	tcr.traceReporterWaitingTime = 0
 	return tcr, vcsFake
-
 }
 
 func initTCREngineWithFakes(
