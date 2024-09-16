@@ -24,7 +24,6 @@ package params
 
 import (
 	"github.com/murex/tcr/runmode"
-	"github.com/murex/tcr/variant"
 	"time"
 )
 
@@ -37,7 +36,7 @@ type Params struct {
 	Toolchain       string
 	MobTurnDuration time.Duration
 	AutoPush        bool
-	Variant         variant.Variant
+	Variant         string
 	CommitFailures  bool
 	PollingPeriod   time.Duration
 	Mode            runmode.RunMode

@@ -22,16 +22,45 @@ SOFTWARE.
 
 package variant
 
-// Variant represents the possible values for the TCR Variant
+import "fmt"
+
+// UnsupportedVariantError is returned when the provided Variant name is not supported.
+type UnsupportedVariantError struct {
+	variantName string
+}
+
+// Error returns the error description
+func (e *UnsupportedVariantError) Error() string {
+	return fmt.Sprintf("variant not supported: \"%s\"", e.variantName)
+}
+
+// Variant represents the possible values for the TCR Variant.
+// These values are inspired by the following blog-post:
 // https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3
 type Variant string
 
-func (v Variant) Name() string {
-	return string(v)
-}
-
+// Recognized variant values
 const (
 	Relaxed       Variant = "relaxed"
 	BTCR          Variant = "btcr"
 	Introspective Variant = "introspective"
 )
+
+var recognized = []Variant{Relaxed, BTCR, Introspective}
+
+// Select returns a variant instance for the provided name.
+// It returns an UnsupportedVariantError if the name is not recognized as a
+// valid variant name.
+func Select(name string) (*Variant, error) {
+	for _, variant := range recognized {
+		if name == variant.Name() {
+			return &variant, nil
+		}
+	}
+	return nil, &UnsupportedVariantError{name}
+}
+
+// Name returns the variant name
+func (v Variant) Name() string {
+	return string(v)
+}

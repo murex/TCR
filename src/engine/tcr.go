@@ -59,7 +59,7 @@ type (
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
 		SetCommitOnFail(flag bool)
-		SetVariant(variant variant.Variant)
+		SetVariant(variant string)
 		GetCurrentRole() role.Role
 		RunAsDriver()
 		RunAsNavigator()
@@ -94,7 +94,7 @@ type (
 		// before starting a new one
 		roleMutex     sync.Mutex
 		commitOnFail  bool
-		variant       variant.Variant
+		variant       *variant.Variant
 		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
 		shoot chan bool
@@ -108,10 +108,6 @@ type (
 		fsWatchRearmDelay time.Duration
 	}
 )
-
-func (tcr *TCREngine) SetVariant(variant variant.Variant) {
-	tcr.variant = variant
-}
 
 const traceReporterWaitingTime = 100 * time.Millisecond
 
@@ -197,6 +193,18 @@ func (tcr *TCREngine) SetCommitOnFail(flag bool) {
 		report.PostInfo("Test-breaking changes will be committed")
 	} else {
 		report.PostInfo("Test-breaking changes will not be committed")
+	}
+}
+
+// SetVariant sets the TCR variant that will be used by TCR engine
+func (tcr *TCREngine) SetVariant(variantName string) {
+	var err error
+	tcr.variant, err = variant.Select(variantName)
+	if err != nil {
+		var unsupportedVariantError *variant.UnsupportedVariantError
+		if errors.As(err, &unsupportedVariantError) {
+			tcr.handleError(err, true, status.ConfigError)
+		}
 	}
 }
 
@@ -633,14 +641,14 @@ func (tcr *TCREngine) revert(event events.TCREvent) {
 }
 
 func (tcr *TCREngine) noFilesRevertedMessage() string {
-	if tcr.variant == variant.Relaxed {
+	if *tcr.variant == variant.Relaxed {
 		return "No file reverted (only test files were updated since last commit)"
 	}
 	return "No file reverted"
 }
 
 func (tcr *TCREngine) shouldRevertFile(path string) bool {
-	return tcr.variant == variant.BTCR || tcr.language.IsSrcFile(path)
+	return *tcr.variant == variant.BTCR || tcr.language.IsSrcFile(path)
 }
 
 func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err error) {
@@ -694,7 +702,7 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
 		CommitOnFail:      tcr.commitOnFail,
-		Variant:           string(tcr.variant),
+		Variant:           tcr.variant.Name(),
 		MessageSuffix:     tcr.messageSuffix,
 	}
 }
