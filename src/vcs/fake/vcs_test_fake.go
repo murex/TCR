@@ -26,6 +26,7 @@ package fake
 
 import (
 	"errors"
+	"github.com/google/go-cmp/cmp"
 	"github.com/murex/tcr/vcs"
 )
 
@@ -75,14 +76,14 @@ type (
 
 	// VCSFake provides a fake implementation of the VCS interface
 	VCSFake struct {
-		settings    Settings
-		pushEnabled bool
-		lastCommand Command
+		settings     Settings
+		pushEnabled  bool
+		lastCommands []Command
 	}
 )
 
 func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
-	vf.lastCommand = cmd
+	vf.lastCommands = append(vf.lastCommands, cmd)
 	if vf.settings.FailingCommands.contains(cmd) {
 		err = errors.New(vf.Name() + " " + string(cmd) + " error")
 	}
@@ -92,7 +93,7 @@ func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 // NewVCSFake initializes a fake VCS implementation which does nothing
 // apart from emulating errors on VCS operations
 func NewVCSFake(settings Settings) *VCSFake {
-	return &VCSFake{settings: settings}
+	return &VCSFake{settings: settings, lastCommands: make([]Command, 0)}
 }
 
 // Name returns VCS name
@@ -107,7 +108,18 @@ func (vf *VCSFake) SessionSummary() string {
 
 // GetLastCommand returns the last command called
 func (vf *VCSFake) GetLastCommand() Command {
-	return vf.lastCommand
+	return vf.GetLastCommands(1)[0]
+}
+
+// GetLastCommands returns the last commands called
+func (vf *VCSFake) GetLastCommands(count int) []Command {
+	return vf.lastCommands[len(vf.lastCommands)-count:]
+}
+
+// VerifyLastCommandsAre checks if last executed commands are the provided ones
+func (vf *VCSFake) VerifyLastCommandsAre(expectedCommands ...Command) bool {
+	actual := vf.lastCommands[len(vf.lastCommands)-len(expectedCommands):]
+	return cmp.Equal(actual, expectedCommands)
 }
 
 // Add does nothing. Returns an error if in the list of failing commands
