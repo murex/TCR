@@ -370,9 +370,10 @@ func Test_introspective_variant(t *testing.T) {
 		})
 
 	tcr.revert(*events.ATcrEvent())
-	//sniffer.Stop()
-	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
-	//assert.Equal(t, 1, sniffer.GetMatchCount())
+	assert.Equal(t, []fake.Command{fake.CommitCommand, fake.RevertCommand}, vcsFake.GetLastCommands(2))
+
+	//assert.True(t, vcsFake.VerifyLastCommandsAre(fake.CommitCommand, fake.RevertCommand),
+	//	"got %v", vcsFake.GetLastCommands())
 
 }
 
