@@ -27,7 +27,6 @@ export interface TcrSessionInfo {
   toolchain: string;
   vcsName: string;
   vcsSession: string;
-  commitOnFail: boolean;
   variant: string;
   gitAutoPush: boolean;
   messageSuffix: string;

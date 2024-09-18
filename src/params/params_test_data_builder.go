@@ -115,13 +115,6 @@ func WithVariant(variant string) func(params *Params) {
 	}
 }
 
-// WithCommitFailures sets commit-failures flag to the provided value
-func WithCommitFailures(value bool) func(params *Params) {
-	return func(params *Params) {
-		params.CommitFailures = value
-	}
-}
-
 // WithRunMode sets the provided mode as the run mode
 func WithRunMode(mode runmode.RunMode) func(params *Params) {
 	return func(params *Params) {

@@ -30,7 +30,6 @@ type SessionInfo struct {
 	ToolchainName     string
 	VCSName           string
 	VCSSessionSummary string
-	CommitOnFail      bool
 	Variant           string
 	GitAutoPush       bool
 	MessageSuffix     string

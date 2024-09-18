@@ -57,7 +57,6 @@ describe('TcrSessionInfoService', () => {
     it('should return session info when called', () => {
       const sample: TcrSessionInfo = {
         baseDir: "/my/base/dir",
-        commitOnFail: false,
         variant: "nice",
         gitAutoPush: false,
         language: "java",

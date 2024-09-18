@@ -31,7 +31,7 @@ var checkWorkflowRunners []checkPointRunner
 
 func init() {
 	checkWorkflowRunners = []checkPointRunner{
-		checkCommitFailures,
+		checkVariant,
 	}
 }
 
@@ -43,14 +43,8 @@ func checkWorkflowConfiguration(p params.Params) (cg *model.CheckGroup) {
 	return cg
 }
 
-func checkCommitFailures(p params.Params) (cp []model.CheckPoint) {
-	switch p.CommitFailures {
-	case true:
-		cp = append(cp, model.OkCheckPoint(
-			"commit-failures is turned on: test-breaking changes will be committed"))
-	case false:
-		cp = append(cp, model.OkCheckPoint(
-			"commit-failures is turned off: test-breaking changes will not be committed"))
-	}
+func checkVariant(_ params.Params) (cp []model.CheckPoint) {
+	cp = append(cp, model.WarningCheckPoint(
+		"variant checker TODO"))
 	return cp
 }
