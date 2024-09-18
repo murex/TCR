@@ -23,9 +23,7 @@ SOFTWARE.
 package checker
 
 import (
-	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -35,31 +33,4 @@ func Test_check_workflow_configuration(t *testing.T) {
 		&checkWorkflowRunners,
 		*params.AParamSet(),
 		"TCR workflow configuration")
-}
-
-func Test_check_commit_failures(t *testing.T) {
-	tests := []struct {
-		desc     string
-		value    bool
-		expected []model.CheckPoint
-	}{
-		{
-			"turned off", false,
-			[]model.CheckPoint{
-				model.OkCheckPoint("commit-failures is turned off: test-breaking changes will not be committed"),
-			},
-		},
-		{
-			"turned on", true,
-			[]model.CheckPoint{
-				model.OkCheckPoint("commit-failures is turned on: test-breaking changes will be committed"),
-			},
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			p := *params.AParamSet(params.WithCommitFailures(test.value))
-			assert.Equal(t, test.expected, checkCommitFailures(p))
-		})
-	}
 }

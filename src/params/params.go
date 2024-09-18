@@ -37,7 +37,6 @@ type Params struct {
 	MobTurnDuration time.Duration
 	AutoPush        bool
 	Variant         string
-	CommitFailures  bool
 	PollingPeriod   time.Duration
 	Mode            runmode.RunMode
 	VCS             string

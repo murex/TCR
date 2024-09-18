@@ -58,7 +58,6 @@ type (
 		setVCS(vcsInterface vcs.Interface)
 		ToggleAutoPush()
 		SetAutoPush(flag bool)
-		SetCommitOnFail(flag bool)
 		SetVariant(name string)
 		GetCurrentRole() role.Role
 		RunAsDriver()
@@ -93,7 +92,6 @@ type (
 		// roles simultaneously: we wait for it to leave the previous role
 		// before starting a new one
 		roleMutex     sync.Mutex
-		commitOnFail  bool
 		variant       *variant.Variant
 		messageSuffix string
 		// shoot channel is used for handling interruptions coming from the UI
@@ -177,23 +175,12 @@ func (tcr *TCREngine) Init(p params.Params) {
 	tcr.setMessageSuffix(p.MessageSuffix)
 	tcr.vcs.EnableAutoPush(p.AutoPush)
 
-	tcr.SetCommitOnFail(p.CommitFailures)
 	tcr.SetVariant(p.Variant)
 	tcr.setMobTimerDuration(p.MobTurnDuration)
 
 	tcr.ui.ShowRunningMode(tcr.mode)
 	tcr.ui.ShowSessionInfo()
 	tcr.warnIfOnRootBranch(tcr.mode.IsInteractive())
-}
-
-// SetCommitOnFail sets VCS commit-on-fail option to the provided value
-func (tcr *TCREngine) SetCommitOnFail(flag bool) {
-	tcr.commitOnFail = flag
-	if tcr.commitOnFail {
-		report.PostInfo("Test-breaking changes will be committed")
-	} else {
-		report.PostInfo("Test-breaking changes will not be committed")
-	}
 }
 
 // SetVariant sets the TCR variant that will be used by TCR engine
@@ -608,16 +595,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	tcr.handleError(tcr.vcsPushAuto(), false, status.VCSError)
 }
 
-func (tcr *TCREngine) revert(event events.TCREvent) {
-	if tcr.commitOnFail {
-		err := tcr.commitTestBreakingChanges(event)
-		tcr.handleError(err, false, status.VCSError)
-		if err != nil {
-			return
-		}
-		tcr.handleError(tcr.vcsPushAuto(), false, status.VCSError)
-	}
-
+func (tcr *TCREngine) revert(_ events.TCREvent) {
 	diffs, err := tcr.vcs.Diff()
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
@@ -651,41 +629,6 @@ func (tcr *TCREngine) shouldRevertFile(path string) bool {
 	return *tcr.variant == variant.BTCR || tcr.language.IsSrcFile(path)
 }
 
-func (tcr *TCREngine) commitTestBreakingChanges(event events.TCREvent) (err error) {
-	// Create stash with the changes
-	err = tcr.vcs.Stash(commitMessageFail)
-	if err != nil {
-		return err
-	}
-	// Apply changes back in the working tree
-	err = tcr.vcs.UnStash(true)
-	if err != nil {
-		return err
-	}
-	// Commit changes with failure message into VCS index
-	err = tcr.vcs.Add()
-	if err != nil {
-		return err
-	}
-	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageFail, &event)...)
-	if err != nil {
-		return err
-	}
-	// Revert changes (both in VCS index and working tree)
-	err = tcr.vcs.Revert()
-	if err != nil {
-		return err
-	}
-	// Amend commit message on revert operation in VCS index
-	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageRevert, nil)...)
-	if err != nil {
-		return err
-	}
-	// Re-apply changes in the working tree and get rid of stash
-	err = tcr.vcs.UnStash(false)
-	return err
-}
-
 func (tcr *TCREngine) revertFile(file string) error {
 	return tcr.vcs.Restore(file)
 }
@@ -701,7 +644,6 @@ func (tcr *TCREngine) GetSessionInfo() SessionInfo {
 		VCSName:           tcr.vcs.Name(),
 		VCSSessionSummary: tcr.vcs.SessionSummary(),
 		GitAutoPush:       tcr.vcs.IsAutoPushEnabled(),
-		CommitOnFail:      tcr.commitOnFail,
 		Variant:           tcr.variant.Name(),
 		MessageSuffix:     tcr.messageSuffix,
 	}

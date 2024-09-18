@@ -51,7 +51,6 @@ func SessionInfoGetHandler(c *gin.Context) {
 		ToolchainName:     info.ToolchainName,
 		VCSName:           info.VCSName,
 		VCSSessionSummary: info.VCSSessionSummary,
-		CommitOnFail:      info.CommitOnFail,
 		Variant:           info.Variant,
 		GitAutoPush:       info.GitAutoPush,
 		MessageSuffix:     info.MessageSuffix,

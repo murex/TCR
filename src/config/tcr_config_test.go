@@ -239,7 +239,6 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 	expected := []string{
 		"TCR configuration:",
 		fmt.Sprintf("%v.git.auto-push: %v", prefix, false),
-		fmt.Sprintf("%v.git.commit-failures: %v", prefix, false),
 		fmt.Sprintf("%v.git.polling-period: %v", prefix, 2*time.Second),
 		fmt.Sprintf("%v.mob-timer.duration: %v", prefix, 5*time.Minute),
 		fmt.Sprintf("%v.tcr.language: %v", prefix, ""),

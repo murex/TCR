@@ -47,7 +47,6 @@ type TcrConfig struct {
 	MobTimerDuration *DurationParam
 	AutoPush         *BoolParam
 	Variant          *StringParam
-	CommitFailures   *BoolParam
 	VCS              *StringParam
 	MessageSuffix    *StringParam
 	Trace            *StringParam
@@ -61,7 +60,6 @@ func (c TcrConfig) reset() {
 	c.MobTimerDuration.reset()
 	c.AutoPush.reset()
 	c.Variant.reset()
-	c.CommitFailures.reset()
 	c.VCS.reset()
 	c.MessageSuffix.reset()
 	c.Trace.reset()
@@ -203,7 +201,6 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
 	Config.Variant = AddVariantParam(cmd)
-	Config.CommitFailures = AddCommitFailuresParam(cmd)
 	Config.VCS = AddVCSParam(cmd)
 	Config.MessageSuffix = AddMessageSuffixParam(cmd)
 	Config.Trace = AddTraceParam(cmd)
@@ -221,7 +218,6 @@ func UpdateEngineParams(p *params.Params) {
 	p.PollingPeriod = Config.PollingPeriod.GetValue()
 	p.AutoPush = Config.AutoPush.GetValue()
 	p.Variant = Config.Variant.GetValue()
-	p.CommitFailures = Config.CommitFailures.GetValue()
 	p.VCS = Config.VCS.GetValue()
 	p.MessageSuffix = Config.MessageSuffix.GetValue()
 	p.Trace = Config.Trace.GetValue()

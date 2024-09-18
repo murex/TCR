@@ -56,7 +56,6 @@ func Test_session_info_get_handler(t *testing.T) {
 		ToolchainName:     info.ToolchainName,
 		VCSName:           info.VCSName,
 		VCSSessionSummary: info.VCSSessionSummary,
-		CommitOnFail:      info.CommitOnFail,
 		Variant:           info.Variant,
 		GitAutoPush:       info.GitAutoPush,
 		MessageSuffix:     info.MessageSuffix,

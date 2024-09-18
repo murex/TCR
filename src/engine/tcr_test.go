@@ -232,55 +232,6 @@ func Test_tcr_operation_end_state(t *testing.T) {
 	}
 }
 
-func Test_tcr_revert_end_state_with_commit_on_fail_enabled(t *testing.T) {
-	testFlags := []struct {
-		desc           string
-		vcsFailures    fake.Commands
-		expectedStatus status.Status
-	}{
-		{
-			"no failure",
-			nil,
-			status.Ok,
-		},
-		{
-			"VCS stash failure",
-			fake.Commands{fake.StashCommand},
-			status.VCSError,
-		},
-		{
-			"VCS un-stash failure",
-			fake.Commands{fake.UnStashCommand},
-			status.VCSError,
-		},
-		{
-			"VCS add failure",
-			fake.Commands{fake.AddCommand},
-			status.VCSError,
-		},
-		{
-			"VCS commit failure",
-			fake.Commands{fake.CommitCommand},
-			status.VCSError,
-		},
-		{
-			"VCS revert failure",
-			fake.Commands{fake.RevertCommand},
-			status.VCSError,
-		},
-	}
-
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			status.RecordState(status.Ok)
-			tcr, _ := initTCREngineWithFakes(nil, nil, tt.vcsFailures, nil)
-			tcr.SetCommitOnFail(true)
-			tcr.revert(*events.ATcrEvent())
-			assert.Equal(t, tt.expectedStatus, status.GetCurrentState())
-		})
-	}
-}
-
 func Test_relaxed_source_revert(t *testing.T) {
 	tcr, vcsFake := initTCREngineWithFakes(nil, nil, nil, nil)
 	tcr.revert(*events.ATcrEvent())
@@ -459,7 +410,6 @@ func initTCREngineWithFakesWithFileDiffs(
 			params.WithToolchain(tchn),
 			params.WithMobTimerDuration(p.MobTurnDuration),
 			params.WithAutoPush(p.AutoPush),
-			params.WithCommitFailures(p.CommitFailures),
 			params.WithVariant(p.Variant),
 			params.WithPollingPeriod(p.PollingPeriod),
 			params.WithRunMode(p.Mode),
@@ -552,24 +502,6 @@ func Test_set_auto_push(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
 			tcr.SetAutoPush(tt.state)
 			assert.Equal(t, tt.state, tcr.GetSessionInfo().GitAutoPush)
-		})
-	}
-}
-
-func Test_set_commit_on_fail(t *testing.T) {
-	var tcr TCRInterface
-	testFlags := []struct {
-		desc  string
-		state bool
-	}{
-		{"Turn on", true},
-		{"Turn off", false},
-	}
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
-			tcr.SetCommitOnFail(tt.state)
-			assert.Equal(t, tt.state, tcr.GetSessionInfo().CommitOnFail)
 		})
 	}
 }
