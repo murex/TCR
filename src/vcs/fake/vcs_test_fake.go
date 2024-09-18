@@ -26,7 +26,6 @@ package fake
 
 import (
 	"errors"
-	"github.com/google/go-cmp/cmp"
 	"github.com/murex/tcr/vcs"
 )
 
@@ -114,12 +113,6 @@ func (vf *VCSFake) GetLastCommand() Command {
 // GetLastCommands returns the last commands called
 func (vf *VCSFake) GetLastCommands(count int) []Command {
 	return vf.lastCommands[len(vf.lastCommands)-count:]
-}
-
-// VerifyLastCommandsAre checks if last executed commands are the provided ones
-func (vf *VCSFake) VerifyLastCommandsAre(expectedCommands ...Command) bool {
-	actual := vf.lastCommands[len(vf.lastCommands)-len(expectedCommands):]
-	return cmp.Equal(actual, expectedCommands)
 }
 
 // Add does nothing. Returns an error if in the list of failing commands
