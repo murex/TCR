@@ -371,10 +371,6 @@ func Test_introspective_variant(t *testing.T) {
 
 	tcr.revert(*events.ATcrEvent())
 	assert.Equal(t, []fake.Command{fake.CommitCommand, fake.RevertCommand}, vcsFake.GetLastCommands(2))
-
-	//assert.True(t, vcsFake.VerifyLastCommandsAre(fake.CommitCommand, fake.RevertCommand),
-	//	"got %v", vcsFake.GetLastCommands())
-
 }
 
 func Test_tcr_cycle_end_state(t *testing.T) {
