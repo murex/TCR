@@ -461,7 +461,7 @@ func Test_git_restore(t *testing.T) {
 				return tt.gitError
 			}
 
-			err := g.Restore("some-path")
+			err := g.RevertLocal("some-path")
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {

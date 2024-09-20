@@ -162,8 +162,8 @@ func (p *p4Impl) Commit(_ bool, messages ...string) error {
 	return p.submitChangeList(cl)
 }
 
-// Restore restores to last commit for the provided path.
-func (p *p4Impl) Restore(path string) error {
+// RevertLocal restores to last commit for the provided path.
+func (p *p4Impl) RevertLocal(path string) error {
 	// in order to work, p4 revert requires that the file be reconciled beforehand
 	err := p.reconcile(path)
 	if err != nil {
