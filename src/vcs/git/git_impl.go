@@ -258,9 +258,9 @@ func (g *gitImpl) RevertLocal(path string) error {
 	return g.traceGit("checkout", "HEAD", "--", path)
 }
 
-// Revert runs a git revert operation.
+// RollbackLastCommit runs a git revert operation.
 // Current implementation uses a direct call to git
-func (g *gitImpl) Revert() error {
+func (g *gitImpl) RollbackLastCommit() error {
 	report.PostInfo("Reverting changes")
 	return g.traceGit("revert", "--no-gpg-sign", "--no-edit", "HEAD")
 }

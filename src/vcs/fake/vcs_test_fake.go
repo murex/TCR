@@ -51,16 +51,16 @@ func (gc Commands) contains(command Command) bool {
 
 // List of supported VCS commands
 const (
-	AddCommand         Command = "add"
-	CommitCommand      Command = "commit"
-	DiffCommand        Command = "diff"
-	LogCommand         Command = "log"
-	PullCommand        Command = "pull"
-	PushCommand        Command = "push"
-	RevertLocalCommand Command = "revertLocal"
-	RevertCommand      Command = "revert"
-	StashCommand       Command = "stash"
-	UnStashCommand     Command = "unStash"
+	AddCommand                Command = "add"
+	CommitCommand             Command = "commit"
+	DiffCommand               Command = "diff"
+	LogCommand                Command = "log"
+	PullCommand               Command = "pull"
+	PushCommand               Command = "push"
+	RevertLocalCommand        Command = "revertLocal"
+	RollbackLastCommitCommand Command = "rollbackLastCommit"
+	StashCommand              Command = "stash"
+	UnStashCommand            Command = "unStash"
 )
 
 type (
@@ -172,9 +172,9 @@ func (vf *VCSFake) UnStash(_ bool) error {
 	return vf.fakeCommand(UnStashCommand)
 }
 
-// Revert does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) Revert() error {
-	return vf.fakeCommand(RevertCommand)
+// RollbackLastCommit does nothing. Returns an error if in the list of failing commands
+func (vf *VCSFake) RollbackLastCommit() error {
+	return vf.fakeCommand(RollbackLastCommitCommand)
 }
 
 // GetRootDir returns the root directory path

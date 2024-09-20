@@ -500,7 +500,7 @@ func Test_git_revert(t *testing.T) {
 				return tt.gitError
 			}
 
-			err := g.Revert()
+			err := g.RollbackLastCommit()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
