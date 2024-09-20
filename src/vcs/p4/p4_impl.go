@@ -195,19 +195,6 @@ func (p *p4Impl) Pull() error {
 	return p.traceP4("sync", path)
 }
 
-// Stash creates a p4 stash.
-// TODO: VCS Stash - p4 ???
-func (*p4Impl) Stash(_ string) error {
-	return errors.New("VCS stash operation not yet available for p4")
-}
-
-// UnStash applies a p4 stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
-// command is executed under the hood.
-// TODO: VCS UnStash - p4 ???
-func (*p4Impl) UnStash(_ bool) error {
-	return errors.New("VCS unstash operation not yet available for p4")
-}
-
 // Diff returns the list of files modified since last commit with diff info for each file
 func (p *p4Impl) Diff() (diffs vcs.FileDiffs, err error) {
 	var p4Output []byte
