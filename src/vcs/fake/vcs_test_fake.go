@@ -51,16 +51,16 @@ func (gc Commands) contains(command Command) bool {
 
 // List of supported VCS commands
 const (
-	AddCommand     Command = "add"
-	CommitCommand  Command = "commit"
-	DiffCommand    Command = "diff"
-	LogCommand     Command = "log"
-	PullCommand    Command = "pull"
-	PushCommand    Command = "push"
-	RestoreCommand Command = "restore"
-	RevertCommand  Command = "revert"
-	StashCommand   Command = "stash"
-	UnStashCommand Command = "unStash"
+	AddCommand         Command = "add"
+	CommitCommand      Command = "commit"
+	DiffCommand        Command = "diff"
+	LogCommand         Command = "log"
+	PullCommand        Command = "pull"
+	PushCommand        Command = "push"
+	RevertLocalCommand Command = "revertLocal"
+	RevertCommand      Command = "revert"
+	StashCommand       Command = "stash"
+	UnStashCommand     Command = "unStash"
 )
 
 type (
@@ -125,9 +125,9 @@ func (vf *VCSFake) Commit(_ bool, _ ...string) error {
 	return vf.fakeCommand(CommitCommand)
 }
 
-// Restore does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) Restore(_ string) error {
-	return vf.fakeCommand(RestoreCommand)
+// RevertLocal does nothing. Returns an error if in the list of failing commands
+func (vf *VCSFake) RevertLocal(_ string) error {
+	return vf.fakeCommand(RevertLocalCommand)
 }
 
 // Push does nothing. Returns an error if in the list of failing commands

@@ -551,7 +551,7 @@ func Test_p4_restore(t *testing.T) {
 				return tt.p4Error
 			}
 
-			err := p.Restore("some-path")
+			err := p.RevertLocal("some-path")
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {

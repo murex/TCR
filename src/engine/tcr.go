@@ -630,7 +630,7 @@ func (tcr *TCREngine) shouldRevertFile(path string) bool {
 }
 
 func (tcr *TCREngine) revertFile(file string) error {
-	return tcr.vcs.Restore(file)
+	return tcr.vcs.RevertLocal(file)
 }
 
 // GetSessionInfo provides the information related to the current TCR session.

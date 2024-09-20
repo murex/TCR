@@ -216,7 +216,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 		{
 			"revert with VCS restore failure",
 			func() {
-				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.RestoreCommand}, nil)
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.RevertLocalCommand}, nil)
 				tcr.revert(*events.ATcrEvent())
 			},
 			status.VCSError,
@@ -235,7 +235,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 func Test_relaxed_source_revert(t *testing.T) {
 	tcr, vcsFake := initTCREngineWithFakes(nil, nil, nil, nil)
 	tcr.revert(*events.ATcrEvent())
-	assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+	assert.Equal(t, fake.RevertLocalCommand, vcsFake.GetLastCommand())
 }
 
 func Test_relaxed_doesnt_revert_test_files(t *testing.T) {
@@ -244,7 +244,7 @@ func Test_relaxed_doesnt_revert_test_files(t *testing.T) {
 			vcs.NewFileDiff("fake-test", 1, 1),
 		})
 	tcr.revert(*events.ATcrEvent())
-	assert.NotEqual(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+	assert.NotEqual(t, fake.RevertLocalCommand, vcsFake.GetLastCommand())
 }
 
 func Test_variant_specific_reverts(t *testing.T) {
@@ -305,7 +305,7 @@ func Test_variant_specific_reverts(t *testing.T) {
 				nil, nil, nil, tt.fileDiffs)
 			tcr.revert(*events.ATcrEvent())
 			sniffer.Stop()
-			assert.Equal(t, fake.RestoreCommand, vcsFake.GetLastCommand())
+			assert.Equal(t, fake.RevertLocalCommand, vcsFake.GetLastCommand())
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
 	}
@@ -368,7 +368,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 		},
 		{
 			"with test and VCS restore failure",
-			toolchain.Operations{toolchain.TestOperation}, fake.Commands{fake.RestoreCommand},
+			toolchain.Operations{toolchain.TestOperation}, fake.Commands{fake.RevertLocalCommand},
 			status.VCSError,
 		},
 	}

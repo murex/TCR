@@ -251,9 +251,9 @@ func (g *gitImpl) nothingToCommit() bool {
 	return status.IsClean()
 }
 
-// Restore restores to last commit for the provided path.
+// RevertLocal restores to last commit for the provided path.
 // Current implementation uses a direct call to git
-func (g *gitImpl) Restore(path string) error {
+func (g *gitImpl) RevertLocal(path string) error {
 	report.PostWarning("Reverting ", path)
 	return g.traceGit("checkout", "HEAD", "--", path)
 }
