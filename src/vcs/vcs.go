@@ -58,7 +58,7 @@ type Interface interface {
 	Add(paths ...string) error
 	Commit(amend bool, messages ...string) error
 	RevertLocal(path string) error
-	Revert() error
+	RollbackLastCommit() error
 	Push() error
 	Pull() error
 	Stash(message string) error

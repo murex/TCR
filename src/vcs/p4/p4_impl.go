@@ -175,7 +175,7 @@ func (p *p4Impl) RevertLocal(path string) error {
 
 // Revert runs a p4 revert operation.
 // TODO: VCS Revert - p4 revert
-func (*p4Impl) Revert() error {
+func (*p4Impl) RollbackLastCommit() error {
 	return errors.New("VCS revert operation not yet available for p4")
 }
 
