@@ -312,7 +312,6 @@ func Test_variant_specific_reverts(t *testing.T) {
 }
 
 func Test_introspective_variant(t *testing.T) {
-	t.Skip("work in progress")
 	tcr, vcsFake := initTCREngineWithFakesWithFileDiffs(
 		params.AParamSet(params.WithVariant(variant.Introspective.Name())),
 		nil, nil, nil, vcs.FileDiffs{
@@ -321,7 +320,12 @@ func Test_introspective_variant(t *testing.T) {
 		})
 
 	tcr.revert(*events.ATcrEvent())
-	assert.Equal(t, []fake.Command{fake.CommitCommand, fake.RollbackLastCommitCommand}, vcsFake.GetLastCommands(2))
+	assert.Equal(t, []fake.Command{
+		fake.AddCommand,
+		fake.CommitCommand,
+		fake.RollbackLastCommitCommand,
+		fake.CommitCommand,
+	}, vcsFake.GetLastCommands(4))
 }
 
 func Test_tcr_cycle_end_state(t *testing.T) {
