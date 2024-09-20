@@ -59,8 +59,6 @@ const (
 	PushCommand               Command = "push"
 	RevertLocalCommand        Command = "revertLocal"
 	RollbackLastCommitCommand Command = "rollbackLastCommit"
-	StashCommand              Command = "stash"
-	UnStashCommand            Command = "unStash"
 )
 
 type (
@@ -160,16 +158,6 @@ func (vf *VCSFake) Log(msgFilter func(msg string) bool) (logs vcs.LogItems, err 
 		}
 	}
 	return
-}
-
-// Stash does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) Stash(_ string) error {
-	return vf.fakeCommand(StashCommand)
-}
-
-// UnStash does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) UnStash(_ bool) error {
-	return vf.fakeCommand(UnStashCommand)
 }
 
 // RollbackLastCommit does nothing. Returns an error if in the list of failing commands

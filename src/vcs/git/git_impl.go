@@ -292,25 +292,6 @@ func (g *gitImpl) Pull() error {
 	return g.traceGit("pull", "--no-recurse-submodules", g.GetRemoteName(), g.GetWorkingBranch())
 }
 
-// Stash creates a git stash.
-// Current implementation uses a direct call to git
-func (g *gitImpl) Stash(message string) error {
-	report.PostInfo("Stashing changes")
-	return g.traceGit("stash", "push", "--quiet", "--include-untracked", "--message", message)
-}
-
-// UnStash applies a git stash. Depending on the keep argument value, either a "stash apply" or a "stash pop"
-// command is executed under the hood.
-// Current implementation uses a direct call to git
-func (g *gitImpl) UnStash(keep bool) error {
-	report.PostInfo("Applying stashed changes")
-	stashAction := "pop"
-	if keep {
-		stashAction = "apply"
-	}
-	return g.traceGit("stash", stashAction, "--quiet")
-}
-
 // Diff returns the list of files modified since last commit with diff info for each file
 // Current implementation uses a direct call to git
 func (g *gitImpl) Diff() (diffs vcs.FileDiffs, err error) {

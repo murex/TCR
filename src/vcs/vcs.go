@@ -61,8 +61,6 @@ type Interface interface {
 	RollbackLastCommit() error
 	Push() error
 	Pull() error
-	Stash(message string) error
-	UnStash(keep bool) error
 	Diff() (diffs FileDiffs, err error)
 	Log(msgFilter func(msg string) bool) (logs LogItems, err error)
 	EnableAutoPush(flag bool)
