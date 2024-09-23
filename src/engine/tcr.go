@@ -596,10 +596,15 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 }
 
 func (tcr *TCREngine) revert(e events.TCREvent) {
-	if *tcr.variant == variant.Introspective {
+	switch *tcr.variant {
+	case variant.Introspective:
 		_ = tcr.introspectiveRevert(e)
-		return
+	default:
+		tcr.simpleRevert()
 	}
+}
+
+func (tcr *TCREngine) simpleRevert() {
 	diffs, err := tcr.vcs.Diff()
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {

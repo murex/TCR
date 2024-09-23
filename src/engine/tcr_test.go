@@ -214,7 +214,7 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			status.VCSError,
 		},
 		{
-			"revert with VCS restore failure",
+			"revert with VCS revert local failure",
 			func() {
 				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.RevertLocalCommand}, nil)
 				tcr.revert(*events.ATcrEvent())
@@ -371,7 +371,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 			status.VCSError,
 		},
 		{
-			"with test and VCS restore failure",
+			"with test and VCS revert local failure",
 			toolchain.Operations{toolchain.TestOperation}, fake.Commands{fake.RevertLocalCommand},
 			status.VCSError,
 		},
@@ -525,6 +525,68 @@ func Test_set_variant(t *testing.T) {
 			assert.Equal(t, string(tt.variant), tcr.GetSessionInfo().Variant)
 		})
 	}
+}
+
+func Test_variant_commit_subjects(t *testing.T) {
+	var tcr TCRInterface
+	testFlags := []struct {
+		description       string
+		variant           variant.Variant
+		toolchainFailures toolchain.Operations
+		expected          []string
+	}{
+		{
+			"Introspective with tests passing.",
+			variant.Introspective,
+			toolchain.Operations{},
+			[]string{"✅ TCR - tests passing"},
+		},
+		{
+			"Introspective with tests failing.",
+			variant.Introspective,
+			toolchain.Operations{toolchain.TestOperation},
+			[]string{
+				"❌ TCR - tests failing",
+				"⏪ TCR - revert changes",
+			},
+		},
+		{
+			"Relaxed with tests passing.",
+			variant.Relaxed,
+			toolchain.Operations{},
+			[]string{"✅ TCR - tests passing"},
+		},
+		{
+			"Relaxed with tests failing.",
+			variant.Relaxed,
+			toolchain.Operations{toolchain.TestOperation},
+			[]string{},
+		},
+		{
+			"BTCR with tests passing.",
+			variant.BTCR,
+			toolchain.Operations{},
+			[]string{"✅ TCR - tests passing"},
+		},
+		{
+			"BTCR with tests failing.",
+			variant.BTCR,
+			toolchain.Operations{toolchain.TestOperation},
+			[]string{},
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.description, func(t *testing.T) {
+			var vcsFake *fake.VCSFake
+			tcr, vcsFake = initTCREngineWithFakes(nil, tt.toolchainFailures, nil, nil)
+			tcr.SetVariant(tt.variant.Name())
+			tcr.RunTCRCycle()
+			messages := vcsFake.GetLastCommitSubjects()
+			assert.Equal(t, tt.expected, messages)
+		})
+	}
+
 }
 
 func Test_vcs_pull_calls_vcs_command(t *testing.T) {
