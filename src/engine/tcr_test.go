@@ -221,6 +221,15 @@ func Test_tcr_operation_end_state(t *testing.T) {
 			},
 			status.VCSError,
 		},
+		{
+			"introspective revert with VCS rollback last commit failure",
+			func() {
+				tcr, _ := initTCREngineWithFakes(nil, nil, fake.Commands{fake.RollbackLastCommitCommand}, nil)
+				tcr.SetVariant(variant.Introspective.Name())
+				tcr.revert(*events.ATcrEvent())
+			},
+			status.VCSError,
+		},
 	}
 
 	for _, tt := range testFlags {

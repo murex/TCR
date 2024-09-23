@@ -596,28 +596,31 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 }
 
 func (tcr *TCREngine) revert(e events.TCREvent) {
+	var err error
+
 	switch *tcr.variant {
 	case variant.Introspective:
-		_ = tcr.introspectiveRevert(e)
+		err = tcr.introspectiveRevert(e)
 	default:
-		tcr.simpleRevert()
+		err = tcr.simpleRevert()
 	}
+
+	tcr.handleError(err, false, status.VCSError)
 }
 
-func (tcr *TCREngine) simpleRevert() {
+func (tcr *TCREngine) simpleRevert() error {
 	diffs, err := tcr.vcs.Diff()
-	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
-		return
+		return err
 	}
 	var reverted int
 	for _, diff := range diffs {
 		if tcr.shouldRevertFile(diff.Path) {
 			err := tcr.revertFile(diff.Path)
-			tcr.handleError(err, false, status.VCSError)
-			if err == nil {
-				reverted++
+			if err != nil {
+				return err
 			}
+			reverted++
 		}
 	}
 	if reverted > 0 {
@@ -625,10 +628,10 @@ func (tcr *TCREngine) simpleRevert() {
 	} else {
 		report.PostInfo(tcr.noFilesRevertedMessage())
 	}
+	return nil
 }
 
 func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
-	// Commit changes with failure message into VCS index
 	err = tcr.vcs.Add()
 	if err != nil {
 		return err
@@ -637,12 +640,10 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	// Rollback changes (both in VCS index and working tree)
 	err = tcr.vcs.RollbackLastCommit()
 	if err != nil {
 		return err
 	}
-	// Amend commit message on revert operation in VCS index
 	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageRevert, nil)...)
 	return err
 }
