@@ -73,9 +73,10 @@ type (
 
 	// VCSFake provides a fake implementation of the VCS interface
 	VCSFake struct {
-		settings     Settings
-		pushEnabled  bool
-		lastCommands []Command
+		settings           Settings
+		pushEnabled        bool
+		lastCommands       []Command
+		lastCommitSubjects []string
 	}
 )
 
@@ -90,7 +91,7 @@ func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 // NewVCSFake initializes a fake VCS implementation which does nothing
 // apart from emulating errors on VCS operations
 func NewVCSFake(settings Settings) *VCSFake {
-	return &VCSFake{settings: settings, lastCommands: make([]Command, 0)}
+	return &VCSFake{settings: settings, lastCommitSubjects: make([]string, 0), lastCommands: make([]Command, 0)}
 }
 
 // Name returns VCS name
@@ -119,7 +120,8 @@ func (vf *VCSFake) Add(_ ...string) error {
 }
 
 // Commit does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) Commit(_ bool, _ ...string) error {
+func (vf *VCSFake) Commit(_ bool, messages ...string) error {
+	vf.lastCommitSubjects = append(vf.lastCommitSubjects, messages[0])
 	return vf.fakeCommand(CommitCommand)
 }
 
@@ -203,4 +205,8 @@ func (vf *VCSFake) IsRemoteEnabled() bool {
 // CheckRemoteAccess returns true if VCS remote can be accessed
 func (vf *VCSFake) CheckRemoteAccess() bool {
 	return vf.settings.RemoteAccessWorking
+}
+
+func (vf *VCSFake) GetLastCommitSubjects() []string {
+	return vf.lastCommitSubjects
 }
