@@ -587,7 +587,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageOk, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageOk, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -633,7 +633,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageFail, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageFail, &event)...)
 	if err != nil {
 		return err
 	}
@@ -643,7 +643,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 		return err
 	}
 	// Amend commit message on revert operation in VCS index
-	err = tcr.vcs.Commit(false, tcr.wrapCommitMessages(commitMessageRevert, nil)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageRevert, nil)...)
 	return err
 }
 

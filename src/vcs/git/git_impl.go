@@ -225,11 +225,8 @@ func (g *gitImpl) Add(paths ...string) error {
 
 // Commit commits changes to git index.
 // Current implementation uses a direct call to git
-func (g *gitImpl) Commit(amend bool, messages ...string) error {
+func (g *gitImpl) Commit(messages ...string) error {
 	gitArgs := []string{"commit", "--no-gpg-sign"}
-	if amend {
-		gitArgs = append(gitArgs, "--amend")
-	}
 	for _, message := range messages {
 		gitArgs = append(gitArgs, "-m", message)
 	}

@@ -120,7 +120,7 @@ func (vf *VCSFake) Add(_ ...string) error {
 }
 
 // Commit does nothing. Returns an error if in the list of failing commands
-func (vf *VCSFake) Commit(_ bool, messages ...string) error {
+func (vf *VCSFake) Commit(messages ...string) error {
 	vf.lastCommitSubjects = append(vf.lastCommitSubjects, messages[0])
 	return vf.fakeCommand(CommitCommand)
 }

@@ -56,7 +56,7 @@ type Interface interface {
 	GetWorkingBranch() string
 	IsOnRootBranch() bool
 	Add(paths ...string) error
-	Commit(amend bool, messages ...string) error
+	Commit(messages ...string) error
 	RevertLocal(path string) error
 	RollbackLastCommit() error
 	Push() error
