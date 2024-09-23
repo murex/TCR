@@ -393,7 +393,6 @@ func Test_p4_commit(t *testing.T) {
 	testFlags := []struct {
 		desc                 string
 		messages             []string
-		amend                bool
 		p4ChangeError        error
 		p4ChangeOutput       string
 		p4SubmitError        error
@@ -402,42 +401,35 @@ func Test_p4_commit(t *testing.T) {
 	}{
 		{
 			"p4 change and p4 submit command calls succeed",
-			[]string{"some message"}, false,
+			[]string{"some message"},
 			nil, "change 1234567 created ...",
 			nil, []string{"submit", "-c", "1234567"},
 			false,
 		},
 		{
 			"p4 change command call fails",
-			[]string{"some message"}, false,
+			[]string{"some message"},
 			errors.New("p4 change error"), "",
 			nil, nil,
 			true,
 		},
 		{
 			"p4 submit command call fails",
-			[]string{"some message"}, false,
+			[]string{"some message"},
 			nil, "change 1234567 created ...",
 			errors.New("p4 submit error"), []string{"submit", "-c", "1234567"},
 			true,
 		},
 		{
 			"with multiple messages",
-			[]string{"main message", "additional message"}, false,
+			[]string{"main message", "additional message"},
 			nil, "change 1234567 created ...",
 			nil, []string{"submit", "-c", "1234567"},
 			false,
 		},
 		{
 			"with multi-line messages",
-			[]string{"main message", "- line 1\n- line 2"}, false,
-			nil, "change 1234567 created ...",
-			nil, []string{"submit", "-c", "1234567"},
-			false,
-		},
-		{
-			"with amend option",
-			[]string{"some message"}, true,
+			[]string{"main message", "- line 1\n- line 2"},
 			nil, "change 1234567 created ...",
 			nil, []string{"submit", "-c", "1234567"},
 			false,
@@ -457,7 +449,7 @@ func Test_p4_commit(t *testing.T) {
 				return tt.p4SubmitError
 			}
 
-			err := p.Commit(tt.amend, tt.messages...)
+			err := p.Commit(tt.messages...)
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {

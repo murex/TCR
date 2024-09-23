@@ -153,7 +153,7 @@ type changeList struct {
 
 // Commit commits changes to p4 index.
 // With current implementation, "amend" parameter is ignored.
-func (p *p4Impl) Commit(_ bool, messages ...string) error {
+func (p *p4Impl) Commit(messages ...string) error {
 	cl, err := p.createChangeList(messages...)
 	if err != nil {
 		report.PostError(err)
