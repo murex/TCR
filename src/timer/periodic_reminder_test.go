@@ -71,7 +71,9 @@ func Test_ticking_does_not_stop_after_timeout(t *testing.T) {
 	r := NewPeriodicReminder(testTimeout, testTickPeriod, func(ctx ReminderContext) {})
 	r.Start()
 	time.Sleep(testTimeout * 2)
-	assert.GreaterOrEqual(t, 4, r.tickCounter)
+	// There should be 2 ticks before the timeout fires.
+	// We should get more than 2 ticks in a period spawning 2 timeouts.
+	assert.Greater(t, r.tickCounter, 2)
 	assert.Equal(t, afterTimeOut, r.state)
 }
 
@@ -141,7 +143,7 @@ func Test_keep_posting_reminders_after_timeout(t *testing.T) {
 	time.Sleep(testTimeout * 2)
 	r.Stop()
 
-	assert.GreaterOrEqual(t, 5, r.tickCounter)
+	assert.Equal(t, 5, r.tickCounter)
 	assert.Equal(t, stoppedAfterInterruption, r.state)
 }
 
