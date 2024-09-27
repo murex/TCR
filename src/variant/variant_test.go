@@ -53,7 +53,9 @@ func Test_select_variant(t *testing.T) {
 		expectedError   error
 	}{
 		{"relaxed", &relaxed, nil},
+		{"Relaxed", &relaxed, nil},
 		{"btcr", &btcr, nil},
+		{"BTCR", &btcr, nil},
 		{"introspective", &introspective, nil},
 		{"unknown", nil, &UnsupportedVariantError{"unknown"}},
 		{"", nil, &UnsupportedVariantError{""}},

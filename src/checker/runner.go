@@ -61,7 +61,7 @@ var checkGroupRunners = []checkGroupRunner{
 	checkVCSConfiguration,
 	checkGitEnvironment,
 	checkP4Environment,
-	checkWorkflowConfiguration,
+	checkVariantConfiguration,
 	checkMobConfiguration,
 }
 
