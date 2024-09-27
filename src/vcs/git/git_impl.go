@@ -259,7 +259,7 @@ func (g *gitImpl) RevertLocal(path string) error {
 // Current implementation uses a direct call to git
 func (g *gitImpl) RollbackLastCommit() error {
 	report.PostInfo("Reverting changes")
-	return g.traceGit("revert", "--no-gpg-sign", "--no-edit", "HEAD")
+	return g.traceGit("revert", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD")
 }
 
 // Push runs a git push operation.

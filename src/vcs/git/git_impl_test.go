@@ -474,13 +474,13 @@ func Test_git_revert(t *testing.T) {
 			"git revert command call succeeds",
 			nil,
 			false,
-			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
+			[]string{"revert", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
 		},
 		{
 			"git revert command call fails",
 			errors.New("git revert error"),
 			true,
-			[]string{"revert", "--no-gpg-sign", "--no-edit", "HEAD"},
+			[]string{"revert", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
 		},
 	}
 	for _, tt := range testFlags {
