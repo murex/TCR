@@ -22,7 +22,10 @@ SOFTWARE.
 
 package variant
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // UnsupportedVariantError is returned when the provided Variant name is not supported.
 type UnsupportedVariantError struct {
@@ -53,7 +56,7 @@ var recognized = []Variant{Relaxed, BTCR, Introspective}
 // valid variant name.
 func Select(name string) (*Variant, error) {
 	for _, variant := range recognized {
-		if name == variant.Name() {
+		if strings.ToLower(name) == strings.ToLower(variant.Name()) {
 			return &variant, nil
 		}
 	}

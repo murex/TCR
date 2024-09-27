@@ -25,26 +25,36 @@ package checker
 import (
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
+	"github.com/murex/tcr/variant"
+	"strings"
 )
 
-var checkWorkflowRunners []checkPointRunner
+var checkVariantRunners []checkPointRunner
 
 func init() {
-	checkWorkflowRunners = []checkPointRunner{
-		checkVariant,
+	checkVariantRunners = []checkPointRunner{
+		checkVariantSelection,
 	}
 }
 
-func checkWorkflowConfiguration(p params.Params) (cg *model.CheckGroup) {
-	cg = model.NewCheckGroup("TCR workflow configuration")
-	for _, runner := range checkWorkflowRunners {
+func checkVariantConfiguration(p params.Params) (cg *model.CheckGroup) {
+	cg = model.NewCheckGroup("TCR variant configuration")
+	for _, runner := range checkVariantRunners {
 		cg.Add(runner(p)...)
 	}
 	return cg
 }
 
-func checkVariant(_ params.Params) (cp []model.CheckPoint) {
-	cp = append(cp, model.WarningCheckPoint(
-		"variant checker TODO"))
+func checkVariantSelection(p params.Params) (cp []model.CheckPoint) {
+	switch variantName := strings.ToLower(p.Variant); variantName {
+	case variant.Relaxed.Name(), variant.BTCR.Name(), variant.Introspective.Name():
+		cp = append(cp, model.OkCheckPoint("selected variant is ", variantName))
+	case "original":
+		cp = append(cp, model.ErrorCheckPoint("original variant is not yet supported"))
+	case "":
+		cp = append(cp, model.ErrorCheckPoint("no variant is selected"))
+	default:
+		cp = append(cp, model.ErrorCheckPoint("selected variant is not supported: \"", variantName, "\""))
+	}
 	return cp
 }
