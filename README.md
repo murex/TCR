@@ -90,6 +90,16 @@ provided as built-in.
 | scala      | sbt               | sbt                                                  |
 | typescript | yarn              | yarn bazel make                                      |
 
+### TCR Variants
+
+TCR tool can run several variants of the TCR workflow, inspired by [this blog post](https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3)
+by Thomas Deniffel.
+
+Some are great as pedagogic tools, some are better for day-to-day use.
+
+The default variant is "The Relaxed". You can refer to [this page](./variants-doc/tcr_variants.md)
+for further details on available variants.
+
 ### Base directory
 
 In order to know which files and directories to watch, TCR needs to know on which part of the filesystem it should work.
