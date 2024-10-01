@@ -174,6 +174,7 @@ func (tcr *TCREngine) Init(p params.Params) {
 	tcr.initVCS(p.VCS, p.Trace)
 	tcr.setMessageSuffix(p.MessageSuffix)
 	tcr.vcs.EnableAutoPush(p.AutoPush)
+	tcr.vcs.SetRemoteName(p.GitRemote)
 
 	tcr.SetVariant(p.Variant)
 	tcr.setMobTimerDuration(p.MobTurnDuration)

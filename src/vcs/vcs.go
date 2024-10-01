@@ -53,6 +53,7 @@ type Interface interface {
 	SessionSummary() string
 	GetRootDir() string
 	GetRemoteName() string
+	SetRemoteName(name string)
 	GetWorkingBranch() string
 	IsOnRootBranch() bool
 	Add(paths ...string) error

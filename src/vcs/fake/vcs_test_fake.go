@@ -75,6 +75,7 @@ type (
 	VCSFake struct {
 		settings           Settings
 		pushEnabled        bool
+		remoteName         string
 		lastCommands       []Command
 		lastCommitSubjects []string
 	}
@@ -91,7 +92,12 @@ func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 // NewVCSFake initializes a fake VCS implementation which does nothing
 // apart from emulating errors on VCS operations
 func NewVCSFake(settings Settings) *VCSFake {
-	return &VCSFake{settings: settings, lastCommitSubjects: make([]string, 0), lastCommands: make([]Command, 0)}
+	return &VCSFake{
+		settings:           settings,
+		remoteName:         "vcs-fake-remote-name",
+		lastCommitSubjects: make([]string, 0),
+		lastCommands:       make([]Command, 0),
+	}
 }
 
 // Name returns VCS name
@@ -174,7 +180,12 @@ func (vf *VCSFake) GetRootDir() string {
 
 // GetRemoteName returns the current VCS remote name
 func (vf *VCSFake) GetRemoteName() string {
-	return "vcs-fake-remote-name"
+	return vf.remoteName
+}
+
+// SetRemoteName sets the current VCS remote name
+func (vf *VCSFake) SetRemoteName(name string) {
+	vf.remoteName = name
 }
 
 // GetWorkingBranch returns the current VCS working branch

@@ -190,6 +190,11 @@ func (g *gitImpl) GetRemoteName() string {
 	return g.remoteName
 }
 
+// SetRemoteName sets the current git remote name
+func (g *gitImpl) SetRemoteName(name string) {
+	g.remoteName = name
+}
+
 // IsRemoteEnabled indicates if git remote operations are enabled
 func (g *gitImpl) IsRemoteEnabled() bool {
 	return g.remoteEnabled

@@ -39,6 +39,7 @@ func AParamSet(builders ...func(params *Params)) *Params {
 		Toolchain:       "",
 		MobTurnDuration: 0,
 		AutoPush:        false,
+		GitRemote:       "origin",
 		Variant:         "relaxed",
 		PollingPeriod:   0,
 		Mode:            runmode.OneShot{},
@@ -105,6 +106,13 @@ func WithMobTimerDuration(duration time.Duration) func(params *Params) {
 func WithAutoPush(value bool) func(params *Params) {
 	return func(params *Params) {
 		params.AutoPush = value
+	}
+}
+
+// WithGitRemote sets the provided value as the git remote name to be used
+func WithGitRemote(remote string) func(params *Params) {
+	return func(params *Params) {
+		params.GitRemote = remote
 	}
 }
 
