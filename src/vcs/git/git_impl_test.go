@@ -699,6 +699,24 @@ func Test_check_remote_access(t *testing.T) {
 	}
 }
 
+func Test_set_remote_name(t *testing.T) {
+	tests := []struct {
+		desc     string
+		name     string
+		expected string
+	}{
+		{desc: "origin", name: "origin", expected: "origin"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g.SetRemoteName(test.name)
+			assert.Equal(t, test.expected, g.GetRemoteName())
+		})
+	}
+}
+
 func Test_is_on_root_branch(t *testing.T) {
 	testFlags := []struct {
 		desc     string

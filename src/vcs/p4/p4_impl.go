@@ -114,6 +114,11 @@ func (*p4Impl) GetRemoteName() string {
 	return ""
 }
 
+// SetRemoteName sets the current p4 "remote name"
+func (p *p4Impl) SetRemoteName(_ string) {
+	// This method does nothing in the case of p4
+}
+
 // IsRemoteEnabled indicates if p4 remote operations are enabled
 // remote is always enabled with p4 due its architecture (all changes occur directly on the server)
 func (*p4Impl) IsRemoteEnabled() bool {

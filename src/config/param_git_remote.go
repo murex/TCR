@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package params
+package config
 
 import (
-	"github.com/murex/tcr/runmode"
-	"time"
+	"github.com/spf13/cobra"
 )
 
-// Params contains the main parameter values that TCR engine is using
-type Params struct {
-	ConfigDir       string
-	BaseDir         string
-	WorkDir         string
-	Language        string
-	Toolchain       string
-	MobTurnDuration time.Duration
-	GitRemote       string
-	AutoPush        bool
-	Variant         string
-	PollingPeriod   time.Duration
-	Mode            runmode.RunMode
-	VCS             string
-	MessageSuffix   string
-	Trace           string
-	PortNumber      int
+// AddGitRemoteParam adds a parameter allowing to specify the name of the git remote repository
+func AddGitRemoteParam(cmd *cobra.Command) *StringParam {
+	param := StringParam{
+		s: paramSettings{
+			viperSettings: viperSettings{
+				enabled: false,
+				keyPath: "",
+				name:    "",
+			},
+			cobraSettings: cobraSettings{
+				name:       "git-remote",
+				shorthand:  "g",
+				usage:      "name of the git remote repository to sync with (default: \"origin\")",
+				persistent: true,
+			},
+		},
+		v: paramValueString{
+			value:        "",
+			defaultValue: "origin",
+		},
+	}
+	param.addToCommand(cmd)
+	return &param
 }
