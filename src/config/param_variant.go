@@ -39,7 +39,7 @@ func AddVariantParam(cmd *cobra.Command) *StringParam {
 			cobraSettings: cobraSettings{
 				name:       "variant",
 				shorthand:  "r",
-				usage:      "indicate the variant to be used by TCR: relaxed (default) or btcr",
+				usage:      "indicate the variant to be used by TCR: relaxed (default), btcr, or introspective",
 				persistent: true,
 			},
 		},
