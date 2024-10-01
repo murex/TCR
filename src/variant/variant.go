@@ -56,7 +56,7 @@ var recognized = []Variant{Relaxed, BTCR, Introspective}
 // valid variant name.
 func Select(name string) (*Variant, error) {
 	for _, variant := range recognized {
-		if strings.ToLower(name) == strings.ToLower(variant.Name()) {
+		if strings.EqualFold(name, variant.Name()) {
 			return &variant, nil
 		}
 	}
