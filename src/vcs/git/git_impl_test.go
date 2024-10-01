@@ -429,7 +429,7 @@ func Test_git_commit(t *testing.T) {
 	}
 }
 
-func Test_git_restore(t *testing.T) {
+func Test_git_revert_local(t *testing.T) {
 	testFlags := []struct {
 		desc        string
 		gitError    error
@@ -463,7 +463,7 @@ func Test_git_restore(t *testing.T) {
 	}
 }
 
-func Test_git_revert(t *testing.T) {
+func Test_git_rollback_last_commit(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		gitError     error

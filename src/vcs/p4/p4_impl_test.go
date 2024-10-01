@@ -508,7 +508,7 @@ func Test_p4_submit(t *testing.T) {
 	}
 }
 
-func Test_p4_restore(t *testing.T) {
+func Test_p4_revert_local(t *testing.T) {
 	testFlags := []struct {
 		desc         string
 		p4Error      error
@@ -552,6 +552,48 @@ func Test_p4_restore(t *testing.T) {
 			if tt.expectedArgs != nil {
 				assert.Equal(t, tt.expectedArgs, actualArgs)
 			}
+		})
+	}
+}
+
+func Test_p4_rollback_last_commit(t *testing.T) {
+	t.Skip("Work in progress")
+
+	testFlags := []struct {
+		desc         string
+		p4Error      error
+		expectError  bool
+		expectedArgs []string
+	}{
+		{
+			"p4 undo command call succeeds",
+			nil,
+			false,
+			[]string{"undo", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
+		},
+		{
+			"git revert command call fails",
+			errors.New("git revert error"),
+			true,
+			[]string{"revert", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
+		},
+	}
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.traceP4Function = func(args ...string) (err error) {
+				actualArgs = args[2:]
+				return tt.p4Error
+			}
+
+			err := p.RollbackLastCommit()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.expectedArgs, actualArgs)
 		})
 	}
 }

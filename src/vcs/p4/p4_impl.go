@@ -173,8 +173,7 @@ func (p *p4Impl) RevertLocal(path string) error {
 	return p.traceP4("revert", path)
 }
 
-// Revert runs a p4 revert operation.
-// TODO: VCS Revert - p4 revert
+// RollbackLastCommit runs a p4 revert operation.
 func (*p4Impl) RollbackLastCommit() error {
 	return errors.New("VCS revert operation not yet available for p4")
 }
