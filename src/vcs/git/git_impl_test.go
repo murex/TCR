@@ -51,22 +51,61 @@ func inMemoryRepoInit(_ string) (repo *git.Repository, fs billy.Filesystem, err 
 }
 
 func Test_get_vcs_name(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
+	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	assert.Equal(t, "git", g.Name())
 }
 
 func Test_get_vcs_session_summary(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
-	assert.Equal(t, "git branch \"master\"", g.SessionSummary())
+	tests := []struct {
+		desc          string
+		remoteName    string
+		remoteEnabled bool
+		expected      string
+	}{
+		{
+			desc:          "remote not set",
+			remoteName:    "",
+			remoteEnabled: false,
+			expected:      "git branch \"master\"",
+		},
+		{
+			desc:          "remote origin enabled",
+			remoteName:    "origin",
+			remoteEnabled: true,
+			expected:      "git branch \"origin/master\"",
+		},
+		{
+			desc:          "remote origin disabled",
+			remoteName:    "origin",
+			remoteEnabled: false,
+			expected:      "git branch \"master\"",
+		},
+		{
+			desc:          "remote with custom name",
+			remoteName:    "custom-origin",
+			remoteEnabled: true,
+			expected:      "git branch \"custom-origin/master\"",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			g, _ := newGitImpl(inMemoryRepoInit, "", test.remoteName)
+			// we need to overwrite remoteEnabled flag when running with an in-memory repo
+			// (this flag is automatically set depending on the existence of this remote alias)
+			g.remoteEnabled = test.remoteEnabled
+			assert.Equal(t, test.expected, g.SessionSummary())
+		})
+	}
+
 }
 
 func Test_git_auto_push_is_disabled_default(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
+	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	assert.Zero(t, g.IsAutoPushEnabled())
 }
 
 func Test_git_enable_disable_push(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
+	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	g.EnableAutoPush(true)
 	assert.NotZero(t, g.IsAutoPushEnabled())
 	g.EnableAutoPush(false)
@@ -74,24 +113,24 @@ func Test_git_enable_disable_push(t *testing.T) {
 }
 
 func Test_init_fails_when_working_dir_is_not_in_a_git_repo(t *testing.T) {
-	g, err := New("/")
+	g, err := New("/", "")
 	assert.Zero(t, g)
 	assert.Error(t, err)
 }
 
 func Test_can_retrieve_working_branch_on_in_memory_repo(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
+	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	// go-git's in memory repository default branch is "master"
 	assert.Equal(t, "master", g.GetWorkingBranch())
 }
 
 func Test_can_retrieve_working_branch_on_current_repo(t *testing.T) {
-	g, _ := New(".")
+	g, _ := New(".", "")
 	assert.NotEmpty(t, g.GetWorkingBranch())
 }
 
 func Test_check_remote_access_on_in_memory_repo(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, "")
+	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	assert.False(t, g.CheckRemoteAccess())
 }
 
@@ -187,7 +226,7 @@ func Test_git_diff(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.runGitFunction = func(args ...string) (output []byte, err error) {
 				actualArgs = args[2:]
 				return []byte(tt.gitDiffOutput), tt.gitDiffError
@@ -245,13 +284,12 @@ func Test_git_push(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
 			g.autoPushEnabled = tt.autoPushEnabled
 			g.remoteEnabled = true
-			g.remoteName = DefaultRemoteName
 
 			err := g.Push()
 			if tt.expectError {
@@ -298,12 +336,11 @@ func Test_git_pull(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
 			g.remoteEnabled = true
-			g.remoteName = DefaultRemoteName
 			g.workingBranchExistsOnRemote = tt.branchOnRemote
 
 			err := g.Pull()
@@ -356,7 +393,7 @@ func Test_git_add(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
@@ -413,7 +450,7 @@ func Test_git_commit(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(args ...string) error {
 				actualArgs = args[2:]
 				return tt.gitError
@@ -448,7 +485,7 @@ func Test_git_revert_local(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(_ ...string) (err error) {
 				return tt.gitError
 			}
@@ -486,7 +523,7 @@ func Test_git_rollback_last_commit(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.traceGitFunction = func(args ...string) (err error) {
 				actualArgs = args[2:]
 				return tt.gitError
@@ -542,7 +579,7 @@ func Test_git_log(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, ".")
+			g, _ := newGitImpl(inMemoryRepoInit, ".", "")
 			items, err := g.Log(tt.filter)
 			assert.NoError(t, err)
 			tt.asserter(t, items)
@@ -559,7 +596,7 @@ func Test_nothing_to_commit(t *testing.T) {
 		{
 			"with empty working tree",
 			func() *gitImpl {
-				g, _ := newGitImpl(inMemoryRepoInit, "")
+				g, _ := newGitImpl(inMemoryRepoInit, "", "")
 				return g
 			},
 			true,
@@ -567,7 +604,7 @@ func Test_nothing_to_commit(t *testing.T) {
 		{
 			"with a new file",
 			func() *gitImpl {
-				g, _ := newGitImpl(inMemoryRepoInit, "")
+				g, _ := newGitImpl(inMemoryRepoInit, "", "")
 				filePath := "my-file.txt"
 				newFile, _ := g.filesystem.Create(filePath)
 				_, _ = newFile.Write([]byte("My new file\n"))
@@ -579,7 +616,7 @@ func Test_nothing_to_commit(t *testing.T) {
 		{
 			"with a new added uncommitted file",
 			func() *gitImpl {
-				g, _ := newGitImpl(inMemoryRepoInit, "")
+				g, _ := newGitImpl(inMemoryRepoInit, "", "")
 				filePath := "my-file.txt"
 				newFile, _ := g.filesystem.Create(filePath)
 				_, _ = newFile.Write([]byte("My new file\n"))
@@ -593,7 +630,7 @@ func Test_nothing_to_commit(t *testing.T) {
 		{
 			"with a committed file",
 			func() *gitImpl {
-				g, _ := newGitImpl(inMemoryRepoInit, "")
+				g, _ := newGitImpl(inMemoryRepoInit, "", "")
 				filePath := "my-file.txt"
 				newFile, _ := g.filesystem.Create(filePath)
 				_, _ = newFile.Write([]byte("My new file\n"))
@@ -609,7 +646,7 @@ func Test_nothing_to_commit(t *testing.T) {
 		{
 			"with a modified file",
 			func() *gitImpl {
-				g, _ := newGitImpl(inMemoryRepoInit, "")
+				g, _ := newGitImpl(inMemoryRepoInit, "", "")
 				filePath := "my-file.txt"
 				newFile, _ := g.filesystem.Create(filePath)
 				_, _ = newFile.Write([]byte("My new file\n"))
@@ -685,7 +722,7 @@ func Test_check_remote_access(t *testing.T) {
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
 			var actualArgs []string
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.remoteEnabled = tt.remoteEnabled
 			g.remoteName = tt.remoteName
 			g.workingBranch = tt.branchName
@@ -695,24 +732,6 @@ func Test_check_remote_access(t *testing.T) {
 			}
 			assert.Equal(t, tt.expectedResult, g.CheckRemoteAccess())
 			assert.Equal(t, tt.expectedArgs, actualArgs)
-		})
-	}
-}
-
-func Test_set_remote_name(t *testing.T) {
-	tests := []struct {
-		desc     string
-		name     string
-		expected string
-	}{
-		{desc: "origin", name: "origin", expected: "origin"},
-	}
-
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, "")
-			g.SetRemoteName(test.name)
-			assert.Equal(t, test.expected, g.GetRemoteName())
 		})
 	}
 }
@@ -730,7 +749,7 @@ func Test_is_on_root_branch(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			g, _ := newGitImpl(inMemoryRepoInit, "")
+			g, _ := newGitImpl(inMemoryRepoInit, "", "")
 			g.workingBranch = tt.name
 			assert.Equal(t, tt.expected, g.IsOnRootBranch())
 		})
@@ -738,7 +757,7 @@ func Test_is_on_root_branch(t *testing.T) {
 }
 
 func Test_git_run_command_global_parameters(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"))
+	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"), "")
 	var cmdParams []string
 	g.runGitFunction = func(params ...string) (out []byte, err error) {
 		cmdParams = params
@@ -749,7 +768,7 @@ func Test_git_run_command_global_parameters(t *testing.T) {
 }
 
 func Test_git_trace_command_global_parameters(t *testing.T) {
-	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"))
+	g, _ := newGitImpl(inMemoryRepoInit, filepath.FromSlash("/basedir"), "")
 	var cmdParams []string
 	g.traceGitFunction = func(params ...string) (err error) {
 		cmdParams = params

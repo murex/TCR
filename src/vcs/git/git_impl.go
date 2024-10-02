@@ -43,9 +43,6 @@ import (
 // Name provides the name for this VCS implementation
 const Name = "git"
 
-// DefaultRemoteName is the alias used by default for the git remote repository
-const DefaultRemoteName = "origin"
-
 // gitImpl provides the implementation of the git interface
 type gitImpl struct {
 	baseDir                     string
@@ -62,13 +59,17 @@ type gitImpl struct {
 }
 
 // New initializes the git implementation based on the provided directory from local clone
-func New(dir string) (vcs.Interface, error) {
-	return newGitImpl(plainOpen, dir)
+func New(dir string, remoteName string) (vcs.Interface, error) {
+	return newGitImpl(plainOpen, dir, remoteName)
 }
 
-func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error), dir string) (*gitImpl, error) {
+func newGitImpl(
+	initRepo func(string) (*git.Repository, billy.Filesystem, error),
+	dir string,
+	remoteName string) (*gitImpl, error) {
 	var g = gitImpl{
 		baseDir:          dir,
+		remoteName:       remoteName,
 		autoPushEnabled:  vcs.DefaultAutoPushEnabled,
 		runGitFunction:   runGitCommand,
 		traceGitFunction: traceGitCommand,
@@ -87,10 +88,12 @@ func newGitImpl(initRepo func(string) (*git.Repository, billy.Filesystem, error)
 		return nil, fmt.Errorf("%s - %s", Name, err.Error())
 	}
 
-	if isRemoteDefined(DefaultRemoteName, g.repository) {
+	if isRemoteDefined(remoteName, g.repository) {
+		report.PostInfo("Git remote name is ", g.remoteName)
 		g.remoteEnabled = true
-		g.remoteName = DefaultRemoteName
 		g.workingBranchExistsOnRemote, err = g.isWorkingBranchOnRemote()
+	} else {
+		report.PostWarning("Git remote name not found: ", g.remoteName)
 	}
 
 	return &g, err
@@ -103,7 +106,11 @@ func (*gitImpl) Name() string {
 
 // SessionSummary provides a short description related to current VCS session summary
 func (g *gitImpl) SessionSummary() string {
-	return fmt.Sprintf("%s branch \"%s\"", g.Name(), g.GetWorkingBranch())
+	var branch = g.GetWorkingBranch()
+	if g.IsRemoteEnabled() {
+		branch = fmt.Sprintf("%s/%s", g.GetRemoteName(), g.GetWorkingBranch())
+	}
+	return fmt.Sprintf("%s branch \"%s\"", g.Name(), branch)
 }
 
 // plainOpen is the regular function used to open a repository
@@ -126,6 +133,9 @@ func plainOpen(dir string) (*git.Repository, billy.Filesystem, error) {
 
 // isRemoteDefined returns true is the provided remote is defined in the repository
 func isRemoteDefined(remoteName string, repo *git.Repository) bool {
+	if remoteName == "" {
+		return false
+	}
 	_, err := repo.Remote(remoteName)
 	return err == nil
 }
@@ -172,7 +182,7 @@ func retrieveWorkingBranch(repository *git.Repository) (string, error) {
 		return head.Name().Short(), nil
 	}
 
-	// Brand new repo: nothing is committed yet
+	// Brand-new repo: nothing is committed yet
 	head, err = repository.Reference(plumbing.HEAD, false)
 	if err != nil {
 		return "", err
@@ -188,11 +198,6 @@ func (g *gitImpl) GetRootDir() string {
 // GetRemoteName returns the current git remote name
 func (g *gitImpl) GetRemoteName() string {
 	return g.remoteName
-}
-
-// SetRemoteName sets the current git remote name
-func (g *gitImpl) SetRemoteName(name string) {
-	g.remoteName = name
 }
 
 // IsRemoteEnabled indicates if git remote operations are enabled
