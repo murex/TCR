@@ -183,11 +183,6 @@ func (vf *VCSFake) GetRemoteName() string {
 	return vf.remoteName
 }
 
-// SetRemoteName sets the current VCS remote name
-func (vf *VCSFake) SetRemoteName(name string) {
-	vf.remoteName = name
-}
-
 // GetWorkingBranch returns the current VCS working branch
 func (vf *VCSFake) GetWorkingBranch() string {
 	return "vcs-fake-working-branch"

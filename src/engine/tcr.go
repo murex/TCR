@@ -171,10 +171,9 @@ func (tcr *TCREngine) Init(p params.Params) {
 	tcr.handleError(err, true, status.ConfigError)
 	report.PostInfo("Work directory is ", toolchain.GetWorkDir())
 
-	tcr.initVCS(p.VCS, p.Trace)
+	tcr.initVCS(p.VCS, p.GitRemote, p.Trace)
 	tcr.setMessageSuffix(p.MessageSuffix)
 	tcr.vcs.EnableAutoPush(p.AutoPush)
-	tcr.vcs.SetRemoteName(p.GitRemote)
 
 	tcr.SetVariant(p.Variant)
 	tcr.setMobTimerDuration(p.MobTurnDuration)
@@ -241,7 +240,7 @@ func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
 
 func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 	tcr.initSourceTree(p)
-	tcr.initVCS(p.VCS, p.Trace)
+	tcr.initVCS(p.VCS, "", p.Trace)
 
 	logs, err := tcr.vcs.Log(isTCRCommitMessage)
 	if err != nil {
@@ -315,14 +314,14 @@ func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCR
 	return messages
 }
 
-func (tcr *TCREngine) initVCS(vcsName string, trace string) {
+func (tcr *TCREngine) initVCS(vcsName string, remoteName string, trace string) {
 	if tcr.vcs != nil {
 		return // VCS should be initialized only once
 	}
 	// Set VCS trace flag
 	vcs.SetTrace(trace == "vcs")
 	var err error
-	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir())
+	tcr.vcs, err = factory.InitVCS(vcsName, tcr.sourceTree.GetBaseDir(), remoteName)
 	var unsupportedVCSError *factory.UnsupportedVCSError
 	switch {
 	case errors.As(err, &unsupportedVCSError):
