@@ -46,7 +46,7 @@ func Test_get_vcs_name(t *testing.T) {
 
 func Test_get_vcs_session_summary(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
-	assert.Equal(t, "p4 client \"test\"", p.SessionSummary())
+	assert.Equal(t, "p4 client \""+p4TestClientName+"\"", p.SessionSummary())
 }
 
 func Test_p4_auto_push_is_always_enabled(t *testing.T) {
@@ -594,6 +594,61 @@ func Test_p4_rollback_last_commit(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.expectedArgs, actualArgs)
+		})
+	}
+}
+
+func Test_p4_get_latest_changelist_id(t *testing.T) {
+	testFlags := []struct {
+		desc                 string
+		p4ChangesOutput      string
+		p4ChangesError       error
+		expectError          bool
+		expectedArgs         []string
+		expectedChangelistId *changeList
+	}{
+		{"p4 changes working case",
+			"Change 7297330 on 2024/10/01 by pbourgau@pbourgau_LPBOU05_8775 'Γ£à TCR - tests passing  cha'",
+			nil,
+			false,
+			[]string{"changes", "-m1", p4TestClientName, "-s", "submitted"},
+			&changeList{"7297330"},
+		},
+		{"p4 changes return an error",
+			"Change 7297330 on 2024/10/01 by pbourgau@pbourgau_LPBOU05_8775 'Γ£à TCR - tests passing  cha'",
+			errors.New("p4 changes error"),
+			true,
+			nil,
+			nil,
+		},
+		{"p4 changes return an unexpectedly formed output",
+			"Single_word_output",
+			nil,
+			true,
+			nil,
+			nil,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.rootDir = ""
+			p.runP4Function = func(args ...string) (output []byte, err error) {
+				actualArgs = args[4:]
+				return []byte(tt.p4ChangesOutput), tt.p4ChangesError
+			}
+			actualChangelistId, err := p.getLatestChangelistId()
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			if tt.expectedArgs != nil {
+				assert.Equal(t, tt.expectedArgs, actualArgs)
+			}
+			assert.Equal(t, tt.expectedChangelistId, actualChangelistId)
 		})
 	}
 }
