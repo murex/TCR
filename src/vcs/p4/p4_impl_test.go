@@ -611,7 +611,7 @@ func Test_p4_get_latest_changelist_id(t *testing.T) {
 			"Change 7297330 on 2024/10/01 by pbourgau@pbourgau_LPBOU05_8775 'Γ£à TCR - tests passing  cha'",
 			nil,
 			false,
-			[]string{"changes", "-m1", p4TestClientName, "-s", "submitted"},
+			[]string{"changes", "-m1", "@" + p4TestClientName, "-s", "submitted"},
 			&changeList{"7297330"},
 		},
 		{"p4 changes return an error",
