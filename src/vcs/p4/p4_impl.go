@@ -352,7 +352,7 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 }
 
 func (p *p4Impl) getLatestChangelistId() (*changeList, error) {
-	p4Output, err := p.runP4("changes", "-m1", p.clientName, "-s", "submitted")
+	p4Output, err := p.runP4("changes", "-m1", "@"+p.clientName, "-s", "submitted")
 	if err != nil {
 		return nil, err
 	}
