@@ -351,7 +351,7 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 	return "//" + p.clientName + slashedPath + "...", nil
 }
 
-func (p *p4Impl) getLatestChangelistId() (*changeList, error) {
+func (p *p4Impl) getLatestChangelist() (*changeList, error) {
 	p4Output, err := p.runP4("changes", "-m1", "@"+p.clientName, "-s", "submitted")
 	if err != nil {
 		return nil, err
@@ -363,4 +363,9 @@ func (p *p4Impl) getLatestChangelistId() (*changeList, error) {
 	}
 
 	return &changeList{fields[1]}, nil
+}
+
+func (p *p4Impl) undoChangelist(changelist changeList) error {
+	err := p.traceP4("undo", fmt.Sprintf("@%v,@%v", changelist.number, changelist.number))
+	return err
 }
