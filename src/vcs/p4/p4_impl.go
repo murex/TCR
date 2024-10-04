@@ -41,6 +41,7 @@ import (
 
 // Name provides the name for this VCS implementation
 const Name = "p4"
+const p4TestClientName = "test"
 
 // p4Impl provides the implementation of the Perforce interface
 type p4Impl struct {
@@ -71,7 +72,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 
 	if testFlag {
 		// For test purpose only: tests should run and pass without having p4 installed and with no p4 server available
-		p.clientName = "test"
+		p.clientName = p4TestClientName
 		p.rootDir = dir
 	} else {
 		p.clientName = GetP4ClientName()
@@ -348,4 +349,18 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 		slashedPath = slashedPath + "/"
 	}
 	return "//" + p.clientName + slashedPath + "...", nil
+}
+
+func (p *p4Impl) getLatestChangelistId() (*changeList, error) {
+	p4Output, err := p.runP4("changes", "-m1", p.clientName, "-s", "submitted")
+	if err != nil {
+		return nil, err
+	}
+
+	fields := strings.Split(string(p4Output), " ")
+	if len(fields) < 2 {
+		return nil, errors.New("unexpected output from `p4 changes`: " + string(p4Output))
+	}
+
+	return &changeList{fields[1]}, nil
 }
