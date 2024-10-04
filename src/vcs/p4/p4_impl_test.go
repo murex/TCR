@@ -560,52 +560,46 @@ func Test_p4_rollback_last_commit(t *testing.T) {
 	t.Skip("Work in progress")
 
 	testFlags := []struct {
-		desc         string
-		p4Error      error
-		expectError  bool
-		expectedArgs []string
+		desc            string
+		p4ChangesOutput []byte
+		p4ChangesError  error
+		p4UndoError     error
+		expectedError   error
 	}{
 		{
-			"p4 undo command call succeeds",
+			"p4 changes and p4 undo happy path",
+			[]byte("Change 7297330"),
 			nil,
-			false,
-			[]string{"undo", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
-		},
-		{
-			"git revert command call fails",
-			errors.New("git revert error"),
-			true,
-			[]string{"revert", "--no-gpg-sign", "--no-edit", "--no-commit", "HEAD"},
+			nil,
+			nil,
 		},
 	}
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			var actualArgs []string
 			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			// Stubs the p4 changes command call
+			p.runP4Function = func(args ...string) (out []byte, err error) {
+				return tt.p4ChangesOutput, tt.p4ChangesError
+			}
+			// Stubs the p4 undo command
 			p.traceP4Function = func(args ...string) (err error) {
-				actualArgs = args[2:]
-				return tt.p4Error
+				return tt.p4UndoError
 			}
 
 			err := p.RollbackLastCommit()
-			if tt.expectError {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-			assert.Equal(t, tt.expectedArgs, actualArgs)
+			assert.Equal(t, tt.expectedError, err)
 		})
 	}
 }
 
-func Test_p4_get_latest_changelist_id(t *testing.T) {
+func Test_p4_get_latest_changelist(t *testing.T) {
 	testFlags := []struct {
-		desc                 string
-		p4ChangesOutput      string
-		p4ChangesError       error
-		expectError          bool
-		expectedArgs         []string
-		expectedChangelistId *changeList
+		desc               string
+		p4ChangesOutput    string
+		p4ChangesError     error
+		expectError        bool
+		expectedArgs       []string
+		expectedChangelist *changeList
 	}{
 		{"p4 changes working case",
 			"Change 7297330 on 2024/10/01 by pbourgau@pbourgau_LPBOU05_8775 'Γ£à TCR - tests passing  cha'",
@@ -639,7 +633,7 @@ func Test_p4_get_latest_changelist_id(t *testing.T) {
 				actualArgs = args[4:]
 				return []byte(tt.p4ChangesOutput), tt.p4ChangesError
 			}
-			actualChangelistId, err := p.getLatestChangelistId()
+			actualChangelist, err := p.getLatestChangelist()
 			if tt.expectError {
 				assert.Error(t, err)
 			} else {
@@ -648,7 +642,53 @@ func Test_p4_get_latest_changelist_id(t *testing.T) {
 			if tt.expectedArgs != nil {
 				assert.Equal(t, tt.expectedArgs, actualArgs)
 			}
-			assert.Equal(t, tt.expectedChangelistId, actualChangelistId)
+			assert.Equal(t, tt.expectedChangelist, actualChangelist)
+		})
+	}
+}
+
+func Test_p4_undo_changelist(t *testing.T) {
+	testFlags := []struct {
+		desc             string
+		changeListToUndo *changeList
+		p4UndoError      error
+		expectError      bool
+		expectedArgs     []string
+	}{
+		{
+			"p4 undo working case",
+			&changeList{number: "12345"},
+			nil,
+			false,
+			[]string{"undo", "@12345,@12345"},
+		},
+		{
+			"p4 undo returns an error",
+			&changeList{number: "12345"},
+			errors.New("p4 undo failed"),
+			true,
+			nil,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			var actualArgs []string
+			p, _ := newP4Impl(inMemoryDepotInit, "", true)
+			p.rootDir = ""
+			p.traceP4Function = func(args ...string) (err error) {
+				actualArgs = args[4:]
+				return tt.p4UndoError
+			}
+			err := p.undoChangelist(*tt.changeListToUndo)
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			if tt.expectedArgs != nil {
+				assert.Equal(t, tt.expectedArgs, actualArgs)
+			}
 		})
 	}
 }
