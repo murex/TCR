@@ -175,6 +175,10 @@ func (p *p4Impl) RevertLocal(path string) error {
 
 // RollbackLastCommit runs a p4 revert operation.
 func (*p4Impl) RollbackLastCommit() error {
+	// TO IMPLEMENT
+	// get the changelist to rollback "p4 changes -m1 @<client_name>"
+	// undo this changelist "p4 undo @,@"
+	// no commit to do,  will be called by TCR
 	return errors.New("VCS revert operation not yet available for p4")
 }
 
@@ -275,6 +279,9 @@ func (p *p4Impl) buildP4Args(args ...string) []string {
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	// Command: p4 --field "Description=<message>" change -o | p4 change -i
+	//   `change -o` outputs a "changelist spec" to stdout
+	//   `change -i` then reads it and creates a real changelist from it
+	//   `change -o` takes all the changed files from the Default changelist and adds them to this new changelist
 	out, err := p.runPipedP4(newP4Command(p.buildP4Args("change", "-i")...),
 		"-Q", "utf8",
 		"--field", buildDescriptionField(shell.GetAttributes(), messages...),
