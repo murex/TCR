@@ -175,12 +175,12 @@ func (p *p4Impl) RevertLocal(path string) error {
 }
 
 // RollbackLastCommit runs a p4 revert operation.
-func (*p4Impl) RollbackLastCommit() error {
-	// TO IMPLEMENT
-	// get the changelist to rollback "p4 changes -m1 @<client_name>"
-	// undo this changelist "p4 undo @,@"
-	// no commit to do,  will be called by TCR
-	return errors.New("VCS revert operation not yet available for p4")
+func (p *p4Impl) RollbackLastCommit() error {
+	cl, err := p.getLatestChangelist()
+	if err != nil {
+		return err
+	}
+	return p.undoChangelist(*cl)
 }
 
 // Push runs a push operation.

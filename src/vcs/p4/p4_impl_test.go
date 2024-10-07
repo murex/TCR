@@ -557,21 +557,37 @@ func Test_p4_revert_local(t *testing.T) {
 }
 
 func Test_p4_rollback_last_commit(t *testing.T) {
-	t.Skip("Work in progress")
-
 	testFlags := []struct {
 		desc            string
 		p4ChangesOutput []byte
 		p4ChangesError  error
+		p4ChangelistId  string
 		p4UndoError     error
-		expectedError   error
+		expectError     bool
 	}{
 		{
 			"p4 changes and p4 undo happy path",
 			[]byte("Change 7297330"),
 			nil,
+			"7297330",
 			nil,
+			false,
+		},
+		{
+			"p4 changes failure",
 			nil,
+			errors.New("p4 changes error"),
+			"",
+			nil,
+			true,
+		},
+		{
+			"p4 undo failure",
+			[]byte("Change 7297330"),
+			nil,
+			"7297330",
+			errors.New("p4 undo error"),
+			true,
 		},
 	}
 	for _, tt := range testFlags {
@@ -582,12 +598,15 @@ func Test_p4_rollback_last_commit(t *testing.T) {
 				return tt.p4ChangesOutput, tt.p4ChangesError
 			}
 			// Stubs the p4 undo command
+			undoArg := ""
 			p.traceP4Function = func(args ...string) (err error) {
+				undoArg = args[len(args)-1]
 				return tt.p4UndoError
 			}
 
 			err := p.RollbackLastCommit()
-			assert.Equal(t, tt.expectedError, err)
+			assert.Contains(t, undoArg, tt.p4ChangelistId)
+			assert.Equal(t, tt.expectError, err != nil)
 		})
 	}
 }
