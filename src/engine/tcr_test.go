@@ -398,6 +398,7 @@ func Test_tcr_cycle_end_state(t *testing.T) {
 	}
 }
 
+// FIXME SMELL: This test factory method is getting complicated with too many parameters. Consider refactoring to Builders.
 func initTCREngineWithFakesWithFileDiffs(
 	p *params.Params,
 	toolchainFailures toolchain.Operations,
