@@ -41,6 +41,7 @@ import (
 
 // Name provides the name for this VCS implementation
 const Name = "p4"
+const p4TestClientName = "test"
 
 // p4Impl provides the implementation of the Perforce interface
 type p4Impl struct {
@@ -71,7 +72,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 
 	if testFlag {
 		// For test purpose only: tests should run and pass without having p4 installed and with no p4 server available
-		p.clientName = "test"
+		p.clientName = p4TestClientName
 		p.rootDir = dir
 	} else {
 		p.clientName = GetP4ClientName()
@@ -174,8 +175,12 @@ func (p *p4Impl) RevertLocal(path string) error {
 }
 
 // RollbackLastCommit runs a p4 revert operation.
-func (*p4Impl) RollbackLastCommit() error {
-	return errors.New("VCS revert operation not yet available for p4")
+func (p *p4Impl) RollbackLastCommit() error {
+	cl, err := p.getLatestChangelist()
+	if err != nil {
+		return err
+	}
+	return p.undoChangelist(*cl)
 }
 
 // Push runs a push operation.
@@ -275,6 +280,9 @@ func (p *p4Impl) buildP4Args(args ...string) []string {
 
 func (p *p4Impl) createChangeList(messages ...string) (*changeList, error) {
 	// Command: p4 --field "Description=<message>" change -o | p4 change -i
+	//   `change -o` outputs a "changelist spec" to stdout
+	//   `change -i` then reads it and creates a real changelist from it
+	//   `change -o` takes all the changed files from the Default changelist and adds them to this new changelist
 	out, err := p.runPipedP4(newP4Command(p.buildP4Args("change", "-i")...),
 		"-Q", "utf8",
 		"--field", buildDescriptionField(shell.GetAttributes(), messages...),
@@ -341,4 +349,23 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 		slashedPath = slashedPath + "/"
 	}
 	return "//" + p.clientName + slashedPath + "...", nil
+}
+
+func (p *p4Impl) getLatestChangelist() (*changeList, error) {
+	p4Output, err := p.runP4("changes", "-m1", "@"+p.clientName, "-s", "submitted")
+	if err != nil {
+		return nil, err
+	}
+
+	fields := strings.Split(string(p4Output), " ")
+	if len(fields) < 2 {
+		return nil, errors.New("unexpected output from `p4 changes`: " + string(p4Output))
+	}
+
+	return &changeList{fields[1]}, nil
+}
+
+func (p *p4Impl) undoChangelist(changelist changeList) error {
+	err := p.traceP4("undo", fmt.Sprintf("@%v,@%v", changelist.number, changelist.number))
+	return err
 }
