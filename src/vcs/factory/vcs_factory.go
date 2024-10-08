@@ -31,7 +31,7 @@ import (
 )
 
 // InitVCS returns the VCS instance of type defined by name, working on the provided directory
-var InitVCS func(name string, dir string) (vcs.Interface, error)
+var InitVCS func(name string, dir string, remoteName string) (vcs.Interface, error)
 
 func init() {
 	// InitVCS is set by default to real VCS implementation factory.
@@ -51,10 +51,10 @@ func (e *UnsupportedVCSError) Error() string {
 }
 
 // initVCS returns the VCS instance of type defined by name, working on the provided directory
-func initVCS(name string, dir string) (vcs.Interface, error) {
+func initVCS(name string, dir string, remoteName string) (vcs.Interface, error) {
 	switch strings.ToLower(name) {
 	case git.Name:
-		return git.New(dir)
+		return git.New(dir, remoteName)
 	case p4.Name:
 		return p4.New(dir)
 	default:

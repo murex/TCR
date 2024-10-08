@@ -35,7 +35,7 @@ import (
 
 func initTestCheckEnv(params params.Params) {
 	// Replace VCS factory initializer in order to use a VCS fake instead of the real thing
-	factory.InitVCS = func(_ string, _ string) (vcs.Interface, error) {
+	factory.InitVCS = func(_ string, _ string, _ string) (vcs.Interface, error) {
 		return fake.NewVCSFake(fake.Settings{}), nil
 	}
 	initCheckEnv(params)

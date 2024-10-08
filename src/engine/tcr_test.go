@@ -427,6 +427,7 @@ func initTCREngineWithFakesWithFileDiffs(
 			params.WithPollingPeriod(p.PollingPeriod),
 			params.WithRunMode(p.Mode),
 			params.WithVCS(p.VCS),
+			params.WithGitRemote(p.GitRemote),
 			params.WithMessageSuffix(p.MessageSuffix),
 		)
 	}
@@ -434,7 +435,7 @@ func initTCREngineWithFakesWithFileDiffs(
 	tcr := NewTCREngine()
 	// Replace VCS factory initializer in order to use a VCS fake instead of the real thing
 	var vcsFake *fake.VCSFake
-	factory.InitVCS = func(_ string, _ string) (vcs.Interface, error) {
+	factory.InitVCS = func(_ string, _ string, _ string) (vcs.Interface, error) {
 		fakeSettings := fake.Settings{
 			FailingCommands: vcsFailures,
 			ChangedFiles:    fileDiffs,

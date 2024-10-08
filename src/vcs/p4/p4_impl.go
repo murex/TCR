@@ -110,7 +110,7 @@ func (p *p4Impl) GetRootDir() string {
 
 // GetRemoteName returns the current p4 "remote name"
 func (*p4Impl) GetRemoteName() string {
-	// Always return an empty string
+	// Always return an empty string as there is no such thing as a remote in p4
 	return ""
 }
 

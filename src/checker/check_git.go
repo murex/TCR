@@ -98,6 +98,9 @@ func checkGitRemote(_ params.Params) (cp []model.CheckPoint) {
 	}
 
 	if !checkEnv.vcs.IsRemoteEnabled() {
+		if checkEnv.vcs.GetRemoteName() != "" {
+			cp = append(cp, model.WarningCheckPoint("git remote not found: ", checkEnv.vcs.GetRemoteName()))
+		}
 		cp = append(cp, model.OkCheckPoint("git remote is disabled: all operations will be done locally"))
 		return cp
 	}

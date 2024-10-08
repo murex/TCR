@@ -175,9 +175,10 @@ func Test_check_git_remote(t *testing.T) {
 			"VCS not initialized", nil, []model.CheckPoint{},
 		},
 		{
-			"git remote disabled",
+			"git remote disabled due to undefined remote name",
 			fake.NewVCSFake(fake.Settings{RemoteEnabled: false}),
 			[]model.CheckPoint{
+				model.WarningCheckPoint("git remote not found: vcs-fake-remote-name"),
 				model.OkCheckPoint("git remote is disabled: all operations will be done locally"),
 			},
 		},

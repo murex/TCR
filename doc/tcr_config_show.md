@@ -26,6 +26,7 @@ tcr config show [flags]
   -b, --base-dir string         indicate the directory from which TCR is looking for files (default: current directory)
   -c, --config-dir string       indicate the directory where TCR configuration is stored (default: current directory)
   -d, --duration duration       set the duration for role rotation countdown timer
+  -g, --git-remote string       name of the git remote repository to sync with (default: "origin")
   -l, --language string         indicate the programming language to be used by TCR
   -m, --message-suffix string   indicate text to append at the end of TCR commit messages (ex: "[#1234]")
   -o, --polling duration        set VCS polling period when running as navigator

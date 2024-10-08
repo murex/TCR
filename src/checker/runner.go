@@ -99,6 +99,6 @@ func initCheckEnv(p params.Params) {
 	checkEnv.workDir = toolchain.GetWorkDir()
 
 	if checkEnv.sourceTreeErr == nil {
-		checkEnv.vcs, checkEnv.vcsErr = factory.InitVCS(p.VCS, checkEnv.sourceTree.GetBaseDir())
+		checkEnv.vcs, checkEnv.vcsErr = factory.InitVCS(p.VCS, checkEnv.sourceTree.GetBaseDir(), p.GitRemote)
 	}
 }

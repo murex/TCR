@@ -45,6 +45,7 @@ type TcrConfig struct {
 	Toolchain        *StringParam
 	PollingPeriod    *DurationParam
 	MobTimerDuration *DurationParam
+	GitRemote        *StringParam
 	AutoPush         *BoolParam
 	Variant          *StringParam
 	VCS              *StringParam
@@ -59,6 +60,7 @@ func (c TcrConfig) reset() {
 	c.PollingPeriod.reset()
 	c.MobTimerDuration.reset()
 	c.AutoPush.reset()
+	c.GitRemote.reset()
 	c.Variant.reset()
 	c.VCS.reset()
 	c.MessageSuffix.reset()
@@ -199,6 +201,7 @@ func AddParameters(cmd *cobra.Command, defaultDir string) {
 	Config.Toolchain = AddToolchainParam(cmd)
 	Config.PollingPeriod = AddPollingPeriodParam(cmd)
 	Config.MobTimerDuration = AddMobTimerDurationParam(cmd)
+	Config.GitRemote = AddGitRemoteParam(cmd)
 	Config.AutoPush = AddAutoPushParam(cmd)
 	Config.Variant = AddVariantParam(cmd)
 	Config.VCS = AddVCSParam(cmd)
@@ -217,6 +220,7 @@ func UpdateEngineParams(p *params.Params) {
 	p.Toolchain = Config.Toolchain.GetValue()
 	p.PollingPeriod = Config.PollingPeriod.GetValue()
 	p.AutoPush = Config.AutoPush.GetValue()
+	p.GitRemote = Config.GitRemote.GetValue()
 	p.Variant = Config.Variant.GetValue()
 	p.VCS = Config.VCS.GetValue()
 	p.MessageSuffix = Config.MessageSuffix.GetValue()

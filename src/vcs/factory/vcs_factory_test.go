@@ -31,14 +31,14 @@ import (
 func Test_supported_vcs(t *testing.T) {
 	for _, name := range []string{"git", "p4"} {
 		t.Run(name, func(t *testing.T) {
-			_, err := initVCS(name, "")
+			_, err := initVCS(name, "", "")
 			assert.NotEqual(t, reflect.TypeOf(&UnsupportedVCSError{}), reflect.TypeOf(err))
 		})
 	}
 }
 
 func Test_vcs_factory_returns_an_error_when_vcs_is_not_supported(t *testing.T) {
-	v, err := initVCS("unknown-vcs", "")
+	v, err := initVCS("unknown-vcs", "", "")
 	assert.IsType(t, &UnsupportedVCSError{}, err)
 	assert.Zero(t, v)
 }
