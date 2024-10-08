@@ -92,7 +92,8 @@ provided as built-in.
 
 ### TCR Variants
 
-TCR tool can run several variants of the TCR workflow, inspired by [this blog post](https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3)
+TCR tool can run several variants of the TCR workflow, inspired
+by [this blog post](https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3)
 by Thomas Deniffel.
 
 Some are great as pedagogic tools, some are better for day-to-day use.
@@ -245,13 +246,22 @@ Before running TCR with Perforce, make sure that the P4 Client is properly confi
 To use TCR with Perforce, you'll need to add the `--vcs=p4` to the command line (you can also set this up in
 the `.tcr/config.yml`, see the [Configuration Directory](#configuration-directory) section below).
 
+> ***Note: IDE configuration when using TCR with Perforce***
+>
+> In order to use TCR with Perforce, make sure to setup your IDE so that it
+> automatically marks files for edit on modify. Without this you will still be able to use TCR,
+> but you will have to repeatedly mark files for edit after every commit.
+>
+> - With VS-Code, look for available Perforce extensions to enable it
+> - With JetBrains IDEs, [Perforce Helix Core](https://plugins.jetbrains.com/plugin/69-perforce-helix-core) plugin
+    allows to enable it
+
 > ***Note: Perforce limitations***
 >
 > At the moment, TCR over Perforce is still in the experimentation phase. It does not yet support all the options
 > available with git.
 > Here are the main limitations:
 >
-> - Option `--commit-failures` or `-f` is not supported
 > - Option `--auto-push` or `-p` has no meaning with Perforce and is ignored
 > - Sub-command `log` is not supported
 > - Sub-command `stats` is not supported
