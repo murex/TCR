@@ -130,6 +130,10 @@ func (sniffer *Sniffer) Stop() {
 	}
 }
 
+// FIXME SMELL: Duplicated assertion code in tests. Consider improving the reporter fake as a real mock with
+//  check method and better error reporting, ex: report.assertWarning... instead of setting up the sniffer
+//  then asserting count matches
+
 // GetAllMatches returns a slice containing all matching messages captured by the sniffer
 func (sniffer *Sniffer) GetAllMatches() []Message {
 	return sniffer.captured
