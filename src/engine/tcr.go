@@ -131,14 +131,12 @@ var (
 	messageReverted = CommitMessage{Emoji: '⏪', Tag: "[TCR - REVERTED]", Description: "revert changes"}
 )
 
-var (
-	commitMessagePassed   = messagePassed.toString()
-	commitMessageFailed   = messageFailed.toString()
-	commitMessageReverted = messageReverted.toString()
-)
-
-func (cm CommitMessage) toString() string {
-	return fmt.Sprintf("%c %s %s", cm.Emoji, cm.Tag, cm.Description)
+func (cm CommitMessage) toString(withEmoji bool) string {
+	textOnly := fmt.Sprintf("%s %s", cm.Tag, cm.Description)
+	if withEmoji {
+		return fmt.Sprintf("%c %s", cm.Emoji, textOnly)
+	}
+	return textOnly
 }
 
 var (
@@ -274,7 +272,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 }
 
 func isTCRCommitMessage(msg string) bool {
-	return strings.Index(msg, commitMessagePassed) == 0 || strings.Index(msg, commitMessageFailed) == 0
+	return strings.Index(msg, messagePassed.toString(true)) == 0 || strings.Index(msg, messageFailed.toString(true)) == 0
 }
 
 func parseCommitMessage(message string) (event events.TCREvent) {
@@ -310,9 +308,9 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 
 	event = events.FromYAML(statsYAML.String())
 	switch header {
-	case commitMessagePassed:
+	case messagePassed.toString(true):
 		event.Status = events.StatusPass
-	case commitMessageFailed:
+	case messageFailed.toString(true):
 		event.Status = events.StatusFail
 	default:
 		event.Status = events.StatusUnknown
@@ -324,8 +322,8 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 	tcr.messageSuffix = suffix
 }
 
-func (tcr *TCREngine) wrapCommitMessages(statusMessage string, event *events.TCREvent) []string {
-	messages := []string{statusMessage}
+func (tcr *TCREngine) wrapCommitMessages(header CommitMessage, event *events.TCREvent) []string {
+	messages := []string{header.toString(true)}
 	if event != nil {
 		messages = append(messages, event.ToYAML())
 	}
@@ -608,7 +606,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessagePassed, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(messagePassed, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -657,7 +655,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageFailed, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(messageFailed, &event)...)
 	if err != nil {
 		return err
 	}
@@ -665,7 +663,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageReverted, nil)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(messageReverted, nil)...)
 	return err
 }
 
