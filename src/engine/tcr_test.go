@@ -955,7 +955,7 @@ func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			p := params.AParamSet(params.WithRunMode(runmode.OneShot{}), params.WithMessageSuffix(test.suffix))
 			tcr, _ := initTCREngineWithFakes(p, nil, nil, nil)
-			result := tcr.wrapCommitMessages(commitMessageOk, events.ATcrEvent())
+			result := tcr.wrapCommitMessages(commitMessagePassed, events.ATcrEvent())
 			assert.Equal(t, test.expected, result[len(result)-len(test.expected):])
 		})
 	}
@@ -1024,6 +1024,45 @@ func Test_count_files(t *testing.T) {
 
 			assert.Equal(t, test.expectedFileCount, count)
 			assert.Equal(t, test.expectedWarnings, sniffer.GetMatchCount())
+		})
+	}
+}
+
+func Test_building_commit_messages(t *testing.T) {
+	tests := []struct {
+		desc          string
+		commitMessage CommitMessage
+		expected      string
+	}{
+		{
+			"Passing Message",
+			CommitMessage{
+				Emoji:       '✅',
+				Tag:         "[TCR - PASSED]",
+				Description: "tests passing",
+			},
+			passedCommitMessage,
+		}, {
+			"Failing Message",
+			CommitMessage{
+				Emoji:       '❌',
+				Tag:         "[TCR - FAILED]",
+				Description: "tests failing",
+			},
+			failedCommitMessage,
+		}, {
+			"Reverting Message",
+			CommitMessage{
+				Emoji:       '⏪',
+				Tag:         "[TCR - REVERTED]",
+				Description: "revert changes",
+			},
+			revertedCommitMessage,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, test.commitMessage.toString())
 		})
 	}
 }
