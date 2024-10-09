@@ -24,6 +24,7 @@ package engine
 
 import (
 	"errors"
+	"fmt"
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -112,13 +113,33 @@ const traceReporterWaitingTime = 100 * time.Millisecond
 const fsWatchRearmDelay = 100 * time.Millisecond
 
 const (
-	commitMessageOk     = "✅ [TCR - PASSED] tests passing"
-	commitMessageFail   = "❌ [TCR - FAILED] tests failing"
-	commitMessageRevert = "⏪ [TCR - REVERTED] revert changes"
 	buildFailureMessage = "There are build errors! I can't go any further"
 	testFailureMessage  = "Some tests are failing! That's unfortunate"
 	testSuccessMessage  = "Tests passed!"
 )
+
+// CommitMessage is a struct that holds information of the commit message
+type CommitMessage struct {
+	Emoji       rune
+	Tag         string
+	Description string
+}
+
+var (
+	messagePassed   = CommitMessage{Emoji: '✅', Tag: "[TCR - PASSED]", Description: "tests passing"}
+	messageFailed   = CommitMessage{Emoji: '❌', Tag: "[TCR - FAILED]", Description: "tests failing"}
+	messageReverted = CommitMessage{Emoji: '⏪', Tag: "[TCR - REVERTED]", Description: "revert changes"}
+)
+
+var (
+	commitMessagePassed   = messagePassed.toString()
+	commitMessageFailed   = messageFailed.toString()
+	commitMessageReverted = messageReverted.toString()
+)
+
+func (cm CommitMessage) toString() string {
+	return fmt.Sprintf("%c %s %s", cm.Emoji, cm.Tag, cm.Description)
+}
 
 var (
 	// TCR is TCR Engine singleton instance
@@ -253,7 +274,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 }
 
 func isTCRCommitMessage(msg string) bool {
-	return strings.Index(msg, commitMessageOk) == 0 || strings.Index(msg, commitMessageFail) == 0
+	return strings.Index(msg, commitMessagePassed) == 0 || strings.Index(msg, commitMessageFailed) == 0
 }
 
 func parseCommitMessage(message string) (event events.TCREvent) {
@@ -289,9 +310,9 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 
 	event = events.FromYAML(statsYAML.String())
 	switch header {
-	case commitMessageOk:
+	case commitMessagePassed:
 		event.Status = events.StatusPass
-	case commitMessageFail:
+	case commitMessageFailed:
 		event.Status = events.StatusFail
 	default:
 		event.Status = events.StatusUnknown
@@ -587,7 +608,7 @@ func (tcr *TCREngine) commit(event events.TCREvent) {
 	if err != nil {
 		return
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageOk, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessagePassed, &event)...)
 	tcr.handleError(err, false, status.VCSError)
 	if err != nil {
 		return
@@ -636,7 +657,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageFail, &event)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageFailed, &event)...)
 	if err != nil {
 		return err
 	}
@@ -644,7 +665,7 @@ func (tcr *TCREngine) introspectiveRevert(event events.TCREvent) (err error) {
 	if err != nil {
 		return err
 	}
-	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageRevert, nil)...)
+	err = tcr.vcs.Commit(tcr.wrapCommitMessages(commitMessageReverted, nil)...)
 	return err
 }
 
