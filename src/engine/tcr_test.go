@@ -953,7 +953,7 @@ func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			p := params.AParamSet(params.WithRunMode(runmode.OneShot{}), params.WithMessageSuffix(test.suffix))
 			tcr, _ := initTCREngineWithFakes(p, nil, nil, nil)
-			result := tcr.wrapCommitMessages(commitMessagePassed, events.ATcrEvent())
+			result := tcr.wrapCommitMessages(messagePassed, events.ATcrEvent())
 			assert.Equal(t, test.expected, result[len(result)-len(test.expected):])
 		})
 	}
@@ -1030,6 +1030,7 @@ func Test_building_commit_messages(t *testing.T) {
 	tests := []struct {
 		desc          string
 		commitMessage CommitMessage
+		withEmoji     bool
 		expected      string
 	}{
 		{
@@ -1039,6 +1040,7 @@ func Test_building_commit_messages(t *testing.T) {
 				Tag:         "[TCR - PASSED]",
 				Description: "tests passing",
 			},
+			true,
 			passedCommitMessage,
 		}, {
 			"Failing Message",
@@ -1047,6 +1049,7 @@ func Test_building_commit_messages(t *testing.T) {
 				Tag:         "[TCR - FAILED]",
 				Description: "tests failing",
 			},
+			true,
 			failedCommitMessage,
 		}, {
 			"Reverting Message",
@@ -1055,12 +1058,22 @@ func Test_building_commit_messages(t *testing.T) {
 				Tag:         "[TCR - REVERTED]",
 				Description: "revert changes",
 			},
+			true,
 			revertedCommitMessage,
+		}, {
+			"Passing Message without Emoji",
+			CommitMessage{
+				Emoji:       '✅',
+				Tag:         "[TCR - PASSED]",
+				Description: "tests passing",
+			},
+			false,
+			"[TCR - PASSED] tests passing",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			assert.Equal(t, test.expected, test.commitMessage.toString())
+			assert.Equal(t, test.expected, test.commitMessage.toString(test.withEmoji))
 		})
 	}
 }
