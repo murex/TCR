@@ -104,6 +104,11 @@ func Test_git_auto_push_is_disabled_default(t *testing.T) {
 	assert.Zero(t, g.IsAutoPushEnabled())
 }
 
+func Test_git_supports_emojis(t *testing.T) {
+	g, _ := newGitImpl(inMemoryRepoInit, "")
+	assert.True(t, g.SupportsEmojis())
+}
+
 func Test_git_enable_disable_push(t *testing.T) {
 	g, _ := newGitImpl(inMemoryRepoInit, "", "")
 	g.EnableAutoPush(true)

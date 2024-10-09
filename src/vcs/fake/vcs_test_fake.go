@@ -81,6 +81,10 @@ type (
 	}
 )
 
+func (vf *VCSFake) SupportsEmojis() bool {
+	return true
+}
+
 func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 	vf.lastCommands = append(vf.lastCommands, cmd)
 	if vf.settings.FailingCommands.contains(cmd) {

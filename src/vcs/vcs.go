@@ -67,4 +67,5 @@ type Interface interface {
 	IsAutoPushEnabled() bool
 	IsRemoteEnabled() bool
 	CheckRemoteAccess() bool
+	SupportsEmojis() bool
 }

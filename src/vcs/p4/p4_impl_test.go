@@ -54,6 +54,11 @@ func Test_p4_auto_push_is_always_enabled(t *testing.T) {
 	assert.True(t, p.IsAutoPushEnabled())
 }
 
+func Test_p4_does_not_support_emojis(t *testing.T) {
+	p, _ := newP4Impl(inMemoryDepotInit, "", true)
+	assert.False(t, p.SupportsEmojis())
+}
+
 func Test_p4_enable_disable_push_has_no_effect(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
 	p.EnableAutoPush(true)

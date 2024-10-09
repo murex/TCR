@@ -58,6 +58,10 @@ type gitImpl struct {
 	traceGitFunction            func(params ...string) (err error)
 }
 
+func (g *gitImpl) SupportsEmojis() bool {
+	return true
+}
+
 // New initializes the git implementation based on the provided directory from local clone
 func New(dir string, remoteName string) (vcs.Interface, error) {
 	return newGitImpl(plainOpen, dir, remoteName)
