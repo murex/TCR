@@ -46,6 +46,12 @@ import (
 	"time"
 )
 
+const (
+	passedCommitMessage   = "✅ [TCR - PASSED] tests passing"
+	failedCommitMessage   = "❌ [TCR - FAILED] tests failing"
+	revertedCommitMessage = "⏪ [TCR - REVERTED] revert changes"
+)
+
 func Test_tcr_command_end_state(t *testing.T) {
 	testFlags := []struct {
 		desc              string
@@ -550,22 +556,19 @@ func Test_variant_commit_subjects(t *testing.T) {
 			"Introspective with tests passing.",
 			variant.Introspective,
 			toolchain.Operations{},
-			[]string{"✅ TCR - tests passing"},
+			[]string{passedCommitMessage},
 		},
 		{
 			"Introspective with tests failing.",
 			variant.Introspective,
 			toolchain.Operations{toolchain.TestOperation},
-			[]string{
-				"❌ TCR - tests failing",
-				"⏪ TCR - revert changes",
-			},
+			[]string{failedCommitMessage, revertedCommitMessage},
 		},
 		{
 			"Relaxed with tests passing.",
 			variant.Relaxed,
 			toolchain.Operations{},
-			[]string{"✅ TCR - tests passing"},
+			[]string{passedCommitMessage},
 		},
 		{
 			"Relaxed with tests failing.",
@@ -577,7 +580,7 @@ func Test_variant_commit_subjects(t *testing.T) {
 			"BTCR with tests passing.",
 			variant.BTCR,
 			toolchain.Operations{},
-			[]string{"✅ TCR - tests passing"},
+			[]string{passedCommitMessage},
 		},
 		{
 			"BTCR with tests failing.",
@@ -707,9 +710,9 @@ func Test_mob_timer_should_be_off_in_solo_mode(t *testing.T) {
 func Test_tcr_print_log(t *testing.T) {
 	now := time.Now()
 	sampleItems := vcs.LogItems{
-		vcs.NewLogItem("1111", now, "✅ TCR - tests passing"),
-		vcs.NewLogItem("2222", now, "❌ TCR - tests failing"),
-		vcs.NewLogItem("3333", now, "⏪ TCR - revert changes"),
+		vcs.NewLogItem("1111", now, passedCommitMessage),
+		vcs.NewLogItem("2222", now, failedCommitMessage),
+		vcs.NewLogItem("3333", now, revertedCommitMessage),
 		vcs.NewLogItem("4444", now, "other commit message"),
 	}
 	testFlags := []struct {
@@ -722,7 +725,7 @@ func Test_tcr_print_log(t *testing.T) {
 			desc: "TCR passing commits are kept",
 			filter: func(msg report.Message) bool {
 				return msg.Type.Category == report.Info &&
-					strings.Index(msg.Payload.ToString(), "message:   ✅ TCR - tests passing") == 0
+					strings.Index(msg.Payload.ToString(), "message:   "+passedCommitMessage) == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -731,7 +734,7 @@ func Test_tcr_print_log(t *testing.T) {
 			desc: "TCR failing commits are kept",
 			filter: func(msg report.Message) bool {
 				return msg.Type.Category == report.Info &&
-					strings.Index(msg.Payload.ToString(), "message:   ❌ TCR - tests failing") == 0
+					strings.Index(msg.Payload.ToString(), "message:   "+failedCommitMessage) == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 1,
@@ -740,7 +743,7 @@ func Test_tcr_print_log(t *testing.T) {
 			desc: "TCR revert commits are dropped",
 			filter: func(msg report.Message) bool {
 				return msg.Type.Category == report.Info &&
-					strings.Index(msg.Payload.ToString(), "message:   ⏪ TCR - revert changes") == 0
+					strings.Index(msg.Payload.ToString(), "message:   "+revertedCommitMessage) == 0
 			},
 			logItems:        sampleItems,
 			expectedMatches: 0,
@@ -808,7 +811,7 @@ func Test_parse_commit_message(t *testing.T) {
 		},
 		{
 			desc: "test-passing commit",
-			commitMessage: "✅ TCR - tests passing\n" +
+			commitMessage: passedCommitMessage + "\n" +
 				"\n" +
 				"changed-lines:\n" +
 				"    src: 2\n" +
@@ -829,7 +832,7 @@ func Test_parse_commit_message(t *testing.T) {
 		},
 		{
 			desc: "test-failing commit",
-			commitMessage: "❌ TCR - tests failing\n" +
+			commitMessage: failedCommitMessage + "\n" +
 				"\n" +
 				"changed-lines:\n" +
 				"    src: 1\n" +
@@ -850,7 +853,7 @@ func Test_parse_commit_message(t *testing.T) {
 		},
 		{
 			desc: "commit with single line suffix message",
-			commitMessage: "✅ TCR - tests passing\n" +
+			commitMessage: passedCommitMessage + "\n" +
 				"\n" +
 				"changed-lines:\n" +
 				"    src: 1\n" +
