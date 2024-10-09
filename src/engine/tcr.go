@@ -112,9 +112,9 @@ const traceReporterWaitingTime = 100 * time.Millisecond
 const fsWatchRearmDelay = 100 * time.Millisecond
 
 const (
-	commitMessageOk     = "✅ TCR - tests passing"
-	commitMessageFail   = "❌ TCR - tests failing"
-	commitMessageRevert = "⏪ TCR - revert changes"
+	commitMessageOk     = "✅ [TCR - PASSED] tests passing"
+	commitMessageFail   = "❌ [TCR - FAILED] tests failing"
+	commitMessageRevert = "⏪ [TCR - REVERTED] revert changes"
 	buildFailureMessage = "There are build errors! I can't go any further"
 	testFailureMessage  = "Some tests are failing! That's unfortunate"
 	testSuccessMessage  = "Tests passed!"
