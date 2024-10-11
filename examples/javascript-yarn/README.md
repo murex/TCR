@@ -22,7 +22,29 @@
 > Use a **git bash** terminal for running the commands below.
 > _Windows CMD and PowerShell are not supported_
 
-### 2 - Launch TCR
+### 2 - Install dependencies
+
+> ***Reminder***: the command below should be run from
+> [examples/javascript-yarn](.)
+> directory
+
+The example uses `corepack` when configuring `yarn` as the package manager to be used.
+You may need to run the following command beforehand to enable it:
+
+> ***Note***: depending on your environment you may need to run this command
+> as an administrator (Windows) or with sudo (Linux and macOS)
+
+```shell
+corepack enable
+```
+
+To install the dependencies:
+
+```shell
+yarn install
+```
+
+### 3 - Launch TCR
 
 > ***Reminder***: the command below should be run from
 > [examples/javascript-yarn](.)

@@ -5,16 +5,19 @@
   "author": "Murex",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "*",
-    "jest": "*",
-    "ts-jest": "*",
-    "jest-junit": "*",
-    "typescript": "*"
+    "@tsconfig/node22": "^22.0.0",
+    "@types/jest": "^29.5.13",
+    "@types/node": "^22.7.5",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.3"
   },
   "scripts": {
     "test": "jest --watchAll"
   },
   "jest-junit": {
     "outputDirectory": "./test_results"
-  }
+  },
+  "packageManager": "yarn@4.5.0"
 }
