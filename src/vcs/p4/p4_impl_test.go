@@ -24,12 +24,10 @@ package p4
 
 import (
 	"errors"
-	"fmt"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/text/encoding/charmap"
 	"path/filepath"
 	"testing"
 )
@@ -97,26 +95,6 @@ func Test_p4_check_remote_access_is_always_true(t *testing.T) {
 func Test_p4_get_remote_name_is_always_empty(t *testing.T) {
 	p, _ := newP4Impl(inMemoryDepotInit, "", true)
 	assert.Equal(t, "", p.GetRemoteName())
-}
-
-func Test_convert_line(t *testing.T) {
-	tests := []struct {
-		desc     string
-		input    rune
-		encoding *charmap.Charmap
-		expected string
-	}{
-		{"UTC-8 smiley", '🙂', nil, "f09f9982"},
-		{"ISO8859-1 smiley", '🙂', charmap.ISO8859_1, "c3b0c29fc299c282"},
-		{"WINDOWS-1252 smiley", '🙂', charmap.Windows1252, "c3b0c5b8e284a2e2809a"},
-	}
-
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			//t.Logf("%x - %x", test.input, convertLine(test.encoding, string(test.input)))
-			assert.Equal(t, test.expected, fmt.Sprintf("%x", convertLine(test.encoding, string(test.input))))
-		})
-	}
 }
 
 func Test_p4_diff(t *testing.T) {

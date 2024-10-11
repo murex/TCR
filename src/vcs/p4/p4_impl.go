@@ -32,8 +32,6 @@ import (
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
-	"golang.org/x/text/encoding/charmap"
-	"golang.org/x/text/transform"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -307,22 +305,10 @@ func buildDescriptionField(attr shell.Attributes, messages ...string) string {
 	var builder strings.Builder
 	_, _ = builder.WriteString("Description=")
 	for _, message := range messages {
-		_, _ = builder.WriteString(convertLine(attr.Encoding, message))
+		_, _ = builder.WriteString(message)
 		_, _ = builder.WriteString(attr.EOL)
 	}
 	return builder.String()
-}
-
-func convertLine(charMap *charmap.Charmap, message string) string {
-	if charMap == nil {
-		// By default, we use UTF-8, which is the default with Go strings
-		return message
-	}
-	var b bytes.Buffer
-	converter := transform.NewWriter(&b, charMap.NewDecoder())
-	_, _ = converter.Write([]byte(message))
-	_ = converter.Close()
-	return b.String()
 }
 
 func (p *p4Impl) submitChangeList(cl *changeList) error {

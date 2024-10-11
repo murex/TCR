@@ -22,12 +22,9 @@ SOFTWARE.
 
 package shell
 
-import "golang.org/x/text/encoding/charmap"
-
 // osShellAttributes returns shell attributes associated to the underlying operating system
 func osShellAttributes() Attributes {
 	return Attributes{
-		Encoding: charmap.Windows1252,
-		EOL:      "\r\n",
+		EOL: "\r\n",
 	}
 }

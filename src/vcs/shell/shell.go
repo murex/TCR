@@ -22,13 +22,10 @@ SOFTWARE.
 
 package shell
 
-import "golang.org/x/text/encoding/charmap"
-
 // Attributes contain shell-specific attributes allowing to tune behavior
 // when interacting with a shell command
 type Attributes struct {
-	Encoding *charmap.Charmap
-	EOL      string
+	EOL string
 }
 
 // GetAttributes Returns shell-specific attributes

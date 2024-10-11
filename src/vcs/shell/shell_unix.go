@@ -27,7 +27,6 @@ package shell
 // osShellAttributes returns shell attributes associated to the underlying operating system
 func osShellAttributes() Attributes {
 	return Attributes{
-		Encoding: nil,
-		EOL:      "\n",
+		EOL: "\n",
 	}
 }
