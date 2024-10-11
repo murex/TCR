@@ -798,17 +798,53 @@ func Test_tcr_print_log(t *testing.T) {
 	}
 }
 
+func Test_parse_commit_message_type_tag(t *testing.T) {
+	testFlags := []struct {
+		desc           string
+		commitMessage  string
+		expectedStatus events.CommandStatus
+	}{
+		{
+			desc:           "empty commit message",
+			commitMessage:  "",
+			expectedStatus: events.StatusUnknown,
+		},
+		{
+			desc:           "passing commit",
+			commitMessage:  messagePassed.Tag,
+			expectedStatus: events.StatusPass,
+		},
+		{
+			desc:           "failing commit",
+			commitMessage:  messageFailed.Tag,
+			expectedStatus: events.StatusFail,
+		},
+		{
+			desc:           "revert commit are unknown status",
+			commitMessage:  messageReverted.Tag,
+			expectedStatus: events.StatusUnknown,
+		},
+		{
+			desc:           "non-TCR commit",
+			commitMessage:  "Joe was here!",
+			expectedStatus: events.StatusUnknown,
+		},
+	}
+
+	for _, tt := range testFlags {
+		t.Run(tt.desc, func(t *testing.T) {
+			event := parseCommitMessage(tt.commitMessage)
+			assert.Equal(t, tt.expectedStatus, event.Status)
+		})
+	}
+}
+
 func Test_parse_commit_message(t *testing.T) {
 	testFlags := []struct {
 		desc          string
 		commitMessage string
 		expected      events.TCREvent
 	}{
-		{
-			desc:          "empty commit message",
-			commitMessage: "",
-			expected:      events.TCREvent{Status: events.StatusUnknown},
-		},
 		{
 			desc: "test-passing commit",
 			commitMessage: passedCommitMessage + "\n" +
@@ -1043,58 +1079,6 @@ func Test_count_files(t *testing.T) {
 
 			assert.Equal(t, test.expectedFileCount, count)
 			assert.Equal(t, test.expectedWarnings, sniffer.GetMatchCount())
-		})
-	}
-}
-
-func Test_building_commit_messages(t *testing.T) {
-	tests := []struct {
-		desc          string
-		commitMessage CommitMessage
-		withEmoji     bool
-		expected      string
-	}{
-		{
-			"Passing Message",
-			CommitMessage{
-				Emoji:       '✅',
-				Tag:         "[TCR - PASSED]",
-				Description: "tests passing",
-			},
-			true,
-			passedCommitMessage,
-		}, {
-			"Failing Message",
-			CommitMessage{
-				Emoji:       '❌',
-				Tag:         "[TCR - FAILED]",
-				Description: "tests failing",
-			},
-			true,
-			failedCommitMessage,
-		}, {
-			"Reverting Message",
-			CommitMessage{
-				Emoji:       '⏪',
-				Tag:         "[TCR - REVERTED]",
-				Description: "revert changes",
-			},
-			true,
-			revertedCommitMessage,
-		}, {
-			"Passing Message without Emoji",
-			CommitMessage{
-				Emoji:       '✅',
-				Tag:         "[TCR - PASSED]",
-				Description: "tests passing",
-			},
-			false,
-			"[TCR - PASSED] tests passing",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			assert.Equal(t, test.expected, test.commitMessage.toString(test.withEmoji))
 		})
 	}
 }

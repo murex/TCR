@@ -24,7 +24,6 @@ package engine
 
 import (
 	"errors"
-	"fmt"
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -117,27 +116,6 @@ const (
 	testFailureMessage  = "Some tests are failing! That's unfortunate"
 	testSuccessMessage  = "Tests passed!"
 )
-
-// CommitMessage is a struct that holds information of the commit message
-type CommitMessage struct {
-	Emoji       rune
-	Tag         string
-	Description string
-}
-
-var (
-	messagePassed   = CommitMessage{Emoji: '✅', Tag: "[TCR - PASSED]", Description: "tests passing"}
-	messageFailed   = CommitMessage{Emoji: '❌', Tag: "[TCR - FAILED]", Description: "tests failing"}
-	messageReverted = CommitMessage{Emoji: '⏪', Tag: "[TCR - REVERTED]", Description: "revert changes"}
-)
-
-func (cm CommitMessage) toString(withEmoji bool) string {
-	textOnly := fmt.Sprintf("%s %s", cm.Tag, cm.Description)
-	if withEmoji {
-		return fmt.Sprintf("%c %s", cm.Emoji, textOnly)
-	}
-	return textOnly
-}
 
 var (
 	// TCR is TCR Engine singleton instance
@@ -275,7 +253,13 @@ func isTCRCommitMessage(msg string) bool {
 	return strings.Index(msg, messagePassed.toString(true)) == 0 || strings.Index(msg, messageFailed.toString(true)) == 0
 }
 
-func parseCommitMessage(message string) (event events.TCREvent) {
+func parseCommitMessage(message string) events.TCREvent {
+	header, event := parseCommitHeaderAndEvents(message)
+	event.Status = parseCommitStatus(header)
+	return event
+}
+
+func parseCommitHeaderAndEvents(message string) (string, events.TCREvent) {
 	// First line is the main commit message
 	// Second line is a blank line
 	// The YAML-structured data starts on the third line until we reach a blank line
@@ -305,17 +289,20 @@ func parseCommitMessage(message string) (event events.TCREvent) {
 			continue
 		}
 	}
+	event := events.FromYAML(statsYAML.String())
+	return header, event
+}
 
-	event = events.FromYAML(statsYAML.String())
-	switch header {
-	case messagePassed.toString(true):
-		event.Status = events.StatusPass
-	case messageFailed.toString(true):
-		event.Status = events.StatusFail
-	default:
-		event.Status = events.StatusUnknown
+func parseCommitStatus(header string) events.CommandStatus {
+	commitStatus := events.StatusUnknown
+	if strings.Contains(header, messagePassed.Tag) {
+		commitStatus = events.StatusPass
+	} else if strings.Contains(header, messageFailed.Tag) {
+		commitStatus = events.StatusFail
+	} else {
+		commitStatus = events.StatusUnknown
 	}
-	return event
+	return commitStatus
 }
 
 func (tcr *TCREngine) setMessageSuffix(suffix string) {
