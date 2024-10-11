@@ -58,10 +58,6 @@ type gitImpl struct {
 	traceGitFunction            func(params ...string) (err error)
 }
 
-func (g *gitImpl) SupportsEmojis() bool {
-	return true
-}
-
 // New initializes the git implementation based on the provided directory from local clone
 func New(dir string, remoteName string) (vcs.Interface, error) {
 	return newGitImpl(plainOpen, dir, remoteName)
@@ -386,6 +382,11 @@ func (g *gitImpl) CheckRemoteAccess() bool {
 		return err == nil
 	}
 	return false
+}
+
+// SupportsEmojis indicates if the VCS supports emojis in commit messages (true in case of git)
+func (*gitImpl) SupportsEmojis() bool {
+	return true
 }
 
 // traceGit runs a git command and traces its output.

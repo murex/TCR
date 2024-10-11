@@ -47,7 +47,7 @@ import (
 )
 
 const (
-	passedCommitMessage   = "✅ [TCR - PASSED] tests passing"
+	passedCommitMessage   = "✅ [TCR - PASSED] tests passing" //nolint:gosec
 	failedCommitMessage   = "❌ [TCR - FAILED] tests failing"
 	revertedCommitMessage = "⏪ [TCR - REVERTED] revert changes"
 )

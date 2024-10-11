@@ -82,10 +82,6 @@ type (
 	}
 )
 
-func (vf *VCSFake) SupportsEmojis() bool {
-	return vf.supportsEmojis
-}
-
 func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
 	vf.lastCommands = append(vf.lastCommands, cmd)
 	if vf.settings.FailingCommands.contains(cmd) {
@@ -219,10 +215,17 @@ func (vf *VCSFake) CheckRemoteAccess() bool {
 	return vf.settings.RemoteAccessWorking
 }
 
+// GetLastCommitSubjects returns the list of last commit subjects
 func (vf *VCSFake) GetLastCommitSubjects() []string {
 	return vf.lastCommitSubjects
 }
 
+// SupportsEmojis indicates if the VCS supports emojis in commit messages
+func (vf *VCSFake) SupportsEmojis() bool {
+	return vf.supportsEmojis
+}
+
+// SetSupportsEmojis allows to configure VCS fake's support for emojis
 func (vf *VCSFake) SetSupportsEmojis(flag bool) {
 	vf.supportsEmojis = flag
 }

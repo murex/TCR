@@ -250,7 +250,7 @@ func (tcr *TCREngine) queryVCSLogs(p params.Params) vcs.LogItems {
 }
 
 func isTCRCommitMessage(msg string) bool {
-	return strings.Index(msg, messagePassed.toString(true)) == 0 || strings.Index(msg, messageFailed.toString(true)) == 0
+	return parseCommitStatus(msg) != events.StatusUnknown
 }
 
 func parseCommitMessage(message string) events.TCREvent {
@@ -294,15 +294,13 @@ func parseCommitHeaderAndEvents(message string) (string, events.TCREvent) {
 }
 
 func parseCommitStatus(header string) events.CommandStatus {
-	commitStatus := events.StatusUnknown
 	if strings.Contains(header, messagePassed.Tag) {
-		commitStatus = events.StatusPass
-	} else if strings.Contains(header, messageFailed.Tag) {
-		commitStatus = events.StatusFail
-	} else {
-		commitStatus = events.StatusUnknown
+		return events.StatusPass
 	}
-	return commitStatus
+	if strings.Contains(header, messageFailed.Tag) {
+		return events.StatusFail
+	}
+	return events.StatusUnknown
 }
 
 func (tcr *TCREngine) setMessageSuffix(suffix string) {

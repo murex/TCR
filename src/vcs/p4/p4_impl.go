@@ -53,10 +53,6 @@ type p4Impl struct {
 	tracePipedP4Function func(toCmd shell.Command, params ...string) (err error)
 }
 
-func (p *p4Impl) SupportsEmojis() bool {
-	return false
-}
-
 // New initializes the p4 implementation based on the provided directory from local clone
 func New(dir string) (vcs.Interface, error) {
 	return newP4Impl(plainOpen, dir, false)
@@ -258,6 +254,11 @@ func (*p4Impl) IsAutoPushEnabled() bool {
 // CheckRemoteAccess returns true if p4 remote can be accessed.
 func (*p4Impl) CheckRemoteAccess() bool {
 	return true
+}
+
+// SupportsEmojis indicates if the VCS supports emojis in commit messages (false in case of Perforce)
+func (*p4Impl) SupportsEmojis() bool {
+	return false
 }
 
 // traceP4 runs a p4 command and traces its output.
