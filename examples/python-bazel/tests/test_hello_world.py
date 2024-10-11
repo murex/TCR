@@ -1,5 +1,3 @@
-import pytest
-
 from hello_world.hello_world import say_hello
 
 
