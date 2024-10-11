@@ -961,6 +961,25 @@ func Test_adding_suffix_to_tcr_commit_messages(t *testing.T) {
 	}
 }
 
+func Test_building_the_commit_message_depending_on_the_vcs(t *testing.T) {
+	tests := []struct {
+		desc          string
+		supportsEmoji bool
+	}{
+		{"with vcs supporting emoji", true},
+		{"with vcs not supporting emoji", false},
+	}
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			p := params.AParamSet(params.WithRunMode(runmode.OneShot{}))
+			tcr, vcsFake := initTCREngineWithFakes(p, nil, nil, nil)
+			vcsFake.SetSupportsEmojis(test.supportsEmoji)
+			result := tcr.wrapCommitMessages(messagePassed, events.ATcrEvent())
+			assert.Equal(t, test.supportsEmoji, strings.ContainsRune(result[0], messagePassed.Emoji))
+		})
+	}
+}
+
 func Test_count_files(t *testing.T) {
 	tests := []struct {
 		desc              string

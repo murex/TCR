@@ -78,11 +78,12 @@ type (
 		remoteName         string
 		lastCommands       []Command
 		lastCommitSubjects []string
+		supportsEmojis     bool
 	}
 )
 
 func (vf *VCSFake) SupportsEmojis() bool {
-	return true
+	return vf.supportsEmojis
 }
 
 func (vf *VCSFake) fakeCommand(cmd Command) (err error) {
@@ -101,6 +102,7 @@ func NewVCSFake(settings Settings) *VCSFake {
 		remoteName:         "vcs-fake-remote-name",
 		lastCommitSubjects: make([]string, 0),
 		lastCommands:       make([]Command, 0),
+		supportsEmojis:     true,
 	}
 }
 
@@ -219,4 +221,8 @@ func (vf *VCSFake) CheckRemoteAccess() bool {
 
 func (vf *VCSFake) GetLastCommitSubjects() []string {
 	return vf.lastCommitSubjects
+}
+
+func (vf *VCSFake) SetSupportsEmojis(flag bool) {
+	vf.supportsEmojis = flag
 }

@@ -323,7 +323,7 @@ func (tcr *TCREngine) setMessageSuffix(suffix string) {
 }
 
 func (tcr *TCREngine) wrapCommitMessages(header CommitMessage, event *events.TCREvent) []string {
-	messages := []string{header.toString(true)}
+	messages := []string{header.toString(tcr.vcs.SupportsEmojis())}
 	if event != nil {
 		messages = append(messages, event.ToYAML())
 	}
