@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,36 +22,27 @@ SOFTWARE.
 
 package runmode
 
-// Retro is a type of run mode allowing to generate a retrospective template
-type Retro struct {
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test_retro_mode_name(t *testing.T) {
+	assert.Equal(t, "retro", Retro{}.Name())
 }
 
-// Name returns the name of this run mode
-func (Retro) Name() string {
-	return "retro"
+func Test_retro_mode_default_auto_push_if_false(t *testing.T) {
+	assert.False(t, Retro{}.AutoPushDefault())
 }
 
-// AutoPushDefault returns the default value of VCS auto-push option with this run mode
-func (Retro) AutoPushDefault() bool {
-	return false
+func Test_retro_mode_does_not_require_multiple_roles(t *testing.T) {
+	assert.False(t, Retro{}.IsMultiRole())
 }
 
-// IsMultiRole indicates if this run mode supports multiple roles
-func (r Retro) IsMultiRole() bool {
-	return false
+func Test_retro_mode_allows_user_interactions(t *testing.T) {
+	assert.False(t, Retro{}.IsInteractive())
 }
 
-// NeedsCountdownTimer indicates if a countdown timer is needed with this run mode
-func (Retro) NeedsCountdownTimer() bool {
-	return false
-}
-
-// IsInteractive indicates if this run mode allows user interaction
-func (Retro) IsInteractive() bool {
-	return false
-}
-
-// IsActive indicates if this run mode is actively running TCR
-func (Retro) IsActive() bool {
-	return false
+func Test_retro_mode_is_an_active_mode(t *testing.T) {
+	assert.False(t, Retro{}.IsActive())
 }
