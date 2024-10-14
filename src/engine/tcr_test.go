@@ -41,6 +41,7 @@ import (
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -52,13 +53,39 @@ const (
 	revertedCommitMessage = "⏪ [TCR - REVERTED] revert changes"
 )
 
+// Tried with json marshalling of the test data to create a test name.
+// Did not work well, maybe because of non-marshallable fields like lambdas (I did not dig further)
+// func testInputToString[T any](t *testing.T, input T) string {
+//     bytes, err := json.Marshal(input)
+//     assert.NoError(t, err)
+//     return string(bytes)
+//}
+
+func testInputToString[T any](t *testing.T, input T) string {
+	v := reflect.ValueOf(input)
+	assert.Equal(t, v.Kind(), reflect.Struct)
+
+	descField := v.FieldByName("Description")
+	assert.True(t, descField.IsValid(), "parametrized test data structs should have a 'Description' field")
+
+	return fmt.Sprintf("%v", descField.Interface())
+}
+func parametrizedTest[T any](t *testing.T, cases []T, test func(t *testing.T, input T)) {
+	for _, input := range cases {
+		t.Run(testInputToString(t, input), func(t *testing.T) {
+			test(t, input)
+		})
+	}
+}
+
 func Test_tcr_command_end_state(t *testing.T) {
-	testFlags := []struct {
-		desc              string
+	type TestData struct {
+		Description       string
 		command           func() command.Result
 		expectedCmdStatus command.Status
 		expectedAppStatus status.Status
-	}{
+	}
+	parametrizedTest(t, []TestData{
 		{
 			"build with no failure",
 			func() command.Result {
@@ -93,15 +120,11 @@ func Test_tcr_command_end_state(t *testing.T) {
 			},
 			command.StatusFail, status.TestFailed,
 		},
-	}
-
-	for _, tt := range testFlags {
-		t.Run(tt.desc, func(t *testing.T) {
-			status.RecordState(status.Ok)
-			assert.Equal(t, tt.expectedCmdStatus, tt.command().Status)
-			assert.Equal(t, tt.expectedAppStatus, status.GetCurrentState())
-		})
-	}
+	}, func(t *testing.T, tt TestData) {
+		status.RecordState(status.Ok)
+		assert.Equal(t, tt.expectedCmdStatus, tt.command().Status)
+		assert.Equal(t, tt.expectedAppStatus, status.GetCurrentState())
+	})
 }
 
 func Test_tcr_reports_and_emphasises(t *testing.T) {
