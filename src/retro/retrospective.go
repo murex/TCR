@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package runmode
+package retro
 
-// Retro is a type of run mode allowing to generate a retrospective template
-type Retro struct {
-}
+import (
+	"bytes"
+	"github.com/murex/tcr/events"
+	"text/template"
+)
 
-// Name returns the name of this run mode
-func (Retro) Name() string {
-	return "retro"
-}
+func GenerateMarkdown(tcrEvents *events.TcrEvents) string {
+	t := template.New("QuickRetro")
+	t, _ = t.Parse("# Quick Retrospective\n" +
+		"Average passed commit size: {{.GreenAvg}}\n" +
+		"Average failed commit size: {{.RedAvg}}\n")
 
-// AutoPushDefault returns the default value of VCS auto-push option with this run mode
-func (Retro) AutoPushDefault() bool {
-	return false
-}
+	greenAvg := tcrEvents.AllLineChangesPerGreenCommit().Avg()
+	redAvg := tcrEvents.AllLineChangesPerRedCommit().Avg()
 
-// IsMultiRole indicates if this run mode supports multiple roles
-func (Retro) IsMultiRole() bool {
-	return false
-}
-
-// IsInteractive indicates if this run mode allows user interaction
-func (Retro) IsInteractive() bool {
-	return false
-}
-
-// IsActive indicates if this run mode is actively running TCR
-func (Retro) IsActive() bool {
-	return false
+	buf := new(bytes.Buffer)
+	t.Execute(buf, struct {
+		GreenAvg any
+		RedAvg   any
+	}{greenAvg, redAvg})
+	return buf.String()
 }
