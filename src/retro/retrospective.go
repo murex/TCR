@@ -24,21 +24,24 @@ package retro
 
 import (
 	"bytes"
+	_ "embed"
 	"github.com/murex/tcr/events"
 	"text/template"
 )
 
+//go:embed template/retro.md
+var tmpl string
+
+// GenerateMarkdown builds retrospective markdown contents
 func GenerateMarkdown(tcrEvents *events.TcrEvents) string {
 	t := template.New("QuickRetro")
-	t, _ = t.Parse("# Quick Retrospective\n" +
-		"Average passed commit size: {{.GreenAvg}}\n" +
-		"Average failed commit size: {{.RedAvg}}\n")
+	t, _ = t.Parse(tmpl)
 
 	greenAvg := tcrEvents.AllLineChangesPerGreenCommit().Avg()
 	redAvg := tcrEvents.AllLineChangesPerRedCommit().Avg()
 
 	buf := new(bytes.Buffer)
-	t.Execute(buf, struct {
+	_ = t.Execute(buf, struct {
 		GreenAvg any
 		RedAvg   any
 	}{greenAvg, redAvg})
