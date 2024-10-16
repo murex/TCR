@@ -229,7 +229,7 @@ func (tcr *TCREngine) PrintStats(p params.Params) {
 }
 
 // GenerateRetro generates a retrospective markdown file template using stats
-func (tcr *TCREngine) GenerateRetro(_ params.Params) {
+func (*TCREngine) GenerateRetro(_ params.Params) {
 	//TODO implement me
 	panic("implement me")
 }

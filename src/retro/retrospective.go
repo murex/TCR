@@ -30,20 +30,22 @@ import (
 )
 
 //go:embed template/retro.md
-var tmpl string
+var retroTemplate string
 
 // GenerateMarkdown builds retrospective markdown contents
 func GenerateMarkdown(tcrEvents *events.TcrEvents) string {
-	t := template.New("QuickRetro")
-	t, _ = t.Parse(tmpl)
+	t := template.New("retro")
+	t, _ = t.Parse(retroTemplate)
 
+	date := tcrEvents.EndingTime().Format("2006/01/02")
 	greenAvg := tcrEvents.AllLineChangesPerGreenCommit().Avg()
 	redAvg := tcrEvents.AllLineChangesPerRedCommit().Avg()
 
 	buf := new(bytes.Buffer)
 	_ = t.Execute(buf, struct {
+		Date     string
 		GreenAvg any
 		RedAvg   any
-	}{greenAvg, redAvg})
+	}{date, greenAvg, redAvg})
 	return buf.String()
 }

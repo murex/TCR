@@ -2,9 +2,9 @@
 
 ## TODO - Session Name
 
-| Team | Date       |
-|------|------------|
-| XXX  | MM/DD/YYYY |
+| Team | Date      |
+|------|-----------|
+| XXX  | {{.Date}} |
 
 ## Session's TCR metrics
 

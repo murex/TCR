@@ -32,9 +32,9 @@ import (
 // retroCmd represents the retro command
 var retroCmd = &cobra.Command{
 	Use:   "retro",
-	Short: "Generates a retrospective template using stats",
+	Short: "Generate retrospective template with stats",
 	Long:  `TODO`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Retro{}
 		u := cli.New(parameters, engine.NewTCREngine())
 		u.Start()

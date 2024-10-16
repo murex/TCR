@@ -23,14 +23,14 @@ SOFTWARE.
 package retro
 
 import (
-	"github.com/murex/tcr/events"
+	e "github.com/murex/tcr/events"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func Test_generate_retrospective_md_for_empty_tcr_events(t *testing.T) {
-	tcrEvents := events.NewTcrEvents()
+	tcrEvents := e.NewTcrEvents()
 	md := GenerateMarkdown(tcrEvents)
 	assert.Contains(t, md, "# Quick Retrospective")
 	assert.Contains(t, md, "Average passed commit size: 0")
@@ -39,23 +39,28 @@ func Test_generate_retrospective_md_for_empty_tcr_events(t *testing.T) {
 
 func Test_generate_retrospective_md_with_one_passing_and_one_failing_commit(t *testing.T) {
 	now := time.Now().UTC()
-	tcrEvents := events.NewTcrEvents()
-	passedStatus := events.WithCommandStatus(events.StatusPass)
-	passedLines := events.WithModifiedSrcLines(20)
-	passedTestLines := events.WithModifiedTestLines(10)
-
-	passedEvent := events.ATcrEvent(passedStatus, passedLines, passedTestLines)
-
-	failedStatus := events.WithCommandStatus(events.StatusFail)
-	failedLines := events.WithModifiedSrcLines(10)
-	failedTestLines := events.WithModifiedTestLines(5)
-	failedEvent := events.ATcrEvent(failedStatus, failedLines, failedTestLines)
-
-	tcrEvents.Add(now, *passedEvent)
-	tcrEvents.Add(now, *failedEvent)
+	tcrEvents := e.NewTcrEvents()
+	tcrEvents.Add(now, *e.ATcrEvent(
+		e.WithCommandStatus(e.StatusPass),
+		e.WithModifiedSrcLines(20),
+		e.WithModifiedTestLines(10)))
+	tcrEvents.Add(now, *e.ATcrEvent(
+		e.WithCommandStatus(e.StatusFail),
+		e.WithModifiedSrcLines(10),
+		e.WithModifiedTestLines(5)))
 
 	md := GenerateMarkdown(tcrEvents)
 	assert.Contains(t, md, "# Quick Retrospective")
 	assert.Contains(t, md, "Average passed commit size: 30")
 	assert.Contains(t, md, "Average failed commit size: 15")
+}
+
+func Test_include_last_commit_date_in_generated_md(t *testing.T) {
+	d := time.Date(2022, 9, 22, 11, 0, 0, 0, time.UTC)
+	tcrEvents := e.TcrEvents{
+		*e.ADatedTcrEvent(e.WithTimestamp(d.Add(-24 * time.Hour))),
+		*e.ADatedTcrEvent(e.WithTimestamp(d)),
+	}
+	md := GenerateMarkdown(&tcrEvents)
+	assert.Contains(t, md, "2022/09/22")
 }
