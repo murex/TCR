@@ -1,6 +1,6 @@
 # Quick Retrospective
 
-## TODO - Session Name
+## {{.Title}}
 
 | Team | Date      |
 |------|-----------|
