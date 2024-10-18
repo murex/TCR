@@ -33,7 +33,19 @@ import (
 var retroCmd = &cobra.Command{
 	Use:   "retro",
 	Short: "Generate retrospective template with stats",
-	Long:  `TODO`,
+	Long: `
+TCR retro subcommand generates a retrospective template in markdown format prefilled with TCR execution info.
+The markdown file is saved into the TCR base directory with the name 'tcr-retro.md'. 
+
+The following information is included in the markdown:
+
+- Average size of changes per passing commit 
+- Average size of changes per failing commit
+
+These stats are extracted for the repository containing TCR base directory (cf. -b option). 
+The branch is the current working branch set for this repository.
+
+This subcommand does not start TCR engine.`,
 	Run: func(_ *cobra.Command, _ []string) {
 		parameters.Mode = runmode.Retro{}
 		u := cli.New(parameters, engine.NewTCREngine())

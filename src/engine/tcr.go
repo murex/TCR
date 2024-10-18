@@ -31,6 +31,7 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/retro"
 	"github.com/murex/tcr/role"
 	"github.com/murex/tcr/runmode"
 	"github.com/murex/tcr/settings"
@@ -45,6 +46,7 @@ import (
 	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -107,6 +109,8 @@ type (
 		fsWatchRearmDelay time.Duration
 	}
 )
+
+const retroFileName = "tcr-retro.md"
 
 const traceReporterWaitingTime = 100 * time.Millisecond
 
@@ -229,9 +233,17 @@ func (tcr *TCREngine) PrintStats(p params.Params) {
 }
 
 // GenerateRetro generates a retrospective markdown file template using stats
-func (*TCREngine) GenerateRetro(_ params.Params) {
-	//TODO implement me
-	panic("implement me")
+func (tcr *TCREngine) GenerateRetro(p params.Params) {
+	tcrEvents := tcrLogsToEvents(tcr.queryVCSLogs(p))
+	markdown := retro.GenerateMarkdown(filepath.Base(tcr.vcs.GetRootDir()), &tcrEvents)
+
+	retroPath := filepath.Join(tcr.sourceTree.GetBaseDir(), retroFileName)
+	err := os.WriteFile(retroPath, []byte(markdown), 0644)
+	if err != nil {
+		report.PostError(err)
+	} else {
+		report.PostInfo("Retro file generated ", retroPath)
+	}
 }
 
 func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {

@@ -31,7 +31,7 @@ import (
 
 func Test_generate_retrospective_md_for_empty_tcr_events(t *testing.T) {
 	tcrEvents := e.NewTcrEvents()
-	md := GenerateMarkdown(tcrEvents)
+	md := GenerateMarkdown("", tcrEvents)
 	assert.Contains(t, md, "# Quick Retrospective")
 	assert.Contains(t, md, "Average passed commit size: 0")
 	assert.Contains(t, md, "Average failed commit size: 0")
@@ -49,10 +49,17 @@ func Test_generate_retrospective_md_with_one_passing_and_one_failing_commit(t *t
 		e.WithModifiedSrcLines(10),
 		e.WithModifiedTestLines(5)))
 
-	md := GenerateMarkdown(tcrEvents)
+	md := GenerateMarkdown("", tcrEvents)
 	assert.Contains(t, md, "# Quick Retrospective")
 	assert.Contains(t, md, "Average passed commit size: 30")
 	assert.Contains(t, md, "Average failed commit size: 15")
+}
+
+func Test_the_generated_date_is_current_date_for_empty_tcr_events(t *testing.T) {
+	now := time.Now().UTC()
+	tcrEvents := e.NewTcrEvents()
+	md := GenerateMarkdown("", tcrEvents)
+	assert.Contains(t, md, now.Format("2006/01/02"))
 }
 
 func Test_include_last_commit_date_in_generated_md(t *testing.T) {
@@ -61,6 +68,13 @@ func Test_include_last_commit_date_in_generated_md(t *testing.T) {
 		*e.ADatedTcrEvent(e.WithTimestamp(d.Add(-24 * time.Hour))),
 		*e.ADatedTcrEvent(e.WithTimestamp(d)),
 	}
-	md := GenerateMarkdown(&tcrEvents)
+	md := GenerateMarkdown("", &tcrEvents)
 	assert.Contains(t, md, "2022/09/22")
+}
+
+func Test_include_the_repo_name_in_generated_md(t *testing.T) {
+	repo := "SampleRepoName"
+	tcrEvents := e.TcrEvents{}
+	md := GenerateMarkdown(repo, &tcrEvents)
+	assert.Contains(t, md, "## "+repo)
 }

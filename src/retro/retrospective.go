@@ -27,25 +27,32 @@ import (
 	_ "embed"
 	"github.com/murex/tcr/events"
 	"text/template"
+	"time"
 )
 
 //go:embed template/retro.md
 var retroTemplate string
 
 // GenerateMarkdown builds retrospective markdown contents
-func GenerateMarkdown(tcrEvents *events.TcrEvents) string {
+func GenerateMarkdown(repoName string, tcrEvents *events.TcrEvents) string {
 	t := template.New("retro")
 	t, _ = t.Parse(retroTemplate)
 
-	date := tcrEvents.EndingTime().Format("2006/01/02")
+	d := time.Now().UTC()
+	if tcrEvents.Len() != 0 {
+		d = tcrEvents.EndingTime()
+	}
+	date := d.Format("2006/01/02")
+
 	greenAvg := tcrEvents.AllLineChangesPerGreenCommit().Avg()
 	redAvg := tcrEvents.AllLineChangesPerRedCommit().Avg()
 
 	buf := new(bytes.Buffer)
 	_ = t.Execute(buf, struct {
+		Title    string
 		Date     string
 		GreenAvg any
 		RedAvg   any
-	}{date, greenAvg, redAvg})
+	}{repoName, date, greenAvg, redAvg})
 	return buf.String()
 }
