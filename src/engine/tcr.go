@@ -236,14 +236,8 @@ func (tcr *TCREngine) PrintStats(p params.Params) {
 func (tcr *TCREngine) GenerateRetro(p params.Params) {
 	tcrEvents := tcrLogsToEvents(tcr.queryVCSLogs(p))
 	markdown := retro.GenerateMarkdown(filepath.Base(tcr.vcs.GetRootDir()), &tcrEvents)
-
 	retroPath := filepath.Join(tcr.sourceTree.GetBaseDir(), retroFileName)
-	err := os.WriteFile(retroPath, []byte(markdown), 0644) //nolint:gosec
-	if err != nil {
-		report.PostError(err)
-	} else {
-		report.PostInfo("Retro file: ", retroPath)
-	}
+	filesystem.WriteFile(retroPath, []byte(markdown))
 }
 
 func tcrLogsToEvents(tcrLogs vcs.LogItems) (tcrEvents events.TcrEvents) {
