@@ -238,11 +238,11 @@ func (tcr *TCREngine) GenerateRetro(p params.Params) {
 	markdown := retro.GenerateMarkdown(filepath.Base(tcr.vcs.GetRootDir()), &tcrEvents)
 
 	retroPath := filepath.Join(tcr.sourceTree.GetBaseDir(), retroFileName)
-	err := os.WriteFile(retroPath, []byte(markdown), 0644)
+	err := os.WriteFile(retroPath, []byte(markdown), 0644) //nolint:gosec
 	if err != nil {
 		report.PostError(err)
 	} else {
-		report.PostInfo("Retro file generated ", retroPath)
+		report.PostInfo("Retro file: ", retroPath)
 	}
 }
 
