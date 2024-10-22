@@ -7,7 +7,7 @@ require (
 	github.com/codeskyblue/go-sh v0.0.0-20200712050446-30169cf553fe
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
-	github.com/go-git/go-billy/v5 v5.5.0
+	github.com/go-git/go-billy/v5 v5.6.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/goreleaser/goreleaser v1.26.2
