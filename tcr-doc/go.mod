@@ -5,7 +5,7 @@ go 1.23.1
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v1.3.0
+	github.com/murex/tcr v1.4.0
 	github.com/spf13/cobra v1.8.1
 )
 
