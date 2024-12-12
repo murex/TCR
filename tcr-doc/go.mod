@@ -38,7 +38,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.23.0 // indirect
 	github.com/go-toast/toast v0.0.0-20190211030409-01e6764cf0a4 // indirect
-	github.com/goccy/go-json v0.10.3 // indirect
+	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
@@ -80,8 +80,8 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
-	golang.org/x/crypto v0.30.0 // indirect
-	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
 	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
