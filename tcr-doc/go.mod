@@ -1,6 +1,6 @@
 module github.com/murex/tcr/tcr-doc
 
-go 1.23.3
+go 1.23.4
 
 replace github.com/murex/tcr => ../src
 
@@ -13,7 +13,7 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.3 // indirect
-	github.com/bytedance/sonic v1.12.5 // indirect
+	github.com/bytedance/sonic v1.12.6 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
 	github.com/cloudflare/circl v1.5.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
@@ -81,7 +81,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/exp v0.0.0-20241210194714-1829a127f884 // indirect
+	golang.org/x/exp v0.0.0-20241215155358-4a5509556b9e // indirect
 	golang.org/x/net v0.32.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
