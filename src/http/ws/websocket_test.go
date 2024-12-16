@@ -24,6 +24,7 @@ package ws
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
@@ -34,6 +35,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"testing"
 	"time"
 )
@@ -60,8 +62,15 @@ func (s *fakeHTTPServer) GetServerAddress() string {
 // GetWebsocketTimeout returns the timeout after which inactive websocket connections
 // should be closed
 func (s *fakeHTTPServer) GetWebsocketTimeout() time.Duration {
-	// To prevent waiting for 1 minute before websocket connection gets shut down
-	return 100 * time.Millisecond
+	// We differentiate CI and local machine to optimize test speed execution when run on local machine
+	// while not failing when run on CI (which runs slower)
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		fmt.Println("Using long websocket timeouts")
+		return 1 * time.Second
+	} else {
+		fmt.Println("Using short websocket timeouts")
+		return 100 * time.Millisecond
+	}
 }
 
 func Test_websocket_report_messages(t *testing.T) {
