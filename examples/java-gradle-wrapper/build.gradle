@@ -26,28 +26,25 @@ test {
     }
 }
 
-group = 'com.murex.tcr.example'
-version = '1.0-SNAPSHOT'
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
 testlogger {
-    theme 'standard'
-    showExceptions true
-    showStackTraces true
-    showFullStackTraces false
-    showCauses true
-    slowThreshold 5000
-    showSummary true
-    showSimpleNames false
-    showPassed true
-    showSkipped true
-    showFailed true
-    showStandardStreams false
-    showPassedStandardStreams true
-    showSkippedStandardStreams true
-    showFailedStandardStreams true
-    logLevel 'lifecycle'
+    theme = 'standard'
+    showExceptions = true
+    showStackTraces = true
+    showFullStackTraces = false
+    showCauses = true
+    slowThreshold = 5000
+    showSummary = true
+    showSimpleNames = false
+    showPassed = true
+    showSkipped = true
+    showFailed = true
+    showStandardStreams = false
+    showPassedStandardStreams = true
+    showSkippedStandardStreams = true
+    showFailedStandardStreams = true
+    logLevel = 'lifecycle'
 }
