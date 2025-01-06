@@ -25,7 +25,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.7 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4 // indirect
 	github.com/gin-contrib/cors v1.7.3 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
@@ -80,13 +80,13 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/arch v0.12.0 // indirect
+	golang.org/x/arch v0.13.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67 // indirect
+	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/tools v0.28.0 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
