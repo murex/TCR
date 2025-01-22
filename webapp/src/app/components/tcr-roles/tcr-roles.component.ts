@@ -26,7 +26,6 @@ import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
 
 @Component({
   selector: 'app-tcr-roles',
-  standalone: true,
   imports: [
     NgForOf,
     TcrRoleComponent

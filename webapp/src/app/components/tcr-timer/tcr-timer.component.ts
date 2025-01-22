@@ -26,14 +26,12 @@ import {TcrTimerService} from "../../services/tcr-timer.service";
 import {toSignal} from "@angular/core/rxjs-interop";
 import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
 import {FormatTimerPipe} from "../../pipes/format-timer.pipe";
-import {NgClass, NgIf, NgStyle} from "@angular/common";
+import {NgIf, NgStyle} from "@angular/common";
 
 @Component({
   selector: 'app-tcr-timer',
-  standalone: true,
   imports: [
     FormatTimerPipe,
-    NgClass,
     NgIf,
     NgStyle
   ],

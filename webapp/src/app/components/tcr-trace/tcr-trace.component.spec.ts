@@ -30,6 +30,7 @@ import {NgTerminal} from "ng-terminal";
 @Component({
   selector: 'ng-terminal', // eslint-disable-line @angular-eslint/component-selector
   template: '',
+  standalone: false
 })
 class StubNgTerminal { // eslint-disable-line @angular-eslint/component-class-suffix
   underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any

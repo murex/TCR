@@ -23,20 +23,16 @@ SOFTWARE.
 import {Component, Input, OnInit} from '@angular/core';
 import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
 import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
-import {DatePipe, NgIf, NgOptimizedImage} from "@angular/common";
+import {NgIf, NgOptimizedImage} from "@angular/common";
 import {OnOffPipe} from "../../pipes/on-off.pipe";
-import {ShowEmptyPipe} from "../../pipes/show-empty.pipe";
 import {VariantDescriptionPipe} from "../../pipes/variant-description.pipe";
 import {VariantImagePathPipe} from "../../pipes/variant-image-path.pipe";
 
 @Component({
   selector: 'app-tcr-session-info',
-  standalone: true,
   imports: [
-    DatePipe,
     NgIf,
     OnOffPipe,
-    ShowEmptyPipe,
     NgOptimizedImage,
     VariantDescriptionPipe,
     VariantImagePathPipe

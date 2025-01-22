@@ -21,18 +21,11 @@ SOFTWARE.
 */
 
 import {Component} from '@angular/core';
-import {NgForOf, NgIf} from "@angular/common";
-import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
 import {TcrControlsService} from "../../services/tcr-controls.service";
 
 @Component({
   selector: 'app-tcr-controls',
-  standalone: true,
-  imports: [
-    NgForOf,
-    TcrRoleComponent,
-    NgIf
-  ],
+  imports: [],
   templateUrl: './tcr-controls.component.html',
   styleUrl: './tcr-controls.component.css'
 })

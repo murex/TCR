@@ -27,7 +27,6 @@ import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-tcr-about',
-  standalone: true,
   imports: [
     NgIf,
     DatePipe

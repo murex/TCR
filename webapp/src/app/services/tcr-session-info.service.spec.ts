@@ -36,7 +36,11 @@ describe('TcrSessionInfoService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [TcrSessionInfoService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      providers: [
+        TcrSessionInfoService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ]
     });
 
     service = TestBed.inject(TcrSessionInfoService);

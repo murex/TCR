@@ -61,7 +61,7 @@ describe('TcrConsoleComponent', () => {
       imports: [
         TcrConsoleComponent,
         MockComponent(TcrRolesComponent),
-        MockComponent(TcrTraceComponent),
+        TcrTraceComponent,
       ],
       providers: [
         {provide: TcrMessageService, useClass: FakeTcrMessageService},

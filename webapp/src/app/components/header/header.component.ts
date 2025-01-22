@@ -26,7 +26,6 @@ import {TcrTimerComponent} from "../tcr-timer/tcr-timer.component";
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [
     RouterLink,
     TcrTimerComponent,

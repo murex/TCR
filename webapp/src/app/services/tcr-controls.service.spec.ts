@@ -24,9 +24,9 @@ import {TestBed} from '@angular/core/testing';
 
 import {TcrControlsService} from './tcr-controls.service';
 import {
-  HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController, provideHttpClientTesting
 } from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 
 describe('TcrControlsService', () => {
   let service: TcrControlsService;
@@ -34,9 +34,11 @@ describe('TcrControlsService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         TcrControlsService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
     service = TestBed.inject(TcrControlsService);

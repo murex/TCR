@@ -39,14 +39,13 @@ import {TcrControlsComponent} from "../tcr-controls/tcr-controls.component";
 
 @Component({
   selector: 'app-tcr-console',
-  standalone: true,
   imports: [
     TcrRolesComponent,
     TcrTraceComponent,
     TcrControlsComponent
   ],
   templateUrl: './tcr-console.component.html',
-  styleUrl: './tcr-console.component.css'
+  styleUrl: './tcr-console.component.css',
 })
 export class TcrConsoleComponent {
   title: string = "TCR Console";

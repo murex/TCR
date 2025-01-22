@@ -29,7 +29,6 @@ import {Unicode11Addon} from '@xterm/addon-unicode11';
 
 @Component({
   selector: 'app-tcr-trace',
-  standalone: true,
   imports: [NgTerminalModule],
   templateUrl: './tcr-trace.component.html',
   styleUrl: './tcr-trace.component.css',

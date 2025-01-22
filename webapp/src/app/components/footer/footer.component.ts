@@ -27,7 +27,6 @@ import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   imports: [
     NgIf,
     DatePipe

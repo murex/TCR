@@ -29,7 +29,6 @@ import {toSignal} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-tcr-role',
-  standalone: true,
   imports: [
     NgIf,
     NgClass
