@@ -21,6 +21,10 @@ test:
 cov:
 	@npm run coverage
 
+.PHONY: tidy
+tidy:
+	@npm install
+
 .PHONY: build
 build: setup
 	@npm run build-prod
