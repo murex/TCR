@@ -94,7 +94,7 @@ require (
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect
 	github.com/alingse/nilnesserr v0.1.2 // indirect
-	github.com/anchore/bubbly v0.0.0-20250124054429-95f0022eca33 // indirect
+	github.com/anchore/bubbly v0.0.0-20250127051525-d9802c6caaae // indirect
 	github.com/anchore/go-logger v0.0.0-20250123165234-f6ab2194492f // indirect
 	github.com/anchore/go-macholibre v0.0.0-20250122032733-1f68a22608c0 // indirect
 	github.com/anchore/quill v0.5.0 // indirect
@@ -143,7 +143,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/butuzov/ireturn v0.3.1 // indirect
 	github.com/butuzov/mirror v1.3.0 // indirect
-	github.com/bytedance/sonic v1.12.7 // indirect
+	github.com/bytedance/sonic v1.12.8 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect
 	github.com/caarlos0/ctrlc v1.2.0 // indirect
 	github.com/caarlos0/env/v11 v11.3.1 // indirect
@@ -330,7 +330,7 @@ require (
 	github.com/ldez/usetesting v0.4.2 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.2 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20250124212858-8ab022e8c920 // indirect
+	github.com/letsencrypt/boulder v0.0.0-20250126014652-3fcaebe934a5 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/macabu/inamedparam v0.1.3 // indirect
 	github.com/magiconair/properties v1.8.9 // indirect
