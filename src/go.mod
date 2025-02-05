@@ -105,25 +105,25 @@ require (
 	github.com/aws/aws-sdk-go v1.55.6 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.36.0 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.8 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.29.4 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.57 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.29.5 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.58 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.27 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.57 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.58 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.31 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.31 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.2 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.31 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ecr v1.40.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ecr v1.40.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.31.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.5.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/kms v1.37.16 // indirect
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/kms v1.37.17 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.24.14 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.28.13 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.33.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.33.13 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.0.0-20250127194757-14dfc70fe71c // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
@@ -136,7 +136,7 @@ require (
 	github.com/blakesmith/ar v0.0.0-20190502131153-809d4375e1fb // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
-	github.com/bluesky-social/indigo v0.0.0-20250202033855-fd270fbccf0c // indirect
+	github.com/bluesky-social/indigo v0.0.0-20250204162705-af0f2ad4599c // indirect
 	github.com/bombsimon/wsl/v4 v4.5.0 // indirect
 	github.com/breml/bidichk v0.3.2 // indirect
 	github.com/breml/errchkjson v0.4.0 // indirect
@@ -158,7 +158,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/charithe/durationcheck v0.0.10 // indirect
-	github.com/charmbracelet/bubbletea v1.2.4 // indirect
+	github.com/charmbracelet/bubbletea v1.3.0 // indirect
 	github.com/charmbracelet/lipgloss v1.0.0 // indirect
 	github.com/charmbracelet/x/ansi v0.8.0 // indirect
 	github.com/charmbracelet/x/exp/ordered v0.1.0 // indirect
@@ -166,7 +166,7 @@ require (
 	github.com/chavacava/garif v0.1.0 // indirect
 	github.com/chrismellard/docker-credential-acr-env v0.0.0-20230304212654-82a0ddb27589 // indirect
 	github.com/ckaznocha/intrange v0.3.0 // indirect
-	github.com/cloudflare/circl v1.5.0 // indirect
+	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/cncf/xds/go v0.0.0-20250121191232-2f005788dc42 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
@@ -330,7 +330,7 @@ require (
 	github.com/ldez/usetesting v0.4.2 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/leonklingele/grouper v1.1.2 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20250130223922-f11475ccc38e // indirect
+	github.com/letsencrypt/boulder v0.0.0-20250204164546-eda496606ddd // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/macabu/inamedparam v0.1.3 // indirect
 	github.com/magiconair/properties v1.8.9 // indirect
@@ -347,7 +347,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/mitchellh/mapstructure v1.5.1-0.20231216201459-8508981c8b6c // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -413,7 +413,7 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/sigstore/cosign/v2 v2.4.1 // indirect
+	github.com/sigstore/cosign/v2 v2.4.2 // indirect
 	github.com/sigstore/protobuf-specs v0.4.0 // indirect
 	github.com/sigstore/rekor v1.3.9 // indirect
 	github.com/sigstore/sigstore v1.8.12 // indirect
@@ -479,22 +479,22 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	gocloud.dev v0.40.0 // indirect
-	golang.org/x/arch v0.13.0 // indirect
+	golang.org/x/arch v0.14.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c // indirect
 	golang.org/x/exp/typeparams v0.0.0-20250128182459-e0ece0dbea4c // indirect
-	golang.org/x/mod v0.22.0 // indirect
+	golang.org/x/mod v0.23.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
+	golang.org/x/oauth2 v0.26.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/term v0.28.0 // indirect
-	golang.org/x/time v0.9.0 // indirect
+	golang.org/x/term v0.29.0 // indirect
+	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.29.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.219.0 // indirect
-	google.golang.org/genproto v0.0.0-20250127172529-29210b9bc287 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250127172529-29210b9bc287 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250127172529-29210b9bc287 // indirect
+	google.golang.org/genproto v0.0.0-20250204164813-702378808489 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250204164813-702378808489 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250204164813-702378808489 // indirect
 	google.golang.org/grpc v1.70.0 // indirect
 	google.golang.org/protobuf v1.36.4 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
