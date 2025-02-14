@@ -9,7 +9,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20240516210008-9c006672e7f4
 	github.com/go-git/go-billy/v5 v5.6.2
 	github.com/go-git/go-git/v5 v5.13.2
-	github.com/golangci/golangci-lint v1.64.4
+	github.com/golangci/golangci-lint v1.64.5
 	github.com/goreleaser/goreleaser v1.26.2
 	github.com/imkira/go-observer v1.0.3
 	github.com/logrusorgru/aurora v2.0.3+incompatible
@@ -274,7 +274,7 @@ require (
 	github.com/goreleaser/nfpm/v2 v2.41.2 // indirect
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/gostaticanalysis/comment v1.5.0 // indirect
-	github.com/gostaticanalysis/forcetypeassert v0.1.0 // indirect
+	github.com/gostaticanalysis/forcetypeassert v0.2.0 // indirect
 	github.com/gostaticanalysis/nilerr v0.1.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -408,7 +408,7 @@ require (
 	github.com/sassoftware/relic v7.2.1+incompatible // indirect
 	github.com/scylladb/go-set v1.0.3-0.20200225121959-cc7b2070d91e // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.9.0 // indirect
-	github.com/securego/gosec/v2 v2.22.0 // indirect
+	github.com/securego/gosec/v2 v2.22.1 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sigstore/cosign/v2 v2.4.2 // indirect
@@ -430,7 +430,7 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tadvi/systray v0.0.0-20190226123456-11a2b8fa57af // indirect
-	github.com/tdakkota/asciicheck v0.3.0 // indirect
+	github.com/tdakkota/asciicheck v0.4.0 // indirect
 	github.com/tetafro/godot v1.4.20 // indirect
 	github.com/theupdateframework/go-tuf v0.7.0 // indirect
 	github.com/timakin/bodyclose v0.0.0-20241222091800-1db5c5ca4d67 // indirect
