@@ -6,7 +6,7 @@ replace github.com/murex/tcr => ../src
 
 require (
 	github.com/murex/tcr v1.4.0
-	github.com/spf13/cobra v1.8.1
+	github.com/spf13/cobra v1.9.1
 )
 
 require (
