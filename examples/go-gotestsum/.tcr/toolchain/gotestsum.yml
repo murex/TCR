@@ -6,6 +6,6 @@ build:
 test:
   - os: [ darwin, linux, windows ]
     arch: [ "386", amd64, arm64 ]
-    command: gotestsum
-    arguments: [ "--format", "pkgname", "--junitfile", "_test_results/output.xml", "--", "-short", ./... ]
+    command: go
+    arguments: [ tool, gotestsum, "--format", "pkgname", "--junitfile", "_test_results/output.xml", "--", "-short", ./... ]
 test-result-dir: _test_results
