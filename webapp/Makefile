@@ -36,6 +36,3 @@ run:
 .PHONY: clean
 clean:
 	@npm run clean
-
-.PHONY: install-tools
-install-tools: setup

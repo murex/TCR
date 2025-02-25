@@ -3,7 +3,7 @@ default: build ;
 
 .PHONY: deps
 deps:
-	@go get -u -t ./...
+	@go get -u -t tool ./...
 
 .PHONY: lint
 lint:
@@ -15,7 +15,7 @@ vet:
 
 define RUN_TESTS
 @mkdir -p _test_results
-@gotestsum --format pkgname --junitfile _test_results/output.xml --hide-summary=skipped -- $(1) -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
+@go tool gotestsum --format pkgname --junitfile _test_results/output.xml --hide-summary=skipped -- $(1) -covermode atomic -coverprofile=_test_results/coverage-all.out -tags=test_helper -v ./...
 @grep -v "_test_" _test_results/coverage-all.out >| _test_results/coverage.out
 @sed -e 's:\(/tcr/\):\1src/:g' _test_results/coverage.out >| _test_results/coverage-sonar.out
 endef
@@ -30,7 +30,7 @@ test-short:
 
 .PHONY: slow-tests
 slow-tests:
-	@go test -json -tags=test_helper ./... | gotestsum tool slowest --threshold 500ms
+	@go test -json -tags=test_helper ./... | go tool gotestsum tool slowest --threshold 500ms
 
 .PHONY: cov
 cov:
@@ -60,7 +60,3 @@ run:
 .PHONY: download
 download:
 	@go mod download
-
-.PHONY: install-tools
-install-tools: download
-	@cat tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %@latest

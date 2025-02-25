@@ -20,17 +20,10 @@ tcr-doc: src
 
 # Convenience target for automating release preparation
 .PHONY: prepare
-prepare: deps install-tools tidy lint build doc test
+prepare: deps tidy lint build doc test
 
-.PHONY: deps
-deps: $(MAIN_MODULES)
-	@for module in $^; do \
-		echo "- make $@ $$module"; \
-		$(MAKE) -C $$module $@; \
-	done
-
-.PHONY: tidy vet lint
-tidy vet lint: $(MAIN_MODULES)
+.PHONY: deps tidy vet lint
+deps tidy vet lint: $(MAIN_MODULES)
 	@for module in $^; do \
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \
@@ -43,8 +36,8 @@ test test-short cov: $(PROD_MODULES)
 		$(MAKE) -C $$module $@; \
 	done
 
-.PHONY: build install-tools download run
-build install-tools download run: $(BUILD_MODULES)
+.PHONY: build download run
+build download run: $(BUILD_MODULES)
 	@for module in $^; do \
 		echo "- make $@ $$module"; \
 		$(MAKE) -C $$module $@; \
