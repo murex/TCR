@@ -5,14 +5,14 @@ go 1.24.0
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v1.4.0
+	github.com/murex/tcr v1.4.1
 	github.com/spf13/cobra v1.9.1
 )
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/ProtonMail/go-crypto v1.1.5 // indirect
+	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/bytedance/sonic v1.12.9 // indirect
 	github.com/bytedance/sonic/loader v0.2.3 // indirect
 	github.com/cloudflare/circl v1.6.0 // indirect
@@ -32,7 +32,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
-	github.com/go-git/go-git/v5 v5.13.2 // indirect
+	github.com/go-git/go-git/v5 v5.14.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.25.0 // indirect
