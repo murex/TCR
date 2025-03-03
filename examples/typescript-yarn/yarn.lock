@@ -1424,7 +1424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-loggers@npm:^0.3.1":
+"color-loggers@npm:^0.3.2":
   version: 0.3.2
   resolution: "color-loggers@npm:0.3.2"
   checksum: 10c0/8dda47e66ea3232d136ca75fb4ea96625d75a669bfc0dabb029123120c9c5561b60bf9691a69e634626f99bd96cd1468cfc377cf01877a392a549269f739b25b
@@ -1915,7 +1915,7 @@ __metadata:
     jest-junit: "npm:^16.0.0"
     ts-jest: "npm:^29.2.6"
     typescript: "npm:^5.7.3"
-    yarn-upgrade-all: "npm:^0.7.4"
+    yarn-upgrade-all: "npm:^0.7.5"
   languageName: unknown
   linkType: soft
 
@@ -3833,14 +3833,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yarn-upgrade-all@npm:^0.7.4":
-  version: 0.7.4
-  resolution: "yarn-upgrade-all@npm:0.7.4"
+"yarn-upgrade-all@npm:^0.7.5":
+  version: 0.7.5
+  resolution: "yarn-upgrade-all@npm:0.7.5"
   dependencies:
-    color-loggers: "npm:^0.3.1"
+    color-loggers: "npm:^0.3.2"
   bin:
     yarn-upgrade-all: build/index.js
-  checksum: 10c0/f2ae28aa67769bde3dffb0ae25f3f345a0e166b9ab1ca304bff29d7605574c25fd4ec27923c39dd3a5ab21cff93a39155d910f6d3f3c4b3a7f8d55c1931b72ab
+  checksum: 10c0/e4fe51715d0f601b38e79256585818c6b2b46254588f84f37ea0e4ad1c657c1f92cbfd0ab45939a29d5c5525b88e0188a69a5848cd6c83b0b906a85466f424ff
   languageName: node
   linkType: hard
 
