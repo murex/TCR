@@ -211,7 +211,7 @@ func testRESTRoutes(t *testing.T, router *gin.Engine, tests []testRESTRouteParam
 	for _, test := range tests {
 		// Hierarchical test runner seems to get confused when there are "/" in description.
 		// Replacing them with "\" allows to work around this issue
-		descPath := strings.Replace(test.path, "/", "\\", -1)
+		descPath := strings.ReplaceAll(test.path, "/", "\\")
 		t.Run(descPath, func(t *testing.T) {
 			for _, method := range allRESTMethods() {
 				methodSupported := slices.Contains(test.methods, method)

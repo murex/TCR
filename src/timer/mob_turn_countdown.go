@@ -64,7 +64,7 @@ func reportTimerEvent(ctx ReminderContext, trigger timer_event.Trigger, timeout 
 
 func findBestTickPeriodFor(timeout time.Duration) time.Duration {
 	const oneSecond = 1 * time.Second   //nolint:revive
-	const tenSeconds = 10 * time.Second //nolint:revive
+	const tenSeconds = 10 * time.Second //nolint:revive,staticcheck
 	const oneMinute = 1 * time.Minute   //nolint:revive
 
 	if timeout <= tenSeconds {

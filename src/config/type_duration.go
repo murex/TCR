@@ -47,9 +47,9 @@ func (param *DurationParam) addToCommand(cmd *cobra.Command) {
 	flags := param.s.getCmdFlags(cmd)
 	flags.DurationVarP(&param.v.value,
 		param.s.cobraSettings.name,
-		param.s.cobraSettings.shorthand,
+		param.s.shorthand,
 		0,
-		param.s.cobraSettings.usage)
+		param.s.usage)
 	flag := flags.Lookup(param.s.cobraSettings.name)
 	param.s.bindToViper(flag)
 }
@@ -57,7 +57,7 @@ func (param *DurationParam) addToCommand(cmd *cobra.Command) {
 func (param *DurationParam) useDefaultValueIfNotSet() {
 	const undefined time.Duration = 0
 	if param.v.value == undefined {
-		if param.s.viperSettings.enabled {
+		if param.s.enabled {
 			if cfgValue := viper.GetDuration(param.s.getViperKey()); cfgValue != undefined {
 				param.v.value = cfgValue
 			} else {

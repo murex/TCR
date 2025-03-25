@@ -46,18 +46,19 @@ func (param *BoolParam) addToCommand(cmd *cobra.Command) {
 	flags := param.s.getCmdFlags(cmd)
 	flags.BoolVarP(&param.v.value,
 		param.s.cobraSettings.name,
-		param.s.cobraSettings.shorthand,
+		param.s.shorthand,
 		false,
-		param.s.cobraSettings.usage)
+		param.s.usage)
 	flag := flags.Lookup(param.s.cobraSettings.name)
 	param.s.bindToViper(flag)
 }
 
 func (param *BoolParam) useDefaultValueIfNotSet() {
 	const undefined bool = false
-	// nolint:gosimple // We want to use undefined variable explicitly here
+	// nolint:staticcheck // We want to use undefined variable explicitly here
 	if param.v.value == undefined {
-		if param.s.viperSettings.enabled {
+		if param.s.enabled {
+			// nolint:staticcheck // We want to use undefined variable explicitly here
 			if cfgValue := viper.GetBool(param.s.getViperKey()); cfgValue != undefined {
 				param.v.value = cfgValue
 			} else {
