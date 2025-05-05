@@ -55,10 +55,10 @@ require (
 	cloud.google.com/go/kms v1.21.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
 	cloud.google.com/go/monitoring v1.24.2 // indirect
-	cloud.google.com/go/storage v1.52.0 // indirect
+	cloud.google.com/go/storage v1.53.0 // indirect
 	code.gitea.io/sdk/gitea v0.21.0 // indirect
 	dario.cat/mergo v1.0.1 // indirect
-	github.com/42wim/httpsig v1.2.2 // indirect
+	github.com/42wim/httpsig v1.2.3 // indirect
 	github.com/AlekSi/pointer v1.2.0 // indirect
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.18.0 // indirect
@@ -122,7 +122,7 @@ require (
 	github.com/blacktop/go-macho v1.1.245 // indirect
 	github.com/blakesmith/ar v0.0.0-20190502131153-809d4375e1fb // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/bluesky-social/indigo v0.0.0-20250430184718-8aa64b2abd8c // indirect
+	github.com/bluesky-social/indigo v0.0.0-20250505042036-9c19d0c438ef // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/bytedance/sonic v1.13.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
@@ -146,7 +146,7 @@ require (
 	github.com/chrismellard/docker-credential-acr-env v0.0.0-20230304212654-82a0ddb27589 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
-	github.com/cncf/xds/go v0.0.0-20250326154945-ae57f3c0d45f // indirect
+	github.com/cncf/xds/go v0.0.0-20250501225837-2ac532fd4443 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.16.3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
@@ -238,12 +238,12 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/jsonschema v0.13.0 // indirect
 	github.com/ipfs/bbloom v0.0.4 // indirect
-	github.com/ipfs/go-block-format v0.2.0 // indirect
+	github.com/ipfs/boxo v0.30.0 // indirect
+	github.com/ipfs/go-block-format v0.2.1 // indirect
 	github.com/ipfs/go-cid v0.5.0 // indirect
 	github.com/ipfs/go-datastore v0.8.2 // indirect
 	github.com/ipfs/go-ipfs-blockstore v1.3.1 // indirect
 	github.com/ipfs/go-ipfs-ds-help v1.1.1 // indirect
-	github.com/ipfs/go-ipfs-util v0.0.3 // indirect
 	github.com/ipfs/go-ipld-cbor v0.2.0 // indirect
 	github.com/ipfs/go-ipld-format v0.6.0 // indirect
 	github.com/ipfs/go-log v1.0.5 // indirect
@@ -260,7 +260,7 @@ require (
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/letsencrypt/boulder v0.0.0-20250428151438-1274878d5e10 // indirect
+	github.com/letsencrypt/boulder v0.0.0-20250502002419-9102759f4ef8 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -323,7 +323,7 @@ require (
 	github.com/slack-go/slack v0.16.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	github.com/spf13/cast v1.7.1 // indirect
+	github.com/spf13/cast v1.8.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tadvi/systray v0.0.0-20190226123456-11a2b8fa57af // indirect
