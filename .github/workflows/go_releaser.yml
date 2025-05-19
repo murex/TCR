@@ -1,5 +1,10 @@
 name: Go release
 
+permissions:
+  contents: write
+  actions: write
+  id-token: write
+
 on:
   push:
     tags:
