@@ -1,5 +1,10 @@
 name: Go build and test
 
+permissions:
+  contents: read
+  actions: write
+  id-token: write
+
 on:
   push:
     branches:
