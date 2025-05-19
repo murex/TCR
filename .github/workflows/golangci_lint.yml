@@ -1,4 +1,9 @@
 name: Go lint
+
+permissions:
+  contents: read
+  actions: write
+
 on:
   push:
     tags:
@@ -30,7 +35,7 @@ jobs:
         with:
           # Required: the version of golangci-lint is required and must be specified
           # without patch version: we always use the latest patch version.
-          version: v2.0
+          version: v2.1
           # Optional: working directory, useful for mono-repos
           working-directory: src
 
