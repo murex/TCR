@@ -4,7 +4,6 @@
 [![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=murex_TCR&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=murex_TCR)
 [![Coveralls](https://coveralls.io/repos/github/murex/TCR/badge.svg?branch=main)](https://coveralls.io/github/murex/TCR?branch=main)
 [![goreleaser](https://github.com/murex/tcr/actions/workflows/go_releaser.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/go_releaser.yml)
-[![Add contributors](https://github.com/murex/tcr/actions/workflows/add_contributors.yml/badge.svg)](https://github.com/murex/tcr/actions/workflows/add_contributors.yml)
 
 # TCR - Test && Commit || Revert
 
