@@ -5,7 +5,7 @@ go 1.24.0
 replace github.com/murex/tcr => ../src
 
 require (
-	github.com/murex/tcr v1.4.1
+	github.com/murex/tcr v1.4.2
 	github.com/spf13/cobra v1.9.1
 )
 
@@ -29,7 +29,7 @@ require (
 	github.com/gin-contrib/cors v1.7.5 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/gin-contrib/static v1.1.5 // indirect
-	github.com/gin-gonic/gin v1.10.0 // indirect
+	github.com/gin-gonic/gin v1.10.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.6.2 // indirect
 	github.com/go-git/go-git/v5 v5.16.0 // indirect

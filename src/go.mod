@@ -37,7 +37,7 @@ require (
 require (
 	github.com/gin-contrib/cors v1.7.5
 	github.com/gin-contrib/static v1.1.5
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 )
