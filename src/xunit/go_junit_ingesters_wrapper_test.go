@@ -59,7 +59,7 @@ func assertXunitSampleData(t *testing.T, suites []junit.Suite, nbSamples int) {
 	t.Helper()
 	assert.Equal(t, 2*nbSamples, len(suites))
 
-	for i := 0; i < nbSamples; i++ {
+	for i := range nbSamples {
 		suite0 := suites[2*i+0]
 		assert.Equal(t, sampleTotalsSuite0, suite0.Totals)
 		assert.Equal(t, len(sampleTestStatus0), len(suite0.Tests))

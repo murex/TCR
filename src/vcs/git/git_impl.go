@@ -36,6 +36,7 @@ import (
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -213,12 +214,7 @@ func (g *gitImpl) GetWorkingBranch() string {
 // IsOnRootBranch indicates if git is currently on its root branch or not.
 // Current implementation is a trivial one, that returns true if the branch is called "main" or "master"
 func (g *gitImpl) IsOnRootBranch() bool {
-	for _, b := range []string{"main", "master"} {
-		if b == g.GetWorkingBranch() {
-			return true
-		}
-	}
-	return false
+	return slices.Contains([]string{"main", "master"}, g.GetWorkingBranch())
 }
 
 // Add adds the listed paths to git index.

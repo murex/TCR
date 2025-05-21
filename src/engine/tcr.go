@@ -281,7 +281,7 @@ func parseCommitHeaderAndEvents(message string) (string, events.TCREvent) {
 	var header string
 	var statsYAML strings.Builder
 	var section = 1
-	for _, line := range strings.Split(message, "\n") {
+	for line := range strings.SplitSeq(message, "\n") {
 		switch section {
 		case 1: // main commit message
 			header = line

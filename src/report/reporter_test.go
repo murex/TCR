@@ -47,7 +47,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 	var c [nbListeners]chan bool
 	var stubs [nbListeners]*messageReporterStub
 
-	for i := 0; i < nbListeners; i++ {
+	for i := range nbListeners {
 		go func(i int) {
 			stubs[i] = newMessageReporterStub(i)
 			c[i] = Subscribe(stubs[i])
@@ -58,7 +58,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 	time.Sleep(1 * time.Millisecond)
 	Post(txt)
 
-	for i := 0; i < nbListeners; i++ {
+	for i := range nbListeners {
 		iReceived := <-stubs[i].received
 		Unsubscribe(c[iReceived])
 		assert.Equal(t, txt, stubs[iReceived].message.Payload.ToString())
@@ -73,7 +73,7 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 
 	// To make sure the observer is ready to receive
 	time.Sleep(1 * time.Millisecond)
-	for i := 0; i < nbMessages; i++ {
+	for i := range nbMessages {
 		txt := fmt.Sprintf("dummy message %v", i)
 		Post(txt)
 		<-stub.received

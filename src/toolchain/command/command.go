@@ -25,6 +25,7 @@ package command
 import (
 	"errors"
 	"runtime"
+	"slices"
 	"strings"
 )
 
@@ -80,21 +81,11 @@ func (command Command) runsOnPlatform(osName OsName, archName ArchName) bool {
 }
 
 func (command Command) runsWithOs(osName OsName) bool {
-	for _, o := range command.Os {
-		if o == osName {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(command.Os, osName)
 }
 
 func (command Command) runsWithArch(archName ArchName) bool {
-	for _, a := range command.Arch {
-		if a == archName {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(command.Arch, archName)
 }
 
 func (command Command) check() error {
@@ -118,10 +109,8 @@ func (command Command) checkOsTable() error {
 	if command.Os == nil {
 		return errors.New("command's OS list is empty")
 	}
-	for _, osName := range command.Os {
-		if osName == "" {
-			return errors.New("a command OS name is empty")
-		}
+	if slices.Contains(command.Os, "") {
+		return errors.New("a command OS name is empty")
 	}
 	return nil
 }
@@ -130,10 +119,8 @@ func (command Command) checkArchTable() error {
 	if command.Arch == nil {
 		return errors.New("command's architecture list is empty")
 	}
-	for _, archName := range command.Arch {
-		if archName == "" {
-			return errors.New("a command architecture name is empty")
-		}
+	if slices.Contains(command.Arch, "") {
+		return errors.New("a command architecture name is empty")
 	}
 	return nil
 }

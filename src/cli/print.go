@@ -70,9 +70,6 @@ func printUntouched(a ...any) {
 }
 
 func printHorizontalLine() {
-	lineWidth := getTerminalColumns() - len(linePrefix) - 2
-	if lineWidth < 0 {
-		lineWidth = 0
-	}
+	lineWidth := max(getTerminalColumns()-len(linePrefix)-2, 0)
 	printInCyan(strings.Repeat(horizontalLineCharacter, lineWidth))
 }

@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"github.com/murex/tcr/toolchain"
 	"path/filepath"
+	"slices"
 )
 
 type (
@@ -201,12 +202,7 @@ func (lang *Language) verifyCompatibility(tchn toolchain.TchnInterface) (bool, e
 }
 
 func (lang *Language) worksWithToolchain(toolchainName string) bool {
-	for _, compatible := range lang.GetToolchains().Compatible {
-		if compatible == toolchainName {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(lang.GetToolchains().Compatible, toolchainName)
 }
 
 // AllSrcFiles returns the list of source files for this language.

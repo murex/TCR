@@ -26,6 +26,7 @@ import (
 	"github.com/murex/tcr/utils"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 const (
@@ -131,15 +132,15 @@ func asToolchains(toolchainsCfg toolchainConfigYAML) Toolchains {
 }
 
 func asToolchainTable(toolchainsCfg []string) []string {
-	return append([]string{}, toolchainsCfg...)
+	return slices.Clone(toolchainsCfg)
 }
 
 func asDirectoryTable(directoryTableCfg []string) []string {
-	return append([]string{}, directoryTableCfg...)
+	return slices.Clone(directoryTableCfg)
 }
 
 func asFilePatternTable(filePatternTableCfg []string) []string {
-	return append([]string{}, filePatternTableCfg...)
+	return slices.Clone(filePatternTableCfg)
 }
 
 // ResetConfigs resets the languages configuration
@@ -169,7 +170,7 @@ func asFileTreeFilterConfig(files FileTreeFilter) fileTreeFilterConfigYAML {
 }
 
 func asToolchainsTableConfig(toolchains []string) []string {
-	return append([]string(nil), toolchains...)
+	return slices.Clone(toolchains)
 }
 
 func asToolchainsConfig(toolchains Toolchains) toolchainConfigYAML {
@@ -180,11 +181,11 @@ func asToolchainsConfig(toolchains Toolchains) toolchainConfigYAML {
 }
 
 func asDirectoryTableConfig(directoryTable []string) []string {
-	return append([]string(nil), directoryTable...)
+	return slices.Clone(directoryTable)
 }
 
 func asFilePatternTableConfig(filePatternTable []string) []string {
-	return append([]string(nil), filePatternTable...)
+	return slices.Clone(filePatternTable)
 }
 
 func initConfigDirPath(configDirPath string) {

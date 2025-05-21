@@ -9,6 +9,10 @@ deps:
 lint:
 	@golangci-lint run --build-tags=test_helper -v
 
+.PHONY: modernize
+modernize:
+	@go run -tags test_helper golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest -test -fix ./...
+
 .PHONY: vet
 vet:
 	@go vet --tags=test_helper ./...
