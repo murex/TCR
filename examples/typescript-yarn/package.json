@@ -10,7 +10,7 @@
     "@types/node": "^24.0.2",
     "jest": "^30.0.0",
     "jest-junit": "^16.0.0",
-    "jest-util": "^30.0.0",
+    "jest-util": "^30.0.2",
     "ts-jest": "^29.4.0",
     "typescript": "^5.8.3",
     "yarn-upgrade-all": "^0.7.5"
