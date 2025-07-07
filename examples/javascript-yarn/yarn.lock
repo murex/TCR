@@ -919,7 +919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^24.0.7":
+"@types/node@npm:*, @types/node@npm:^24.0.10":
   version: 24.0.10
   resolution: "@types/node@npm:24.0.10"
   dependencies:
@@ -1817,7 +1817,7 @@ __metadata:
   resolution: "hello-world@workspace:."
   dependencies:
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.0.7"
+    "@types/node": "npm:^24.0.10"
     jest: "npm:^30.0.4"
     jest-junit: "npm:^16.0.0"
     yarn-upgrade-all: "npm:^0.7.5"
