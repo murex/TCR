@@ -77,22 +77,42 @@ type Message struct {
 	Timestamp time.Time
 }
 
-var msgProperty observer.Property
+// Reporter encapsulates the message pipeline for isolation
+type Reporter struct {
+	msgProperty observer.Property
+}
+
+var defaultReporter *Reporter
 
 func init() {
-	Reset()
+	defaultReporter = NewReporter()
 }
 
-// Reset resets the reporter pipeline
+// NewReporter creates a new Reporter instance
+func NewReporter() *Reporter {
+	r := &Reporter{}
+	r.Reset()
+	return r
+}
+
+// Reset resets the reporter pipeline (for default reporter)
 func Reset() {
-	msgProperty = observer.NewProperty(Message{Type: MessageType{Category: Normal}, Payload: text.New("")})
+	defaultReporter.Reset()
 }
 
-// Subscribe allows a listener to subscribe to any posted message through the reporter.
-// The listener must implement the MessageReporter interface. The returned channel
-// shall be kept by the listener as this channel will be used for unsubscription
+// Reset resets the reporter pipeline (for Reporter instance)
+func (r *Reporter) Reset() {
+	r.msgProperty = observer.NewProperty(Message{Type: MessageType{Category: Normal}, Payload: text.New("")})
+}
+
+// Subscribe allows a listener to subscribe to any posted message through the reporter (default)
 func Subscribe(reporter MessageReporter) chan bool {
-	stream := msgProperty.Observe()
+	return defaultReporter.Subscribe(reporter)
+}
+
+// Subscribe allows a listener to subscribe to any posted message through the reporter (instance)
+func (r *Reporter) Subscribe(reporter MessageReporter) chan bool {
+	stream := r.msgProperty.Observe()
 
 	msg, _ := stream.Value().(Message) //nolint:revive
 
@@ -209,7 +229,7 @@ func PostTimerEvent(
 }
 
 func postMessage(msgType MessageType, payload MessagePayload) {
-	msgProperty.Update(NewMessage(msgType, payload))
+	defaultReporter.msgProperty.Update(NewMessage(msgType, payload))
 }
 
 // NewMessage builds a new reporter message
