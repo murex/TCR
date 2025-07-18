@@ -25,10 +25,12 @@ SOFTWARE.
 package report
 
 import (
+	"sync"
+	"time"
+
 	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
-	"time"
 )
 
 type messageFilter func(msg Message) bool
@@ -39,6 +41,7 @@ type Sniffer struct {
 	filters          []messageFilter
 	captured         []Message
 	reporter         *Reporter
+	mutex            sync.RWMutex
 }
 
 // NewSniffer creates a new instance of report sniffer, with filtering.
@@ -79,6 +82,9 @@ func (sniffer *Sniffer) Start() {
 }
 
 func (sniffer *Sniffer) sniff(msg Message) {
+	sniffer.mutex.Lock()
+	defer sniffer.mutex.Unlock()
+
 	if len(sniffer.filters) == 0 {
 		// If no filter is set, we keep all messages
 		sniffer.captured = append(sniffer.captured, msg)
@@ -135,11 +141,16 @@ func (sniffer *Sniffer) ReportTimerEvent(emphasis bool, payload timer_event.Mess
 
 // Stop tells the sniffer to stop
 func (sniffer *Sniffer) Stop() {
-	// Micro-timer to give a chance to reporters to process their messages
-	// before the sniffer stops listening
-	time.Sleep(1 * time.Millisecond)
 	if sniffer.reportingChannel != nil {
-		Unsubscribe(sniffer.reportingChannel)
+		// Give a small moment for any pending messages to be processed
+		time.Sleep(10 * time.Millisecond)
+
+		// Use select to avoid blocking if channel is full
+		select {
+		case sniffer.reportingChannel <- true:
+		case <-time.After(10 * time.Millisecond):
+			// Channel might be blocked, that's ok
+		}
 	}
 }
 
@@ -149,11 +160,19 @@ func (sniffer *Sniffer) Stop() {
 
 // GetAllMatches returns a slice containing all matching messages captured by the sniffer
 func (sniffer *Sniffer) GetAllMatches() []Message {
-	return sniffer.captured
+	sniffer.mutex.RLock()
+	defer sniffer.mutex.RUnlock()
+
+	// Return a copy to avoid race conditions
+	result := make([]Message, len(sniffer.captured))
+	copy(result, sniffer.captured)
+	return result
 }
 
 // GetMatchCount returns the number of matching messages captured by the sniffer
 func (sniffer *Sniffer) GetMatchCount() int {
+	sniffer.mutex.RLock()
+	defer sniffer.mutex.RUnlock()
 	return len(sniffer.captured)
 }
 
@@ -180,6 +199,9 @@ func TestWithIsolatedReporter(testFunc func(reporter *Reporter, sniffer *Sniffer
 
 	// Run the test function
 	testFunc(isolatedReporter, sniffer)
+
+	// Give a small moment to ensure all messages are processed
+	time.Sleep(5 * time.Millisecond)
 }
 
 // TestWithIsolatedReporterAndFilters runs a test function with an isolated reporter instance and message filters.

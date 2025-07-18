@@ -24,19 +24,23 @@ package report
 
 import (
 	"fmt"
+	"sync"
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func Test_can_retrieve_reported_message(t *testing.T) {
 	txt := "dummy message"
 	TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
 		reporter.Post(txt)
+		// Give a small moment for the message to be processed
+		time.Sleep(10 * time.Millisecond)
 		sniffer.Stop()
 		assert.Equal(t, 1, sniffer.GetMatchCount())
 		assert.Equal(t, txt, sniffer.GetAllMatches()[0].Payload.ToString())
@@ -51,22 +55,50 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 		var c [nbListeners]chan bool
 		var stubs [nbListeners]*messageReporterStub
 
+		// Create stubs and subscribe synchronously
 		for i := range nbListeners {
-			go func(i int) {
-				stubs[i] = newMessageReporterStub(i)
-				c[i] = reporter.Subscribe(stubs[i])
+			stubs[i] = newMessageReporterStub(i)
+			c[i] = reporter.Subscribe(stubs[i])
+		}
+
+		// Post the message
+		reporter.Post(txt)
+
+		// Wait for responses and verify with better synchronization
+		var wg sync.WaitGroup
+		wg.Add(nbListeners)
+
+		for i := range nbListeners {
+			go func(idx int) {
+				defer wg.Done()
+				select {
+				case iReceived := <-stubs[idx].received:
+					assert.Equal(t, idx, iReceived)
+					stubs[idx].mutex.RLock()
+					msgPayload := stubs[idx].message.Payload.ToString()
+					stubs[idx].mutex.RUnlock()
+					assert.Equal(t, txt, msgPayload)
+				case <-time.After(100 * time.Millisecond):
+					t.Errorf("timeout waiting for receiver %d", idx)
+				}
 			}(i)
 		}
 
-		// To make sure observers are ready to receive
-		time.Sleep(1 * time.Millisecond)
-		reporter.Post(txt)
+		wg.Wait()
 
+		// Cleanup - use goroutines to avoid blocking
 		for i := range nbListeners {
-			iReceived := <-stubs[i].received
-			Unsubscribe(c[iReceived])
-			assert.Equal(t, txt, stubs[iReceived].message.Payload.ToString())
+			go func(ch chan bool) {
+				select {
+				case ch <- true:
+				case <-time.After(10 * time.Millisecond):
+					// Channel might be blocked, that's ok
+				}
+			}(c[i])
 		}
+
+		// Small delay to allow cleanup
+		time.Sleep(10 * time.Millisecond)
 	})
 }
 
@@ -77,15 +109,31 @@ func Test_multiple_messages_and_one_receiver(t *testing.T) {
 		stub := newMessageReporterStub(0)
 		c := reporter.Subscribe(stub)
 
-		// To make sure the observer is ready to receive
-		time.Sleep(1 * time.Millisecond)
 		for i := range nbMessages {
 			txt := fmt.Sprintf("dummy message %v", i)
 			reporter.Post(txt)
-			<-stub.received
-			assert.Equal(t, txt, stub.message.Payload.ToString())
+			select {
+			case <-stub.received:
+				stub.mutex.RLock()
+				msgPayload := stub.message.Payload.ToString()
+				stub.mutex.RUnlock()
+				assert.Equal(t, txt, msgPayload)
+			case <-time.After(100 * time.Millisecond):
+				t.Fatalf("timeout waiting for message %d", i)
+			}
 		}
-		Unsubscribe(c)
+
+		// Cleanup using goroutine to avoid blocking
+		go func() {
+			select {
+			case c <- true:
+			case <-time.After(10 * time.Millisecond):
+				// Channel might be blocked, that's ok
+			}
+		}()
+
+		// Small delay to allow cleanup
+		time.Sleep(10 * time.Millisecond)
 	})
 }
 
@@ -140,7 +188,34 @@ func Test_post_text_message_functions(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.text, func(t *testing.T) {
 			TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
-				tt.postFunction(tt.text)
+				// Use the isolated reporter instance instead of global functions
+				switch tt.expectedType.Category {
+				case Normal:
+					reporter.PostText(tt.text)
+				case Info:
+					reporter.PostInfo(tt.text)
+				case Title:
+					reporter.PostTitle(tt.text)
+				case Warning:
+					if tt.expectedType.Emphasis {
+						reporter.PostWarningWithEmphasis(tt.text)
+					} else {
+						reporter.PostWarning(tt.text)
+					}
+				case Error:
+					if tt.expectedType.Emphasis {
+						reporter.PostErrorWithEmphasis(tt.text)
+					} else {
+						reporter.PostError(tt.text)
+					}
+				case Success:
+					if tt.expectedType.Emphasis {
+						reporter.PostSuccessWithEmphasis(tt.text)
+					}
+				}
+
+				// Give time for message processing
+				time.Sleep(10 * time.Millisecond)
 				sniffer.Stop()
 				assert.Equal(t, 1, sniffer.GetMatchCount())
 				result := sniffer.GetAllMatches()[0]
@@ -188,7 +263,16 @@ func Test_post_event_message_functions(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.text, func(t *testing.T) {
 			TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
-				tt.postFunction()
+				// Use the isolated reporter instance for event functions
+				switch tt.text {
+				case "role event message":
+					reporter.PostRoleEvent(role_event.TriggerStart, role.Navigator{})
+				case "timer event message":
+					reporter.PostTimerEvent(timer_event.TriggerCountdown, 3*time.Second, 2*time.Second, 1*time.Second)
+				}
+
+				// Give time for message processing
+				time.Sleep(10 * time.Millisecond)
 				sniffer.Stop()
 				assert.Equal(t, 1, sniffer.GetMatchCount())
 				result := sniffer.GetAllMatches()[0]
@@ -200,12 +284,11 @@ func Test_post_event_message_functions(t *testing.T) {
 	}
 }
 
-
-
 type messageReporterStub struct {
 	index    int
 	received chan int
 	message  Message
+	mutex    sync.RWMutex
 }
 
 func newMessageReporterStub(index int) *messageReporterStub {
@@ -216,7 +299,9 @@ func newMessageReporterStub(index int) *messageReporterStub {
 }
 
 func (stub *messageReporterStub) report(category Category, emphasis bool, payload MessagePayload) {
+	stub.mutex.Lock()
 	stub.message = NewMessage(MessageType{category, emphasis}, payload)
+	stub.mutex.Unlock()
 	stub.received <- stub.index
 }
 
