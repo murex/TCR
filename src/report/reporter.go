@@ -229,7 +229,90 @@ func PostTimerEvent(
 }
 
 func postMessage(msgType MessageType, payload MessagePayload) {
-	defaultReporter.msgProperty.Update(NewMessage(msgType, payload))
+	defaultReporter.PostMessage(msgType, payload)
+}
+
+// PostMessage posts a message to this specific reporter instance
+func (r *Reporter) PostMessage(msgType MessageType, payload MessagePayload) {
+	r.msgProperty.Update(NewMessage(msgType, payload))
+}
+
+// Instance-level posting methods for Reporter
+
+// Post posts some text for reporting. This is actually the same as PostText()
+func (r *Reporter) Post(a ...any) {
+	r.PostText(a...)
+}
+
+// PostText posts some text for reporting
+func (r *Reporter) PostText(a ...any) {
+	r.PostMessage(MessageType{Category: Normal}, text.New(a...))
+}
+
+// PostInfo posts an information message for reporting
+func (r *Reporter) PostInfo(a ...any) {
+	r.PostMessage(MessageType{Category: Info}, text.New(a...))
+}
+
+// PostTitle posts a title message for reporting
+func (r *Reporter) PostTitle(a ...any) {
+	r.PostMessage(MessageType{Category: Title}, text.New(a...))
+}
+
+// PostWarning posts a warning message for reporting
+func (r *Reporter) PostWarning(a ...any) {
+	r.PostMessage(MessageType{Category: Warning}, text.New(a...))
+}
+
+// PostError posts an error message for reporting
+func (r *Reporter) PostError(a ...any) {
+	r.PostMessage(MessageType{Category: Error}, text.New(a...))
+}
+
+// PostSuccessWithEmphasis posts a success message for reporting
+func (r *Reporter) PostSuccessWithEmphasis(a ...any) {
+	r.PostMessage(MessageType{Category: Success, Emphasis: true}, text.New(a...))
+}
+
+// PostWarningWithEmphasis posts a warning with emphasis
+func (r *Reporter) PostWarningWithEmphasis(a ...any) {
+	r.PostMessage(MessageType{Category: Warning, Emphasis: true}, text.New(a...))
+}
+
+// PostErrorWithEmphasis posts an error message for reporting
+func (r *Reporter) PostErrorWithEmphasis(a ...any) {
+	r.PostMessage(MessageType{Category: Error, Emphasis: true}, text.New(a...))
+}
+
+// PostRoleEvent posts a role event
+func (r *Reporter) PostRoleEvent(trigger role_event.Trigger, role role.Role) {
+	msg := role_event.New(trigger, role)
+	r.PostMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()}, msg)
+}
+
+// PostTimerEvent posts a timer event
+func (r *Reporter) PostTimerEvent(
+	trigger timer_event.Trigger,
+	timeout time.Duration,
+	elapsed time.Duration,
+	remaining time.Duration,
+) {
+	msg := timer_event.New(trigger, timeout, elapsed, remaining)
+	r.PostMessage(MessageType{Category: TimerEvent, Emphasis: msg.WithEmphasis()}, msg)
+}
+
+// Test utilities for reporter isolation
+
+// SetDefaultReporter allows tests to temporarily override the default reporter
+func SetDefaultReporter(reporter *Reporter) *Reporter {
+	oldReporter := defaultReporter
+	defaultReporter = reporter
+	return oldReporter
+}
+
+// GetDefaultReporter returns the current default reporter
+func GetDefaultReporter() *Reporter {
+	return defaultReporter
 }
 
 // NewMessage builds a new reporter message

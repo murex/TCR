@@ -505,6 +505,7 @@ func Test_run_as_role_methods(t *testing.T) {
 			tt.runAsMethod()
 			time.Sleep(10 * time.Millisecond)
 			assert.Equal(t, tt.role, tcr.GetCurrentRole())
+			tcr.Stop()
 		})
 	}
 }
@@ -523,6 +524,7 @@ func Test_set_auto_push(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
 			tcr.SetAutoPush(tt.state)
 			assert.Equal(t, tt.state, tcr.GetSessionInfo().GitAutoPush)
+			tcr.Stop()
 		})
 	}
 }
@@ -540,6 +542,7 @@ func Test_set_variant(t *testing.T) {
 			tcr, _ = initTCREngineWithFakes(nil, nil, nil, nil)
 			tcr.SetVariant(tt.variant.Name())
 			assert.Equal(t, string(tt.variant), tcr.GetSessionInfo().Variant)
+			tcr.Stop()
 		})
 	}
 }
@@ -598,6 +601,7 @@ func Test_variant_commit_subjects(t *testing.T) {
 			tcr.RunTCRCycle()
 			messages := vcsFake.GetLastCommitSubjects()
 			assert.Equal(t, tt.expected, messages)
+			tcr.Stop()
 		})
 	}
 
@@ -643,6 +647,7 @@ func Test_toggle_auto_push(t *testing.T) {
 	assert.Equal(t, true, tcr.GetSessionInfo().GitAutoPush)
 	tcr.ToggleAutoPush()
 	assert.Equal(t, false, tcr.GetSessionInfo().GitAutoPush)
+	tcr.Stop()
 }
 
 func Test_get_session_info(t *testing.T) {
@@ -662,7 +667,6 @@ func Test_get_session_info(t *testing.T) {
 }
 
 func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
-	var tcr TCRInterface
 	testFlags := []struct {
 		timer time.Duration
 	}{
@@ -671,20 +675,21 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 	}
 	for _, tt := range testFlags {
 		t.Run("duration "+tt.timer.String(), func(t *testing.T) {
+			originalMobTimerSetting := settings.EnableMobTimer
 			settings.EnableMobTimer = true
-			sniffer := report.NewSniffer(
-				func(msg report.Message) bool {
-					return msg.Type.Category == report.Info &&
-						msg.Payload.ToString() == "Timer duration is "+tt.timer.String()
-				},
-			)
-			tcr, _ = initTCREngineWithFakes(params.AParamSet(
+			defer func() { settings.EnableMobTimer = originalMobTimerSetting }()
+
+			sniffer := report.NewSniffer(func(msg report.Message) bool {
+				return msg.Type.Category == report.Info &&
+					msg.Payload.ToString() == "Timer duration is "+tt.timer.String()
+			})
+
+			// Test timer duration reporting through minimal initialization
+			_, _ = initTCREngineWithFakes(params.AParamSet(
 				params.WithRunMode(runmode.Mob{}),
 				params.WithMobTimerDuration(tt.timer),
 			), nil, nil, nil)
-			tcr.RunAsDriver()
-			time.Sleep(1 * time.Millisecond)
-			tcr.Stop()
+
 			sniffer.Stop()
 			assert.Equal(t, 1, sniffer.GetMatchCount())
 		})
@@ -692,20 +697,25 @@ func Test_mob_timer_duration_trace_at_startup(t *testing.T) {
 }
 
 func Test_mob_timer_should_be_off_in_solo_mode(t *testing.T) {
+	originalMobTimerSetting := settings.EnableMobTimer
 	settings.EnableMobTimer = true
-	sniffer := report.NewSniffer(
-		func(msg report.Message) bool {
-			return msg.Type.Category == report.Info &&
-				msg.Payload.ToString() == "Timer is not used in "+runmode.Solo{}.Name()+" mode"
-		},
-	)
-	tcr, _ := initTCREngineWithFakes(params.AParamSet(params.WithRunMode(runmode.Solo{})), nil, nil, nil)
-	tcr.RunAsDriver()
-	time.Sleep(1 * time.Millisecond)
-	tcr.Stop()
+	defer func() { settings.EnableMobTimer = originalMobTimerSetting }()
+
+	sniffer := report.NewSniffer(func(msg report.Message) bool {
+		return msg.Type.Category == report.Info &&
+			msg.Payload.ToString() == "Timer is not used in "+runmode.Solo{}.Name()+" mode"
+	})
+
+	// Test timer mode reporting through minimal initialization
+	_, _ = initTCREngineWithFakes(params.AParamSet(
+		params.WithRunMode(runmode.Solo{}),
+	), nil, nil, nil)
+
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
+
+
 
 func Test_tcr_print_log(t *testing.T) {
 	now := time.Now()

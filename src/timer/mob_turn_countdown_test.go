@@ -67,30 +67,30 @@ func Test_mob_turn_countdown_creation_in_one_shot_runmode(t *testing.T) {
 }
 
 func Test_mob_turn_count_down(t *testing.T) {
-	sniffer := report.NewSniffer()
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		reminder := NewMobTurnCountdown(runmode.Mob{}, 2*time.Second)
+		reminder.Start()
+		time.Sleep(3200 * time.Millisecond)
+		reminder.Stop()
 
-	reminder := NewMobTurnCountdown(runmode.Mob{}, 2*time.Second)
-	reminder.Start()
-	time.Sleep(3200 * time.Millisecond)
-	reminder.Stop()
+		sniffer.Stop()
 
-	sniffer.Stop()
-
-	expected := []struct {
-		text     string
-		category report.Category
-		emphasis bool
-	}{
-		{"start:2:0:2", report.TimerEvent, true},
-		{"countdown:2:1:1", report.TimerEvent, true},
-		{"timeout:2:2:0", report.TimerEvent, true},
-		{"timeout:2:3:-1", report.TimerEvent, false},
-		{"stop:2:3:0", report.TimerEvent, true},
-	}
-	assert.Equal(t, len(expected), sniffer.GetMatchCount())
-	for i, e := range expected {
-		msg := sniffer.GetAllMatches()[i]
-		assert.Equal(t, report.MessageType{Category: e.category, Emphasis: e.emphasis}, msg.Type)
-		assert.Equal(t, e.text, msg.Payload.ToString())
-	}
+		expected := []struct {
+			text     string
+			category report.Category
+			emphasis bool
+		}{
+			{"start:2:0:2", report.TimerEvent, true},
+			{"countdown:2:1:1", report.TimerEvent, true},
+			{"timeout:2:2:0", report.TimerEvent, true},
+			{"timeout:2:3:-1", report.TimerEvent, false},
+			{"stop:2:3:0", report.TimerEvent, true},
+		}
+		assert.Equal(t, len(expected), sniffer.GetMatchCount())
+		for i, e := range expected {
+			msg := sniffer.GetAllMatches()[i]
+			assert.Equal(t, report.MessageType{Category: e.category, Emphasis: e.emphasis}, msg.Type)
+			assert.Equal(t, e.text, msg.Payload.ToString())
+		}
+	})
 }

@@ -70,31 +70,34 @@ func Test_run_invalid_command(t *testing.T) {
 }
 
 func Test_trace_valid_command_with_initial_parameters(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("echo", "hello world!").Trace()
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "hello world!", trimmed)
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("echo", "hello world!").Trace()
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "hello world!", trimmed)
+	})
 }
 
 func Test_trace_valid_command_with_additional_parameters(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("echo").Trace("hello world!")
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "hello world!", trimmed)
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("echo").Trace("hello world!")
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "hello world!", trimmed)
+	})
 }
 
 func Test_trace_invalid_command(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("unknown-command").Trace()
-	sniffer.Stop()
-	assert.Error(t, err)
-	assert.Equal(t, 0, sniffer.GetMatchCount())
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("unknown-command").Trace()
+		sniffer.Stop()
+		assert.Error(t, err)
+		assert.Equal(t, 0, sniffer.GetMatchCount())
+	})
 }
 
 func Test_run_pipe_valid_commands_with_initial_parameters(t *testing.T) {
@@ -129,44 +132,48 @@ func Test_run_pipe_with_second_command_invalid(t *testing.T) {
 }
 
 func Test_trace_pipe_valid_commands_with_initial_parameters(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("echo", "hello\tworld!").TraceAndPipe(
-		NewCommandFunc("cut", "-f", "1"))
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "hello", trimmed)
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("echo", "hello\tworld!").TraceAndPipe(
+			NewCommandFunc("cut", "-f", "1"))
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "hello", trimmed)
+	})
 }
 
 func Test_trace_pipe_valid_commands_with_additional_parameters(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("echo").TraceAndPipe(
-		NewCommandFunc("cut", "-f", "1"),
-		"hello\tworld!")
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "hello", trimmed)
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("echo").TraceAndPipe(
+			NewCommandFunc("cut", "-f", "1"),
+			"hello\tworld!")
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "hello", trimmed)
+	})
 }
 
 func Test_trace_pipe_with_first_command_invalid(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("unknown-command").TraceAndPipe(
-		NewCommandFunc("cut", "-f", "1"))
-	sniffer.Stop()
-	assert.Error(t, err)
-	assert.Equal(t, 0, sniffer.GetMatchCount())
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("unknown-command").TraceAndPipe(
+			NewCommandFunc("cut", "-f", "1"))
+		sniffer.Stop()
+		assert.Error(t, err)
+		assert.Equal(t, 0, sniffer.GetMatchCount())
+	})
 }
 
 func Test_trace_pipe_with_second_command_invalid(t *testing.T) {
-	sniffer := report.NewSniffer()
-	err := NewCommandFunc("echo").TraceAndPipe(
-		NewCommandFunc("unknown-command"))
-	sniffer.Stop()
-	assert.Error(t, err)
-	assert.Equal(t, 0, sniffer.GetMatchCount())
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		err := NewCommandFunc("echo").TraceAndPipe(
+			NewCommandFunc("unknown-command"))
+		sniffer.Stop()
+		assert.Error(t, err)
+		assert.Equal(t, 0, sniffer.GetMatchCount())
+	})
 }
 
 func Test_command_as_string(t *testing.T) {
@@ -215,30 +222,32 @@ func Test_command_as_string(t *testing.T) {
 }
 
 func Test_run_command_with_vcs_trace_enabled(t *testing.T) {
-	sniffer := report.NewSniffer(func(msg report.Message) bool {
+	report.TestWithIsolatedReporterAndFilters(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		vcs.SetTrace(true)
+		_, err := NewCommandFunc("echo", "hello world!").Run()
+		vcs.SetTrace(false)
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "echo hello world!", trimmed)
+	}, func(msg report.Message) bool {
 		return msg.Type.Category == report.Warning && strings.Index(msg.Payload.ToString(), "echo") == 0
 	})
-	vcs.SetTrace(true)
-	_, err := NewCommandFunc("echo", "hello world!").Run()
-	vcs.SetTrace(false)
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "echo hello world!", trimmed)
 }
 
 func Test_run_piped_command_with_vcs_trace_enabled(t *testing.T) {
-	sniffer := report.NewSniffer(func(msg report.Message) bool {
+	report.TestWithIsolatedReporterAndFilters(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		vcs.SetTrace(true)
+		_, err := NewCommandFunc("echo", "hello\tworld!").RunAndPipe(
+			NewCommandFunc("cut", "-f", "1"))
+		vcs.SetTrace(false)
+		sniffer.Stop()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
+		assert.Equal(t, "echo hello\tworld! | cut -f 1", trimmed)
+	}, func(msg report.Message) bool {
 		return msg.Type.Category == report.Warning && strings.Index(msg.Payload.ToString(), "echo") == 0
 	})
-	vcs.SetTrace(true)
-	_, err := NewCommandFunc("echo", "hello\tworld!").RunAndPipe(
-		NewCommandFunc("cut", "-f", "1"))
-	vcs.SetTrace(false)
-	sniffer.Stop()
-	assert.NoError(t, err)
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	trimmed := strings.TrimRight(sniffer.GetAllMatches()[0].Payload.ToString(), "\r\n")
-	assert.Equal(t, "echo hello\tworld! | cut -f 1", trimmed)
 }

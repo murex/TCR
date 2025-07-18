@@ -38,13 +38,22 @@ type Sniffer struct {
 	reportingChannel chan bool
 	filters          []messageFilter
 	captured         []Message
+	reporter         *Reporter
 }
 
 // NewSniffer creates a new instance of report sniffer, with filtering.
 // If more than one filter is provided, the sniffer keeps all messages satisfying at least
 // one of the filters
 func NewSniffer(filters ...messageFilter) *Sniffer {
-	sniffer := Sniffer{}
+	return NewSnifferWithReporter(nil, filters...)
+}
+
+// NewSnifferWithReporter creates a new instance of report sniffer for a specific reporter instance.
+// If reporter is nil, it uses the default reporter.
+// If more than one filter is provided, the sniffer keeps all messages satisfying at least
+// one of the filters
+func NewSnifferWithReporter(reporter *Reporter, filters ...messageFilter) *Sniffer {
+	sniffer := Sniffer{reporter: reporter}
 	sniffer.addFilters(filters...)
 	sniffer.Start()
 	return &sniffer
@@ -62,7 +71,11 @@ func (sniffer *Sniffer) addFilter(filter messageFilter) {
 
 // Start tells the sniffer to start
 func (sniffer *Sniffer) Start() {
-	sniffer.reportingChannel = Subscribe(sniffer)
+	if sniffer.reporter != nil {
+		sniffer.reportingChannel = sniffer.reporter.Subscribe(sniffer)
+	} else {
+		sniffer.reportingChannel = Subscribe(sniffer)
+	}
 }
 
 func (sniffer *Sniffer) sniff(msg Message) {
@@ -142,4 +155,52 @@ func (sniffer *Sniffer) GetAllMatches() []Message {
 // GetMatchCount returns the number of matching messages captured by the sniffer
 func (sniffer *Sniffer) GetMatchCount() int {
 	return len(sniffer.captured)
+}
+
+// Test utility functions for isolated reporter testing
+
+// TestWithIsolatedReporter runs a test function with an isolated reporter instance.
+// This ensures that messages from the test don't interfere with other tests.
+// The function restores the original default reporter when done.
+func TestWithIsolatedReporter(testFunc func(reporter *Reporter, sniffer *Sniffer)) {
+	// Create an isolated reporter for this test
+	isolatedReporter := NewReporter()
+
+	// Save the original default reporter
+	originalReporter := SetDefaultReporter(isolatedReporter)
+
+	// Create a sniffer for the isolated reporter
+	sniffer := NewSnifferWithReporter(isolatedReporter)
+
+	// Ensure cleanup happens even if test panics
+	defer func() {
+		sniffer.Stop()
+		SetDefaultReporter(originalReporter)
+	}()
+
+	// Run the test function
+	testFunc(isolatedReporter, sniffer)
+}
+
+// TestWithIsolatedReporterAndFilters runs a test function with an isolated reporter instance and message filters.
+// This ensures that messages from the test don't interfere with other tests.
+// The function restores the original default reporter when done.
+func TestWithIsolatedReporterAndFilters(testFunc func(reporter *Reporter, sniffer *Sniffer), filters ...messageFilter) {
+	// Create an isolated reporter for this test
+	isolatedReporter := NewReporter()
+
+	// Save the original default reporter
+	originalReporter := SetDefaultReporter(isolatedReporter)
+
+	// Create a sniffer for the isolated reporter with filters
+	sniffer := NewSnifferWithReporter(isolatedReporter, filters...)
+
+	// Ensure cleanup happens even if test panics
+	defer func() {
+		sniffer.Stop()
+		SetDefaultReporter(originalReporter)
+	}()
+
+	// Run the test function
+	testFunc(isolatedReporter, sniffer)
 }

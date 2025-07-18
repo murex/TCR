@@ -488,7 +488,9 @@ func (tcr *TCREngine) RunAsNavigator() {
 
 // Stop is the entry point for telling TCR engine to stop its current operations
 func (tcr *TCREngine) Stop() {
-	tcr.shoot <- true
+	if tcr.shoot != nil {
+		tcr.shoot <- true
+	}
 }
 
 func (tcr *TCREngine) fromBirthTillDeath(

@@ -35,51 +35,58 @@ import (
 
 func Test_can_retrieve_reported_message(t *testing.T) {
 	txt := "dummy message"
-	result := reportAndReceive(func() {
-		Post(txt)
+	TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
+		reporter.Post(txt)
+		sniffer.Stop()
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		assert.Equal(t, txt, sniffer.GetAllMatches()[0].Payload.ToString())
 	})
-	assert.Equal(t, txt, result.Payload.ToString())
 }
 
 func Test_one_message_and_multiple_receivers(t *testing.T) {
 	const nbListeners = 2
 	txt := "dummy message"
-	var c [nbListeners]chan bool
-	var stubs [nbListeners]*messageReporterStub
 
-	for i := range nbListeners {
-		go func(i int) {
-			stubs[i] = newMessageReporterStub(i)
-			c[i] = Subscribe(stubs[i])
-		}(i)
-	}
+	TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
+		var c [nbListeners]chan bool
+		var stubs [nbListeners]*messageReporterStub
 
-	// To make sure observers are ready to receive
-	time.Sleep(1 * time.Millisecond)
-	Post(txt)
+		for i := range nbListeners {
+			go func(i int) {
+				stubs[i] = newMessageReporterStub(i)
+				c[i] = reporter.Subscribe(stubs[i])
+			}(i)
+		}
 
-	for i := range nbListeners {
-		iReceived := <-stubs[i].received
-		Unsubscribe(c[iReceived])
-		assert.Equal(t, txt, stubs[iReceived].message.Payload.ToString())
-	}
+		// To make sure observers are ready to receive
+		time.Sleep(1 * time.Millisecond)
+		reporter.Post(txt)
+
+		for i := range nbListeners {
+			iReceived := <-stubs[i].received
+			Unsubscribe(c[iReceived])
+			assert.Equal(t, txt, stubs[iReceived].message.Payload.ToString())
+		}
+	})
 }
 
 func Test_multiple_messages_and_one_receiver(t *testing.T) {
 	const nbMessages = 3
 
-	stub := newMessageReporterStub(0)
-	c := Subscribe(stub)
+	TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
+		stub := newMessageReporterStub(0)
+		c := reporter.Subscribe(stub)
 
-	// To make sure the observer is ready to receive
-	time.Sleep(1 * time.Millisecond)
-	for i := range nbMessages {
-		txt := fmt.Sprintf("dummy message %v", i)
-		Post(txt)
-		<-stub.received
-		assert.Equal(t, txt, stub.message.Payload.ToString())
-	}
-	Unsubscribe(c)
+		// To make sure the observer is ready to receive
+		time.Sleep(1 * time.Millisecond)
+		for i := range nbMessages {
+			txt := fmt.Sprintf("dummy message %v", i)
+			reporter.Post(txt)
+			<-stub.received
+			assert.Equal(t, txt, stub.message.Payload.ToString())
+		}
+		Unsubscribe(c)
+	})
 }
 
 func Test_post_text_message_functions(t *testing.T) {
@@ -132,12 +139,15 @@ func Test_post_text_message_functions(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.text, func(t *testing.T) {
-			result := reportAndReceive(func() {
+			TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
 				tt.postFunction(tt.text)
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				result := sniffer.GetAllMatches()[0]
+				assert.Equal(t, text.New(tt.text), result.Payload)
+				assert.Equal(t, tt.expectedType, result.Type)
+				assert.NotZero(t, result.Timestamp)
 			})
-			assert.Equal(t, text.New(tt.text), result.Payload)
-			assert.Equal(t, tt.expectedType, result.Type)
-			assert.NotZero(t, result.Timestamp)
 		})
 	}
 }
@@ -177,27 +187,20 @@ func Test_post_event_message_functions(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.text, func(t *testing.T) {
-			result := reportAndReceive(func() {
+			TestWithIsolatedReporter(func(reporter *Reporter, sniffer *Sniffer) {
 				tt.postFunction()
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				result := sniffer.GetAllMatches()[0]
+				assert.Equal(t, tt.expectedPayload, result.Payload)
+				assert.Equal(t, tt.expectedType, result.Type)
+				assert.NotZero(t, result.Timestamp)
 			})
-			assert.Equal(t, tt.expectedPayload, result.Payload)
-			assert.Equal(t, tt.expectedType, result.Type)
-			assert.NotZero(t, result.Timestamp)
 		})
 	}
 }
 
-func reportAndReceive(report func()) Message {
-	stub := newMessageReporterStub(0)
-	c := Subscribe(stub)
 
-	// To make sure the observer is ready to receive
-	time.Sleep(1 * time.Millisecond)
-	report()
-	<-stub.received
-	Unsubscribe(c)
-	return stub.message
-}
 
 type messageReporterStub struct {
 	index    int

@@ -166,21 +166,21 @@ func Test_watch_reports_a_warning_on_missing_directory(t *testing.T) {
 
 	tree, _ := New(baseDir)
 
-	sniffer := report.NewSniffer(func(msg report.Message) bool {
+	report.TestWithIsolatedReporterAndFilters(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		stopWatching := make(chan bool)
+		changeDetected := make(chan bool)
+		go func() {
+			changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
+		}()
+		time.Sleep(1 * time.Millisecond)
+		stopWatching <- true
+		<-changeDetected
+		sniffer.Stop()
+
+		assert.Equal(t, 1, sniffer.GetMatchCount())
+		assert.Equal(t, report.Warning, sniffer.GetAllMatches()[0].Type.Category)
+		assert.NotEmpty(t, sniffer.GetAllMatches()[0].Payload.ToString())
+	}, func(msg report.Message) bool {
 		return msg.Type.Category == report.Warning
 	})
-
-	stopWatching := make(chan bool)
-	changeDetected := make(chan bool)
-	go func() {
-		changeDetected <- tree.Watch([]string{srcDir}, func(_ string) bool { return false }, stopWatching)
-	}()
-	time.Sleep(1 * time.Millisecond)
-	stopWatching <- true
-	<-changeDetected
-	sniffer.Stop()
-
-	assert.Equal(t, 1, sniffer.GetMatchCount())
-	assert.Equal(t, report.Warning, sniffer.GetAllMatches()[0].Type.Category)
-	assert.NotEmpty(t, sniffer.GetAllMatches()[0].Payload.ToString())
 }

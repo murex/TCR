@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -140,21 +140,22 @@ func Test_check_group_print_with_checkpoints(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			cg := NewCheckGroup("check group")
-			cg.Add(test.checkpoints...)
-			cg.Print()
-			sniffer.Stop()
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				cg := NewCheckGroup("check group")
+				cg.Add(test.checkpoints...)
+				cg.Print()
+				sniffer.Stop()
 
-			assert.Equal(t, 2+len(test.checkpoints), sniffer.GetMatchCount())
-			messages := sniffer.GetAllMatches()
-			assert.Equal(t, report.Info, messages[0].Type.Category)
-			assert.Equal(t, "", messages[0].Payload.ToString())
-			assert.Equal(t, test.expectedCategory, messages[1].Type.Category)
-			assert.Equal(t, "➤ checking check group", messages[1].Payload.ToString())
-			for i := range test.checkpoints {
-				assert.GreaterOrEqual(t, test.expectedCategory, messages[2+i].Type.Category)
-			}
+				assert.Equal(t, 2+len(test.checkpoints), sniffer.GetMatchCount())
+				messages := sniffer.GetAllMatches()
+				assert.Equal(t, report.Info, messages[0].Type.Category)
+				assert.Equal(t, "", messages[0].Payload.ToString())
+				assert.Equal(t, test.expectedCategory, messages[1].Type.Category)
+				assert.Equal(t, "➤ checking check group", messages[1].Payload.ToString())
+				for i := range test.checkpoints {
+					assert.GreaterOrEqual(t, test.expectedCategory, messages[2+i].Type.Category)
+				}
+			})
 		})
 	}
 }
@@ -175,13 +176,14 @@ func Test_check_group_print_with_no_checkpoints(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			cg := NewCheckGroup("check group")
-			cg.Add(test.checkpoints...)
-			cg.Print()
-			sniffer.Stop()
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				cg := NewCheckGroup("check group")
+				cg.Add(test.checkpoints...)
+				cg.Print()
+				sniffer.Stop()
 
-			assert.Equal(t, 0, sniffer.GetMatchCount())
+				assert.Equal(t, 0, sniffer.GetMatchCount())
+			})
 		})
 	}
 }

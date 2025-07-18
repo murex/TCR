@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2023 Murex
+Copyright (c) 2024 Murex
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,12 +62,13 @@ func Test_checkpoint_print(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			test.checkpoint.Print()
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, test.expectedCategory, sniffer.GetAllMatches()[0].Type.Category)
-			assert.Equal(t, test.expectedText, sniffer.GetAllMatches()[0].Payload.ToString())
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				test.checkpoint.Print()
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				assert.Equal(t, test.expectedCategory, sniffer.GetAllMatches()[0].Type.Category)
+				assert.Equal(t, test.expectedText, sniffer.GetAllMatches()[0].Payload.ToString())
+			})
 		})
 	}
 }

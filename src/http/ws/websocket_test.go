@@ -77,97 +77,97 @@ func Test_websocket_report_messages(t *testing.T) {
 	const messageText = "hello from TCR!"
 	tests := []struct {
 		desc     string
-		action   func()
+		action   func(reporter *report.Reporter)
 		expected message
 	}{
 		{
 			desc:     "report.Post",
-			action:   func() { report.Post(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.Post(messageText) },
 			expected: newMessage(messageTypeSimple, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostText",
-			action:   func() { report.PostText(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostText(messageText) },
 			expected: newMessage(messageTypeSimple, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostInfo",
-			action:   func() { report.PostInfo(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostInfo(messageText) },
 			expected: newMessage(messageTypeInfo, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostTitle",
-			action:   func() { report.PostTitle(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostTitle(messageText) },
 			expected: newMessage(messageTypeTitle, messageSeverityNormal, false, messageText),
 		},
 		{
 			desc:     "report.PostWarning",
-			action:   func() { report.PostWarning(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostWarning(messageText) },
 			expected: newMessage(messageTypeWarning, messageSeverityLow, false, messageText),
 		},
 		{
 			desc:     "report.PostError",
-			action:   func() { report.PostError(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostError(messageText) },
 			expected: newMessage(messageTypeError, messageSeverityHigh, false, messageText),
 		},
 		{
 			desc:     "report.PostRoleEvent navigator start",
-			action:   func() { report.PostRoleEvent(role_event.TriggerStart, role.Navigator{}) },
+			action:   func(reporter *report.Reporter) { reporter.PostRoleEvent(role_event.TriggerStart, role.Navigator{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:start"),
 		},
 		{
 			desc:     "report.PostRoleEvent driver start",
-			action:   func() { report.PostRoleEvent(role_event.TriggerStart, role.Driver{}) },
+			action:   func(reporter *report.Reporter) { reporter.PostRoleEvent(role_event.TriggerStart, role.Driver{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:start"),
 		},
 		{
 			desc:     "report.PostRoleEvent navigator end",
-			action:   func() { report.PostRoleEvent(role_event.TriggerEnd, role.Navigator{}) },
+			action:   func(reporter *report.Reporter) { reporter.PostRoleEvent(role_event.TriggerEnd, role.Navigator{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "navigator:end"),
 		},
 		{
 			desc:     "report.PostRoleEvent driver end",
-			action:   func() { report.PostRoleEvent(role_event.TriggerEnd, role.Driver{}) },
+			action:   func(reporter *report.Reporter) { reporter.PostRoleEvent(role_event.TriggerEnd, role.Driver{}) },
 			expected: newMessage(messageTypeRole, messageSeverityNormal, false, "driver:end"),
 		},
 		{
 			desc:     "report.PostTimerEvent start",
-			action:   func() { report.PostTimerEvent(timer_event.TriggerStart, 0, 0, 0) },
+			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerStart, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "start:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent countdown",
-			action:   func() { report.PostTimerEvent(timer_event.TriggerCountdown, 0, 0, 0) },
+			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerCountdown, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "countdown:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent stop",
-			action:   func() { report.PostTimerEvent(timer_event.TriggerStop, 0, 0, 0) },
+			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerStop, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "stop:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent first timeout",
-			action:   func() { report.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, 0) },
+			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, 0) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "timeout:0:0:0"),
 		},
 		{
 			desc:     "report.PostTimerEvent second timeout",
-			action:   func() { report.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, -1*time.Second) },
+			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, -1*time.Second) },
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, false, "timeout:0:0:-1"),
 		},
 		{
 			desc:     "report.PostSuccessWithEmphasis",
-			action:   func() { report.PostSuccessWithEmphasis(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostSuccessWithEmphasis(messageText) },
 			expected: newMessage(messageTypeSuccess, messageSeverityNormal, true, messageText),
 		},
 		{
 			desc:     "report.PostWarningWithEmphasis",
-			action:   func() { report.PostWarningWithEmphasis(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostWarningWithEmphasis(messageText) },
 			expected: newMessage(messageTypeWarning, messageSeverityLow, true, messageText),
 		},
 		{
 			desc:     "report.PostErrorWithEmphasis",
-			action:   func() { report.PostErrorWithEmphasis(messageText) },
+			action:   func(reporter *report.Reporter) { reporter.PostErrorWithEmphasis(messageText) },
 			expected: newMessage(messageTypeError, messageSeverityHigh, true, messageText),
 		},
 	}
@@ -199,7 +199,7 @@ func Test_websocket_report_messages(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			// Run the test action (message posting through report)
-			test.action()
+			test.action(report.GetDefaultReporter())
 
 			// Retrieve the message sent through the websocket and verify its contents
 			var msg message

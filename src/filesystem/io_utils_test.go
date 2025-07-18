@@ -66,12 +66,13 @@ func Test_write_file_reports_fs_errors(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
-			sniffer := report.NewSniffer(func(msg report.Message) bool {
+			report.TestWithIsolatedReporterAndFilters(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				WriteFile(test.path, []byte("some stuff"))
+				sniffer.Stop()
+				assert.Equal(t, test.expected, sniffer.GetMatchCount())
+			}, func(msg report.Message) bool {
 				return msg.Type.Category == report.Error
 			})
-			WriteFile(test.path, []byte("some stuff"))
-			sniffer.Stop()
-			assert.Equal(t, test.expected, sniffer.GetMatchCount())
 		})
 	}
 

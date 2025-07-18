@@ -53,11 +53,12 @@ func Test_print_stat(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			printStat(tt.name, tt.value)
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				printStat(tt.name, tt.value)
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			})
 		})
 	}
 }
@@ -79,11 +80,12 @@ func Test_print_stat_value_and_ratio(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			printStatValueAndRatio(tt.name, tt.stat)
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				printStatValueAndRatio(tt.name, tt.stat)
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			})
 		})
 	}
 }
@@ -111,12 +113,13 @@ func Test_print_stat_min_max_avg(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			printStatMinMaxAvg(tt.name, tt.stat)
-			time.Sleep(1 * time.Millisecond)
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				printStatMinMaxAvg(tt.name, tt.stat)
+				time.Sleep(1 * time.Millisecond)
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			})
 		})
 	}
 }
@@ -138,12 +141,13 @@ func Test_print_stat_evolution(t *testing.T) {
 
 	for _, tt := range testFlags {
 		t.Run(tt.desc, func(t *testing.T) {
-			sniffer := report.NewSniffer()
-			printStatEvolution(tt.name, tt.value)
-			time.Sleep(1 * time.Millisecond)
-			sniffer.Stop()
-			assert.Equal(t, 1, sniffer.GetMatchCount())
-			assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+				printStatEvolution(tt.name, tt.value)
+				time.Sleep(1 * time.Millisecond)
+				sniffer.Stop()
+				assert.Equal(t, 1, sniffer.GetMatchCount())
+				assert.Equal(t, tt.expected, sniffer.GetAllMatches()[0].Payload.ToString())
+			})
 		})
 	}
 }
@@ -208,15 +212,16 @@ func Test_print_all_stats(t *testing.T) {
 		"- Skipped tests count:       5 --> 1",
 		"- Test execution duration:   500ms --> 2s",
 	}
-	sniffer := report.NewSniffer()
-	Print(branch, inputEvents)
-	time.Sleep(1 * time.Millisecond)
-	sniffer.Stop()
+	report.TestWithIsolatedReporter(func(reporter *report.Reporter, sniffer *report.Sniffer) {
+		Print(branch, inputEvents)
+		time.Sleep(1 * time.Millisecond)
+		sniffer.Stop()
 
-	assert.Equal(t, len(expected), sniffer.GetMatchCount())
-	var result []string
-	for _, line := range sniffer.GetAllMatches() {
-		result = append(result, line.Payload.ToString())
-	}
-	assert.Equal(t, expected, result)
+		assert.Equal(t, len(expected), sniffer.GetMatchCount())
+		var result []string
+		for _, line := range sniffer.GetAllMatches() {
+			result = append(result, line.Payload.ToString())
+		}
+		assert.Equal(t, expected, result)
+	})
 }
