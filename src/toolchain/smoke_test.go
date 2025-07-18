@@ -23,8 +23,8 @@ SOFTWARE.
 package toolchain
 
 import (
+	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/toolchain/command"
-	"github.com/murex/tcr/utils"
 	"testing"
 )
 
@@ -56,7 +56,7 @@ func Test_toolchain_returns_error_when_build_command_fails(t *testing.T) {
 }
 
 func Test_toolchain_returns_ok_when_build_passes(t *testing.T) {
-	utils.SlowTestTag(t)
+	helpers.SlowTestTag(t)
 	assertNoErrorWhenBuildPasses(t, toolchainName, testDataDirJava)
 }
 
@@ -84,6 +84,6 @@ func Test_toolchain_returns_error_when_test_command_fails(t *testing.T) {
 }
 
 func Test_toolchain_returns_ok_when_tests_pass(t *testing.T) {
-	utils.SlowTestTag(t)
+	helpers.SlowTestTag(t)
 	assertNoErrorWhenTestPasses(t, toolchainName, testDataDirJava)
 }

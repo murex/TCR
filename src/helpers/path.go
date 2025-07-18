@@ -20,32 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils
+package helpers
 
 import (
-	"fmt"
-	"github.com/murex/tcr/settings"
-	"io"
+	"path/filepath"
+	"strings"
 )
 
-// simpleTraceWriter is the writer used by Trace() to write trace messages to io.Writer
-var simpleTraceWriter io.Writer
-
-// SetSimpleTrace sets the writer used by Trace()
-func SetSimpleTrace(w io.Writer) {
-	if w != nil {
-		simpleTraceWriter = w
+// IsSubPathOf indicates if aPath is a sub-path of refPath
+func IsSubPathOf(aPath string, refPath string) bool {
+	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
+	if refPath == "" {
+		return true
 	}
-}
 
-// Trace writes simple trace messages
-func Trace(a ...any) {
-	if simpleTraceWriter != nil {
-		_, _ = fmt.Fprintln(simpleTraceWriter, "["+settings.ApplicationName+"]", fmt.Sprint(a...))
-	}
-}
-
-// TraceKeyValue writes simple trace messages for a key/value pair
-func TraceKeyValue(key string, value any) {
-	Trace("- ", key, ": ", value)
+	cleanPath := filepath.Clean(aPath)
+	cleanRefPath := filepath.Clean(refPath)
+	relPath, err := filepath.Rel(cleanRefPath, cleanPath)
+	return err == nil && !strings.Contains(relPath, "..")
 }

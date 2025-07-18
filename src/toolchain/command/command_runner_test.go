@@ -24,7 +24,7 @@ package command
 
 import (
 	"fmt"
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/helpers"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
@@ -84,7 +84,7 @@ func Test_abort_command(t *testing.T) {
 	// this test fails randomly on Windows for an unexplained reason.
 	// This seems to be related to command.Process never being set when running a command,
 	// but no explanation why this happens on Windows while this works as expected on Unix OS's.
-	utils.SkipOnWindows(t)
+	helpers.SkipOnWindows(t)
 
 	testCases := []struct {
 		desc     string

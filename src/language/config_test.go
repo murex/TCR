@@ -24,7 +24,7 @@ package language
 
 import (
 	"fmt"
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/helpers"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -101,7 +101,7 @@ func Test_show_language_configs_with_no_saved_config(t *testing.T) {
 		"Configured languages:",
 		"- none (will use built-in languages)",
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			languageDirPath = ""
 			ShowConfigs()
@@ -116,7 +116,7 @@ func Test_reset_language_configs_with_no_saved_config(t *testing.T) {
 	for _, builtin := range Names() {
 		expected = append(expected, "- "+builtin)
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			ResetConfigs()
 		},
@@ -135,7 +135,7 @@ func Test_show_language_config(t *testing.T) {
 		fmt.Sprintf("%v.test-files.directories: %v", prefix, cfg.TestFiles.Directories),
 		fmt.Sprintf("%v.test-files.patterns: %v", prefix, cfg.TestFiles.FilePatterns),
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			cfg.show()
 		},
@@ -168,7 +168,7 @@ func Test_save_and_load_a_language_config(t *testing.T) {
 	saveConfig(name)
 
 	// Load the language configuration file
-	yamlConfig := loadConfig(utils.BuildYAMLFilename(name))
+	yamlConfig := loadConfig(helpers.BuildYAMLFilename(name))
 
 	// Check that we get back the same language data
 	if assert.NotNil(t, yamlConfig) {

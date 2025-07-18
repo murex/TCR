@@ -24,8 +24,8 @@ package checker
 
 import (
 	"github.com/murex/tcr/checker/model"
+	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/params"
-	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs/p4"
 	"strings"
 )
@@ -84,12 +84,12 @@ func checkP4Workspace(p params.Params) (cp []model.CheckPoint) {
 	}
 	cp = append(cp, model.OkCheckPoint("p4 client root is ", p4RootDir))
 
-	if !utils.IsSubPathOf(p.BaseDir, p4RootDir) {
+	if !helpers.IsSubPathOf(p.BaseDir, p4RootDir) {
 		cp = append(cp, model.ErrorCheckPoint("TCR base dir is not under p4 client root dir"))
 		return cp
 	}
 
-	if !utils.IsSubPathOf(p.WorkDir, p4RootDir) {
+	if !helpers.IsSubPathOf(p.WorkDir, p4RootDir) {
 		cp = append(cp, model.ErrorCheckPoint("TCR work dir is not under p4 client root dir"))
 		return cp
 	}

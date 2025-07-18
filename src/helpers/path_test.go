@@ -20,22 +20,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils
+package helpers
 
 import (
-	"path/filepath"
-	"strings"
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-// IsSubPathOf indicates if aPath is a sub-path of refPath
-func IsSubPathOf(aPath string, refPath string) bool {
-	// If refPath is empty, we consider it as being the root, thus aPath is a sub-path of refPath
-	if refPath == "" {
-		return true
+func Test_is_sub_path_of_unix(t *testing.T) {
+	tests := []struct {
+		desc     string
+		subPath  string
+		refPath  string
+		expected bool
+	}{
+		{"direct sub-dir", "/user/bob", "/user", true},
+		{"direct not quite sub-dir", "/usex/bob", "/user", false},
+		{"deep sub-dir", "/user/bob/deep/dir", "/user", true},
+		{"direct sub-dir with trailing on sub", "/user/bob/", "/user", true},
+		{"direct sub-dir with trailing on ref", "/user/bob", "/user/", true},
+		{"everything is subpath to an blanc refPath", "/user/bob", "", true},
+		{"direct not sub-dir", "/userx/bob", "/user", false},
 	}
-
-	cleanPath := filepath.Clean(aPath)
-	cleanRefPath := filepath.Clean(refPath)
-	relPath, err := filepath.Rel(cleanRefPath, cleanPath)
-	return err == nil && !strings.Contains(relPath, "..")
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			assert.Equal(t, test.expected, IsSubPathOf(test.subPath, test.refPath),
+				fmt.Sprintf("%s vs %s", test.subPath, test.refPath))
+		})
+	}
 }

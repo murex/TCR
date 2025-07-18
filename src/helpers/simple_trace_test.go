@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package utils
+package helpers
 
 import (
 	"fmt"
@@ -28,25 +28,28 @@ import (
 	"testing"
 )
 
-func Test_is_sub_path_of_windows(t *testing.T) {
-	tests := []struct {
-		desc     string
-		subPath  string
-		refPath  string
-		expected bool
-	}{
-		{"direct sub-dir", "C:\\user\\bob", "C:\\user", true},
-		{"direct not quite sub-dir", "C:\\usex\\bob", "C:\\user", false},
-		{"deep sub-dir", "C:\\user\\bob\\deep\\dir", "C:\\user", true},
-		{"direct sub-dir with trailing on sub", "C:\\user\\bob\\", "C:\\user", true},
-		{"direct sub-dir with trailing on ref", "C:\\user\\bob", "C:\\user\\", true},
-		{"backslash sub-dir and slash ref-dir", "C:\\user\\bob", "C:/user", true},
-		{"slash ref-dir and backslash ref-dir", "C:/user/bob", "C:\\user", true},
-	}
-	for _, test := range tests {
-		t.Run(test.desc, func(t *testing.T) {
-			assert.Equal(t, test.expected, IsSubPathOf(test.subPath, test.refPath),
-				fmt.Sprintf("%s vs %s", test.subPath, test.refPath))
-		})
-	}
+func Test_simple_trace_when_writer_is_not_set(t *testing.T) {
+	assert.NotPanics(t, func() {
+		SetSimpleTrace(nil)
+		Trace("Some dummy message")
+	})
+}
+
+func Test_simple_trace_format(t *testing.T) {
+	msg := "Some dummy message"
+	AssertSimpleTrace(t, []string{msg},
+		func() {
+			Trace(msg)
+		},
+	)
+}
+
+func Test_simple_trace_key_value_format(t *testing.T) {
+	k, v := "some-key", "some-value"
+	expected := []string{fmt.Sprintf("- %s: %s", k, v)}
+	AssertSimpleTrace(t, expected,
+		func() {
+			TraceKeyValue(k, v)
+		},
+	)
 }

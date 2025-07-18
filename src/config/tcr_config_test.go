@@ -24,10 +24,10 @@ package config
 
 import (
 	"fmt"
+	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
-	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/variant"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
@@ -70,9 +70,9 @@ func Test_get_config_dir_path_when_set(t *testing.T) {
 func Test_show_config_value(t *testing.T) {
 	key, value := "some-key", "some-value"
 	expected := []string{"- " + key + ": " + value}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
-			utils.TraceKeyValue(key, value)
+			helpers.TraceKeyValue(key, value)
 		},
 	)
 }
@@ -112,7 +112,7 @@ func Test_reset_tcr_config_with_no_saved_config(t *testing.T) {
 	for _, builtinLang := range language.Names() {
 		expected = append(expected, "- "+builtinLang)
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -150,7 +150,7 @@ func Test_save_tcr_config_with_no_saved_config(t *testing.T) {
 	for _, builtinLang := range language.Names() {
 		expected = append(expected, "- "+builtinLang)
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -166,7 +166,7 @@ func Test_save_tcr_config_with_no_saved_config(t *testing.T) {
 
 func Test_init_tcr_config_with_no_config_file(t *testing.T) {
 	expected := []string{"No configuration file found"}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			initTCRConfig()
 		},
@@ -184,7 +184,7 @@ func Test_cobra_command_init_with_no_saved_config(t *testing.T) {
 		"Loading toolchains configuration",
 		"Loading languages configuration",
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -205,7 +205,7 @@ func Test_cobra_command_init_with_saved_config(t *testing.T) {
 		"Loading toolchains configuration",
 		"Loading languages configuration",
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			cmd := NewCobraTestCmd()
 			cmd.Run = func(cmd *cobra.Command, args []string) {
@@ -247,7 +247,7 @@ func Test_show_tcr_config_with_default_values(t *testing.T) {
 		fmt.Sprintf("%v.tcr.variant: %v", prefix, variant.Relaxed),
 		fmt.Sprintf("%v.vcs.name: %v", prefix, "git"),
 	}
-	utils.AssertSimpleTrace(t, expected,
+	helpers.AssertSimpleTrace(t, expected,
 		func() {
 			showTCRConfig()
 		},

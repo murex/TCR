@@ -23,7 +23,7 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/helpers"
 	"github.com/spf13/afero"
 	"os"
 	"path"
@@ -84,14 +84,14 @@ func (ftf FileTreeFilter) isInFileTree(aPath string, baseDir string) bool {
 	absPath, _ := filepath.Abs(aPath)
 	// If no directory is configured, any path that is under baseDir path is ok
 	if len(ftf.Directories) == 0 {
-		if utils.IsSubPathOf(absPath, baseDir) {
+		if helpers.IsSubPathOf(absPath, baseDir) {
 			return true
 		}
 	}
 
 	for _, dir := range ftf.Directories {
 		filterAbsPath, _ := filepath.Abs(filepath.Join(baseDir, dir))
-		if utils.IsSubPathOf(absPath, filterAbsPath) {
+		if helpers.IsSubPathOf(absPath, filterAbsPath) {
 			return true
 		}
 	}

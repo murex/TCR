@@ -23,7 +23,7 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/helpers"
 	"os"
 	"path/filepath"
 	"slices"
@@ -68,43 +68,43 @@ func InitConfig(configDirPath string) {
 // SaveConfigs saves the language configurations
 func SaveConfigs() {
 	createConfigDir()
-	utils.Trace("Saving languages configuration")
+	helpers.Trace("Saving languages configuration")
 	// Loop on all existing languages
 	for _, name := range Names() {
-		utils.Trace("- ", name)
+		helpers.Trace("- ", name)
 		saveConfig(name)
 	}
 }
 
 func saveConfig(name string) {
 	lang, _ := Get(name)
-	utils.SaveToYAMLFile(appFS, asConfig(lang), utils.BuildYAMLFilePath(languageDirPath, name))
+	helpers.SaveToYAMLFile(appFS, asConfig(lang), helpers.BuildYAMLFilePath(languageDirPath, name))
 }
 
 // GetConfigFileList returns the list of language configuration files found in language directory
 func GetConfigFileList() (list []string) {
-	return utils.ListYAMLFilesIn(appFS, languageDirPath)
+	return helpers.ListYAMLFilesIn(appFS, languageDirPath)
 }
 
 func loadConfigs() {
-	utils.Trace("Loading languages configuration")
+	helpers.Trace("Loading languages configuration")
 	// Loop on all YAML files in language directory
 	for _, entry := range GetConfigFileList() {
 		err := Register(asLanguage(*loadConfig(entry)))
 		if err != nil {
-			utils.Trace("Error in ", entry, ": ", err)
+			helpers.Trace("Error in ", entry, ": ", err)
 		}
 	}
 }
 
 func loadConfig(yamlFilename string) *configYAML {
 	var languageCfg configYAML
-	err := utils.LoadFromYAMLFile(os.DirFS(languageDirPath), yamlFilename, &languageCfg)
+	err := helpers.LoadFromYAMLFile(os.DirFS(languageDirPath), yamlFilename, &languageCfg)
 	if err != nil {
-		utils.Trace("Error in ", yamlFilename, ": ", err)
+		helpers.Trace("Error in ", yamlFilename, ": ", err)
 		return nil
 	}
-	languageCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
+	languageCfg.Name = helpers.ExtractNameFromYAMLFilename(yamlFilename)
 	return &languageCfg
 }
 
@@ -145,10 +145,10 @@ func asFilePatternTable(filePatternTableCfg []string) []string {
 
 // ResetConfigs resets the languages configuration
 func ResetConfigs() {
-	utils.Trace("Resetting languages configuration")
+	helpers.Trace("Resetting languages configuration")
 	// Loop on all existing languages
 	for _, name := range Names() {
-		utils.Trace("- ", name)
+		helpers.Trace("- ", name)
 		Reset(name)
 	}
 }
@@ -198,15 +198,15 @@ func GetConfigDirPath() string {
 }
 
 func createConfigDir() {
-	utils.CreateSubDir(appFS, languageDirPath, "TCR language configuration directory")
+	helpers.CreateSubDir(appFS, languageDirPath, "TCR language configuration directory")
 }
 
 // ShowConfigs shows the languages configuration
 func ShowConfigs() {
-	utils.Trace("Configured languages:")
+	helpers.Trace("Configured languages:")
 	entries := GetConfigFileList()
 	if len(entries) == 0 {
-		utils.Trace("- none (will use built-in languages)")
+		helpers.Trace("- none (will use built-in languages)")
 	}
 	for _, entry := range entries {
 		loadConfig(entry).show()
@@ -221,11 +221,11 @@ func (l configYAML) show() {
 }
 
 func (lt toolchainConfigYAML) show(prefix string) {
-	utils.TraceKeyValue(prefix+".default", lt.Default)
-	utils.TraceKeyValue(prefix+".compatible-with", lt.Compatible)
+	helpers.TraceKeyValue(prefix+".default", lt.Default)
+	helpers.TraceKeyValue(prefix+".compatible-with", lt.Compatible)
 }
 
 func (ftf fileTreeFilterConfigYAML) show(prefix string) {
-	utils.TraceKeyValue(prefix+".directories", ftf.Directories)
-	utils.TraceKeyValue(prefix+".patterns", ftf.FilePatterns)
+	helpers.TraceKeyValue(prefix+".directories", ftf.Directories)
+	helpers.TraceKeyValue(prefix+".patterns", ftf.FilePatterns)
 }

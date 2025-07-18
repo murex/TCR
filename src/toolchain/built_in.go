@@ -24,7 +24,7 @@ package toolchain
 
 import (
 	"embed"
-	"github.com/murex/tcr/utils"
+	"github.com/murex/tcr/helpers"
 	"path"
 )
 
@@ -40,17 +40,17 @@ func init() {
 }
 
 func loadBuiltInToolchains() {
-	// utils.SetSimpleTrace(os.Stdout)
-	utils.Trace("Loading built-in toolchains")
+	// helpers.SetSimpleTrace(os.Stdout)
+	helpers.Trace("Loading built-in toolchains")
 	entries, err := builtInFS.ReadDir(builtInDir)
 	if err != nil {
-		utils.Trace("Error loading built-in toolchains: ", err)
+		helpers.Trace("Error loading built-in toolchains: ", err)
 	}
 	// Loop on all YAML files in built-in toolchain directory
 	for _, entry := range entries {
 		err := addBuiltIn(asToolchain(*loadBuiltInToolchain(entry.Name())))
 		if err != nil {
-			utils.Trace("Error in ", entry.Name(), ": ", err)
+			helpers.Trace("Error in ", entry.Name(), ": ", err)
 		}
 	}
 }
@@ -58,11 +58,11 @@ func loadBuiltInToolchains() {
 func loadBuiltInToolchain(yamlFilename string) *configYAML {
 	var toolchainCfg configYAML
 
-	err := utils.LoadFromYAMLFile(builtInFS, path.Join(builtInDir, yamlFilename), &toolchainCfg)
+	err := helpers.LoadFromYAMLFile(builtInFS, path.Join(builtInDir, yamlFilename), &toolchainCfg)
 	if err != nil {
-		utils.Trace("Error in ", yamlFilename, ": ", err)
+		helpers.Trace("Error in ", yamlFilename, ": ", err)
 		return nil
 	}
-	toolchainCfg.Name = utils.ExtractNameFromYAMLFilename(yamlFilename)
+	toolchainCfg.Name = helpers.ExtractNameFromYAMLFilename(yamlFilename)
 	return &toolchainCfg
 }

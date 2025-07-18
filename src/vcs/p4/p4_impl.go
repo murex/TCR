@@ -27,8 +27,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/utils"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
@@ -81,7 +81,7 @@ func newP4Impl(initDepotFs func() afero.Fs, dir string, testFlag bool) (*p4Impl,
 		}
 	}
 
-	if !utils.IsSubPathOf(p.baseDir, p.GetRootDir()) {
+	if !helpers.IsSubPathOf(p.baseDir, p.GetRootDir()) {
 		return nil, fmt.Errorf("directory %s does not belong to a p4 depot", p.baseDir)
 	}
 	return &p, nil
@@ -327,7 +327,7 @@ func (p *p4Impl) toP4ClientPath(dir string) (string, error) {
 	if dir == "" {
 		return "", errors.New("can not convert an empty path")
 	}
-	if !utils.IsSubPathOf(cleanDir, cleanRoot) {
+	if !helpers.IsSubPathOf(cleanDir, cleanRoot) {
 		return "", errors.New("path is outside p4 root directory")
 	}
 
