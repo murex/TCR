@@ -1,0 +1,3 @@
+{
+  "GOFLAGS": "-tags=test_helper"
+}
