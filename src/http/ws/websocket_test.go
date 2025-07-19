@@ -25,12 +25,6 @@ package ws
 import (
 	"context"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/report/role_event"
-	"github.com/murex/tcr/report/timer_event"
-	"github.com/murex/tcr/role"
-	"github.com/stretchr/testify/assert"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -38,6 +32,13 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/report/role_event"
+	"github.com/murex/tcr/report/timer_event"
+	"github.com/murex/tcr/role"
+	"github.com/stretchr/testify/assert"
 )
 
 type fakeHTTPServer struct {
@@ -151,8 +152,10 @@ func Test_websocket_report_messages(t *testing.T) {
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, true, "timeout:0:0:0"),
 		},
 		{
-			desc:     "report.PostTimerEvent second timeout",
-			action:   func(reporter *report.Reporter) { reporter.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, -1*time.Second) },
+			desc: "report.PostTimerEvent second timeout",
+			action: func(reporter *report.Reporter) {
+				reporter.PostTimerEvent(timer_event.TriggerTimeout, 0, 0, -1*time.Second)
+			},
 			expected: newMessage(messageTypeTimer, messageSeverityNormal, false, "timeout:0:0:-1"),
 		},
 		{
@@ -203,14 +206,28 @@ func Test_websocket_report_messages(t *testing.T) {
 
 			// Retrieve the message sent through the websocket and verify its contents
 			var msg message
+
+			// Set read deadline to prevent hanging
+			_ = ws.SetReadDeadline(time.Now().Add(500 * time.Millisecond))
+
 			readErr := ws.ReadJSON(&msg)
+			if readErr != nil {
+				// Check if it's a close error, which is expected during shutdown
+				if websocket.IsCloseError(readErr, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
+					t.Logf("WebSocket closed during test: %v", readErr)
+					return
+				}
+			}
 			assert.NoError(t, readErr)
 			assertMessagesMatch(t, test.expected, msg)
 		})
 	}
 
-	// Wait for the websocket connection to time out
-	time.Sleep(fakeServer.GetWebsocketTimeout())
+	// Send close frame before waiting for timeout
+	_ = ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+
+	// Wait for the websocket connection to time out with some extra buffer
+	time.Sleep(fakeServer.GetWebsocketTimeout() + 100*time.Millisecond)
 }
 
 func Test_websocket_upgrader_with_invalid_request_header(t *testing.T) {

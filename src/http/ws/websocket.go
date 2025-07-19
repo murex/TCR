@@ -23,18 +23,20 @@ SOFTWARE.
 package ws
 
 import (
+	"context"
 	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"sync"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
-	"net/http"
-	"net/url"
-	"strconv"
-	"sync"
-	"time"
 )
 
 // message is used to JSON-encode TCR report messages
@@ -144,10 +146,19 @@ func (r *MessageReporter) ReportTimerEvent(emphasis bool, payload timer_event.Me
 
 func (r *MessageReporter) write(msg message) {
 	r.connMutex.Lock()
+	defer r.connMutex.Unlock()
+
+	// Check if connection is still open before writing
+	if r.conn == nil {
+		return
+	}
+
+	// Set a write deadline to prevent hanging
+	_ = r.conn.SetWriteDeadline(time.Now().Add(100 * time.Millisecond))
+
 	// We deliberately ignore write errors, which could happen
 	// every time a client closes their console browser page
 	_ = r.conn.WriteJSON(msg)
-	r.connMutex.Unlock()
 }
 
 var upgrader = websocket.Upgrader{
@@ -197,8 +208,21 @@ func websocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	reporter := newMessageReporter(server, conn)
 	reporter.startReporting()
 
+	// Set up a context for graceful shutdown
+	ctx, cancel := context.WithTimeout(r.Context(), server.GetWebsocketTimeout())
+	defer cancel()
+
 	defer func() {
+		// Stop reporting first to prevent new messages
 		reporter.stopReporting()
+
+		// Mark connection as closed in reporter
+		reporter.connMutex.Lock()
+		reporter.conn = nil
+		reporter.connMutex.Unlock()
+
+		// Send close frame and close connection gracefully
+		_ = conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 		_ = conn.Close()
 	}()
 
@@ -206,5 +230,5 @@ func websocketConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	// messages to clients that are no longer there.
 	// This should not be an issue for clients that are still connected
 	// as the webapp client will automatically open a new connection after this one is gone.
-	time.Sleep(server.GetWebsocketTimeout())
+	<-ctx.Done()
 }
