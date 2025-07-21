@@ -44,6 +44,10 @@ import {
 import { TcrRolesComponent } from "../tcr-roles/tcr-roles.component";
 import { TcrTraceComponent } from "../tcr-trace/tcr-trace.component";
 import { MockComponent } from "ng-mocks";
+import {
+  MockNgTerminalComponent,
+  setupTerminalTestEnvironment,
+} from "../../../testing/terminal-test-utils";
 
 class FakeTcrMessageService {
   message$ = new Observable<TcrMessage>();
@@ -55,13 +59,19 @@ describe("TcrConsoleComponent", () => {
   let component: TcrConsoleComponent;
   let fixture: ComponentFixture<TcrConsoleComponent>;
 
+  beforeAll(() => {
+    // Set up safe terminal test environment
+    setupTerminalTestEnvironment();
+  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
         TcrConsoleComponent,
         MockComponent(TcrRolesComponent),
-        TcrTraceComponent,
+        MockComponent(TcrTraceComponent),
       ],
+      declarations: [MockNgTerminalComponent],
       providers: [
         { provide: TcrMessageService, useClass: FakeTcrMessageService },
         { provide: TcrControlsService, useClass: FakeTcrControlsService },

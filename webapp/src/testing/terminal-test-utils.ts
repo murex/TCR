@@ -28,9 +28,9 @@ import { NgTerminal } from "ng-terminal";
  * This mock prevents xterm.js dimension errors in headless environments
  */
 @Component({
-  selector: "app-ng-terminal", // eslint-disable-line @angular-eslint/component-selector
+  selector: "ng-terminal", // eslint-disable-line @angular-eslint/component-selector
   template: '<div class="mock-terminal"></div>',
-  standalone: true, // eslint-disable-line @angular-eslint/prefer-standalone
+  standalone: false, // eslint-disable-line @angular-eslint/prefer-standalone
 })
 export class MockNgTerminalComponent {
   underlying: MockTerminalUnderlying;

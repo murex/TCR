@@ -23,74 +23,40 @@ SOFTWARE.
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TcrTraceComponent, toCRLF } from "./tcr-trace.component";
 import { Subject } from "rxjs";
-import { Component } from "@angular/core";
-import { NgTerminal } from "ng-terminal";
 
-@Component({
-  selector: "ng-terminal", // eslint-disable-line @angular-eslint/component-selector
-  template: "",
-  standalone: false, // eslint-disable-line @angular-eslint/prefer-standalone
-})
-// eslint-disable-next-line @angular-eslint/component-class-suffix
-class StubNgTerminal {
-  underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-
-  constructor() {
-    this.underlying = {
-      reset: jasmine.createSpy("reset"),
-      dispose: jasmine.createSpy("dispose"),
-      loadAddon: jasmine.createSpy("loadAddon"),
-      unicode: { activeVersion: "11" },
-      // Mock viewport with dimensions to prevent the error
-      _core: {
-        viewport: {
-          dimensions: { cols: 80, rows: 24 },
-          syncScrollArea: jasmine.createSpy("syncScrollArea"),
-          _innerRefresh: jasmine.createSpy("_innerRefresh"),
-        },
-      },
-    };
-  }
-
-  write(_data: string): void {}
-
-  setXtermOptions(_options: unknown): void {}
-
-  setRows(_rows: number): void {}
-
-  setCols(_cols: number): void {}
-
-  setMinWidth(_width: number): void {}
-
-  setMinHeight(_height: number): void {}
-
-  setDraggable(_draggable: boolean): void {}
-}
+import {
+  MockNgTerminalComponent,
+  createMockNgTerminal,
+  cleanupTerminal,
+  setupTerminalTestEnvironment,
+} from "../../../testing/terminal-test-utils";
 
 describe("TcrTraceComponent", () => {
   let component: TcrTraceComponent;
   let fixture: ComponentFixture<TcrTraceComponent>;
 
+  beforeAll(() => {
+    // Set up safe terminal test environment
+    setupTerminalTestEnvironment();
+  });
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTraceComponent],
-      declarations: [StubNgTerminal],
+      declarations: [MockNgTerminalComponent],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
-    component.ngTerminal = TestBed.createComponent(StubNgTerminal)
-      .componentInstance as NgTerminal;
+    component.ngTerminal = createMockNgTerminal();
     fixture.detectChanges();
   });
 
   afterEach(() => {
     // Clean up terminal instances to prevent memory leaks and dimension errors
-    if (component.ngTerminal?.underlying?.dispose) {
-      component.ngTerminal.underlying.dispose();
-    }
+    cleanupTerminal(component.ngTerminal);
     if (fixture) {
       fixture.destroy();
     }
