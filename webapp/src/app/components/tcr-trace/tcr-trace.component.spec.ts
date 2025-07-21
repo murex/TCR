@@ -31,8 +31,8 @@ import { NgTerminal } from "ng-terminal";
   template: "",
   standalone: false, // eslint-disable-line @angular-eslint/prefer-standalone
 })
+// eslint-disable-next-line @angular-eslint/component-class-suffix
 class StubNgTerminal {
-  // eslint-disable-line @angular-eslint/component-class-suffix
   underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor() {
@@ -46,6 +46,7 @@ class StubNgTerminal {
         viewport: {
           dimensions: { cols: 80, rows: 24 },
           syncScrollArea: jasmine.createSpy("syncScrollArea"),
+          _innerRefresh: jasmine.createSpy("_innerRefresh"),
         },
       },
     };
@@ -53,7 +54,7 @@ class StubNgTerminal {
 
   write(_data: string): void {}
 
-  setXtermOptions(_options: any): void {}
+  setXtermOptions(_options: unknown): void {}
 
   setRows(_rows: number): void {}
 

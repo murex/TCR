@@ -363,7 +363,7 @@ describe("TcrConsoleComponent", () => {
     ].forEach((testCase) => {
       it(`should format and print ${testCase.type} messages`, () => {
         const printFunction = spyOn(
-          component as any,
+          component as any, // eslint-disable-line @typescript-eslint/no-explicit-any
           testCase.expectedFunction,
         ).and.callThrough();
 

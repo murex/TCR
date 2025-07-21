@@ -28,9 +28,9 @@ import { NgTerminal } from "ng-terminal";
  * This mock prevents xterm.js dimension errors in headless environments
  */
 @Component({
-  selector: "ng-terminal",
+  selector: "app-ng-terminal", // eslint-disable-line @angular-eslint/component-selector
   template: '<div class="mock-terminal"></div>',
-  standalone: false,
+  standalone: true, // eslint-disable-line @angular-eslint/prefer-standalone
 })
 export class MockNgTerminalComponent {
   underlying: MockTerminalUnderlying;
@@ -45,7 +45,7 @@ export class MockNgTerminalComponent {
     // Simulate write callback if needed
   }
 
-  setXtermOptions(_options: any): void {
+  setXtermOptions(_options: unknown): void {
     // Mock implementation
   }
 
@@ -84,6 +84,13 @@ export class MockNgTerminalComponent {
 export class MockTerminalUnderlying {
   unicode = { activeVersion: "11" };
   private disposed = false;
+  private _core: {
+    viewport: {
+      dimensions: { cols: number; rows: number };
+      syncScrollArea: jasmine.Spy;
+      _innerRefresh: jasmine.Spy;
+    };
+  };
 
   constructor() {
     // Mock core viewport with safe dimensions
@@ -95,8 +102,6 @@ export class MockTerminalUnderlying {
       },
     };
   }
-
-  private _core: any;
 
   reset = jasmine.createSpy("reset");
   dispose = jasmine.createSpy("dispose").and.callFake(() => {
@@ -139,11 +144,12 @@ export function cleanupTerminal(terminal?: NgTerminal): void {
 export function setupTerminalTestEnvironment(): void {
   // Mock ResizeObserver if not available
   if (typeof ResizeObserver === "undefined") {
-    (global as any).ResizeObserver = class ResizeObserver {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    };
+    (globalThis as { ResizeObserver?: unknown }).ResizeObserver =
+      class ResizeObserver {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      };
   }
 
   // Mock canvas context for xterm.js
@@ -181,9 +187,10 @@ export function setupTerminalTestEnvironment(): void {
   };
 
   if (typeof HTMLCanvasElement !== "undefined") {
-    HTMLCanvasElement.prototype.getContext = jasmine
-      .createSpy("getContext")
-      .and.returnValue(mockCanvasContext);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    HTMLCanvasElement.prototype.getContext = function () {
+      return mockCanvasContext as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   // Mock getBoundingClientRect for consistent dimensions

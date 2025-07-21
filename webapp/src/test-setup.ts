@@ -28,16 +28,6 @@ import {
 } from "@angular/platform-browser-dynamic/testing";
 
 // Global test configuration
-declare const require: {
-  context(
-    path: string,
-    deep?: boolean,
-    filter?: RegExp,
-  ): {
-    <T>(id: string): T;
-    keys(): string[];
-  };
-};
 
 // Initialize the Angular testing environment
 getTestBed().initTestEnvironment(
@@ -59,24 +49,26 @@ window.addEventListener("error", (event) => {
 
 // Mock ResizeObserver if not available (common in headless environments)
 if (typeof ResizeObserver === "undefined") {
-  (global as any).ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
+  (globalThis as { ResizeObserver?: unknown }).ResizeObserver =
+    class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
 }
 
 // Mock IntersectionObserver if not available
 if (typeof IntersectionObserver === "undefined") {
-  (global as any).IntersectionObserver = class IntersectionObserver {
-    constructor(
-      public callback: Function,
-      public options?: any,
-    ) {}
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  };
+  (globalThis as { IntersectionObserver?: unknown }).IntersectionObserver =
+    class IntersectionObserver {
+      constructor(
+        public callback: (entries: unknown[], observer: unknown) => void,
+        public options?: unknown,
+      ) {}
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
 }
 
 // Mock HTMLElement methods that might not be available in headless Chrome
@@ -114,7 +106,7 @@ if (typeof HTMLElement !== "undefined") {
 // Global afterEach to clean up any lingering timers or async operations
 afterEach(() => {
   // Clear any pending timeouts (limited to reasonable range)
-  const dummyTimeoutId = setTimeout(() => {}, 0) as any;
+  const dummyTimeoutId = setTimeout(() => {}, 0) as unknown as number;
   clearTimeout(dummyTimeoutId);
   // Clear a reasonable range of potential timeout IDs
   for (
@@ -126,7 +118,7 @@ afterEach(() => {
   }
 
   // Clear any pending intervals (limited to reasonable range)
-  const dummyIntervalId = setInterval(() => {}, 1000) as any;
+  const dummyIntervalId = setInterval(() => {}, 1000) as unknown as number;
   clearInterval(dummyIntervalId);
   // Clear a reasonable range of potential interval IDs
   for (
