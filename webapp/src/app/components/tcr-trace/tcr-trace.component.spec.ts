@@ -20,26 +20,53 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TcrTraceComponent, toCRLF} from './tcr-trace.component';
-import {Subject} from "rxjs";
-import {Component} from "@angular/core";
-import {NgTerminal} from "ng-terminal";
-
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { TcrTraceComponent, toCRLF } from "./tcr-trace.component";
+import { Subject } from "rxjs";
+import { Component } from "@angular/core";
+import { NgTerminal } from "ng-terminal";
 
 @Component({
-  selector: 'ng-terminal', // eslint-disable-line @angular-eslint/component-selector
-  template: '',
+  selector: "ng-terminal", // eslint-disable-line @angular-eslint/component-selector
+  template: "",
   standalone: false, // eslint-disable-line @angular-eslint/prefer-standalone
 })
-class StubNgTerminal { // eslint-disable-line @angular-eslint/component-class-suffix
+class StubNgTerminal {
+  // eslint-disable-line @angular-eslint/component-class-suffix
   underlying: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  write(_data: string): void {
+  constructor() {
+    this.underlying = {
+      reset: jasmine.createSpy("reset"),
+      dispose: jasmine.createSpy("dispose"),
+      loadAddon: jasmine.createSpy("loadAddon"),
+      unicode: { activeVersion: "11" },
+      // Mock viewport with dimensions to prevent the error
+      _core: {
+        viewport: {
+          dimensions: { cols: 80, rows: 24 },
+          syncScrollArea: jasmine.createSpy("syncScrollArea"),
+        },
+      },
+    };
   }
+
+  write(_data: string): void {}
+
+  setXtermOptions(_options: any): void {}
+
+  setRows(_rows: number): void {}
+
+  setCols(_cols: number): void {}
+
+  setMinWidth(_width: number): void {}
+
+  setMinHeight(_height: number): void {}
+
+  setDraggable(_draggable: boolean): void {}
 }
 
-describe('TcrTraceComponent', () => {
+describe("TcrTraceComponent", () => {
   let component: TcrTraceComponent;
   let fixture: ComponentFixture<TcrTraceComponent>;
 
@@ -53,28 +80,39 @@ describe('TcrTraceComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
-    component.ngTerminal = TestBed.createComponent(StubNgTerminal).componentInstance as NgTerminal;
+    component.ngTerminal = TestBed.createComponent(StubNgTerminal)
+      .componentInstance as NgTerminal;
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  afterEach(() => {
+    // Clean up terminal instances to prevent memory leaks and dimension errors
+    if (component.ngTerminal?.underlying?.dispose) {
+      component.ngTerminal.underlying.dispose();
+    }
+    if (fixture) {
+      fixture.destroy();
+    }
+  });
+
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have ng-terminal child component', () => {
+    it("should have ng-terminal child component", () => {
       expect(component.ngTerminal).toBeTruthy();
     });
 
-    it('should have ng-terminal child.underlying component', () => {
+    it("should have ng-terminal child.underlying component", () => {
       expect(component.ngTerminal.underlying).toBeTruthy();
     });
 
-    it('should clear the terminal upon reception of clearTrace observable', () => {
+    it("should clear the terminal upon reception of clearTrace observable", () => {
       let cleared = false;
       component.ngTerminal.underlying!.reset = () => {
         cleared = true;
-      }
+      };
 
       const clearTrace = new Subject<void>();
       component.clearTrace = clearTrace.asObservable();
@@ -85,11 +123,11 @@ describe('TcrTraceComponent', () => {
       expect(cleared).toBeTruthy();
     });
 
-    it('should print text upon reception of text observable', () => {
+    it("should print text upon reception of text observable", () => {
       let written = "";
       component.ngTerminal.write = (input: string) => {
         written = input;
-      }
+      };
       const text = new Subject<string>();
 
       const input = "Hello World";
@@ -100,56 +138,54 @@ describe('TcrTraceComponent', () => {
 
       expect(written).toEqual(input + "\r\n");
     });
-
   });
 
-  describe('toCRLF function', () => {
-    it('should replace all LF with CRLF in the input string', () => {
+  describe("toCRLF function", () => {
+    it("should replace all LF with CRLF in the input string", () => {
       const input = "Hello\nWorld\n";
       const result = toCRLF(input);
       expect(result).toEqual("Hello\r\nWorld\r\n\r\n");
     });
 
-    it('should append CRLF to the input string if it does not end with LF', () => {
+    it("should append CRLF to the input string if it does not end with LF", () => {
       const input = "Hello World";
       const result = toCRLF(input);
       expect(result).toEqual("Hello World\r\n");
     });
 
-    it('should return an empty string if the input string is empty', () => {
+    it("should return an empty string if the input string is empty", () => {
       const input = "";
       const result = toCRLF(input);
       expect(result).toEqual("");
     });
 
-    it('should return an empty string if the input string is undefined', () => {
+    it("should return an empty string if the input string is undefined", () => {
       const input = undefined;
       const result = toCRLF(input!);
       expect(result).toEqual("");
     });
   });
 
-  describe('print function', () => {
-    it('should send text to the terminal', () => {
+  describe("print function", () => {
+    it("should send text to the terminal", () => {
       let written = "";
       component.ngTerminal.write = (input: string) => {
         written = input;
-      }
+      };
       const input = "Hello World";
       component.print(input);
       expect(written).toEqual(input + "\r\n");
     });
   });
 
-  describe('clear function', () => {
-    it('should clear the terminal contents', () => {
+  describe("clear function", () => {
+    it("should clear the terminal contents", () => {
       let cleared = false;
       component.ngTerminal.underlying!.reset = () => {
         cleared = true;
-      }
+      };
       component.clear();
       expect(cleared).toBeTruthy();
     });
   });
-
 });
