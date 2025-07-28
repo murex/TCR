@@ -200,7 +200,7 @@ func Test_websocket_rapid_connect_disconnect(t *testing.T) {
 }
 
 // Test_websocket_message_flood tests sending many messages rapidly
-// to verify the write mutex and error handling work correctly
+// to verify the "write" mutex and error handling work correctly
 func Test_websocket_message_flood(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping stress test in short mode")
@@ -242,13 +242,9 @@ func Test_websocket_message_flood(t *testing.T) {
 		for {
 			_ = ws.SetReadDeadline(time.Now().Add(100 * time.Millisecond))
 			var msg message
-			err := ws.ReadJSON(&msg)
-			if err != nil {
-				if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
-					return
-				}
-				// Timeout or other error, continue
-				continue
+			if err := ws.ReadJSON(&msg); err != nil {
+				// Exit on any read error to avoid repeated reads on a failed connection
+				return
 			}
 			messagesReceived++
 			if messagesReceived >= numMessages {
