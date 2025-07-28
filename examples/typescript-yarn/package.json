@@ -8,7 +8,7 @@
     "@tsconfig/node22": "^22.0.2",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.15",
-    "jest": "^30.0.4",
+    "jest": "^30.0.5",
     "jest-junit": "^16.0.0",
     "jest-util": "^30.0.2",
     "ts-jest": "^29.4.0",
