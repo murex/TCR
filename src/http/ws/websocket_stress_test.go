@@ -272,23 +272,6 @@ func Test_websocket_message_flood(t *testing.T) {
 	assert.True(t, messagesReceived > 0, "Should have received at least some messages")
 }
 
-// fakeHTTPServer with shorter timeout for stress tests
-type stressFakeHTTPServer struct {
-	url url.URL
-}
-
-func (s *stressFakeHTTPServer) InDevMode() bool {
-	return false
-}
-
-func (s *stressFakeHTTPServer) GetServerAddress() string {
-	return s.url.Host
-}
-
-func (s *stressFakeHTTPServer) GetWebsocketTimeout() time.Duration {
-	return 50 * time.Millisecond // Much shorter for stress tests
-}
-
 // Helper function to parse URL and panic on error (for test setup)
 func mustParseURL(urlStr string) *url.URL {
 	u, err := url.Parse(urlStr)
