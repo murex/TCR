@@ -285,8 +285,8 @@ func (r *Reporter) PostErrorWithEmphasis(a ...any) {
 }
 
 // PostRoleEvent posts a role event
-func (r *Reporter) PostRoleEvent(trigger role_event.Trigger, role role.Role) {
-	msg := role_event.New(trigger, role)
+func (r *Reporter) PostRoleEvent(trigger role_event.Trigger, rl role.Role) {
+	msg := role_event.New(trigger, rl)
 	r.PostMessage(MessageType{Category: RoleEvent, Emphasis: msg.WithEmphasis()}, msg)
 }
 

@@ -76,7 +76,7 @@ func Test_websocket_concurrent_connections_stress(t *testing.T) {
 			hd.Add("Origin", s.URL)
 
 			// Create the websocket connection
-			ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd)
+			ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd) //nolint:bodyclose
 			if err != nil {
 				errorChan <- err
 				return
@@ -174,7 +174,7 @@ func Test_websocket_rapid_connect_disconnect(t *testing.T) {
 		hd.Add("Origin", s.URL)
 
 		// Create the websocket connection
-		ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd)
+		ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd) //nolint:bodyclose
 		if !assert.NoError(t, err, "Failed to create WebSocket connection on cycle %d", i) {
 			continue
 		}
@@ -225,7 +225,7 @@ func Test_websocket_message_flood(t *testing.T) {
 	hd.Add("Origin", s.URL)
 
 	// Create the websocket connection
-	ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd)
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), hd) //nolint:bodyclose
 	assert.NoError(t, err)
 	defer func() {
 		_ = ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
