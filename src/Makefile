@@ -1,20 +1,25 @@
 .PHONY: default
-default: build ;
+default: help ;
+
+.PHONY: help
+help: ## Show this help message
+	@echo "Available targets:"; \
+	grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: deps
-deps:
+deps: ## Download dependencies
 	@go get -u -t tool ./...
 
 .PHONY: lint
-lint:
+lint: ## Run linter
 	@golangci-lint run --build-tags=test_helper -v
 
 .PHONY: modernize
-modernize:
+modernize: ## Run code modernizer utility
 	@go run -tags test_helper golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize@latest -test -fix ./...
 
 .PHONY: vet
-vet:
+vet: ## Run go vet
 	@go vet --tags=test_helper ./...
 
 define RUN_TESTS
@@ -25,29 +30,29 @@ define RUN_TESTS
 endef
 
 .PHONY: test
-test:
+test: ## Run all tests
 	$(call RUN_TESTS,)
 
 .PHONY: test-short
-test-short:
+test-short: ## Run short tests
 	$(call RUN_TESTS,-short)
 
 .PHONY: slow-tests
-slow-tests:
+slow-tests: ## Run slowest tests report
 	@go test -json -tags=test_helper ./... | go tool gotestsum tool slowest --threshold 500ms
 
 .PHONY: cov
-cov:
+cov: ## Run tests with coverage report
 	@go tool cover -html=_test_results/coverage.out
 
 .PHONY: tidy
-tidy:
+tidy: ## Run go mod tidy
 	@go mod tidy
 
 CONFIG_PKG="github.com/murex/tcr/settings"
 export CGO_ENABLED=0
 .PHONY: build
-build:
+build: ## Build the tcr binary
 	@go build -ldflags "-s -w \
     		-X ${CONFIG_PKG}.BuildVersion="`git describe --tags`" \
             -X ${CONFIG_PKG}.BuildOs="`go env GOOS`" \
@@ -58,9 +63,9 @@ build:
             "
 
 .PHONY: run
-run:
+run: ## Run locally built tcr on testdata/java
 	@tcr-local
 
 .PHONY: download
-download:
+download: ## Download Go module dependencies
 	@go mod download
