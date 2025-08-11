@@ -919,12 +919,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^24.1.0":
+"@types/node@npm:*":
   version: 24.1.0
   resolution: "@types/node@npm:24.1.0"
   dependencies:
     undici-types: "npm:~7.8.0"
   checksum: 10c0/6c4686bc144f6ce7bffd4cadc3e1196e2217c1da4c639c637213719c8a3ee58b6c596b994befcbffeacd9d9eb0c3bff6529d2bc27da5d1cb9d58b1da0056f9f4
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^24.2.1":
+  version: 24.2.1
+  resolution: "@types/node@npm:24.2.1"
+  dependencies:
+    undici-types: "npm:~7.10.0"
+  checksum: 10c0/439a3c7edf88a298e0c92e46f670234070b892589c3b06e82cc86c47a7e1cf220f4a4b4736ec6ac7e4b9e1c40d7b6d443a1e22f99dd17f13f9dd15de3b32011b
   languageName: node
   linkType: hard
 
@@ -1817,7 +1826,7 @@ __metadata:
   resolution: "hello-world@workspace:."
   dependencies:
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^24.1.0"
+    "@types/node": "npm:^24.2.1"
     jest: "npm:^30.0.5"
     jest-junit: "npm:^16.0.0"
     yarn-upgrade-all: "npm:^0.7.5"
@@ -3362,6 +3371,13 @@ __metadata:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: 10c0/902bd57bfa30d51d4779b641c2bc403cdf1371fb9c91d3c058b0133694fcfdb817aef07a47f40faf79039eecbaa39ee9d3c532deff244f3a19ce68cea71a61e8
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.10.0":
+  version: 7.10.0
+  resolution: "undici-types@npm:7.10.0"
+  checksum: 10c0/8b00ce50e235fe3cc601307f148b5e8fb427092ee3b23e8118ec0a5d7f68eca8cee468c8fc9f15cbb2cf2a3797945ebceb1cbd9732306a1d00e0a9b6afa0f635
   languageName: node
   linkType: hard
 
