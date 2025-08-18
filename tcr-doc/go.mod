@@ -1,6 +1,6 @@
 module github.com/murex/tcr/tcr-doc
 
-go 1.24.4
+go 1.25
 
 replace github.com/murex/tcr => ../src
 

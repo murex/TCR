@@ -48,8 +48,8 @@ trace_error() {
 for dir in "${example_dir}"/*; do
   if [ -f "${dir}/tcrw" ]; then
 
-    example_name=$(basename ${dir})
-    echo "Checking Example ${example_name}"
+    example_name=$(basename "${dir}")
+    trace_info "Checking Example ${example_name}"
 
     if [ -f "${dir}/cmake_easy_setup.sh" ]; then
       cd "${dir}" && ./cmake_easy_setup.sh
@@ -61,9 +61,8 @@ for dir in "${example_dir}"/*; do
       --work-dir="${dir}" \
       check
 
-    if [ $? -ne 0 ]; then
-      echo "TCR check on ${example_name} failed. \nAborting..."
-      exit 1
+    if [ $? -gt 1 ]; then
+      trace_error "TCR check on ${example_name} failed."
     fi
   fi
 done

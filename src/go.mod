@@ -1,6 +1,6 @@
 module github.com/murex/tcr
 
-go 1.24.4
+go 1.25
 
 tool (
 	github.com/spf13/cobra-cli
