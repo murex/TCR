@@ -4,7 +4,7 @@ go 1.25
 
 tool gotest.tools/gotestsum
 
-require github.com/stretchr/testify v1.10.0
+require github.com/stretchr/testify v1.11.0
 
 require (
 	github.com/bitfield/gotestdox v0.2.2 // indirect
@@ -25,5 +25,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/gotestsum v1.12.0 // indirect
 )
-
-
