@@ -23,7 +23,7 @@ require (
 	github.com/spf13/cobra-cli v1.3.0 // indirect
 	github.com/spf13/pflag v1.0.7
 	github.com/spf13/viper v1.20.1
-	github.com/stretchr/testify v1.11.0
+	github.com/stretchr/testify v1.11.1
 	github.com/zenizh/go-capturer v0.0.0-20211219060012-52ea6c8fed04
 	golang.org/x/sys v0.35.0
 	golang.org/x/text v0.28.0
