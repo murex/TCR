@@ -7,7 +7,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",
-    "jest": "^30.0.5",
+    "jest": "^30.1.2",
     "jest-junit": "^16.0.0",
     "yarn-upgrade-all": "^0.7.5"
   },
