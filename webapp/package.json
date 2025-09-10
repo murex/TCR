@@ -17,6 +17,9 @@
     "rebuild-prod": "npm run reinstall && npm run build-prod"
   },
   "private": true,
+  "overrides": {
+    "vite": "7.1.5"
+  },
   "engines": {
     "npm": ">=10.8.1",
     "node": ">=22.5.1"
