@@ -1,2 +1,4 @@
 build --java_language_version=17
 test --test_output=errors
+test --jvmopt=-XX:+IgnoreUnrecognizedVMOptions
+test --jvmopt=-Djava.security.manager=disallow
