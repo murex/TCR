@@ -33,6 +33,6 @@ cc_test(
         "@platforms//os:osx": [":hello-world-unix-lib"],
         "@platforms//os:windows": [":hello-world-win-lib"],
     }) + [
-        "@gtest//:gtest_main",
+        "@googletest//:gtest_main",
     ],
 )
