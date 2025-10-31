@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2023 Murex
+# Copyright (c) 2025 Murex
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,10 @@ BASE_DIR="$(cd "$(dirname -- "$0")" && pwd)"
 BASE_URL="https://github.com/murex/TCR"
 
 # ------------------------------------------------------------------------------
-# TCR-Go directory structure and information
+# TCR directory structure and information
 # ------------------------------------------------------------------------------
 
-TCR_DIR="$(dirname "${BASE_DIR}")/tcr"
+TCR_DIR="${BASE_DIR}/tcr"
 TCR_DOWNLOAD_DIR="${TCR_DIR}/download"
 TCR_BIN_DIR="${TCR_DIR}/bin"
 TCR_DOC_DIR="${TCR_DIR}/doc"

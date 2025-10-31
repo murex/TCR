@@ -16,7 +16,8 @@ NC='\e[1;0m' # No Color
 
 # Configuration
 GITHUB_REPO="murex/TCR"
-GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/main/auto-install"
+GITHUB_BRANCH="main"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/auto-install"
 
 # Print messages
 print_info() {
@@ -28,7 +29,7 @@ print_error() {
 }
 
 print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1" >&2
+    echo -e "${GREEN}[DONE]${NC} $1" >&2
 }
 
 # Download tcrw to current directory
