@@ -42,6 +42,18 @@ production code if you feel like it!
 
 If you are a technical coach, you can advise participants to your coaching sessions to use it during the sessions.
 
+## Quick Install
+
+Want to get started quickly? Use our one-liner installer to set up TCR in your current project:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/murex/TCR/main/auto-install/setup.sh | bash
+```
+
+This will download the TCR wrapper (`tcrw`) to your current directory, create the necessary `tcr/` structure, and provide usage instructions. After installation, simply run `./tcrw` to start using TCR.
+
+For more details about the auto-install process, see the [auto-install README](auto-install/README.md).
+
 ## Where to start?
 
 ### Prerequisites
