@@ -20,16 +20,21 @@ GITHUB_BRANCH="main"
 GITHUB_RAW_URL="https://raw.githubusercontent.com/${GITHUB_REPO}/${GITHUB_BRANCH}/auto-install"
 
 # Print messages
+
+print_line() {
+    printf "$1\n" >&2
+}
+
 print_info() {
-    echo -e "${CYAN}[INFO]${NC} $1" >&2
+    print_line "${CYAN}[INFO]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}[ERROR]${NC} $1" >&2
+    print_line "${RED}[ERROR]${NC} $1"
 }
 
 print_success() {
-    echo -e "${GREEN}[DONE]${NC} $1" >&2
+    print_line "${GREEN}[DONE]${NC} $1"
 }
 
 # Download tcrw to current directory
@@ -69,24 +74,24 @@ download_version_file() {
 
 # Show usage instructions
 show_usage() {
-    echo ""
+    print_line ""
     print_success "TCR setup completed!"
-    echo ""
-    echo "To launch TCR, run:"
-    echo "  ./tcrw"
-    echo ""
-    echo "For help and available options:"
-    echo "  ./tcrw --help"
-    echo ""
-    echo "For more information, visit: https://github.com/${GITHUB_REPO}"
-    echo ""
+    print_line ""
+    print_line "To launch TCR, run:"
+    print_line "  ./tcrw"
+    print_line ""
+    print_line "For help and available options:"
+    print_line "  ./tcrw --help"
+    print_line ""
+    print_line "For more information, visit: https://github.com/${GITHUB_REPO}"
+    print_line ""
 }
 
 # Display TCR banner
 show_banner() {
-    echo ""
+    print_line ""
     curl -sSL "${GITHUB_RAW_URL}/banner.sh" | bash
-    echo ""
+    print_line ""
 }
 
 # Main function
