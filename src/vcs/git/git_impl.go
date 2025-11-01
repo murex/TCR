@@ -27,6 +27,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"path/filepath"
+	"slices"
+	"strconv"
+	"strings"
+
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -35,10 +40,6 @@ import (
 	"github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
-	"path/filepath"
-	"slices"
-	"strconv"
-	"strings"
 )
 
 // Name provides the name for this VCS implementation
@@ -67,8 +68,9 @@ func New(dir string, remoteName string) (vcs.Interface, error) {
 func newGitImpl(
 	initRepo func(string) (*git.Repository, billy.Filesystem, error),
 	dir string,
-	remoteName string) (*gitImpl, error) {
-	var g = gitImpl{
+	remoteName string,
+) (*gitImpl, error) {
+	g := gitImpl{
 		baseDir:          dir,
 		remoteName:       remoteName,
 		autoPushEnabled:  vcs.DefaultAutoPushEnabled,
@@ -79,25 +81,28 @@ func newGitImpl(
 	var err error
 	g.repository, g.filesystem, err = initRepo(dir)
 	if err != nil {
-		return nil, fmt.Errorf("%s - %s", Name, err.Error())
+		return nil, fmt.Errorf("%s %s", Name, err.Error())
 	}
 
 	g.rootDir = retrieveRootDir(g.filesystem)
 
 	g.workingBranch, err = retrieveWorkingBranch(g.repository)
 	if err != nil {
-		return nil, fmt.Errorf("%s - %s", Name, err.Error())
+		return nil, fmt.Errorf("%s %s", Name, err.Error())
 	}
 
 	if isRemoteDefined(remoteName, g.repository) {
 		report.PostInfo("Git remote name is ", g.remoteName)
 		g.remoteEnabled = true
 		g.workingBranchExistsOnRemote, err = g.isWorkingBranchOnRemote()
+		if err != nil {
+			return nil, fmt.Errorf("%s %s", Name, err.Error())
+		}
 	} else {
 		report.PostWarning("Git remote name not found: ", g.remoteName)
 	}
 
-	return &g, err
+	return &g, nil
 }
 
 // Name returns VCS name
@@ -107,7 +112,7 @@ func (*gitImpl) Name() string {
 
 // SessionSummary provides a short description related to current VCS session summary
 func (g *gitImpl) SessionSummary() string {
-	var branch = g.GetWorkingBranch()
+	branch := g.GetWorkingBranch()
 	if g.IsRemoteEnabled() {
 		branch = fmt.Sprintf("%s/%s", g.GetRemoteName(), g.GetWorkingBranch())
 	}

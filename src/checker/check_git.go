@@ -23,10 +23,11 @@ SOFTWARE.
 package checker
 
 import (
+	"strings"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
-	"strings"
 )
 
 var checkGitRunners []checkPointRunner
@@ -81,6 +82,10 @@ func checkGitRepository(_ params.Params) (cp []model.CheckPoint) {
 		cp = append(cp, model.ErrorCheckPoint(checkEnv.vcsErr))
 		return cp
 	}
+	if checkEnv.vcs == nil {
+		cp = append(cp, model.ErrorCheckPoint("git repository not properly initialized"))
+		return cp
+	}
 
 	cp = append(cp, model.OkCheckPoint("git repository root is ", checkEnv.vcs.GetRootDir()))
 
@@ -92,7 +97,7 @@ func checkGitRepository(_ params.Params) (cp []model.CheckPoint) {
 }
 
 func checkGitRemote(_ params.Params) (cp []model.CheckPoint) {
-	if checkEnv.vcs == nil {
+	if checkEnv.vcs == nil || checkEnv.vcsErr != nil {
 		// If git is not properly initialized, no point in trying to go further
 		return []model.CheckPoint{}
 	}
