@@ -24,6 +24,8 @@ package cli
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/murex/tcr/desktop"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
@@ -37,7 +39,6 @@ import (
 	"github.com/murex/tcr/timer"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
-	"os"
 )
 
 // TerminalUI is the user interface implementation when using the Command Line Interface
@@ -76,7 +77,7 @@ const timerMessagePrefix = "(Mob Timer) "
 // New creates a new instance of terminal
 func New(p params.Params, tcr engine.TCRInterface) *TerminalUI {
 	setLinePrefix("[" + settings.ApplicationName + "]")
-	var term = TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
+	term := TerminalUI{params: p, tcr: tcr, desktop: desktop.NewDesktop(nil)}
 	tcr.AttachUI(&term, true)
 	term.soloMenu = term.initSoloMenu()
 	term.mobMenu = term.initMobMenu()
@@ -375,7 +376,10 @@ func (term *TerminalUI) Confirm(message string, defaultAnswer bool) bool {
 	keyboardInput := make([]byte, 1)
 	for {
 		setupTerminal()
-		_, _ = os.Stdin.Read(keyboardInput)
+		n, err := os.Stdin.Read(keyboardInput)
+		if err != nil || n == 0 {
+			continue
+		}
 		switch keyboardInput[0] {
 		case 'y', 'Y':
 			return true

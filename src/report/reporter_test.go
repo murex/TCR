@@ -56,7 +56,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 		var stubs [nbListeners]*messageReporterStub
 
 		// Create stubs and subscribe synchronously
-		for i := range nbListeners {
+		for i := 0; i < nbListeners; i++ {
 			stubs[i] = newMessageReporterStub(i)
 			c[i] = reporter.Subscribe(stubs[i])
 		}
@@ -87,7 +87,7 @@ func Test_one_message_and_multiple_receivers(t *testing.T) {
 		wg.Wait()
 
 		// Cleanup - use goroutines to avoid blocking
-		for i := range nbListeners {
+		for i := 0; i < nbListeners; i++ {
 			go func(ch chan bool) {
 				select {
 				case ch <- true:
