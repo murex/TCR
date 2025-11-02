@@ -25,10 +25,11 @@ package timer
 import (
 	"flag"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var testTimeout time.Duration

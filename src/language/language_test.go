@@ -24,12 +24,13 @@ package language
 
 import (
 	"errors"
-	"github.com/murex/tcr/toolchain"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/murex/tcr/toolchain"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_dirs_to_watch_should_contain_both_source_and_test_dirs(t *testing.T) {

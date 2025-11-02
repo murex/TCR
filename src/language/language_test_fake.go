@@ -25,8 +25,9 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/toolchain"
 	"strings"
+
+	"github.com/murex/tcr/toolchain"
 )
 
 type allFilesFunc func() ([]string, error)

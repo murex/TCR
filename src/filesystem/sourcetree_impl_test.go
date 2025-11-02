@@ -23,13 +23,14 @@ SOFTWARE.
 package filesystem
 
 import (
-	"github.com/murex/tcr/helpers"
-	"github.com/murex/tcr/report"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/murex/tcr/helpers"
+	"github.com/murex/tcr/report"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

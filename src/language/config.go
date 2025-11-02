@@ -23,10 +23,11 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/helpers"
 	"os"
 	"path/filepath"
 	"slices"
+
+	"github.com/murex/tcr/helpers"
 )
 
 const (

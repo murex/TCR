@@ -24,15 +24,16 @@ package checker
 
 import (
 	"errors"
+	"path/filepath"
+	"runtime"
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
 	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
-	"runtime"
-	"testing"
 )
 
 func Test_check_toolchain(t *testing.T) {

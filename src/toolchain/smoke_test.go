@@ -23,9 +23,10 @@ SOFTWARE.
 package toolchain
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/toolchain/command"
-	"testing"
 )
 
 const (

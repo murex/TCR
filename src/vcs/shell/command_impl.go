@@ -23,11 +23,12 @@ SOFTWARE.
 package shell
 
 import (
+	"os/exec"
+	"strings"
+
 	"github.com/codeskyblue/go-sh"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
-	"os/exec"
-	"strings"
 )
 
 // CommandImpl is a command that can be launched from a shell

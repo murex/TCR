@@ -25,8 +25,9 @@ SOFTWARE.
 package shell
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_unix_shell_end_of_line(t *testing.T) {

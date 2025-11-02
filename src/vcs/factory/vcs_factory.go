@@ -24,10 +24,11 @@ package factory
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
-	"strings"
 )
 
 // InitVCS returns the VCS instance of type defined by name, working on the provided directory

@@ -23,6 +23,11 @@ SOFTWARE.
 package cli
 
 import (
+	"os"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/desktop"
 	"github.com/murex/tcr/engine"
 	"github.com/murex/tcr/params"
@@ -36,10 +41,6 @@ import (
 	"github.com/murex/tcr/vcs/p4"
 	"github.com/stretchr/testify/assert"
 	"github.com/zenizh/go-capturer"
-	"os"
-	"strings"
-	"testing"
-	"time"
 )
 
 func init() {

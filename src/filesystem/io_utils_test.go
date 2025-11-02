@@ -23,12 +23,13 @@ SOFTWARE.
 package filesystem
 
 import (
-	"github.com/murex/tcr/report"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"os"
 	"testing"
+
+	"github.com/murex/tcr/report"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 const pathWithPermError = "/path/with/permission/err"

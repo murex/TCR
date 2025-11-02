@@ -25,8 +25,9 @@ SOFTWARE.
 package params
 
 import (
-	"github.com/murex/tcr/runmode"
 	"time"
+
+	"github.com/murex/tcr/runmode"
 )
 
 // AParamSet is a test data builder for type Params

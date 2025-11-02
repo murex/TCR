@@ -23,9 +23,10 @@ SOFTWARE.
 package vcs
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_compute_changed_lines(t *testing.T) {

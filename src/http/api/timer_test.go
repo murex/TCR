@@ -24,12 +24,13 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/engine"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murex/tcr/engine"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_timer_get_handler(t *testing.T) {

@@ -23,11 +23,12 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_existing_dirs_in(t *testing.T) {

@@ -24,14 +24,15 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/engine"
-	"github.com/murex/tcr/role"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/role"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_roles_get_handler(t *testing.T) {

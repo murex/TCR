@@ -23,12 +23,13 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/mengdaming/go-junit"
-	"github.com/spf13/afero"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/mengdaming/go-junit"
+	"github.com/spf13/afero"
 )
 
 // The purpose of this file is to wrap go-junit ingest functions so that they can work with afero in-memory file system.

@@ -23,8 +23,9 @@ SOFTWARE.
 package params
 
 import (
-	"github.com/murex/tcr/runmode"
 	"time"
+
+	"github.com/murex/tcr/runmode"
 )
 
 // Params contains the main parameter values that TCR engine is using

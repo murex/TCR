@@ -23,9 +23,10 @@ SOFTWARE.
 package role_event
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/role"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_wrap_message(t *testing.T) {

@@ -23,10 +23,11 @@ SOFTWARE.
 package retro
 
 import (
-	e "github.com/murex/tcr/events"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	e "github.com/murex/tcr/events"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_generate_retrospective_md_for_empty_tcr_events(t *testing.T) {

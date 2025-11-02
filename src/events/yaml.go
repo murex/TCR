@@ -24,9 +24,10 @@ package events
 
 import (
 	"bytes"
+	"time"
+
 	"github.com/murex/tcr/report"
 	"gopkg.in/yaml.v3"
-	"time"
 )
 
 type (

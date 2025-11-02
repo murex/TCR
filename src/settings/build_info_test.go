@@ -23,10 +23,11 @@ SOFTWARE.
 package settings
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/zenizh/go-capturer"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/zenizh/go-capturer"
 )
 
 var defaultBuildInfo = []BuildInfo{

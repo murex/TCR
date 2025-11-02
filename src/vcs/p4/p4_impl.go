@@ -27,14 +27,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"path/filepath"
+	"strconv"
+	"strings"
+
 	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/spf13/afero"
-	"path/filepath"
-	"strconv"
-	"strings"
 )
 
 // Name provides the name for this VCS implementation

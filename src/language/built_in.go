@@ -24,8 +24,9 @@ package language
 
 import (
 	"embed"
-	"github.com/murex/tcr/helpers"
 	"path"
+
+	"github.com/murex/tcr/helpers"
 )
 
 const builtInDir = "built-in"

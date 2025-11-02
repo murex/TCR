@@ -26,6 +26,7 @@ package fake
 
 import (
 	"errors"
+
 	"github.com/murex/tcr/vcs"
 )
 

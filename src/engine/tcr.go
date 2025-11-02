@@ -24,6 +24,12 @@ package engine
 
 import (
 	"errors"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/murex/tcr/checker"
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/filesystem"
@@ -45,11 +51,6 @@ import (
 	"github.com/murex/tcr/vcs"
 	"github.com/murex/tcr/vcs/factory"
 	"gopkg.in/tomb.v2"
-	"os"
-	"path/filepath"
-	"strings"
-	"sync"
-	"time"
 )
 
 type (

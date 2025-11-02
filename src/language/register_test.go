@@ -24,11 +24,12 @@ package language
 
 import (
 	"errors"
+	"path/filepath"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"path/filepath"
-	"testing"
 )
 
 func Test_does_not_support_empty_language_name(t *testing.T) {

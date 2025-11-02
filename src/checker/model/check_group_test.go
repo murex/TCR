@@ -23,9 +23,10 @@ SOFTWARE.
 package model
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_check_group_status(t *testing.T) {

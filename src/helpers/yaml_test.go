@@ -23,13 +23,14 @@ SOFTWARE.
 package helpers
 
 import (
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

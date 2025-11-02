@@ -24,8 +24,9 @@ package helpers
 
 import (
 	"fmt"
-	"github.com/murex/tcr/settings"
 	"io"
+
+	"github.com/murex/tcr/settings"
 )
 
 // simpleTraceWriter is the writer used by Trace() to write trace messages to io.Writer

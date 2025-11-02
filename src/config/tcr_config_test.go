@@ -24,6 +24,11 @@ package config
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
@@ -31,10 +36,6 @@ import (
 	"github.com/murex/tcr/variant"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"path/filepath"
-	"testing"
-	"time"
 )
 
 const (

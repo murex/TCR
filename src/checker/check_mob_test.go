@@ -23,11 +23,12 @@ SOFTWARE.
 package checker
 
 import (
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func Test_check_mob_configuration(t *testing.T) {

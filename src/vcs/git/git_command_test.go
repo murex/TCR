@@ -24,9 +24,10 @@ package git
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // newGitCommandStub creates a new git shell command stub

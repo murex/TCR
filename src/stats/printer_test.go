@@ -23,11 +23,12 @@ SOFTWARE.
 package stats
 
 import (
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/report"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func Test_print_stat(t *testing.T) {

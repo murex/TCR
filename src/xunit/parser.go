@@ -23,8 +23,9 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/mengdaming/go-junit"
 	"time"
+
+	"github.com/mengdaming/go-junit"
 )
 
 // TestStats is the structure containing test Stats extracted from xUnit files

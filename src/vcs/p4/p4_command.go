@@ -26,8 +26,9 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/murex/tcr/vcs/shell"
 	"strings"
+
+	"github.com/murex/tcr/vcs/shell"
 )
 
 func init() {

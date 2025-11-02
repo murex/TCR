@@ -24,10 +24,11 @@ package model
 
 import (
 	"errors"
-	"github.com/murex/tcr/report"
-	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"testing"
+
+	"github.com/murex/tcr/report"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_checkpoint_creation(t *testing.T) {

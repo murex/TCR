@@ -24,12 +24,13 @@ package toolchain
 
 import (
 	"errors"
-	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/toolchain/command"
-	"github.com/murex/tcr/xunit"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/toolchain/command"
+	"github.com/murex/tcr/xunit"
 )
 
 type (

@@ -23,8 +23,9 @@ SOFTWARE.
 package runmode
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_interactive_run_mode_list_should_only_contain_interactive_ones(t *testing.T) {

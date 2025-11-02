@@ -23,10 +23,11 @@ SOFTWARE.
 package checker
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_check_variant_configuration(t *testing.T) {

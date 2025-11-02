@@ -24,12 +24,13 @@ package toolchain
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/toolchain/command"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func Test_convert_toolchain_name_to_config(t *testing.T) {

@@ -24,8 +24,9 @@ package helpers
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_simple_trace_when_writer_is_not_set(t *testing.T) {

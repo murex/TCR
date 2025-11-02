@@ -23,9 +23,10 @@ SOFTWARE.
 package events
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_dated_event_timespan_until(t *testing.T) {

@@ -23,11 +23,12 @@ SOFTWARE.
 package checker
 
 import (
+	"path/filepath"
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
-	"testing"
 )
 
 func Test_check_config_files(t *testing.T) {

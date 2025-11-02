@@ -23,6 +23,11 @@ SOFTWARE.
 package config
 
 import (
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+
 	"github.com/murex/tcr/helpers"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
@@ -30,10 +35,6 @@ import (
 	"github.com/murex/tcr/toolchain"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"io"
-	"os"
-	"path/filepath"
-	"sort"
 )
 
 // TcrConfig wraps all possible TCR configuration parameters

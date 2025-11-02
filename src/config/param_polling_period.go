@@ -23,8 +23,9 @@ SOFTWARE.
 package config
 
 import (
-	"github.com/spf13/cobra"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 // AddPollingPeriodParam adds VCS polling period parameter to the provided command

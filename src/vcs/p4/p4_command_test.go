@@ -24,10 +24,11 @@ package p4
 
 import (
 	"errors"
-	"github.com/murex/tcr/vcs/shell"
-	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
+
+	"github.com/murex/tcr/vcs/shell"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_is_p4_command_available(t *testing.T) {

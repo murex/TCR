@@ -23,8 +23,9 @@ SOFTWARE.
 package toolchain
 
 import (
-	. "github.com/murex/tcr/toolchain/built_in_test_data"
 	"testing"
+
+	. "github.com/murex/tcr/toolchain/built_in_test_data"
 )
 
 func Test_is_a_built_in_toolchain(t *testing.T) {

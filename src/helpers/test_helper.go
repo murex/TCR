@@ -26,10 +26,11 @@ package helpers
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"runtime"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // SlowTestTag is a test utility function for marking tests that take a long time to be executed.

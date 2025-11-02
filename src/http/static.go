@@ -24,9 +24,10 @@ package http
 
 import (
 	"embed"
-	"github.com/gin-contrib/static"
 	"io/fs"
 	"net/http"
+
+	"github.com/gin-contrib/static"
 )
 
 //go:embed static

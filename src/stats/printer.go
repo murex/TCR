@@ -24,9 +24,10 @@ package stats
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/report"
-	"time"
 )
 
 // Print prints all TCR stats for the provided list of TCR events.

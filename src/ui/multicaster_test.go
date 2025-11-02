@@ -23,8 +23,9 @@ SOFTWARE.
 package ui
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_primary_user_interface_registration(t *testing.T) {

@@ -23,10 +23,11 @@ SOFTWARE.
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/role"
-	"net/http"
 )
 
 type roleData struct {

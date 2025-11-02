@@ -23,13 +23,14 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/mengdaming/go-junit"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/mengdaming/go-junit"
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 var xunitSample = []byte(`

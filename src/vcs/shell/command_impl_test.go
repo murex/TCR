@@ -24,12 +24,13 @@ package shell
 
 import (
 	"bytes"
-	"github.com/murex/tcr/report"
-	"github.com/murex/tcr/vcs"
-	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/murex/tcr/report"
+	"github.com/murex/tcr/vcs"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_is_in_path_for_a_valid_command(t *testing.T) {

@@ -25,9 +25,10 @@ SOFTWARE.
 package language
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/language/built_in_test_data"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func assertDefaultToolchain(t *testing.T, languageName string, toolchainName string) {

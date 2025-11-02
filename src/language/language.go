@@ -25,9 +25,10 @@ package language
 import (
 	"errors"
 	"fmt"
-	"github.com/murex/tcr/toolchain"
 	"path/filepath"
 	"slices"
+
+	"github.com/murex/tcr/toolchain"
 )
 
 type (

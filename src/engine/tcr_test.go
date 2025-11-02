@@ -24,6 +24,11 @@ package engine
 
 import (
 	"fmt"
+	"os"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/events"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
@@ -40,10 +45,6 @@ import (
 	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"strings"
-	"testing"
-	"time"
 )
 
 const (
@@ -714,8 +715,6 @@ func Test_mob_timer_should_be_off_in_solo_mode(t *testing.T) {
 	sniffer.Stop()
 	assert.Equal(t, 1, sniffer.GetMatchCount())
 }
-
-
 
 func Test_tcr_print_log(t *testing.T) {
 	now := time.Now()

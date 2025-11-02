@@ -24,12 +24,13 @@ package helpers
 
 import (
 	"bytes"
-	"github.com/spf13/afero"
-	"gopkg.in/yaml.v3"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/afero"
+	"gopkg.in/yaml.v3"
 )
 
 const (

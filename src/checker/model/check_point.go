@@ -25,8 +25,9 @@ package model
 import (
 	"errors"
 	"fmt"
-	"github.com/murex/tcr/report"
 	"io/fs"
+
+	"github.com/murex/tcr/report"
 )
 
 // CheckPoint is used for describing the result of a single check point

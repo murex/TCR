@@ -24,8 +24,9 @@ package cli
 
 import (
 	"fmt"
-	"github.com/logrusorgru/aurora"
 	"strings"
+
+	"github.com/logrusorgru/aurora"
 )
 
 const (

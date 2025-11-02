@@ -25,8 +25,9 @@ package git
 import (
 	"bufio"
 	"bytes"
-	"github.com/murex/tcr/vcs/shell"
 	"strings"
+
+	"github.com/murex/tcr/vcs/shell"
 )
 
 func init() {

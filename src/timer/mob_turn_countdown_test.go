@@ -23,11 +23,12 @@ SOFTWARE.
 package timer
 
 import (
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/runmode"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func Test_best_tick_period_for_timeout(t *testing.T) {

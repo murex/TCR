@@ -24,13 +24,14 @@ package cli
 
 import (
 	"bytes"
-	"github.com/codeskyblue/go-sh"
-	"github.com/murex/tcr/report"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strconv"
 	"strings"
+
+	"github.com/codeskyblue/go-sh"
+	"github.com/murex/tcr/report"
 )
 
 // sttyCmdDisabled allows to turn on/off the underlying call to stty command.

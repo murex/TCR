@@ -23,9 +23,10 @@ SOFTWARE.
 package api
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/murex/tcr/settings"
-	"net/http"
 )
 
 type buildInfo struct {

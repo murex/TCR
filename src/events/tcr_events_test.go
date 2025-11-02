@@ -23,10 +23,11 @@ SOFTWARE.
 package events
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_events_nb_records(t *testing.T) {

@@ -24,10 +24,11 @@ package command
 
 import (
 	"bufio"
-	"github.com/murex/tcr/report"
 	"io"
 	"os/exec"
 	"sync"
+
+	"github.com/murex/tcr/report"
 )
 
 type (

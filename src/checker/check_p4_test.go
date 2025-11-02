@@ -24,13 +24,14 @@ package checker
 
 import (
 	"errors"
+	"strings"
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/p4"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
 func Test_check_p4_environment(t *testing.T) {

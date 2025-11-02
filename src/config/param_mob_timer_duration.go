@@ -23,8 +23,9 @@ SOFTWARE.
 package config
 
 import (
-	"github.com/spf13/cobra"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 // AddMobTimerDurationParam adds mob timer duration parameter to the provided command

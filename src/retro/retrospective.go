@@ -25,9 +25,10 @@ package retro
 import (
 	"bytes"
 	_ "embed"
-	"github.com/murex/tcr/events"
 	"text/template"
 	"time"
+
+	"github.com/murex/tcr/events"
 )
 
 //go:embed template/retro.md

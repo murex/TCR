@@ -23,13 +23,14 @@ SOFTWARE.
 package report
 
 import (
+	"sync"
+	"time"
+
 	"github.com/imkira/go-observer"
 	"github.com/murex/tcr/report/role_event"
 	"github.com/murex/tcr/report/text"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/role"
-	"sync"
-	"time"
 )
 
 // Category provides different categories for reported message

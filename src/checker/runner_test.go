@@ -23,6 +23,8 @@ SOFTWARE.
 package checker
 
 import (
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/status"
@@ -30,7 +32,6 @@ import (
 	"github.com/murex/tcr/vcs/factory"
 	"github.com/murex/tcr/vcs/fake"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func initTestCheckEnv(params params.Params) {

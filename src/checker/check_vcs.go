@@ -23,12 +23,13 @@ SOFTWARE.
 package checker
 
 import (
+	"strings"
+	"time"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
-	"strings"
-	"time"
 )
 
 var checkVCSRunners []checkPointRunner

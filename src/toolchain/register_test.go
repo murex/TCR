@@ -24,11 +24,12 @@ package toolchain
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/murex/tcr/toolchain/command"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"testing"
 )
 
 func Test_does_not_support_empty_toolchain_name(t *testing.T) {

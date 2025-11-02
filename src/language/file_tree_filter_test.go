@@ -23,11 +23,12 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_convert_back_slashed_path_to_slashed_path(t *testing.T) {

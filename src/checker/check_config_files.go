@@ -23,12 +23,13 @@ SOFTWARE.
 package checker
 
 import (
+	"path/filepath"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/config"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain"
-	"path/filepath"
 )
 
 var checkConfigRunners []checkPointRunner

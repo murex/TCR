@@ -23,13 +23,14 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/murex/tcr/helpers"
-	"github.com/spf13/afero"
 	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/murex/tcr/helpers"
+	"github.com/spf13/afero"
 )
 
 // UnreachableDirectoryError is used to indicate that one or more directories cannot be accessed.

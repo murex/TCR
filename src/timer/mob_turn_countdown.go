@@ -23,10 +23,11 @@ SOFTWARE.
 package timer
 
 import (
+	"time"
+
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/report/timer_event"
 	"github.com/murex/tcr/runmode"
-	"time"
 )
 
 // NewMobTurnCountdown creates a PeriodicReminder that starts when entering driver mode, and

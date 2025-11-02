@@ -24,12 +24,13 @@ package checker
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/filesystem"
 	"github.com/murex/tcr/language"
 	"github.com/murex/tcr/params"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_check_language(t *testing.T) {

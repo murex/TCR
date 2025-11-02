@@ -23,8 +23,9 @@ SOFTWARE.
 package role
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_navigator_role_name(t *testing.T) {

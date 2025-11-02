@@ -23,13 +23,14 @@ SOFTWARE.
 package checker
 
 import (
+	"testing"
+	"time"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/p4"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func Test_check_vcs_configuration(t *testing.T) {

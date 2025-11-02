@@ -23,8 +23,9 @@ SOFTWARE.
 package desktop
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_build_browser_url(t *testing.T) {

@@ -23,11 +23,12 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/murex/tcr/toolchain/command"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/murex/tcr/toolchain/command"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_set_work_dir(t *testing.T) {

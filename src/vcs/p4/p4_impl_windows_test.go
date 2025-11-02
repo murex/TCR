@@ -24,8 +24,9 @@ package p4
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_convert_to_p4_client_path_windows(t *testing.T) {

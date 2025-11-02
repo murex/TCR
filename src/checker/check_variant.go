@@ -23,10 +23,11 @@ SOFTWARE.
 package checker
 
 import (
+	"strings"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/variant"
-	"strings"
 )
 
 var checkVariantRunners []checkPointRunner

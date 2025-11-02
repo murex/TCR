@@ -23,9 +23,10 @@ SOFTWARE.
 package checker
 
 import (
+	"time"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
-	"time"
 )
 
 var checkMobConfigurationRunners []checkPointRunner

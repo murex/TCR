@@ -23,9 +23,10 @@ SOFTWARE.
 package desktop
 
 import (
+	"testing"
+
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_show_notification(t *testing.T) {

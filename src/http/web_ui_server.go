@@ -25,6 +25,9 @@ package http
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -34,8 +37,6 @@ import (
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/report"
 	"github.com/murex/tcr/runmode"
-	"net/http"
-	"time"
 )
 
 // WebUIServer provides a TCR interface implementation over HTTP. It acts

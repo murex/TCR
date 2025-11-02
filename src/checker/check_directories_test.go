@@ -24,12 +24,13 @@ package checker
 
 import (
 	"errors"
-	"github.com/murex/tcr/checker/model"
-	"github.com/murex/tcr/params"
-	"github.com/stretchr/testify/assert"
 	"io/fs"
 	"path/filepath"
 	"testing"
+
+	"github.com/murex/tcr/checker/model"
+	"github.com/murex/tcr/params"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_check_directories(t *testing.T) {

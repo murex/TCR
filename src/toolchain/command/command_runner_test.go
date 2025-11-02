@@ -24,10 +24,11 @@ package command
 
 import (
 	"fmt"
-	"github.com/murex/tcr/helpers"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/murex/tcr/helpers"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_command_result_outcome(t *testing.T) {

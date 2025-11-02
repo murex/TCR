@@ -23,16 +23,17 @@ SOFTWARE.
 package http
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/engine"
-	"github.com/murex/tcr/params"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"slices"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murex/tcr/engine"
+	"github.com/murex/tcr/params"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_create_web_ui_server(t *testing.T) {

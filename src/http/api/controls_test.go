@@ -23,13 +23,14 @@ SOFTWARE.
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/murex/tcr/engine"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murex/tcr/engine"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_controls_post_handler(t *testing.T) {

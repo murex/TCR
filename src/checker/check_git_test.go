@@ -24,6 +24,8 @@ package checker
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/vcs"
@@ -31,7 +33,6 @@ import (
 	"github.com/murex/tcr/vcs/git"
 	"github.com/murex/tcr/vcs/shell"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_check_git_environment(t *testing.T) {

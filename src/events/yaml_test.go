@@ -23,9 +23,10 @@ SOFTWARE.
 package events
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_convert_a_yaml_string_to_a_tcr_event(t *testing.T) {

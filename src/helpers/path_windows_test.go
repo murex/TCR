@@ -24,8 +24,9 @@ package helpers
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_is_sub_path_of_windows(t *testing.T) {

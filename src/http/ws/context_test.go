@@ -23,10 +23,11 @@ SOFTWARE.
 package ws
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_http_server_middleware_updates_gin_context(t *testing.T) {

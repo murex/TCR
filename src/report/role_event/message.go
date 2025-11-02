@@ -24,6 +24,7 @@ package role_event //nolint:revive
 
 import (
 	"fmt"
+
 	"github.com/murex/tcr/role"
 )
 

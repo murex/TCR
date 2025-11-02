@@ -23,10 +23,11 @@ SOFTWARE.
 package checker
 
 import (
+	"runtime"
+
 	"github.com/murex/tcr/checker/model"
 	"github.com/murex/tcr/params"
 	"github.com/murex/tcr/toolchain/command"
-	"runtime"
 )
 
 var checkToolchainRunners []checkPointRunner

@@ -23,10 +23,11 @@ SOFTWARE.
 package toolchain
 
 import (
-	"github.com/murex/tcr/helpers"
-	"github.com/murex/tcr/toolchain/command"
 	"os"
 	"path/filepath"
+
+	"github.com/murex/tcr/helpers"
+	"github.com/murex/tcr/toolchain/command"
 )
 
 const (

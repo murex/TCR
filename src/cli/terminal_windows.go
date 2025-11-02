@@ -23,8 +23,9 @@ SOFTWARE.
 package cli
 
 import (
-	"golang.org/x/sys/windows"
 	"os"
+
+	"golang.org/x/sys/windows"
 )
 
 func setupTerminal() {

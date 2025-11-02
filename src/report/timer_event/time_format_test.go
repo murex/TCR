@@ -23,9 +23,10 @@ SOFTWARE.
 package timer_event
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_format_duration(t *testing.T) {

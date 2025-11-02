@@ -23,11 +23,12 @@ SOFTWARE.
 package xunit
 
 import (
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_retrieve_xunit_test_counters(t *testing.T) {

@@ -23,8 +23,9 @@ SOFTWARE.
 package language
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_convert_back_slashed_path_to_local_path(t *testing.T) {

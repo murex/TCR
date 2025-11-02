@@ -24,10 +24,11 @@ package filesystem
 
 import (
 	"errors"
-	"github.com/fsnotify/fsnotify"
-	"github.com/murex/tcr/report"
 	"os"
 	"path/filepath"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/murex/tcr/report"
 )
 
 // SourceTreeImpl is the implementation of Source Tree interface

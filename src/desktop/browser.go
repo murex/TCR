@@ -24,9 +24,10 @@ package desktop
 
 import (
 	"fmt"
+	"net/url"
+
 	"github.com/murex/tcr/report"
 	"github.com/pkg/browser"
-	"net/url"
 )
 
 const hostname = "127.0.0.1"
