@@ -211,6 +211,71 @@ Key configuration sections:
 4. **Baby Steps**: Follow TCR principles during development
 5. **Cross-Platform**: Ensure compatibility across OS platforms
 
+## Mandatory Quality Gates
+
+**CRITICAL**: After ANY code change (modification, addition, deletion, refactoring, formatting, import organization, etc.), you MUST ALWAYS execute these quality gates to prevent regressions:
+
+### Required Steps (Execute in Order):
+1. **Run Linter**: `make lint`
+   - Must pass with 0 issues
+   - Applies to both Go and TypeScript/Angular code
+   - Non-negotiable - fix all linting errors before proceeding
+
+2. **Run Tests**: `make test` or `make test-short` for Go changes
+   - All tests must pass
+   - No skipped tests due to failures
+   - Verify test coverage is maintained
+
+3. **Verify Build**: `make build` (if significant changes)
+   - Ensure project still compiles and builds successfully
+   - Check both webapp and Go modules
+
+### Examples of Changes Requiring Quality Gates:
+- Import organization/formatting (like `goimports`)
+- Code refactoring or restructuring
+- Adding/removing dependencies
+- Modifying configuration files
+- Updating documentation that affects code
+- Any file modifications in `src/`, `webapp/`, or `examples/`
+
+### Failure Handling:
+- If linter fails: Fix all issues before proceeding
+- If tests fail: Investigate and fix, don't ignore
+- If build fails: Resolve compilation errors immediately
+- Document any issues encountered and their resolution
+
+**Remember**: The TCR philosophy applies to development too - small, verified steps prevent large regressions.
+
+## AI Agent Instructions
+
+### MANDATORY: Quality Gate Enforcement
+**Every AI agent MUST execute quality gates after ANY code modification:**
+
+1. **Always End With**: `make lint && make test`
+2. **Never Skip**: Even for "simple" changes like formatting or imports
+3. **Report Status**: Always show linter and test results
+4. **Fix Issues**: Don't leave regressions - address all failures immediately
+
+### Quality Gate Command Examples:
+```bash
+# After any Go code changes
+make lint
+make test-short  # or make test for full suite
+
+# After webapp changes  
+cd webapp && npm run lint && npm test
+
+# After project-wide changes
+make lint && make test
+```
+
+### AI Agent Response Pattern:
+1. Make the requested changes
+2. Execute quality gates: `make lint && make test`
+3. Report results with ✅ or ❌ status
+4. Fix any issues found
+5. Re-run quality gates until all pass
+
 ## Common Tasks for AI Agents
 
 ### Adding New Language Support
@@ -218,12 +283,14 @@ Key configuration sections:
 2. Add language detection in `src/language/`
 3. Add toolchain implementation in `src/toolchain/`
 4. Update documentation and tests
+5. **EXECUTE**: `make lint && make test`
 
 ### Bug Fixes
 1. Reproduce issue with test case
 2. Fix in appropriate module
 3. Ensure tests pass on all platforms
 4. Update documentation if needed
+5. **EXECUTE**: `make lint && make test`
 
 ### Feature Development
 1. Design with TCR principles in mind
@@ -231,6 +298,7 @@ Key configuration sections:
 3. Implement core logic in appropriate module
 4. Add comprehensive tests
 5. Update web interface if applicable
+6. **EXECUTE**: `make lint && make test`
 
 ## File Patterns to Understand
 
