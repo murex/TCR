@@ -17,9 +17,6 @@
     "rebuild-prod": "npm run reinstall && npm run build-prod"
   },
   "private": true,
-  "overrides": {
-    "vite": "7.1.11"
-  },
   "engines": {
     "npm": ">=10.8.1",
     "node": ">=22.5.1"
@@ -50,7 +47,7 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^20.2.2",
+    "@angular-devkit/build-angular": "^20.3.8",
     "@angular-eslint/builder": "19.0.2",
     "@angular-eslint/eslint-plugin": "19.0.2",
     "@angular-eslint/eslint-plugin-template": "19.0.2",
