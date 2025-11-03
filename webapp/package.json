@@ -18,7 +18,7 @@
   },
   "private": true,
   "overrides": {
-    "vite": "7.1.5"
+    "vite": "7.1.11"
   },
   "engines": {
     "npm": ">=10.8.1",
