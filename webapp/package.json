@@ -70,6 +70,6 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "^2.0.1",
     "ng-mocks": "^14.13.2",
-    "typescript": "~5.8.0"
+    "typescript": "~5.9.3"
   }
 }
