@@ -834,10 +834,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node22@npm:^22.0.2":
-  version: 22.0.2
-  resolution: "@tsconfig/node22@npm:22.0.2"
-  checksum: 10c0/c75e6b9ea86ec2a384adefac0e2f16a6c08202ae5cf6c8c745944396a6931ffb38e742809491c1882d1868c2af1c33744193701779674bfb1e05f6a130045a18
+"@tsconfig/node22@npm:^22.0.4":
+  version: 22.0.4
+  resolution: "@tsconfig/node22@npm:22.0.4"
+  checksum: 10c0/3c55efaa4a097740f5280bbe0e94baef673cd71925c07e8a6251d878809ef1ed065d8a44085ebe39b496612f40fe4c7cff7ab67c199534b60dc2236407e752b7
   languageName: node
   linkType: hard
 
@@ -1858,7 +1858,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "hello-world@workspace:."
   dependencies:
-    "@tsconfig/node22": "npm:^22.0.2"
+    "@tsconfig/node22": "npm:^22.0.4"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^24.10.0"
     jest: "npm:^30.2.0"
