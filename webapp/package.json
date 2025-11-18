@@ -56,7 +56,7 @@
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
     "@angular/localize": "^20.0.0",
-    "@eslint/config-array": "^0.21.1",
+    "@eslint/config-array": "^0.23.0",
     "@eslint/object-schema": "^2.1.5",
     "@types/jasmine": "~5.1.5",
     "@typescript-eslint/eslint-plugin": "8.46.4",
