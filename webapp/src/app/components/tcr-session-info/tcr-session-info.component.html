@@ -1,97 +1,99 @@
 <section>
 
-  <div class="container" *ngIf="sessionInfo">
-    <div class="row mb-3 mbr-justify-content-center">
-      <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
-    </div>
+  @if (sessionInfo) {
+    <div class="container">
+      <div class="row mb-3 mbr-justify-content-center">
+        <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>
+      </div>
 
-    <div class="row mbr-justify-content-center">
-      <div class="col-lg-12 mbr-col-md-10">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-gear fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Workflow Variant: {{ sessionInfo.variant | variantDescription }}</h2>
-            <img class="statechart"
-                 ngSrc="{{ sessionInfo.variant | variantImagePath }}"
-                 alt="{{ sessionInfo.variant | variantDescription }}"
-                 width="1" height="1"/>
-            <p>Refer to <a href="https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3" target="_blank">this blog post</a>
-              for additional information on TCR variants.</p>
+      <div class="row mbr-justify-content-center">
+        <div class="col-lg-12 mbr-col-md-10">
+          <div class="wrap">
+            <div class="ico-wrap">
+              <span class="mbr-iconfont fa-gear fa"></span>
+            </div>
+            <div class="text-wrap vcenter">
+              <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Workflow Variant: {{ sessionInfo.variant | variantDescription }}</h2>
+              <img class="statechart"
+                   ngSrc="{{ sessionInfo.variant | variantImagePath }}"
+                   alt="{{ sessionInfo.variant | variantDescription }}"
+                   width="1" height="1"/>
+              <p>Refer to <a href="https://medium.com/@tdeniffel/tcr-variants-test-commit-revert-bf6bd84b17d3" target="_blank">this blog post</a>
+                for additional information on TCR variants.</p>
+            </div>
           </div>
         </div>
+      </div>
+
+      <div class="row mbr-justify-content-center">
+        <div class="col-lg-12 mbr-col-md-10">
+          <div class="wrap">
+            <div class="ico-wrap">
+              <span class="mbr-iconfont fa-folder-open fa"></span>
+            </div>
+            <div class="text-wrap vcenter">
+              <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Directories</h2>
+              <table class="mbr-fonts-style text1 mbr-text display-6">
+                <tr>
+                  <td class="table-header">Base Directory:</td>
+                  <td class="table-value">{{ sessionInfo.baseDir }}</td>
+                </tr>
+                <tr>
+                  <td class="table-header">Work Directory:</td>
+                  <td class="table-value">{{ sessionInfo.workDir }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12 mbr-col-md-10">
+          <div class="wrap">
+            <div class="ico-wrap">
+              <span class="mbr-iconfont fa-file-code-o fa"></span>
+            </div>
+            <div class="text-wrap vcenter">
+              <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Language and Toolchain</h2>
+              <table class="mbr-fonts-style text1 mbr-text display-6">
+                <tr>
+                  <td class="table-header">Language:</td>
+                  <td class="table-value">{{ sessionInfo.language }}</td>
+                </tr>
+                <tr>
+                  <td class="table-header">Toolchain:</td>
+                  <td class="table-value">{{ sessionInfo.toolchain }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-12 mbr-col-md-10">
+          <div class="wrap">
+            <div class="ico-wrap">
+              <span class="mbr-iconfont fa-code-fork fa"></span>
+            </div>
+            <div class="text-wrap vcenter">
+              <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Version Control System</h2>
+              <table class="mbr-fonts-style text1 mbr-text display-6">
+                <tr>
+                  <td class="table-header">Used VCS:</td>
+                  <td class="table-value">{{ sessionInfo.vcsName }}</td>
+                </tr>
+                <tr>
+                  <td class="table-header">Session Summary:</td>
+                  <td class="table-value">{{ sessionInfo.vcsSession }}</td>
+                </tr>
+                <tr>
+                  <td class="table-header">Git Auto-Push:</td>
+                  <td class="table-value">{{ sessionInfo.gitAutoPush | onOff }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-
-    <div class="row mbr-justify-content-center">
-      <div class="col-lg-12 mbr-col-md-10">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-folder-open fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Directories</h2>
-            <table class="mbr-fonts-style text1 mbr-text display-6">
-              <tr>
-                <td class="table-header">Base Directory:</td>
-                <td class="table-value">{{ sessionInfo.baseDir }}</td>
-              </tr>
-              <tr>
-                <td class="table-header">Work Directory:</td>
-                <td class="table-value">{{ sessionInfo.workDir }}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-12 mbr-col-md-10">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-file-code-o fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Language and Toolchain</h2>
-            <table class="mbr-fonts-style text1 mbr-text display-6">
-              <tr>
-                <td class="table-header">Language:</td>
-                <td class="table-value">{{ sessionInfo.language }}</td>
-              </tr>
-              <tr>
-                <td class="table-header">Toolchain:</td>
-                <td class="table-value">{{ sessionInfo.toolchain }}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-12 mbr-col-md-10">
-        <div class="wrap">
-          <div class="ico-wrap">
-            <span class="mbr-iconfont fa-code-fork fa"></span>
-          </div>
-          <div class="text-wrap vcenter">
-            <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Version Control System</h2>
-            <table class="mbr-fonts-style text1 mbr-text display-6">
-              <tr>
-                <td class="table-header">Used VCS:</td>
-                <td class="table-value">{{ sessionInfo.vcsName }}</td>
-              </tr>
-              <tr>
-                <td class="table-header">Session Summary:</td>
-                <td class="table-value">{{ sessionInfo.vcsSession }}</td>
-              </tr>
-              <tr>
-                <td class="table-header">Git Auto-Push:</td>
-                <td class="table-value">{{ sessionInfo.gitAutoPush | onOff }}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
+  }
 </section>

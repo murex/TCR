@@ -20,22 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component} from '@angular/core';
-import {NgForOf} from "@angular/common";
-import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
+import { Component } from "@angular/core";
+import { TcrRoleComponent } from "../tcr-role/tcr-role.component";
 
 @Component({
-  selector: 'app-tcr-roles',
-  imports: [
-    NgForOf,
-    TcrRoleComponent
-  ],
-  templateUrl: './tcr-roles.component.html',
-  styleUrl: './tcr-roles.component.css'
+  selector: "app-tcr-roles",
+  imports: [TcrRoleComponent],
+  templateUrl: "./tcr-roles.component.html",
+  styleUrl: "./tcr-roles.component.css",
 })
 export class TcrRolesComponent {
-  roles: string[] = ['driver', 'navigator'];
+  roles: string[] = ["driver", "navigator"];
 
-  constructor() {
-  }
+  constructor() {}
 }

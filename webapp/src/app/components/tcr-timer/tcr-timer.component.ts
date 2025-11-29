@@ -20,23 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {AfterViewInit, Component, effect, OnInit, Signal} from '@angular/core';
-import {TcrMessage} from "../../interfaces/tcr-message";
-import {TcrTimerService} from "../../services/tcr-timer.service";
-import {toSignal} from "@angular/core/rxjs-interop";
-import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
-import {FormatTimerPipe} from "../../pipes/format-timer.pipe";
-import {NgIf, NgStyle} from "@angular/common";
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  OnInit,
+  Signal,
+} from "@angular/core";
+import { TcrMessage } from "../../interfaces/tcr-message";
+import { TcrTimerService } from "../../services/tcr-timer.service";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { TcrTimer, TcrTimerState } from "../../interfaces/tcr-timer";
+import { FormatTimerPipe } from "../../pipes/format-timer.pipe";
+import { NgStyle } from "@angular/common";
 
 @Component({
-  selector: 'app-tcr-timer',
-  imports: [
-    FormatTimerPipe,
-    NgIf,
-    NgStyle
-  ],
-  templateUrl: './tcr-timer.component.html',
-  styleUrl: './tcr-timer.component.css'
+  selector: "app-tcr-timer",
+  imports: [FormatTimerPipe, NgStyle],
+  templateUrl: "./tcr-timer.component.html",
+  styleUrl: "./tcr-timer.component.css",
 })
 export class TcrTimerComponent implements OnInit, AfterViewInit {
   timer?: TcrTimer;
@@ -79,32 +81,32 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   }
 
   refresh(message: TcrMessage): void {
-    if (message)
-      this.getTimer();
+    if (message) this.getTimer();
   }
 
   public getTimer(): void {
-    this.timerService.getTimer().subscribe(t => {
+    this.timerService.getTimer().subscribe((t) => {
       this.timer = t;
       this.timeout = parseInt(t.timeout, 10);
       this.remaining = parseInt(t.remaining, 10);
-      this.updateColor()
+      this.updateColor();
     });
   }
 
   updateColor(): void {
-    let color = {red: 0, green: 0, blue: 0};
+    let color = { red: 0, green: 0, blue: 0 };
     if (this.timer) {
       switch (this.timer.state) {
         case TcrTimerState.OFF:
         case TcrTimerState.STOPPED:
-          color = {red: 128, green: 128, blue: 128};
+          color = { red: 128, green: 128, blue: 128 };
           break;
         case TcrTimerState.TIMEOUT:
-          color = {red: 255, green: 0, blue: 0};
+          color = { red: 255, green: 0, blue: 0 };
           break;
         default:
-          this.progressRatio = (this.timeout! - this.remaining!) / this.timeout!;
+          this.progressRatio =
+            (this.timeout! - this.remaining!) / this.timeout!;
           color = {
             red: 255,
             green: 255 * (1 - this.progressRatio),

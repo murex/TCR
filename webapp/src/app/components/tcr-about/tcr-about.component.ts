@@ -20,34 +20,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
-import {TcrBuildInfoService} from "../../services/tcr-build-info.service";
-import {DatePipe, NgIf} from "@angular/common";
+import { Component, Input, OnInit } from "@angular/core";
+import { TcrBuildInfo } from "../../interfaces/tcr-build-info";
+import { TcrBuildInfoService } from "../../services/tcr-build-info.service";
+import { DatePipe } from "@angular/common";
 
 @Component({
-  selector: 'app-tcr-about',
-  imports: [
-    NgIf,
-    DatePipe
-  ],
-  templateUrl: './tcr-about.component.html',
-  styleUrl: './tcr-about.component.css'
+  selector: "app-tcr-about",
+  imports: [DatePipe],
+  templateUrl: "./tcr-about.component.html",
+  styleUrl: "./tcr-about.component.css",
 })
 export class TcrAboutComponent implements OnInit {
   title: string = "About TCR";
   @Input() buildInfo?: TcrBuildInfo;
 
-  constructor(
-    private buildInfoService: TcrBuildInfoService) {
-  }
+  constructor(private buildInfoService: TcrBuildInfoService) {}
 
   ngOnInit(): void {
     this.getBuildInfo();
   }
 
   private getBuildInfo(): void {
-    this.buildInfoService.getBuildInfo()
-      .subscribe(buildInfo => this.buildInfo = buildInfo);
+    this.buildInfoService
+      .getBuildInfo()
+      .subscribe((buildInfo) => (this.buildInfo = buildInfo));
   }
 }

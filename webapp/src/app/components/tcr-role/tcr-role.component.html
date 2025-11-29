@@ -1,15 +1,21 @@
-<div *ngIf="role" (click)="toggleRole(role)"
-     [ngClass]="{
-              'navigator-on': role.active && role.name === 'navigator',
-              'driver-on' : role.active && role.name === 'driver',
-              'role-off': !role.active}"
-     data-testid="role-component"
-     class="wrap">
-  <div class="ico-wrap">
-    <span class="mbr-iconfont fa-compass fa" *ngIf="role.name === 'navigator'" data-testid="role-icon"></span>
-    <span class="mbr-iconfont fa-keyboard-o fa" *ngIf="role.name === 'driver'" data-testid="role-icon"></span>
+@if (role) {
+  <div (click)="toggleRole(role)"
+       [ngClass]="{
+                'navigator-on': role.active && role.name === 'navigator',
+                'driver-on' : role.active && role.name === 'driver',
+                'role-off': !role.active}"
+       data-testid="role-component"
+       class="wrap">
+    <div class="ico-wrap">
+      @if (role.name === 'navigator') {
+        <span class="mbr-iconfont fa-compass fa" data-testid="role-icon"></span>
+      }
+      @if (role.name === 'driver') {
+        <span class="mbr-iconfont fa-keyboard-o fa" data-testid="role-icon"></span>
+      }
+    </div>
+    <div class="text-wrap vcenter">
+      <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5" data-testid="role-label">{{ role.description }}</h2>
+    </div>
   </div>
-  <div class="text-wrap vcenter">
-    <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5" data-testid="role-label">{{ role.description }}</h2>
-  </div>
-</div>
+}

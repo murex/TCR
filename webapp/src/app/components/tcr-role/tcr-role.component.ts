@@ -20,24 +20,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component, effect, Input, OnInit, Signal} from '@angular/core';
-import {TcrRole} from "../../interfaces/tcr-role";
-import {TcrRolesService} from "../../services/trc-roles.service";
-import {TcrMessage} from "../../interfaces/tcr-message";
-import {NgClass, NgIf} from "@angular/common";
-import {toSignal} from "@angular/core/rxjs-interop";
+import { Component, effect, Input, OnInit, Signal } from "@angular/core";
+import { TcrRole } from "../../interfaces/tcr-role";
+import { TcrRolesService } from "../../services/trc-roles.service";
+import { TcrMessage } from "../../interfaces/tcr-message";
+import { NgClass } from "@angular/common";
+import { toSignal } from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'app-tcr-role',
-  imports: [
-    NgIf,
-    NgClass
-  ],
-  templateUrl: './tcr-role.component.html',
-  styleUrl: './tcr-role.component.css'
+  selector: "app-tcr-role",
+  imports: [NgClass],
+  templateUrl: "./tcr-role.component.html",
+  styleUrl: "./tcr-role.component.css",
 })
 export class TcrRoleComponent implements OnInit {
-  @Input({required: true}) name: string = "";
+  @Input({ required: true }) name: string = "";
   role?: TcrRole;
   roleMessage: Signal<TcrMessage | undefined>;
 
@@ -65,17 +62,15 @@ export class TcrRoleComponent implements OnInit {
   }
 
   private getRole(): void {
-    this.rolesService.getRole(this.name)
-      .subscribe(r => {
-        this.role = r;
-      });
+    this.rolesService.getRole(this.name).subscribe((r) => {
+      this.role = r;
+    });
   }
 
   toggleRole(role: TcrRole): void {
-    this.rolesService.activateRole(role.name, !role.active)
-      .subscribe(r => {
-        console.log(r.name + ' set to ' + r.active);
-        this.role = r;
-      });
+    this.rolesService.activateRole(role.name, !role.active).subscribe((r) => {
+      console.log(r.name + " set to " + r.active);
+      this.role = r;
+    });
   }
 }

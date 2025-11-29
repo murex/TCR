@@ -20,41 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
-import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
-import {NgIf, NgOptimizedImage} from "@angular/common";
-import {OnOffPipe} from "../../pipes/on-off.pipe";
-import {VariantDescriptionPipe} from "../../pipes/variant-description.pipe";
-import {VariantImagePathPipe} from "../../pipes/variant-image-path.pipe";
+import { Component, Input, OnInit } from "@angular/core";
+import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
+import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
+import { NgOptimizedImage } from "@angular/common";
+import { OnOffPipe } from "../../pipes/on-off.pipe";
+import { VariantDescriptionPipe } from "../../pipes/variant-description.pipe";
+import { VariantImagePathPipe } from "../../pipes/variant-image-path.pipe";
 
 @Component({
-  selector: 'app-tcr-session-info',
+  selector: "app-tcr-session-info",
   imports: [
-    NgIf,
     OnOffPipe,
     NgOptimizedImage,
     VariantDescriptionPipe,
-    VariantImagePathPipe
+    VariantImagePathPipe,
   ],
-  templateUrl: './tcr-session-info.component.html',
-  styleUrl: './tcr-session-info.component.css'
+  templateUrl: "./tcr-session-info.component.html",
+  styleUrl: "./tcr-session-info.component.css",
 })
 export class TcrSessionInfoComponent implements OnInit {
-  title: string = "TCR Session Information"
+  title: string = "TCR Session Information";
   @Input() sessionInfo?: TcrSessionInfo;
 
-  constructor(
-    private sessionInfoService: TcrSessionInfoService) {
-  }
+  constructor(private sessionInfoService: TcrSessionInfoService) {}
 
   ngOnInit(): void {
     this.getSessionInfo();
   }
 
   private getSessionInfo(): void {
-    this.sessionInfoService.getSessionInfo()
-      .subscribe(sessionInfo => this.sessionInfo = sessionInfo);
+    this.sessionInfoService
+      .getSessionInfo()
+      .subscribe((sessionInfo) => (this.sessionInfo = sessionInfo));
   }
-
 }

@@ -1,10 +1,11 @@
 <section>
   <div class="container">
     <div class="row mbr-justify-content-center">
-      <app-tcr-role
-        *ngFor="let role of roles"
-        [name]="role"
-        class="col-lg-6 mbr-col-md-10"></app-tcr-role>
+      @for (role of roles; track role) {
+        <app-tcr-role
+          [name]="role"
+          class="col-lg-6 mbr-col-md-10"></app-tcr-role>
+      }
     </div>
   </div>
 </section>
