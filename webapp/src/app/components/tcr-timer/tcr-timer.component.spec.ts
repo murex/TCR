@@ -20,14 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import {TcrTimerComponent} from './tcr-timer.component';
-import {Observable, of} from "rxjs";
-import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
-import {TcrTimerService} from "../../services/tcr-timer.service";
-import {TcrTimer, TcrTimerState} from "../../interfaces/tcr-timer";
-import {By} from "@angular/platform-browser";
+import { TcrTimerComponent } from "./tcr-timer.component";
+import { Observable, of } from "rxjs";
+import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
+import { TcrTimerService } from "../../services/tcr-timer.service";
+import { TcrTimer, TcrTimerState } from "../../interfaces/tcr-timer";
+import { By } from "@angular/platform-browser";
 
 class FakeTcrTimerService {
   message$ = new Observable<TcrMessage>();
@@ -42,7 +42,7 @@ class FakeTcrTimerService {
   }
 }
 
-describe('TcrTimerComponent', () => {
+describe("TcrTimerComponent", () => {
   let component: TcrTimerComponent;
   let fixture: ComponentFixture<TcrTimerComponent>;
   let serviceFake: TcrTimerService;
@@ -50,9 +50,7 @@ describe('TcrTimerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTimerComponent],
-      providers: [
-        {provide: TcrTimerService, useClass: FakeTcrTimerService},
-      ]
+      providers: [{ provide: TcrTimerService, useClass: FakeTcrTimerService }],
     }).compileComponents();
   });
 
@@ -63,15 +61,23 @@ describe('TcrTimerComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  afterEach(() => {
+    // Clean up the interval created in ngAfterViewInit
+    if (component.ngOnDestroy) {
+      component.ngOnDestroy();
+    }
+    fixture.destroy();
+  });
+
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
   });
 
-  describe('component initialization', () => {
-    const clockIcon = 'fa-clock-o';
-    const warningIcon = 'fa-exclamation-circle';
+  describe("component initialization", () => {
+    const clockIcon = "fa-clock-o";
+    const warningIcon = "fa-exclamation-circle";
 
     [
       {
@@ -120,7 +126,7 @@ describe('TcrTimerComponent', () => {
         expectedText: "-00:20",
       },
     ].forEach((testCase) => {
-      it(`should work with timer in ${testCase.state} state`, (done) => {
+      it(`should work with timer in ${testCase.state} state`, () => {
         const timer: TcrTimer = {
           state: testCase.state,
           timeout: testCase.timeout,
@@ -128,38 +134,52 @@ describe('TcrTimerComponent', () => {
           remaining: testCase.remaining,
         };
 
+        // Clean up existing component first
+        if (component.ngOnDestroy) {
+          component.ngOnDestroy();
+        }
+        fixture.destroy();
+
         // Have the service fake's getTimer method return the timer data
         serviceFake.getTimer = () => of(timer);
         fixture = TestBed.createComponent(TcrTimerComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        done()
 
         // Verify that the component's timer attribute is set correctly
         expect(component.timer).toEqual(timer);
 
         // Verify that the component is rendered with the expected color
         const componentElement = fixture.debugElement.query(
-          By.css(`[data-testid="timer-component"]`));
+          By.css(`[data-testid="timer-component"]`),
+        );
         expect(componentElement).toBeTruthy();
-        expect(componentElement.nativeElement.style.color).toEqual(testCase.expectedColor);
+        expect(componentElement.nativeElement.style.color).toEqual(
+          testCase.expectedColor,
+        );
 
         // Verify that the right icon is rendered
         const iconElement = fixture.debugElement.query(
-          By.css(`[data-testid="timer-icon"]`));
+          By.css(`[data-testid="timer-icon"]`),
+        );
         expect(iconElement).toBeTruthy();
-        expect(iconElement.nativeElement.classList).toContain(testCase.expectedIcon);
+        expect(iconElement.nativeElement.classList).toContain(
+          testCase.expectedIcon,
+        );
 
         // Verify that the timer text is rendered
         const textElement = fixture.debugElement.query(
-          By.css(`[data-testid="timer-label"]`));
+          By.css(`[data-testid="timer-label"]`),
+        );
         expect(textElement).toBeTruthy();
-        expect(textElement.nativeElement.textContent).toEqual(testCase.expectedText);
+        expect(textElement.nativeElement.textContent).toEqual(
+          testCase.expectedText,
+        );
       });
     });
   });
 
-  describe('component updateColor', () => {
+  describe("component updateColor", () => {
     [
       {
         state: TcrTimerState.OFF,
@@ -200,8 +220,6 @@ describe('TcrTimerComponent', () => {
       const input = `${testCase.state}/${testCase.timeout}/${testCase.elapsed}/${testCase.remaining}`;
       it(`should translate ${input} into ${testCase.expectedColor}`, () => {
         // Setup the timer component with the timer data
-        fixture = TestBed.createComponent(TcrTimerComponent);
-        component = fixture.componentInstance;
         component.timer = {
           state: testCase.state,
           timeout: `${testCase.timeout}`,
@@ -217,7 +235,7 @@ describe('TcrTimerComponent', () => {
     });
   });
 
-  describe('component periodicUpdate', () => {
+  describe("component periodicUpdate", () => {
     [
       {
         state: TcrTimerState.OFF,
@@ -257,7 +275,6 @@ describe('TcrTimerComponent', () => {
     ].forEach((testCase) => {
       it(`should change remaining time from ${testCase.remaining} to ${testCase.expectedRemaining} when ${testCase.state}`, () => {
         // Setup the timer component with the timer data
-        component = TestBed.createComponent(TcrTimerComponent).componentInstance;
         component.timer = {
           state: testCase.state,
           timeout: `${testCase.timeout}`,
@@ -290,13 +307,13 @@ describe('TcrTimerComponent', () => {
     ].forEach((testCase) => {
       it(`should re-sync with the server when ${testCase.description}`, () => {
         // Have the service fake's getTimer method return the server timer data
-        serviceFake.getTimer = () => of({
-          state: TcrTimerState.RUNNING,
-          timeout: `${testCase.timeout}`,
-          elapsed: `${testCase.timeout - testCase.serverRemaining}`,
-          remaining: `${testCase.serverRemaining}`,
-        });
-        component = TestBed.createComponent(TcrTimerComponent).componentInstance;
+        serviceFake.getTimer = () =>
+          of({
+            state: TcrTimerState.RUNNING,
+            timeout: `${testCase.timeout}`,
+            elapsed: `${testCase.timeout - testCase.serverRemaining}`,
+            remaining: `${testCase.serverRemaining}`,
+          });
 
         // Setup the timer component starting state
         component.timer = {
@@ -321,7 +338,7 @@ describe('TcrTimerComponent', () => {
     });
   });
 
-  describe('component refresh', () => {
+  describe("component refresh", () => {
     [
       {
         expectation: "should fetch timer data on actual messages",
@@ -333,7 +350,7 @@ describe('TcrTimerComponent', () => {
         } as TcrTimer,
         message: {
           type: TcrMessageType.TIMER,
-          text: "start:100:0:100"
+          text: "start:100:0:100",
         } as TcrMessage,
         timerAfter: {
           state: TcrTimerState.RUNNING,
@@ -358,16 +375,13 @@ describe('TcrTimerComponent', () => {
           remaining: "95",
         } as TcrTimer,
       },
-    ].forEach(testCase => {
+    ].forEach((testCase) => {
       it(`${testCase.expectation}`, () => {
         // Have the service fake's getTimer method return the starting timer data
         serviceFake.getTimer = () => of(testCase.timerBefore);
 
-        fixture = TestBed.createComponent(TcrTimerComponent);
-        component = fixture.componentInstance;
-
-        // Verify that the initial timer is set correctly
-        fixture.detectChanges();
+        // Initialize without triggering change detection
+        component.ngOnInit();
         expect(component.timer).toEqual(testCase.timerBefore);
 
         // Update the service fake to return the expected new timer data
@@ -376,10 +390,10 @@ describe('TcrTimerComponent', () => {
         // Trigger the refresh method with a message
         component.refresh(testCase.message!);
 
-        // Verify that the component's role active attribute was updated
-        fixture.detectChanges();
+        // Verify that the component's timer attribute was updated
         expect(component.timer).toEqual(
-          testCase.message ? testCase.timerAfter : testCase.timerBefore);
+          testCase.message ? testCase.timerAfter : testCase.timerBefore,
+        );
       });
     });
   });

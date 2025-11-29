@@ -20,13 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {HeaderComponent} from './header.component';
-import {RouterModule} from "@angular/router";
-import {TcrTimerComponent} from "../tcr-timer/tcr-timer.component";
-import {MockComponent} from "ng-mocks";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { HeaderComponent } from "./header.component";
+import { RouterModule } from "@angular/router";
+import { Component } from "@angular/core";
 
-describe('HeaderComponent', () => {
+// Mock component for testing
+@Component({
+  selector: "app-tcr-timer",
+  template: '<div class="mock-timer"></div>',
+  standalone: true,
+})
+class MockTcrTimerComponent {}
+
+describe("HeaderComponent", () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
 
@@ -34,7 +41,7 @@ describe('HeaderComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         HeaderComponent,
-        MockComponent(TcrTimerComponent),
+        MockTcrTimerComponent,
         RouterModule.forRoot([]),
       ],
       providers: [],
@@ -47,48 +54,48 @@ describe('HeaderComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
   });
 
-  describe('component DOM', () => {
+  describe("component DOM", () => {
     [
       {
-        description: 'a navigation bar',
-        selector: '.navbar'
+        description: "a navigation bar",
+        selector: ".navbar",
       },
       {
-        description: 'a brand element called TCR',
-        selector: '.navbar-brand',
-        text: 'TCR'
+        description: "a brand element called TCR",
+        selector: ".navbar-brand",
+        text: "TCR",
       },
       {
-        description: 'a link to the home page',
-        selector: 'a[href="/"]',
-        text: 'Home',
+        description: "a link to the home page",
+        selector: 'a[routerLink="/"]',
+        text: "Home",
       },
       {
-        description: 'a link to the session page',
-        selector: 'a[href="/session"]',
-        text: 'Session',
+        description: "a link to the session page",
+        selector: 'a[routerLink="/session"]',
+        text: "Session",
       },
       {
-        description: 'a link to the console page',
-        selector: 'a[href="/console"]',
-        text: 'Console',
+        description: "a link to the console page",
+        selector: 'a[routerLink="/console"]',
+        text: "Console",
       },
       {
-        description: 'a link to the about page',
-        selector: 'a[href="/about"]',
-        text: 'About',
+        description: "a link to the about page",
+        selector: 'a[routerLink="/about"]',
+        text: "About",
       },
       {
-        description: 'a timer component',
-        selector: 'app-tcr-timer',
+        description: "a timer component",
+        selector: "app-tcr-timer",
       },
-    ].forEach(({selector, description, text}) => {
+    ].forEach(({ selector, description, text }) => {
       it(`should contain ${description}`, () => {
         const element = fixture.nativeElement.querySelector(selector);
         expect(element).toBeTruthy();

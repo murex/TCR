@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component} from '@angular/core';
-import {TcrMessage, TcrMessageType} from "../../interfaces/tcr-message";
-import {TcrRolesComponent} from "../tcr-roles/tcr-roles.component";
-import {TcrMessageService} from "../../services/tcr-message.service";
+import { Component, OnDestroy } from "@angular/core";
+import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
+import { TcrRolesComponent } from "../tcr-roles/tcr-roles.component";
+import { TcrMessageService } from "../../services/tcr-message.service";
 import {
   bgDarkGray,
   cyan,
@@ -31,36 +31,40 @@ import {
   lightCyan,
   lightYellow,
   red,
-  yellow
+  yellow,
 } from "ansicolor";
-import {TcrTraceComponent} from "../tcr-trace/tcr-trace.component";
-import {Observable, Subject} from "rxjs";
-import {TcrControlsComponent} from "../tcr-controls/tcr-controls.component";
+import { TcrTraceComponent } from "../tcr-trace/tcr-trace.component";
+import { Observable, Subject, Subscription } from "rxjs";
+import { TcrControlsComponent } from "../tcr-controls/tcr-controls.component";
 
 @Component({
-  selector: 'app-tcr-console',
-  imports: [
-    TcrRolesComponent,
-    TcrTraceComponent,
-    TcrControlsComponent
-  ],
-  templateUrl: './tcr-console.component.html',
-  styleUrl: './tcr-console.component.css',
+  selector: "app-tcr-console",
+  imports: [TcrRolesComponent, TcrTraceComponent, TcrControlsComponent],
+  templateUrl: "./tcr-console.component.html",
+  styleUrl: "./tcr-console.component.css",
 })
-export class TcrConsoleComponent {
+export class TcrConsoleComponent implements OnDestroy {
   title: string = "TCR Console";
   message$: Observable<TcrMessage> = this.messageService.message$;
   text: Subject<string> = new Subject<string>();
   clearTrace: Subject<void> = new Subject<void>();
+  private subscription: Subscription;
 
   constructor(private messageService: TcrMessageService) {
-    this.messageService.message$.subscribe(msg => this.printMessage(msg));
+    this.subscription = this.messageService.message$.subscribe((msg) =>
+      this.printMessage(msg),
+    );
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   printMessage(message: TcrMessage): void {
     // clear the console every time a role is starting
-    if (isRoleStartMessage(message))
-      this.clear();
+    if (isRoleStartMessage(message)) this.clear();
 
     switch (message.type) {
       case TcrMessageType.SIMPLE:
@@ -107,7 +111,9 @@ export class TcrConsoleComponent {
 
   printRole(text: string): void {
     const sepLine = yellow("─".repeat(80));
-    this.print(sepLine + "\n" + lightYellow(formatRoleMessage(text)) + "\n" + sepLine);
+    this.print(
+      sepLine + "\n" + lightYellow(formatRoleMessage(text)) + "\n" + sepLine,
+    );
   }
 
   printSuccess(text: string): void {
@@ -145,7 +151,9 @@ export function getRoleName(message: string): string {
 
 export function formatRoleMessage(message: string): string {
   const action = getRoleAction(message);
-  return action ? capitalize(action) + "ing " + getRoleName(message) + " role" : "";
+  return action
+    ? capitalize(action) + "ing " + getRoleName(message) + " role"
+    : "";
 }
 
 function capitalize(text: string): string {
@@ -155,5 +163,7 @@ function capitalize(text: string): string {
 const ROLE_START = "start";
 
 export function isRoleStartMessage(msg: TcrMessage): boolean {
-  return msg.type === TcrMessageType.ROLE && getRoleAction(msg.text) === ROLE_START;
+  return (
+    msg.type === TcrMessageType.ROLE && getRoleAction(msg.text) === ROLE_START
+  );
 }

@@ -84,9 +84,10 @@ export class MockNgTerminalComponent {
 export class MockTerminalUnderlying {
   unicode = { activeVersion: "11" };
   private disposed = false;
+  private timers: number[] = [];
   private _core: {
     viewport: {
-      dimensions: { cols: number; rows: number };
+      dimensions: { cols: number; rows: number } | undefined;
       syncScrollArea: jasmine.Spy;
       _innerRefresh: jasmine.Spy;
     };
@@ -106,11 +107,23 @@ export class MockTerminalUnderlying {
   reset = jasmine.createSpy("reset");
   dispose = jasmine.createSpy("dispose").and.callFake(() => {
     this.disposed = true;
+    // Clear all timers
+    this.timers.forEach((timer) => clearTimeout(timer));
+    this.timers = [];
+    // Clear dimensions to prevent access after disposal
+    if (this._core && this._core.viewport) {
+      this._core.viewport.dimensions = undefined;
+    }
   });
   loadAddon = jasmine.createSpy("loadAddon");
 
   isDisposed(): boolean {
     return this.disposed;
+  }
+
+  // Track timers to clean them up
+  _registerTimer(timerId: number): void {
+    this.timers.push(timerId);
   }
 }
 
@@ -128,8 +141,48 @@ export function createMockNgTerminal(): NgTerminal {
 export function cleanupTerminal(terminal?: NgTerminal): void {
   if (terminal?.underlying) {
     try {
+      // Stop any pending viewport sync operations
+      const underlying = terminal.underlying as Record<string, unknown>;
+      if (underlying._core?.viewport) {
+        // Clear any pending timers in viewport
+        if (underlying._core.viewport._refreshAnimationFrame) {
+          cancelAnimationFrame(
+            underlying._core.viewport._refreshAnimationFrame,
+          );
+          try {
+            underlying._core.viewport._refreshAnimationFrame = null;
+          } catch {
+            // Property might be read-only
+          }
+        }
+        if (underlying._core.viewport._coreBrowserService) {
+          try {
+            underlying._core.viewport._coreBrowserService = null;
+          } catch {
+            // Property might be read-only
+          }
+        }
+      }
+
+      // Dispose the terminal
       if (typeof terminal.underlying.dispose === "function") {
         terminal.underlying.dispose();
+      }
+
+      // Clear the reference - use Object.defineProperty to bypass read-only
+      try {
+        Object.defineProperty(terminal, "underlying", {
+          value: null,
+          writable: true,
+          configurable: true,
+        });
+      } catch {
+        // If that fails, try direct assignment
+        try {
+          (terminal as Record<string, unknown>).underlying = null;
+        } catch {
+          // Ignore if property is truly read-only
+        }
       }
     } catch (error) {
       // Ignore cleanup errors in tests
@@ -187,10 +240,9 @@ export function setupTerminalTestEnvironment(): void {
   };
 
   if (typeof HTMLCanvasElement !== "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     HTMLCanvasElement.prototype.getContext = function () {
-      return mockCanvasContext as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      return mockCanvasContext as unknown as CanvasRenderingContext2D;
+    } as typeof HTMLCanvasElement.prototype.getContext;
   }
 
   // Mock getBoundingClientRect for consistent dimensions
@@ -243,8 +295,14 @@ export function createSafeXtermMock() {
     _core: {
       viewport: {
         dimensions: { cols: 80, rows: 24 },
-        syncScrollArea: jasmine.createSpy("syncScrollArea"),
-        _innerRefresh: jasmine.createSpy("_innerRefresh"),
+        syncScrollArea: jasmine
+          .createSpy("syncScrollArea")
+          .and.returnValue(undefined),
+        _innerRefresh: jasmine
+          .createSpy("_innerRefresh")
+          .and.returnValue(undefined),
+        _refreshAnimationFrame: null,
+        _coreBrowserService: null,
       },
       buffer: {
         active: {

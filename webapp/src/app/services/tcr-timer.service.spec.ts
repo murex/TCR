@@ -22,21 +22,24 @@ SOFTWARE.
 
 import {
   HttpTestingController,
-  provideHttpClientTesting
-} from '@angular/common/http/testing';
-import {TestBed} from '@angular/core/testing';
-import {TcrTimerService} from './tcr-timer.service';
-import {TcrTimer} from '../interfaces/tcr-timer';
-import {WebsocketService} from './websocket.service';
-import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
-import {Subject} from "rxjs";
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+  provideHttpClientTesting,
+} from "@angular/common/http/testing";
+import { TestBed } from "@angular/core/testing";
+import { TcrTimerService } from "./tcr-timer.service";
+import { TcrTimer } from "../interfaces/tcr-timer";
+import { WebsocketService } from "./websocket.service";
+import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
+import { Subject } from "rxjs";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
 }
 
-describe('TcrTimerService', () => {
+describe("TcrTimerService", () => {
   let service: TcrTimerService;
   let httpMock: HttpTestingController;
   let wsServiceFake: WebsocketService;
@@ -46,10 +49,10 @@ describe('TcrTimerService', () => {
       imports: [],
       providers: [
         TcrTimerService,
-        {provide: WebsocketService, useClass: FakeWebsocketService},
+        { provide: WebsocketService, useClass: FakeWebsocketService },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-      ]
+      ],
     });
 
     service = TestBed.inject(TcrTimerService);
@@ -61,14 +64,14 @@ describe('TcrTimerService', () => {
     httpMock.verify();
   });
 
-  describe('service instance', () => {
-    it('should be created', () => {
+  describe("service instance", () => {
+    it("should be created", () => {
       expect(service).toBeTruthy();
     });
   });
 
-  describe('getTimer() function', () => {
-    it('should return timer info when called', () => {
+  describe("getTimer() function", () => {
+    it("should return timer info when called", () => {
       const sample: TcrTimer = {
         state: "some-state",
         timeout: "500",
@@ -77,56 +80,60 @@ describe('TcrTimerService', () => {
       };
 
       let actual: TcrTimer | undefined;
-      service.getTimer().subscribe(other => {
+      service.getTimer().subscribe((other) => {
         actual = other;
       });
 
       const req = httpMock.expectOne(`/api/timer`);
-      expect(req.request.method).toBe('GET');
-      expect(req.request.responseType).toEqual('json');
+      expect(req.request.method).toBe("GET");
+      expect(req.request.responseType).toEqual("json");
       req.flush(sample);
       expect(actual).toBe(sample);
     });
 
-    it('should return undefined when receiving an error response', () => {
+    it("should return undefined when receiving an error response", () => {
       let actual: TcrTimer | undefined;
-      service.getTimer().subscribe(other => {
+      service.getTimer().subscribe((other) => {
         actual = other;
       });
 
       const req = httpMock.expectOne(`/api/timer`);
-      expect(req.request.method).toBe('GET');
-      req.flush({message: 'Some network error'}, {
-        status: 500,
-        statusText: 'Server Error'
-      });
+      expect(req.request.method).toBe("GET");
+      req.flush(
+        { message: "Some network error" },
+        {
+          status: 500,
+          statusText: "Server Error",
+        },
+      );
       expect(actual).toBeUndefined();
     });
   });
 
-  describe('websocket message handler', () => {
-    it('should forward timer messages', (done) => {
-      const sampleMessage = {type: TcrMessageType.TIMER} as TcrMessage;
-      let actual: TcrMessage | undefined;
+  describe("websocket message handler", () => {
+    it("should forward timer messages", (done) => {
+      const sampleMessage = { type: TcrMessageType.TIMER } as TcrMessage;
       service.message$.subscribe((msg) => {
-        actual = msg;
+        expect(msg).toEqual(sampleMessage);
         done();
       });
       wsServiceFake.webSocket$.next(sampleMessage);
-      expect(actual).toEqual(sampleMessage);
     });
 
-    it('should drop non-timer messages', (done) => {
-      const sampleMessage = {type: TcrMessageType.INFO} as TcrMessage;
-      let actual: TcrMessage | undefined;
+    it("should drop non-timer messages", (done) => {
+      const timerMessage = { type: TcrMessageType.TIMER } as TcrMessage;
+      const infoMessage = { type: TcrMessageType.INFO } as TcrMessage;
+
       service.message$.subscribe((msg) => {
-        actual = msg;
+        // Should only receive timer messages
+        expect(msg.type).toEqual(TcrMessageType.TIMER);
         done();
       });
-      wsServiceFake.webSocket$.next(sampleMessage);
-      // Wait for the message to be processed by the service before checking the result
-      setTimeout(() => done(), 10);
-      expect(actual).toBeUndefined();
+
+      // Send non-timer message first (should be filtered out)
+      wsServiceFake.webSocket$.next(infoMessage);
+      // Send timer message (should be received)
+      wsServiceFake.webSocket$.next(timerMessage);
     });
   });
 });

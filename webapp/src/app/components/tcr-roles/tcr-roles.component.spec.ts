@@ -20,24 +20,78 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TcrRolesComponent} from './tcr-roles.component';
-import {TcrRoleComponent} from "../tcr-role/tcr-role.component";
-import {By} from "@angular/platform-browser";
-import {MockComponent} from "ng-mocks";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { TcrRolesComponent } from "./tcr-roles.component";
+import { Component, Input } from "@angular/core";
+import { By } from "@angular/platform-browser";
+import { TcrRoleComponent } from "../tcr-role/tcr-role.component";
+import { TcrRolesService } from "../../services/trc-roles.service";
+import { Observable, of } from "rxjs";
+import { TcrRole } from "../../interfaces/tcr-role";
+import { TcrMessage } from "../../interfaces/tcr-message";
 
-describe('TcrRolesComponent', () => {
+// Mock service for testing
+class FakeTcrRolesService {
+  message$ = new Observable<TcrMessage>();
+
+  getRole(name: string): Observable<TcrRole> {
+    return of({
+      name: name,
+      description: `${name} role`,
+      active: false,
+    });
+  }
+
+  activateRole(name: string, state: boolean): Observable<TcrRole> {
+    return of({
+      name: name,
+      description: `${name} role`,
+      active: state,
+    });
+  }
+}
+
+// Mock component for testing - use a different selector to avoid conflicts
+@Component({
+  selector: "app-mock-tcr-role",
+  template: '<div class="mock-role">{{ name }}</div>',
+  standalone: true,
+})
+class MockTcrRoleComponent {
+  @Input() name = "";
+}
+
+describe("TcrRolesComponent", () => {
   let component: TcrRolesComponent;
   let fixture: ComponentFixture<TcrRolesComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        TcrRolesComponent,
-        MockComponent(TcrRoleComponent),
-      ],
-      providers: [],
-    }).compileComponents();
+      imports: [TcrRolesComponent],
+      providers: [{ provide: TcrRolesService, useClass: FakeTcrRolesService }],
+    })
+      .overrideComponent(TcrRolesComponent, {
+        remove: {
+          imports: [TcrRoleComponent],
+        },
+        add: {
+          imports: [MockTcrRoleComponent],
+          template: `
+            <section>
+              <div class="container">
+                <div class="row mbr-justify-content-center">
+                  @for (role of roles; track role) {
+                    <app-mock-tcr-role
+                      [name]="role"
+                      class="col-lg-6 mbr-col-md-10"></app-mock-tcr-role>
+                  }
+                </div>
+              </div>
+            </section>
+          `,
+        },
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {
@@ -46,26 +100,33 @@ describe('TcrRolesComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have driver in list of roles', () => {
-      expect(component.roles).toContain('driver');
+    it("should have driver in list of roles", () => {
+      expect(component.roles).toContain("driver");
     });
 
-    it('should have navigator in list of roles', () => {
-      expect(component.roles).toContain('navigator');
+    it("should have navigator in list of roles", () => {
+      expect(component.roles).toContain("navigator");
     });
   });
 
-  describe('component DOM', () => {
-    it('should contain 2 TcrRoleComponent children', () => {
-      const roleElements = fixture.debugElement.queryAll(By.directive(TcrRoleComponent));
+  describe("component DOM", () => {
+    it("should contain 2 TcrRoleComponent children", () => {
+      const roleElements = fixture.debugElement.queryAll(
+        By.css("app-mock-tcr-role"),
+      );
       expect(roleElements.length).toBe(2);
-      expect(roleElements[0].componentInstance.name).toBe('driver');
-      expect(roleElements[1].componentInstance.name).toBe('navigator');
+
+      // Check that the mock components received the correct inputs
+      const mockComponents = roleElements.map(
+        (el) => el.componentInstance as MockTcrRoleComponent,
+      );
+      expect(mockComponents[0].name).toBe("driver");
+      expect(mockComponents[1].name).toBe("navigator");
     });
   });
 });

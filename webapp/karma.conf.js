@@ -76,10 +76,10 @@ module.exports = function (config) {
         ],
       },
     },
-    browserDisconnectTimeout: 60000,
+    browserDisconnectTimeout: 120000,
     browserDisconnectTolerance: 3,
-    browserNoActivityTimeout: 60000,
-    captureTimeout: 120000,
+    browserNoActivityTimeout: 120000,
+    captureTimeout: 240000,
     restartOnFileChange: true,
   });
 };

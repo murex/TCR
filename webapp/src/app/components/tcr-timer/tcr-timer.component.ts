@@ -25,6 +25,7 @@ import {
   Component,
   effect,
   OnInit,
+  OnDestroy,
   Signal,
 } from "@angular/core";
 import { TcrMessage } from "../../interfaces/tcr-message";
@@ -40,7 +41,7 @@ import { NgStyle } from "@angular/common";
   templateUrl: "./tcr-timer.component.html",
   styleUrl: "./tcr-timer.component.css",
 })
-export class TcrTimerComponent implements OnInit, AfterViewInit {
+export class TcrTimerComponent implements OnInit, AfterViewInit, OnDestroy {
   timer?: TcrTimer;
   progressRatio: number | undefined;
   remaining: number | undefined;
@@ -49,6 +50,7 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   timerMessage: Signal<TcrMessage | undefined>;
   private syncCounter: number = 0;
   private SYNC_INTERVAL: number = 10;
+  private intervalId?: number;
 
   constructor(private timerService: TcrTimerService) {
     this.timerMessage = toSignal(this.timerService.message$);
@@ -65,7 +67,16 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setInterval(() => this.periodicUpdate(), 1000);
+    this.intervalId = setInterval(
+      () => this.periodicUpdate(),
+      1000,
+    ) as unknown as number;
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   // Timer periodic update. We re-sync with the server every SYNC_INTERVAL seconds
@@ -74,8 +85,12 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
     if (this.syncCounter++ >= this.SYNC_INTERVAL) {
       this.getTimer();
       this.syncCounter = 0;
-    } else if (activeStates.includes(this.timer?.state as TcrTimerState)) {
-      this.remaining = this.remaining! - 1;
+    } else if (
+      this.timer &&
+      activeStates.includes(this.timer.state as TcrTimerState) &&
+      this.remaining !== undefined
+    ) {
+      this.remaining = this.remaining - 1;
       this.updateColor();
     }
   }
@@ -86,10 +101,12 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
 
   public getTimer(): void {
     this.timerService.getTimer().subscribe((t) => {
-      this.timer = t;
-      this.timeout = parseInt(t.timeout, 10);
-      this.remaining = parseInt(t.remaining, 10);
-      this.updateColor();
+      if (t) {
+        this.timer = t;
+        this.timeout = parseInt(t.timeout, 10);
+        this.remaining = parseInt(t.remaining, 10);
+        this.updateColor();
+      }
     });
   }
 
@@ -104,15 +121,20 @@ export class TcrTimerComponent implements OnInit, AfterViewInit {
         case TcrTimerState.TIMEOUT:
           color = { red: 255, green: 0, blue: 0 };
           break;
-        default:
-          this.progressRatio =
-            (this.timeout! - this.remaining!) / this.timeout!;
+        default: {
+          if (this.timeout && this.remaining !== undefined) {
+            this.progressRatio = (this.timeout - this.remaining) / this.timeout;
+          } else {
+            this.progressRatio = 0;
+          }
+          const ratio = this.progressRatio || 0;
           color = {
             red: 255,
-            green: 255 * (1 - this.progressRatio),
-            blue: 255 * (1 - this.progressRatio),
+            green: 255 * (1 - ratio),
+            blue: 255 * (1 - ratio),
           };
           break;
+        }
       }
     }
     this.fgColor = `rgb(${color.red},${color.green},${color.blue})`;

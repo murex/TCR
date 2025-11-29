@@ -20,48 +20,70 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
-import {NgTerminal, NgTerminalModule} from "ng-terminal";
-import {Observable} from "rxjs";
-import {Terminal} from '@xterm/xterm';
-import {WebLinksAddon} from '@xterm/addon-web-links';
-import {Unicode11Addon} from '@xterm/addon-unicode11';
+import {
+  AfterViewInit,
+  Component,
+  Input,
+  ViewChild,
+  OnDestroy,
+} from "@angular/core";
+import { NgTerminal, NgTerminalModule } from "ng-terminal";
+import { Observable, Subscription } from "rxjs";
+import { Terminal } from "@xterm/xterm";
+import { WebLinksAddon } from "@xterm/addon-web-links";
+import { Unicode11Addon } from "@xterm/addon-unicode11";
 
 @Component({
-  selector: 'app-tcr-trace',
+  selector: "app-tcr-trace",
   imports: [NgTerminalModule],
-  templateUrl: './tcr-trace.component.html',
-  styleUrl: './tcr-trace.component.css',
+  templateUrl: "./tcr-trace.component.html",
+  styleUrl: "./tcr-trace.component.css",
 })
-export class TcrTraceComponent implements AfterViewInit {
+export class TcrTraceComponent implements AfterViewInit, OnDestroy {
   @Input() text?: Observable<string>;
   @Input() clearTrace?: Observable<void>;
-  @ViewChild('term', {static: false}) ngTerminal!: NgTerminal;
+  @ViewChild("term", { static: false }) ngTerminal!: NgTerminal;
   private xterm?: Terminal;
+  private subscriptions: Subscription[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   ngAfterViewInit(): void {
     this.setupTerminal();
 
-    this.text?.subscribe((text) => this.print(text));
-    this.clearTrace?.subscribe(() => this.clear());
+    if (this.text) {
+      this.subscriptions.push(this.text.subscribe((text) => this.print(text)));
+    }
+    if (this.clearTrace) {
+      this.subscriptions.push(this.clearTrace.subscribe(() => this.clear()));
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    if (this.xterm) {
+      try {
+        this.xterm.dispose();
+      } catch (e) {
+        // Ignore disposal errors during cleanup
+        console.warn("Error disposing xterm:", e);
+      }
+    }
   }
 
   private setupTerminal(): void {
     this.xterm = this.ngTerminal.underlying!;
     this.xterm.loadAddon(new WebLinksAddon());
     this.xterm.loadAddon(new Unicode11Addon());
-    this.xterm.unicode.activeVersion = '11';
+    this.xterm.unicode.activeVersion = "11";
     this.ngTerminal.setXtermOptions({
       fontFamily: '"Cascadia Code", Menlo, monospace',
       theme: {
-        background: '#333333',
-        foreground: '#CCCCCC',
-        cursor: '#CCCCCC',
+        background: "#333333",
+        foreground: "#CCCCCC",
+        cursor: "#CCCCCC",
       },
-      cursorBlink: true
+      cursorBlink: true,
     });
     this.ngTerminal.setRows(20);
     this.ngTerminal.setCols(120);
@@ -77,10 +99,17 @@ export class TcrTraceComponent implements AfterViewInit {
   }
 
   clear(): void {
-    this.xterm?.reset();
+    if (this.xterm && typeof this.xterm.reset === "function") {
+      try {
+        this.xterm.reset();
+      } catch (e) {
+        // Ignore errors if terminal is already disposed
+        console.warn("Error clearing terminal:", e);
+      }
+    }
   }
 }
 
 export function toCRLF(input: string): string {
-  return input ? (input.replace(/\n/g, "\r\n") + "\r\n") : "";
+  return input ? input.replace(/\n/g, "\r\n") + "\r\n" : "";
 }

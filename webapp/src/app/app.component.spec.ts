@@ -20,14 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AppComponent} from './app.component';
-import {MockComponent, MockDirective} from "ng-mocks";
-import {HeaderComponent} from "./components/header/header.component";
-import {FooterComponent} from "./components/footer/footer.component";
-import {RouterOutlet} from "@angular/router";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { AppComponent } from "./app.component";
+import { Component } from "@angular/core";
+import { RouterModule } from "@angular/router";
 
-describe('AppComponent', () => {
+// Mock components for testing
+@Component({
+  selector: "app-header",
+  template: '<div class="mock-header"></div>',
+  standalone: true,
+})
+class MockHeaderComponent {}
+
+@Component({
+  selector: "app-footer",
+  template: '<div class="mock-footer"></div>',
+  standalone: true,
+})
+class MockFooterComponent {}
+
+describe("AppComponent", () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
@@ -35,9 +48,9 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AppComponent,
-        MockComponent(HeaderComponent),
-        MockDirective(RouterOutlet),
-        MockComponent(FooterComponent),
+        MockHeaderComponent,
+        MockFooterComponent,
+        RouterModule.forRoot([]),
       ],
     }).compileComponents();
   });
@@ -48,22 +61,22 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should create the app', () => {
+  describe("component instance", () => {
+    it("should create the app", () => {
       expect(app).toBeTruthy();
     });
 
     it(`should have TCR for title`, () => {
-      expect(app.title).toEqual('TCR');
+      expect(app.title).toEqual("TCR");
     });
   });
 
-  describe('component DOM', () => {
+  describe("component DOM", () => {
     [
-      {selector: 'app-header', description: 'a header element'},
-      {selector: 'router-outlet', description: 'a router outlet element'},
-      {selector: 'app-footer', description: 'a footer element'},
-    ].forEach(({selector, description}) => {
+      { selector: "app-header", description: "a header element" },
+      { selector: "router-outlet", description: "a router outlet element" },
+      { selector: "app-footer", description: "a footer element" },
+    ].forEach(({ selector, description }) => {
       it(`should have ${description}`, () => {
         expect(fixture.nativeElement.querySelector(selector)).toBeTruthy();
       });

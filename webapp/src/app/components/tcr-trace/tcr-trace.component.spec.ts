@@ -27,13 +27,13 @@ import { Subject } from "rxjs";
 import {
   MockNgTerminalComponent,
   createMockNgTerminal,
-  cleanupTerminal,
   setupTerminalTestEnvironment,
 } from "../../../testing/terminal-test-utils";
 
 describe("TcrTraceComponent", () => {
   let component: TcrTraceComponent;
   let fixture: ComponentFixture<TcrTraceComponent>;
+  let mockTerminal: ReturnType<typeof createMockNgTerminal>;
 
   beforeAll(() => {
     // Set up safe terminal test environment
@@ -50,15 +50,87 @@ describe("TcrTraceComponent", () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
-    component.ngTerminal = createMockNgTerminal();
+
+    // Create a mock terminal that won't cause afterAll errors
+    mockTerminal = createMockNgTerminal();
+
+    // Ensure the mock has a proper write method
+    if (!mockTerminal.write) {
+      mockTerminal.write = jasmine.createSpy("write");
+    }
+
+    component.ngTerminal = mockTerminal;
+
+    // Override the component's private xterm property to prevent real terminal setup
+    (component as unknown as { xterm: unknown }).xterm =
+      mockTerminal.underlying;
+
+    // Mock the setupTerminal method to prevent real terminal initialization
+    spyOn(
+      component as unknown as { setupTerminal: () => void },
+      "setupTerminal",
+    ).and.callFake(() => {
+      (component as unknown as { xterm: unknown }).xterm =
+        mockTerminal.underlying;
+    });
+
     fixture.detectChanges();
   });
 
   afterEach(() => {
-    // Clean up terminal instances to prevent memory leaks and dimension errors
-    cleanupTerminal(component.ngTerminal);
+    // Clean up subscriptions first
+    if (component && component.ngOnDestroy) {
+      component.ngOnDestroy();
+    }
+
+    // Clean up mock terminal - prevent any async operations
+    if (mockTerminal && mockTerminal.underlying) {
+      // Stop any viewport operations
+      const underlying = mockTerminal.underlying as {
+        _core?: {
+          viewport?: {
+            _refreshAnimationFrame?: number | null;
+            dimensions?: unknown;
+            _coreBrowserService?: unknown;
+          };
+        };
+        dispose?: () => void;
+      };
+      const viewport = underlying._core?.viewport;
+      if (viewport) {
+        if (viewport._refreshAnimationFrame) {
+          cancelAnimationFrame(viewport._refreshAnimationFrame);
+          viewport._refreshAnimationFrame = null;
+        }
+        viewport.dimensions = undefined;
+        viewport._coreBrowserService = null;
+      }
+
+      // Dispose the terminal
+      if (typeof underlying.dispose === "function") {
+        try {
+          underlying.dispose();
+        } catch (_e) {
+          // Ignore disposal errors in tests
+        }
+      }
+    }
+
+    // Clean up fixture
     if (fixture) {
       fixture.destroy();
+    }
+  });
+
+  afterAll(() => {
+    // Additional cleanup to prevent afterAll errors
+    const globalWithCanvas = globalThis as {
+      HTMLCanvasElement?: {
+        prototype: { getContext?: unknown };
+      };
+    };
+    if (typeof globalWithCanvas.HTMLCanvasElement !== "undefined") {
+      delete globalWithCanvas.HTMLCanvasElement.prototype.getContext;
     }
   });
 
@@ -77,9 +149,15 @@ describe("TcrTraceComponent", () => {
 
     it("should clear the terminal upon reception of clearTrace observable", () => {
       let cleared = false;
-      component.ngTerminal.underlying!.reset = () => {
-        cleared = true;
-      };
+
+      // Use the mock terminal's reset method
+      if (mockTerminal.underlying) {
+        mockTerminal.underlying.reset = jasmine
+          .createSpy("reset")
+          .and.callFake(() => {
+            cleared = true;
+          });
+      }
 
       const clearTrace = new Subject<void>();
       component.clearTrace = clearTrace.asObservable();
@@ -88,13 +166,21 @@ describe("TcrTraceComponent", () => {
       clearTrace.next();
 
       expect(cleared).toBeTruthy();
+
+      // Clean up the subject
+      clearTrace.complete();
     });
 
     it("should print text upon reception of text observable", () => {
       let written = "";
-      component.ngTerminal.write = (input: string) => {
-        written = input;
-      };
+
+      // Set up the write spy on the component's ngTerminal
+      component.ngTerminal.write = jasmine
+        .createSpy("write")
+        .and.callFake((input: string) => {
+          written = input;
+        });
+
       const text = new Subject<string>();
 
       const input = "Hello World";
@@ -104,6 +190,9 @@ describe("TcrTraceComponent", () => {
       text.next(input);
 
       expect(written).toEqual(input + "\r\n");
+
+      // Clean up the subject
+      text.complete();
     });
   });
 
@@ -136,9 +225,14 @@ describe("TcrTraceComponent", () => {
   describe("print function", () => {
     it("should send text to the terminal", () => {
       let written = "";
-      component.ngTerminal.write = (input: string) => {
-        written = input;
-      };
+
+      // Set up the write spy on the component's ngTerminal
+      component.ngTerminal.write = jasmine
+        .createSpy("write")
+        .and.callFake((input: string) => {
+          written = input;
+        });
+
       const input = "Hello World";
       component.print(input);
       expect(written).toEqual(input + "\r\n");
@@ -148,9 +242,13 @@ describe("TcrTraceComponent", () => {
   describe("clear function", () => {
     it("should clear the terminal contents", () => {
       let cleared = false;
-      component.ngTerminal.underlying!.reset = () => {
-        cleared = true;
-      };
+      if (mockTerminal.underlying) {
+        mockTerminal.underlying.reset = jasmine
+          .createSpy("reset")
+          .and.callFake(() => {
+            cleared = true;
+          });
+      }
       component.clear();
       expect(cleared).toBeTruthy();
     });

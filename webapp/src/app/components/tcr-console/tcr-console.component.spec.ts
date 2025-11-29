@@ -41,13 +41,26 @@ import {
   red,
   yellow,
 } from "ansicolor";
-import { TcrRolesComponent } from "../tcr-roles/tcr-roles.component";
-import { TcrTraceComponent } from "../tcr-trace/tcr-trace.component";
-import { MockComponent } from "ng-mocks";
+import { Component } from "@angular/core";
 import {
   MockNgTerminalComponent,
   setupTerminalTestEnvironment,
 } from "../../../testing/terminal-test-utils";
+
+// Mock components for testing
+@Component({
+  selector: "app-tcr-roles",
+  template: '<div class="mock-roles"></div>',
+  standalone: true,
+})
+class MockTcrRolesComponent {}
+
+@Component({
+  selector: "app-tcr-trace",
+  template: '<div class="mock-trace"></div>',
+  standalone: true,
+})
+class MockTcrTraceComponent {}
 
 class FakeTcrMessageService {
   message$ = new Observable<TcrMessage>();
@@ -68,8 +81,8 @@ describe("TcrConsoleComponent", () => {
     await TestBed.configureTestingModule({
       imports: [
         TcrConsoleComponent,
-        MockComponent(TcrRolesComponent),
-        MockComponent(TcrTraceComponent),
+        MockTcrRolesComponent,
+        MockTcrTraceComponent,
       ],
       declarations: [MockNgTerminalComponent],
       providers: [
