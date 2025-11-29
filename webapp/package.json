@@ -1,7 +1,7 @@
 {
   "name": "tcr",
   "version": "1.5.0",
-  "description": "TCR Web Application - Angular 21 with modern FontAwesome 7 component-based icons. Note: Use --legacy-peer-deps for npm install/update due to third-party library compatibility",
+  "description": "TCR Web Application - Angular 21 with ng-bootstrap 19.0.1 and modern FontAwesome 7 component-based icons. Note: Use --legacy-peer-deps for npm install/update due to third-party library compatibility",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -36,7 +36,7 @@
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
-    "@ng-bootstrap/ng-bootstrap": "^18.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^19.0.1",
     "@popperjs/core": "^2.11.8",
     "@xterm/addon-unicode11": "^0.8.0",
     "@xterm/addon-web-links": "^0.11.0",
