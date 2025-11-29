@@ -4,10 +4,10 @@
        (click)="getTimer()"
        data-testid="timer-component">
     @if (timer.state === 'timeout') {
-      <i class="fa fa-exclamation-circle vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></i>
+      <fa-icon [icon]="['fas', 'circle-exclamation']" class="vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></fa-icon>
     }
     @if (timer.state !== 'timeout') {
-      <i class="fa fa-clock-o vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></i>
+      <fa-icon [icon]="['fas', 'clock']" class="vcenter px-2 py-0" style="font-size:36px" data-testid="timer-icon"></fa-icon>
     }
     <h2 class="mbr-bold display-5 px-2 py-0" data-testid="timer-label">{{ remaining | formatTimer }}</h2>
   </div>

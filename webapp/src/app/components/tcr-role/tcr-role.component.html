@@ -8,10 +8,10 @@
        class="wrap">
     <div class="ico-wrap">
       @if (role.name === 'navigator') {
-        <span class="mbr-iconfont fa-compass fa" data-testid="role-icon"></span>
+        <fa-icon [icon]="['fas', 'compass']" class="mbr-iconfont" data-testid="role-icon"></fa-icon>
       }
       @if (role.name === 'driver') {
-        <span class="mbr-iconfont fa-keyboard-o fa" data-testid="role-icon"></span>
+        <fa-icon [icon]="['fas', 'keyboard']" class="mbr-iconfont" data-testid="role-icon"></fa-icon>
       }
     </div>
     <div class="text-wrap vcenter">

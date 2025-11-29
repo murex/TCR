@@ -26,10 +26,11 @@ import { TcrRolesService } from "../../services/trc-roles.service";
 import { TcrMessage } from "../../interfaces/tcr-message";
 import { NgClass } from "@angular/common";
 import { toSignal } from "@angular/core/rxjs-interop";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: "app-tcr-role",
-  imports: [NgClass],
+  imports: [NgClass, FontAwesomeModule],
   templateUrl: "./tcr-role.component.html",
   styleUrl: "./tcr-role.component.css",
 })

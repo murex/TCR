@@ -20,22 +20,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import {HomeComponent} from './home.component';
-import {NavigationBehaviorOptions, Router, UrlTree} from "@angular/router";
-import {By} from "@angular/platform-browser";
+import { HomeComponent } from "./home.component";
+import { NavigationBehaviorOptions, Router, UrlTree } from "@angular/router";
+import { By } from "@angular/platform-browser";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
 
 class FakeRouter {
-  url: string = '';
+  url: string = "";
 
-  navigateByUrl(url: string | UrlTree, _extras?: NavigationBehaviorOptions): Promise<boolean> {
+  navigateByUrl(
+    url: string | UrlTree,
+    _extras?: NavigationBehaviorOptions,
+  ): Promise<boolean> {
     this.url = url.toString();
     return Promise.resolve(true);
   }
 }
 
-describe('HomeComponent', () => {
+describe("HomeComponent", () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let router: Router;
@@ -43,10 +48,12 @@ describe('HomeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
-      providers: [
-        {provide: Router, useClass: FakeRouter}
-      ]
+      providers: [{ provide: Router, useClass: FakeRouter }, FaIconLibrary],
     }).compileComponents();
+
+    // Register FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
@@ -56,40 +63,39 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
   });
 
-  describe('component DOM', () => {
-
+  describe("component DOM", () => {
     it(`should have a title`, () => {
-      const element = fixture.nativeElement.querySelector('h1');
+      const element = fixture.nativeElement.querySelector("h1");
       expect(element).toBeTruthy();
-      expect(element.textContent).toContain('TCR - Test && Commit || Revert');
+      expect(element.textContent).toContain("TCR - Test && Commit || Revert");
     });
 
     [
-      {buttonId: 'console-button', expectedUrl: '/console'},
-      {buttonId: 'about-button', expectedUrl: '/about'},
-      {buttonId: 'session-button', expectedUrl: '/session'},
-    ].forEach(({buttonId, expectedUrl}) => {
+      { buttonId: "console-button", expectedUrl: "/console" },
+      { buttonId: "about-button", expectedUrl: "/about" },
+      { buttonId: "session-button", expectedUrl: "/session" },
+    ].forEach(({ buttonId, expectedUrl }) => {
       it(`should have a clickable link redirecting to the ${expectedUrl} page`, () => {
         const element = fixture.debugElement.query(
-          By.css(`[data-testid="${buttonId}"]`));
+          By.css(`[data-testid="${buttonId}"]`),
+        );
         expect(element).toBeTruthy();
-        element.triggerEventHandler('click', null);
+        element.triggerEventHandler("click", null);
         expect(router.url).toEqual(expectedUrl);
       });
     });
 
-    it('should alert the user on invalid path', async () => {
-      spyOn(window, 'alert');
+    it("should alert the user on invalid path", async () => {
+      spyOn(window, "alert");
       router.navigateByUrl = () => Promise.resolve(false);
-      await component.navigateTo('/invalid-path');
+      await component.navigateTo("/invalid-path");
       expect(window.alert).toHaveBeenCalled();
     });
-
   });
 });

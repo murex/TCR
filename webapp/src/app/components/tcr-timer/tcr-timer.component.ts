@@ -34,10 +34,11 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { TcrTimer, TcrTimerState } from "../../interfaces/tcr-timer";
 import { FormatTimerPipe } from "../../pipes/format-timer.pipe";
 import { NgStyle } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: "app-tcr-timer",
-  imports: [FormatTimerPipe, NgStyle],
+  imports: [FormatTimerPipe, NgStyle, FontAwesomeModule],
   templateUrl: "./tcr-timer.component.html",
   styleUrl: "./tcr-timer.component.css",
 })

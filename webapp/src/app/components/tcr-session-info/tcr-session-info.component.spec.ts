@@ -20,11 +20,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Observable, of} from 'rxjs';
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {TcrSessionInfo} from "../../interfaces/tcr-session-info";
-import {TcrSessionInfoService} from "../../services/tcr-session-info.service";
-import {TcrSessionInfoComponent} from "./tcr-session-info.component";
+import { Observable, of } from "rxjs";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
+import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
+import { TcrSessionInfoComponent } from "./tcr-session-info.component";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
 
 const sample: TcrSessionInfo = {
   baseDir: "/my/base/dir",
@@ -35,7 +37,7 @@ const sample: TcrSessionInfo = {
   toolchain: "gradle",
   vcsName: "git",
   vcsSession: "my VCS session",
-  workDir: "/my/work/dir"
+  workDir: "/my/work/dir",
 };
 
 class FakeTcrSessionInfoService {
@@ -46,7 +48,7 @@ class FakeTcrSessionInfoService {
   }
 }
 
-describe('TcrSessionInfoComponent', () => {
+describe("TcrSessionInfoComponent", () => {
   let component: TcrSessionInfoComponent;
   let fixture: ComponentFixture<TcrSessionInfoComponent>;
 
@@ -54,9 +56,14 @@ describe('TcrSessionInfoComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrSessionInfoComponent],
       providers: [
-        {provide: TcrSessionInfoService, useClass: FakeTcrSessionInfoService}
-      ]
+        { provide: TcrSessionInfoService, useClass: FakeTcrSessionInfoService },
+        FaIconLibrary,
+      ],
     }).compileComponents();
+
+    // Register FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
@@ -65,18 +72,18 @@ describe('TcrSessionInfoComponent', () => {
     fixture.detectChanges();
   });
 
-  describe('component instance', () => {
-    it('should be created', () => {
+  describe("component instance", () => {
+    it("should be created", () => {
       expect(component).toBeTruthy();
     });
 
     it('should have title "TCR Session Information"', () => {
-      expect(component.title).toEqual('TCR Session Information');
+      expect(component.title).toEqual("TCR Session Information");
     });
   });
 
-  describe('component initialization', () => {
-    it('should fetch TCR session info on init', () => {
+  describe("component initialization", () => {
+    it("should fetch TCR session info on init", () => {
       expect(component.sessionInfo).toEqual(sample);
     });
   });

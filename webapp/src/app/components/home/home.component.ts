@@ -20,26 +20,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Component} from '@angular/core';
-import {Router} from "@angular/router";
+import { Component } from "@angular/core";
+import { Router } from "@angular/router";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
-  selector: 'app-home',
-  imports: [],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  selector: "app-home",
+  imports: [FontAwesomeModule],
+  templateUrl: "./home.component.html",
+  styleUrl: "./home.component.css",
 })
 export class HomeComponent {
-  title: string = 'TCR - Test && Commit || Revert';
+  title: string = "TCR - Test && Commit || Revert";
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   async navigateTo(url: string): Promise<void> {
-    this.router.navigateByUrl(url)
-      .then(r => {
-        if (!r)
-          window.alert(`Page not found: ${url}`);
-      });
+    this.router.navigateByUrl(url).then((r) => {
+      if (!r) window.alert(`Page not found: ${url}`);
+    });
   }
 }

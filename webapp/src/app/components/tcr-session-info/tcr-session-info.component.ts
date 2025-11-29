@@ -27,6 +27,7 @@ import { NgOptimizedImage } from "@angular/common";
 import { OnOffPipe } from "../../pipes/on-off.pipe";
 import { VariantDescriptionPipe } from "../../pipes/variant-description.pipe";
 import { VariantImagePathPipe } from "../../pipes/variant-image-path.pipe";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: "app-tcr-session-info",
@@ -35,6 +36,7 @@ import { VariantImagePathPipe } from "../../pipes/variant-image-path.pipe";
     NgOptimizedImage,
     VariantDescriptionPipe,
     VariantImagePathPipe,
+    FontAwesomeModule,
   ],
   templateUrl: "./tcr-session-info.component.html",
   styleUrl: "./tcr-session-info.component.css",

@@ -26,6 +26,8 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting,
 } from "@angular/platform-browser-dynamic/testing";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "./app/shared/font-awesome-icons";
 
 // Global test configuration
 
@@ -137,6 +139,10 @@ beforeEach(() => {
     (window as unknown as { __xtermInstances: unknown[] }).__xtermInstances =
       [];
   }
+
+  // Initialize FontAwesome icons for all tests
+  const iconLibrary = new FaIconLibrary();
+  registerFontAwesomeIcons(iconLibrary);
 });
 
 // Global afterEach to clean up any lingering timers or async operations

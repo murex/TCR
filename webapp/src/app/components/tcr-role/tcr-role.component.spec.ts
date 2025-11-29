@@ -33,6 +33,8 @@ import { TcrRolesService } from "../../services/trc-roles.service";
 import { TcrRole } from "../../interfaces/tcr-role";
 import { By } from "@angular/platform-browser";
 import { ChangeDetectorRef } from "@angular/core";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
 
 class FakeTcrRolesService {
   message$ = new Observable<TcrMessage>();
@@ -62,8 +64,15 @@ describe("TcrRoleComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrRoleComponent],
-      providers: [{ provide: TcrRolesService, useClass: FakeTcrRolesService }],
+      providers: [
+        { provide: TcrRolesService, useClass: FakeTcrRolesService },
+        FaIconLibrary,
+      ],
     }).compileComponents();
+
+    // Register FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
@@ -88,28 +97,28 @@ describe("TcrRoleComponent", () => {
         description: "driver role",
         active: true,
         componentClass: "driver-on",
-        iconClass: "fa-keyboard-o",
+        iconClass: "keyboard",
       },
       {
         name: "driver",
         description: "driver role",
         active: false,
         componentClass: "role-off",
-        iconClass: "fa-keyboard-o",
+        iconClass: "keyboard",
       },
       {
         name: "navigator",
         description: "navigator role",
         active: true,
         componentClass: "navigator-on",
-        iconClass: "fa-compass",
+        iconClass: "compass",
       },
       {
         name: "navigator",
         description: "navigator role",
         active: false,
         componentClass: "role-off",
-        iconClass: "fa-compass",
+        iconClass: "compass",
       },
     ].forEach((testCase) => {
       it(`should work with ${testCase.name} role ${testCase.active ? "on" : "off"}`, fakeAsync(() => {
@@ -143,9 +152,19 @@ describe("TcrRoleComponent", () => {
           By.css(`[data-testid="role-icon"]`),
         );
         expect(iconElement).toBeTruthy();
-        expect(iconElement.nativeElement.classList).toContain(
-          testCase.iconClass,
-        );
+        // Check for fa-icon element with correct icon
+        expect(iconElement.nativeElement.tagName.toLowerCase()).toBe("fa-icon");
+        // The icon is rendered as an SVG, check the data-icon attribute
+        const svgElement = iconElement.nativeElement.querySelector("svg");
+        if (svgElement) {
+          const dataIcon = svgElement.getAttribute("data-icon");
+          expect(dataIcon).toBe(testCase.iconClass);
+        } else {
+          // Fallback: check if the icon name is in the class
+          expect(iconElement.nativeElement.innerHTML).toContain(
+            testCase.iconClass,
+          );
+        }
 
         // Verify that the role label is rendered
         const labelElement = fixture.debugElement.query(

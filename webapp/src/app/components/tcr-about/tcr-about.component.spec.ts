@@ -20,13 +20,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {Observable, of} from 'rxjs';
-import {TcrBuildInfoService} from '../../services/tcr-build-info.service';
-import {TcrAboutComponent} from "./tcr-about.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {provideHttpClientTesting} from "@angular/common/http/testing";
-import {TcrBuildInfo} from "../../interfaces/tcr-build-info";
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import { Observable, of } from "rxjs";
+import { TcrBuildInfoService } from "../../services/tcr-build-info.service";
+import { TcrAboutComponent } from "./tcr-about.component";
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
+import { TcrBuildInfo } from "../../interfaces/tcr-build-info";
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from "@angular/common/http";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
 
 const sample: TcrBuildInfo = {
   version: "1.0.0",
@@ -45,7 +50,7 @@ class FakeTcrBuildInfoService {
   }
 }
 
-describe('TcrAboutComponent', () => {
+describe("TcrAboutComponent", () => {
   let component: TcrAboutComponent;
   let fixture: ComponentFixture<TcrAboutComponent>;
 
@@ -53,11 +58,16 @@ describe('TcrAboutComponent', () => {
     await TestBed.configureTestingModule({
       imports: [TcrAboutComponent],
       providers: [
-        {provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService},
+        { provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService },
+        FaIconLibrary,
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
+
+    // Register FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
@@ -66,15 +76,15 @@ describe('TcrAboutComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(component).toBeTruthy();
   });
 
   it('should have title "About TCR"', () => {
-    expect(component.title).toEqual('About TCR');
+    expect(component.title).toEqual("About TCR");
   });
 
-  it('should fetch TCR build info on init', () => {
+  it("should fetch TCR build info on init", () => {
     expect(component.buildInfo).toEqual(sample);
   });
 });

@@ -28,6 +28,8 @@ import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
 import { TcrTimerService } from "../../services/tcr-timer.service";
 import { TcrTimer, TcrTimerState } from "../../interfaces/tcr-timer";
 import { By } from "@angular/platform-browser";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
+import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
 
 class FakeTcrTimerService {
   message$ = new Observable<TcrMessage>();
@@ -50,8 +52,15 @@ describe("TcrTimerComponent", () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TcrTimerComponent],
-      providers: [{ provide: TcrTimerService, useClass: FakeTcrTimerService }],
+      providers: [
+        { provide: TcrTimerService, useClass: FakeTcrTimerService },
+        FaIconLibrary,
+      ],
     }).compileComponents();
+
+    // Register FontAwesome icons
+    const library = TestBed.inject(FaIconLibrary);
+    registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
@@ -76,8 +85,8 @@ describe("TcrTimerComponent", () => {
   });
 
   describe("component initialization", () => {
-    const clockIcon = "fa-clock-o";
-    const warningIcon = "fa-exclamation-circle";
+    const clockIcon = "clock";
+    const warningIcon = "circle-exclamation";
 
     [
       {
@@ -163,9 +172,19 @@ describe("TcrTimerComponent", () => {
           By.css(`[data-testid="timer-icon"]`),
         );
         expect(iconElement).toBeTruthy();
-        expect(iconElement.nativeElement.classList).toContain(
-          testCase.expectedIcon,
-        );
+        // Check for fa-icon element with correct icon
+        expect(iconElement.nativeElement.tagName.toLowerCase()).toBe("fa-icon");
+        // The icon is rendered as an SVG, check the data-icon attribute
+        const svgElement = iconElement.nativeElement.querySelector("svg");
+        if (svgElement) {
+          const dataIcon = svgElement.getAttribute("data-icon");
+          expect(dataIcon).toBe(testCase.expectedIcon);
+        } else {
+          // Fallback: check if the icon name is in the class
+          expect(iconElement.nativeElement.innerHTML).toContain(
+            testCase.expectedIcon,
+          );
+        }
 
         // Verify that the timer text is rendered
         const textElement = fixture.debugElement.query(

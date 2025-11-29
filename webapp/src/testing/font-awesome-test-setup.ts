@@ -20,4 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { registerFontAwesomeIcons } from '../app/shared/font-awesome-icons';
+
+/**
+ * Sets up FontAwesome icons for testing environment
+ * Call this in component tests that use FontAwesome icons
+ */
+export function setupFontAwesomeTestingModule(library: FaIconLibrary): void {
+  registerFontAwesomeIcons(library);
+}
+
+/**
+ * Provider for FontAwesome in tests
+ */
+export const FONT_AWESOME_TEST_PROVIDERS = [
+  FaIconLibrary
+];

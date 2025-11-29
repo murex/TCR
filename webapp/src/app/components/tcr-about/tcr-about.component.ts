@@ -24,10 +24,11 @@ import { Component, Input, OnInit } from "@angular/core";
 import { TcrBuildInfo } from "../../interfaces/tcr-build-info";
 import { TcrBuildInfoService } from "../../services/tcr-build-info.service";
 import { DatePipe } from "@angular/common";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 @Component({
   selector: "app-tcr-about",
-  imports: [DatePipe],
+  imports: [DatePipe, FontAwesomeModule],
   templateUrl: "./tcr-about.component.html",
   styleUrl: "./tcr-about.component.css",
 })
