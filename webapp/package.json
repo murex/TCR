@@ -1,12 +1,14 @@
 {
   "name": "tcr",
   "version": "1.5.0",
+  "description": "TCR Web Application - Upgraded to Angular 21. Note: Use --legacy-peer-deps for npm install/update due to third-party library compatibility",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "build-prod": "ng build --output-path ../src/http/static/webapp --configuration production --extract-licenses false",
     "watch": "ng build --watch --configuration development",
+    "postinstall": "echo 'Note: This project requires --legacy-peer-deps flag for npm operations due to Angular 21 compatibility'",
     "test": "ng test --source-map=false --browsers=ChromeHeadlessCustom --watch=false",
     "coverage": "ng test --source-map=true --browsers=ChromeHeadlessCustom --watch=false --code-coverage",
     "test-watch": "ng test",
