@@ -24,6 +24,7 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { HeaderComponent } from "./header.component";
 import { RouterModule } from "@angular/router";
 import { Component } from "@angular/core";
+import { TcrTimerComponent } from "../tcr-timer/tcr-timer.component";
 
 // Mock component for testing
 @Component({
@@ -39,13 +40,14 @@ describe("HeaderComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        HeaderComponent,
-        MockTcrTimerComponent,
-        RouterModule.forRoot([]),
-      ],
+      imports: [HeaderComponent, RouterModule.forRoot([])],
       providers: [],
-    }).compileComponents();
+    })
+      .overrideComponent(HeaderComponent, {
+        remove: { imports: [TcrTimerComponent] },
+        add: { imports: [MockTcrTimerComponent] },
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

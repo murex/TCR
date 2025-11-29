@@ -28,10 +28,12 @@ import {
   isRoleStartMessage,
   TcrConsoleComponent,
 } from "./tcr-console.component";
-import { Observable } from "rxjs";
 import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
 import { TcrMessageService } from "../../services/tcr-message.service";
 import { TcrControlsService } from "../../services/tcr-controls.service";
+import { TcrRolesComponent } from "../tcr-roles/tcr-roles.component";
+import { TcrTraceComponent } from "../tcr-trace/tcr-trace.component";
+import { TcrControlsComponent } from "../tcr-controls/tcr-controls.component";
 import {
   bgDarkGray,
   cyan,
@@ -41,7 +43,8 @@ import {
   red,
   yellow,
 } from "ansicolor";
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
+import { Observable, Subject, of } from "rxjs";
 import {
   MockNgTerminalComponent,
   setupTerminalTestEnvironment,
@@ -60,13 +63,27 @@ class MockTcrRolesComponent {}
   template: '<div class="mock-trace"></div>',
   standalone: true,
 })
-class MockTcrTraceComponent {}
-
-class FakeTcrMessageService {
-  message$ = new Observable<TcrMessage>();
+class MockTcrTraceComponent {
+  @Input() text?: Observable<string>;
+  @Input() clearTrace?: Observable<void>;
 }
 
-class FakeTcrControlsService {}
+@Component({
+  selector: "app-tcr-controls",
+  template: '<div class="mock-controls"></div>',
+  standalone: true,
+})
+class MockTcrControlsComponent {}
+
+class FakeTcrMessageService {
+  message$ = new Subject<TcrMessage>();
+}
+
+class FakeTcrControlsService {
+  abortCommand() {
+    return of({});
+  }
+}
 
 describe("TcrConsoleComponent", () => {
   let component: TcrConsoleComponent;
@@ -79,17 +96,26 @@ describe("TcrConsoleComponent", () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        TcrConsoleComponent,
-        MockTcrRolesComponent,
-        MockTcrTraceComponent,
-      ],
+      imports: [TcrConsoleComponent],
       declarations: [MockNgTerminalComponent],
       providers: [
         { provide: TcrMessageService, useClass: FakeTcrMessageService },
         { provide: TcrControlsService, useClass: FakeTcrControlsService },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(TcrConsoleComponent, {
+        remove: {
+          imports: [TcrRolesComponent, TcrTraceComponent, TcrControlsComponent],
+        },
+        add: {
+          imports: [
+            MockTcrRolesComponent,
+            MockTcrTraceComponent,
+            MockTcrControlsComponent,
+          ],
+        },
+      })
+      .compileComponents();
   });
 
   beforeEach(() => {

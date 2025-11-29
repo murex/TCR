@@ -142,22 +142,28 @@ export function cleanupTerminal(terminal?: NgTerminal): void {
   if (terminal?.underlying) {
     try {
       // Stop any pending viewport sync operations
-      const underlying = terminal.underlying as Record<string, unknown>;
-      if (underlying._core?.viewport) {
+      const underlying = terminal.underlying as unknown as Record<
+        string,
+        unknown
+      >;
+      const core = underlying["_core"] as Record<string, unknown> | undefined;
+      const viewport = core?.["viewport"] as
+        | Record<string, unknown>
+        | undefined;
+
+      if (viewport) {
         // Clear any pending timers in viewport
-        if (underlying._core.viewport._refreshAnimationFrame) {
-          cancelAnimationFrame(
-            underlying._core.viewport._refreshAnimationFrame,
-          );
+        if (viewport["_refreshAnimationFrame"]) {
+          cancelAnimationFrame(viewport["_refreshAnimationFrame"] as number);
           try {
-            underlying._core.viewport._refreshAnimationFrame = null;
+            viewport["_refreshAnimationFrame"] = null;
           } catch {
             // Property might be read-only
           }
         }
-        if (underlying._core.viewport._coreBrowserService) {
+        if (viewport["_coreBrowserService"]) {
           try {
-            underlying._core.viewport._coreBrowserService = null;
+            viewport["_coreBrowserService"] = null;
           } catch {
             // Property might be read-only
           }
@@ -179,7 +185,7 @@ export function cleanupTerminal(terminal?: NgTerminal): void {
       } catch {
         // If that fails, try direct assignment
         try {
-          (terminal as Record<string, unknown>).underlying = null;
+          (terminal as unknown as Record<string, unknown>)["underlying"] = null;
         } catch {
           // Ignore if property is truly read-only
         }
@@ -242,7 +248,7 @@ export function setupTerminalTestEnvironment(): void {
   if (typeof HTMLCanvasElement !== "undefined") {
     HTMLCanvasElement.prototype.getContext = function () {
       return mockCanvasContext as unknown as CanvasRenderingContext2D;
-    } as typeof HTMLCanvasElement.prototype.getContext;
+    } as unknown as typeof HTMLCanvasElement.prototype.getContext;
   }
 
   // Mock getBoundingClientRect for consistent dimensions

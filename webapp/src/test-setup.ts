@@ -103,8 +103,59 @@ if (typeof HTMLElement !== "undefined") {
   };
 }
 
+// Global cleanup for terminal/xterm instances
+function cleanupXtermInstances() {
+  // Clean up any xterm viewport refresh frames
+  if (
+    typeof window !== "undefined" &&
+    (window as unknown as { __xtermInstances?: unknown[] }).__xtermInstances
+  ) {
+    const instances = (window as unknown as { __xtermInstances: unknown[] })
+      .__xtermInstances;
+    for (const instance of instances) {
+      try {
+        if (instance._core?.viewport?._refreshAnimationFrame) {
+          cancelAnimationFrame(instance._core.viewport._refreshAnimationFrame);
+          instance._core.viewport._refreshAnimationFrame = null;
+        }
+        if (instance.dispose && typeof instance.dispose === "function") {
+          instance.dispose();
+        }
+      } catch (_e) {
+        // Ignore cleanup errors
+      }
+    }
+    (window as unknown as { __xtermInstances: unknown[] }).__xtermInstances =
+      [];
+  }
+}
+
+// Global beforeEach to prepare clean test environment
+beforeEach(() => {
+  // Initialize xterm instance tracking
+  if (typeof window !== "undefined") {
+    (window as unknown as { __xtermInstances: unknown[] }).__xtermInstances =
+      [];
+  }
+});
+
 // Global afterEach to clean up any lingering timers or async operations
 afterEach(() => {
+  // Clean up any xterm instances first
+  cleanupXtermInstances();
+
+  // Cancel any pending animation frames
+  if (typeof window !== "undefined" && window.cancelAnimationFrame) {
+    // Cancel a reasonable range of animation frame IDs
+    for (let i = 1; i <= 1000; i++) {
+      try {
+        window.cancelAnimationFrame(i);
+      } catch (_e) {
+        // Ignore errors for invalid IDs
+      }
+    }
+  }
+
   // Clear any pending timeouts (limited to reasonable range)
   const dummyTimeoutId = setTimeout(() => {}, 0) as unknown as number;
   clearTimeout(dummyTimeoutId);
@@ -128,7 +179,39 @@ afterEach(() => {
   ) {
     clearInterval(i);
   }
+
+  // Clean up any pending promises
+  if (typeof window !== "undefined" && window.Promise) {
+    // Force a microtask flush
+    Promise.resolve().then(() => {});
+  }
 });
 
 // Set longer timeout for tests that might involve DOM operations
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
+// Override console.error to suppress expected error messages in tests
+const originalConsoleError = console.error;
+console.error = (...args: unknown[]) => {
+  // Suppress known HTTP error messages from services
+  const message = args[0]?.toString() || "";
+  if (
+    message.includes("getTimer -") ||
+    message.includes("getRole -") ||
+    message.includes("getBuildInfo -") ||
+    message.includes("activateRole -") ||
+    message.includes("abort-command -")
+  ) {
+    return; // Suppress these expected errors in tests
+  }
+  // Suppress terminal disposal warnings
+  if (
+    message.includes("Error disposing xterm:") ||
+    message.includes("Error clearing terminal:") ||
+    message.includes("Terminal cleanup warning:")
+  ) {
+    return; // Suppress these expected warnings in tests
+  }
+  // Call original console.error for other messages
+  originalConsoleError.apply(console, args);
+};

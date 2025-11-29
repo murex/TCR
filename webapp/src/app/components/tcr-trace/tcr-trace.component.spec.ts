@@ -23,114 +23,87 @@ SOFTWARE.
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TcrTraceComponent, toCRLF } from "./tcr-trace.component";
 import { Subject } from "rxjs";
+import { Component, Input, EventEmitter, Output } from "@angular/core";
 
-import {
-  MockNgTerminalComponent,
-  createMockNgTerminal,
-  setupTerminalTestEnvironment,
-} from "../../../testing/terminal-test-utils";
+/**
+ * Complete mock of NgTerminal to prevent any xterm initialization
+ */
+@Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
+  selector: "ng-terminal",
+  template: '<div class="mock-terminal"></div>',
+  standalone: true,
+})
+class MockNgTerminalComponent {
+  @Input() setXtermOptions: unknown;
+  @Input() setRows: number | undefined;
+  @Input() setCols: number | undefined;
+  @Input() setMinWidth: string | undefined;
+  @Input() setMinHeight: string | undefined;
+  @Input() setDraggable: boolean | undefined;
+  @Output() keyEventInput = new EventEmitter<unknown>();
+
+  underlying: Record<string, unknown> = {
+    reset: jasmine.createSpy("reset"),
+    dispose: jasmine.createSpy("dispose"),
+    loadAddon: jasmine.createSpy("loadAddon"),
+    unicode: { activeVersion: "11" },
+  };
+
+  write = jasmine.createSpy("write");
+  clear = jasmine.createSpy("clear");
+}
 
 describe("TcrTraceComponent", () => {
   let component: TcrTraceComponent;
   let fixture: ComponentFixture<TcrTraceComponent>;
-  let mockTerminal: ReturnType<typeof createMockNgTerminal>;
-
-  beforeAll(() => {
-    // Set up safe terminal test environment
-    setupTerminalTestEnvironment();
-  });
+  let mockTerminal: MockNgTerminalComponent;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TcrTraceComponent],
-      declarations: [MockNgTerminalComponent],
-    }).compileComponents();
-  });
+      imports: [TcrTraceComponent, MockNgTerminalComponent],
+    })
+      .overrideComponent(TcrTraceComponent, {
+        set: {
+          imports: [MockNgTerminalComponent],
+        },
+      })
+      .compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(TcrTraceComponent);
     component = fixture.componentInstance;
 
-    // Create a mock terminal that won't cause afterAll errors
-    mockTerminal = createMockNgTerminal();
+    // Create and assign mock terminal
+    mockTerminal = new MockNgTerminalComponent();
+    component.ngTerminal =
+      mockTerminal as unknown as typeof component.ngTerminal;
 
-    // Ensure the mock has a proper write method
-    if (!mockTerminal.write) {
-      mockTerminal.write = jasmine.createSpy("write");
-    }
-
-    component.ngTerminal = mockTerminal;
-
-    // Override the component's private xterm property to prevent real terminal setup
-    (component as unknown as { xterm: unknown }).xterm =
+    // Mock the private properties and methods
+    (component as unknown as Record<string, unknown>)["xterm"] =
       mockTerminal.underlying;
-
-    // Mock the setupTerminal method to prevent real terminal initialization
     spyOn(
-      component as unknown as { setupTerminal: () => void },
+      component as unknown as Record<string, jasmine.Spy>,
       "setupTerminal",
-    ).and.callFake(() => {
-      (component as unknown as { xterm: unknown }).xterm =
-        mockTerminal.underlying;
-    });
-
-    fixture.detectChanges();
+    ).and.stub();
   });
 
   afterEach(() => {
-    // Clean up subscriptions first
-    if (component && component.ngOnDestroy) {
-      component.ngOnDestroy();
+    // Clean up subscriptions
+    if ((component as unknown as Record<string, unknown>)["subscriptions"]) {
+      (
+        component as unknown as {
+          subscriptions: Array<{ unsubscribe?: () => void }>;
+        }
+      ).subscriptions.forEach((sub: { unsubscribe?: () => void }) => {
+        if (sub && sub.unsubscribe) {
+          sub.unsubscribe();
+        }
+      });
     }
 
-    // Clean up mock terminal - prevent any async operations
-    if (mockTerminal && mockTerminal.underlying) {
-      // Stop any viewport operations
-      const underlying = mockTerminal.underlying as {
-        _core?: {
-          viewport?: {
-            _refreshAnimationFrame?: number | null;
-            dimensions?: unknown;
-            _coreBrowserService?: unknown;
-          };
-        };
-        dispose?: () => void;
-      };
-      const viewport = underlying._core?.viewport;
-      if (viewport) {
-        if (viewport._refreshAnimationFrame) {
-          cancelAnimationFrame(viewport._refreshAnimationFrame);
-          viewport._refreshAnimationFrame = null;
-        }
-        viewport.dimensions = undefined;
-        viewport._coreBrowserService = null;
-      }
-
-      // Dispose the terminal
-      if (typeof underlying.dispose === "function") {
-        try {
-          underlying.dispose();
-        } catch (_e) {
-          // Ignore disposal errors in tests
-        }
-      }
-    }
-
-    // Clean up fixture
+    // Clean up component
     if (fixture) {
       fixture.destroy();
-    }
-  });
-
-  afterAll(() => {
-    // Additional cleanup to prevent afterAll errors
-    const globalWithCanvas = globalThis as {
-      HTMLCanvasElement?: {
-        prototype: { getContext?: unknown };
-      };
-    };
-    if (typeof globalWithCanvas.HTMLCanvasElement !== "undefined") {
-      delete globalWithCanvas.HTMLCanvasElement.prototype.getContext;
     }
   });
 
@@ -148,50 +121,37 @@ describe("TcrTraceComponent", () => {
     });
 
     it("should clear the terminal upon reception of clearTrace observable", () => {
-      let cleared = false;
-
-      // Use the mock terminal's reset method
-      if (mockTerminal.underlying) {
-        mockTerminal.underlying.reset = jasmine
-          .createSpy("reset")
-          .and.callFake(() => {
-            cleared = true;
-          });
-      }
-
       const clearTrace = new Subject<void>();
       component.clearTrace = clearTrace.asObservable();
 
+      // Initialize component
       component.ngAfterViewInit();
+
+      // Trigger the clear
       clearTrace.next();
 
-      expect(cleared).toBeTruthy();
+      // Verify reset was called
+      expect(mockTerminal.underlying["reset"]).toHaveBeenCalled();
 
-      // Clean up the subject
+      // Clean up
       clearTrace.complete();
     });
 
     it("should print text upon reception of text observable", () => {
-      let written = "";
-
-      // Set up the write spy on the component's ngTerminal
-      component.ngTerminal.write = jasmine
-        .createSpy("write")
-        .and.callFake((input: string) => {
-          written = input;
-        });
-
       const text = new Subject<string>();
-
       const input = "Hello World";
       component.text = text.asObservable();
 
+      // Initialize component
       component.ngAfterViewInit();
+
+      // Send the text
       text.next(input);
 
-      expect(written).toEqual(input + "\r\n");
+      // Verify write was called
+      expect(mockTerminal.write).toHaveBeenCalledWith(input + "\r\n");
 
-      // Clean up the subject
+      // Clean up
       text.complete();
     });
   });
@@ -224,33 +184,54 @@ describe("TcrTraceComponent", () => {
 
   describe("print function", () => {
     it("should send text to the terminal", () => {
-      let written = "";
-
-      // Set up the write spy on the component's ngTerminal
-      component.ngTerminal.write = jasmine
-        .createSpy("write")
-        .and.callFake((input: string) => {
-          written = input;
-        });
-
       const input = "Hello World";
       component.print(input);
-      expect(written).toEqual(input + "\r\n");
+      expect(mockTerminal.write).toHaveBeenCalledWith(input + "\r\n");
     });
   });
 
   describe("clear function", () => {
     it("should clear the terminal contents", () => {
-      let cleared = false;
-      if (mockTerminal.underlying) {
-        mockTerminal.underlying.reset = jasmine
-          .createSpy("reset")
-          .and.callFake(() => {
-            cleared = true;
-          });
-      }
       component.clear();
-      expect(cleared).toBeTruthy();
+      expect(mockTerminal.underlying["reset"]).toHaveBeenCalled();
+    });
+  });
+
+  describe("lifecycle hooks", () => {
+    it("should clean up subscriptions on destroy", () => {
+      const text = new Subject<string>();
+      const clearTrace = new Subject<void>();
+      component.text = text.asObservable();
+      component.clearTrace = clearTrace.asObservable();
+
+      component.ngAfterViewInit();
+
+      // Verify subscriptions are created
+      expect(
+        (component as unknown as { subscriptions: unknown[] })["subscriptions"]
+          .length,
+      ).toBe(2);
+
+      // Destroy component
+      component.ngOnDestroy();
+
+      // Verify dispose was called
+      expect(mockTerminal.underlying["dispose"]).toHaveBeenCalled();
+
+      // Clean up subjects
+      text.complete();
+      clearTrace.complete();
+    });
+
+    it("should handle undefined observables gracefully", () => {
+      component.text = undefined;
+      component.clearTrace = undefined;
+
+      expect(() => component.ngAfterViewInit()).not.toThrow();
+      expect(
+        (component as unknown as { subscriptions: unknown[] })["subscriptions"]
+          .length,
+      ).toBe(0);
     });
   });
 });
