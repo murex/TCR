@@ -1,7 +1,7 @@
 {
   "name": "tcr",
   "version": "1.5.0",
-  "description": "TCR Web Application - Angular 21 with ng-bootstrap 19.0.1 and modern FontAwesome 7 component-based icons. Note: Use --legacy-peer-deps for npm install/update due to third-party library compatibility",
+  "description": "TCR Web Application",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -46,7 +46,7 @@
     "ng-terminal": "^6.4.0",
     "rxjs": "~7.8.1",
     "tslib": "^2.8.1",
-    "zone.js": "~0.15.0"
+    "zone.js": "^0.16.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.0.0",
