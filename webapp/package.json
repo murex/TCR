@@ -51,7 +51,7 @@
     "@angular-eslint/builder": "20.6.0",
     "@angular-eslint/schematics": "20.6.0",
     "@angular-eslint/eslint-plugin": "20.6.0",
-    "@angular-eslint/eslint-plugin-template": "20.6.0",
+    "@angular-eslint/eslint-plugin-template": "21.0.1",
     "@angular-eslint/template-parser": "20.6.0",
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
