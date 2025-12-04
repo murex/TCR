@@ -53,7 +53,7 @@
     "@angular-eslint/eslint-plugin": "20.6.0",
     "@angular-eslint/eslint-plugin-template": "20.6.0",
     "@angular-eslint/template-parser": "20.6.0",
-    "@angular/cli": "^20.0.0",
+    "@angular/cli": "^21.0.2",
     "@angular/compiler-cli": "^20.0.0",
     "@angular/localize": "^20.0.0",
     "@eslint/config-array": "^0.23.0",
