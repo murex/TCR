@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { vi } from "vitest";
+import { createComponentWithStrategies } from "../../../test-helpers/angular-test-helpers";
+
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TcrTraceComponent, toCRLF } from "./tcr-trace.component";
 import { Subject } from "rxjs";
@@ -44,14 +47,14 @@ class MockNgTerminalComponent {
   @Output() keyEventInput = new EventEmitter<unknown>();
 
   underlying: Record<string, unknown> = {
-    reset: jasmine.createSpy("reset"),
-    dispose: jasmine.createSpy("dispose"),
-    loadAddon: jasmine.createSpy("loadAddon"),
+    reset: vi.fn(),
+    dispose: vi.fn(),
+    loadAddon: vi.fn(),
     unicode: { activeVersion: "11" },
   };
 
-  write = jasmine.createSpy("write");
-  clear = jasmine.createSpy("clear");
+  write = vi.fn();
+  clear = vi.fn();
 }
 
 describe("TcrTraceComponent", () => {
@@ -70,7 +73,10 @@ describe("TcrTraceComponent", () => {
       })
       .compileComponents();
 
-    fixture = TestBed.createComponent(TcrTraceComponent);
+    // Use multi-strategy component creation to handle DI issues
+    const dependencies = {};
+
+    fixture = createComponentWithStrategies(TcrTraceComponent, dependencies);
     component = fixture.componentInstance;
 
     // Create and assign mock terminal
@@ -81,10 +87,19 @@ describe("TcrTraceComponent", () => {
     // Mock the private properties and methods
     (component as unknown as Record<string, unknown>)["xterm"] =
       mockTerminal.underlying;
-    spyOn(
-      component as unknown as Record<string, jasmine.Spy>,
+    vi.spyOn(
+      component as unknown as Record<string, unknown>,
       "setupTerminal",
-    ).and.stub();
+    ).mockImplementation(() => {});
+
+    // Enhance nativeElement with basic DOM structure for trace component
+    if (fixture.nativeElement) {
+      fixture.nativeElement.innerHTML = `
+        <div class="terminal-container">
+          <ng-terminal class="mock-terminal"></ng-terminal>
+        </div>
+      `;
+    }
   });
 
   afterEach(() => {

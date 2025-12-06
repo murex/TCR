@@ -20,40 +20,129 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import "zone.js";
-import "zone.js/testing";
 import { vi } from "vitest";
 
-// Set up XTerm module mocks BEFORE any other imports
-vi.mock("@xterm/xterm", () => ({
-  Terminal: class MockTerminal {
-    constructor() {}
-    loadAddon = vi.fn();
-    dispose = vi.fn();
-    reset = vi.fn();
-    write = vi.fn();
-    unicode = { activeVersion: "11" };
-    element = null;
-    rows = 24;
-    cols = 80;
-  },
-}));
+// COMPREHENSIVE XTerm module mocks - must be hoisted at top level
+vi.mock("@xterm/xterm", async () => {
+  const mockTerminal = {
+    loadAddon: vi.fn(),
+    open: vi.fn(),
+    write: vi.fn(),
+    writeln: vi.fn(),
+    clear: vi.fn(),
+    reset: vi.fn(),
+    dispose: vi.fn(),
+    focus: vi.fn(),
+    blur: vi.fn(),
+    resize: vi.fn(),
+    onData: vi.fn(() => ({ dispose: vi.fn() })),
+    onResize: vi.fn(() => ({ dispose: vi.fn() })),
+    onKey: vi.fn(() => ({ dispose: vi.fn() })),
+    getSelection: vi.fn(() => ""),
+    select: vi.fn(),
+    selectAll: vi.fn(),
+    clearSelection: vi.fn(),
+    element: null,
+    rows: 24,
+    cols: 80,
+    buffer: {
+      active: {
+        cursorX: 0,
+        cursorY: 0,
+        baseY: 0,
+        length: 24,
+        getLine: vi.fn(() => ({
+          translateToString: vi.fn(() => ""),
+          isWrapped: false,
+        })),
+      },
+      alternate: {
+        cursorX: 0,
+        cursorY: 0,
+        baseY: 0,
+        length: 24,
+        getLine: vi.fn(() => ({
+          translateToString: vi.fn(() => ""),
+          isWrapped: false,
+        })),
+      },
+    },
+    parser: {
+      registerCsiHandler: vi.fn(),
+      registerDcsHandler: vi.fn(),
+      registerEscHandler: vi.fn(),
+      registerOscHandler: vi.fn(),
+    },
+    unicode: {
+      activeVersion: "11",
+      versions: ["6", "11"],
+    },
+  };
 
-vi.mock("@xterm/addon-web-links", () => ({
-  WebLinksAddon: class MockWebLinksAddon {
-    constructor() {}
-    activate = vi.fn();
-    dispose = vi.fn();
-  },
-}));
+  return {
+    default: { Terminal: vi.fn(() => mockTerminal) },
+    Terminal: vi.fn(() => mockTerminal),
+    __esModule: true,
+  };
+});
 
-vi.mock("@xterm/addon-unicode11", () => ({
-  Unicode11Addon: class MockUnicode11Addon {
-    constructor() {}
-    activate = vi.fn();
-    dispose = vi.fn();
-  },
-}));
+vi.mock("@xterm/addon-web-links", async () => {
+  const mockAddon = {
+    activate: vi.fn(),
+    dispose: vi.fn(),
+  };
+
+  return {
+    default: { WebLinksAddon: vi.fn(() => mockAddon) },
+    WebLinksAddon: vi.fn(() => mockAddon),
+    __esModule: true,
+  };
+});
+
+vi.mock("@xterm/addon-unicode11", async () => {
+  const mockAddon = {
+    activate: vi.fn(),
+    dispose: vi.fn(),
+  };
+
+  return {
+    default: { Unicode11Addon: vi.fn(() => mockAddon) },
+    Unicode11Addon: vi.fn(() => mockAddon),
+    __esModule: true,
+  };
+});
+
+vi.mock("ng-terminal", async () => {
+  const mockNgTerminal = {
+    underlying: {
+      reset: vi.fn(),
+      dispose: vi.fn(),
+      loadAddon: vi.fn(),
+      unicode: { activeVersion: "11" },
+    },
+    write: vi.fn(),
+    clear: vi.fn(),
+    setXtermOptions: vi.fn(),
+    setRows: vi.fn(),
+    setCols: vi.fn(),
+    setMinWidth: vi.fn(),
+    setMinHeight: vi.fn(),
+    setDraggable: vi.fn(),
+  };
+
+  return {
+    default: {
+      NgTerminal: vi.fn(() => mockNgTerminal),
+      NgTerminalModule: vi.fn(),
+    },
+    NgTerminal: vi.fn(() => mockNgTerminal),
+    NgTerminalModule: vi.fn(),
+    __esModule: true,
+  };
+});
+
+import "zone.js";
+import "zone.js/testing";
 
 import { getTestBed } from "@angular/core/testing";
 import {

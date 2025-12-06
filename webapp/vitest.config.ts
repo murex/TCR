@@ -30,9 +30,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
-      "@xterm/xterm": "/src/test-helpers/xterm-terminal-mock.ts",
-      "@xterm/addon-web-links": "/src/test-helpers/xterm-weblinks-mock.ts",
-      "@xterm/addon-unicode11": "/src/test-helpers/xterm-unicode11-mock.ts",
     },
   },
   assetsInclude: ["**/*.html", "**/*.css"],
@@ -46,6 +43,8 @@ export default defineConfig({
       "@angular/core/testing",
       "@angular/common/testing",
       "@angular/common/http/testing",
+    ],
+    exclude: [
       "@xterm/xterm",
       "@xterm/addon-web-links",
       "@xterm/addon-unicode11",
@@ -68,7 +67,9 @@ export default defineConfig({
           "@xterm/xterm",
           "@xterm/addon-web-links",
           "@xterm/addon-unicode11",
+          "ng-terminal",
         ],
+        external: [],
       },
     },
     coverage: {
@@ -121,6 +122,7 @@ export default defineConfig({
       "@xterm/xterm",
       "@xterm/addon-web-links",
       "@xterm/addon-unicode11",
+      "ng-terminal",
     ],
   },
   esbuild: {
