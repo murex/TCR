@@ -21,8 +21,11 @@ SOFTWARE.
 */
 
 import { Observable, of } from "rxjs";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
-import { injectService } from "../../../test-helpers/angular-test-helpers";
+import {
+  configureComponentTestingModule,
+  injectService,
+  createComponentWithStrategies,
+} from "../../../test-helpers/angular-test-helpers";
 import { TcrBuildInfoService } from "../../services/tcr-build-info.service";
 import { TcrAboutComponent } from "./tcr-about.component";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
@@ -74,7 +77,16 @@ describe("TcrAboutComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TcrAboutComponent);
+    // Use multi-strategy component creation to handle DI issues
+    const serviceFake = TestBed.inject(
+      TcrBuildInfoService,
+    ) as unknown as FakeTcrBuildInfoService;
+
+    const dependencies = {
+      buildInfoService: serviceFake,
+    };
+
+    fixture = createComponentWithStrategies(TcrAboutComponent, dependencies);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

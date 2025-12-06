@@ -20,9 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
-import { injectService } from "../../../test-helpers/angular-test-helpers";
+import { ComponentFixture } from "@angular/core/testing";
+import {
+  configureComponentTestingModule,
+  injectService,
+  createComponentWithStrategies,
+} from "../../../test-helpers/angular-test-helpers";
 
 import { TcrControlsComponent } from "./tcr-controls.component";
 import { TcrControlsService } from "../../services/tcr-controls.service";
@@ -49,7 +52,13 @@ describe("TcrControlsComponent", () => {
 
   beforeEach(() => {
     serviceFake = injectService(TcrControlsService);
-    fixture = TestBed.createComponent(TcrControlsComponent);
+
+    // Use multi-strategy component creation to handle DI issues
+    const dependencies = {
+      controlsService: serviceFake,
+    };
+
+    fixture = createComponentWithStrategies(TcrControlsComponent, dependencies);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -62,10 +71,9 @@ describe("TcrControlsComponent", () => {
 
   describe("abort command button", () => {
     it("should trigger abort command from controls service", () => {
-      const abortCommandFunction = spyOn(
-        serviceFake,
-        "abortCommand",
-      ).and.callThrough();
+      const abortCommandFunction = vi
+        .spyOn(serviceFake, "abortCommand")
+        .mockImplementation(serviceFake.abortCommand.bind(serviceFake));
       // Trigger the abortCommand call
       component.abortCommand();
       // Verify that the service received the request

@@ -22,6 +22,39 @@ SOFTWARE.
 
 import "zone.js";
 import "zone.js/testing";
+import { vi } from "vitest";
+
+// Set up XTerm module mocks BEFORE any other imports
+vi.mock("@xterm/xterm", () => ({
+  Terminal: class MockTerminal {
+    constructor() {}
+    loadAddon = vi.fn();
+    dispose = vi.fn();
+    reset = vi.fn();
+    write = vi.fn();
+    unicode = { activeVersion: "11" };
+    element = null;
+    rows = 24;
+    cols = 80;
+  },
+}));
+
+vi.mock("@xterm/addon-web-links", () => ({
+  WebLinksAddon: class MockWebLinksAddon {
+    constructor() {}
+    activate = vi.fn();
+    dispose = vi.fn();
+  },
+}));
+
+vi.mock("@xterm/addon-unicode11", () => ({
+  Unicode11Addon: class MockUnicode11Addon {
+    constructor() {}
+    activate = vi.fn();
+    dispose = vi.fn();
+  },
+}));
+
 import { getTestBed } from "@angular/core/testing";
 import {
   BrowserDynamicTestingModule,
@@ -29,13 +62,11 @@ import {
 } from "@angular/platform-browser-dynamic/testing";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { registerFontAwesomeIcons } from "./app/shared/font-awesome-icons";
-import { vi } from "vitest";
 import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import { setupXTermMocks } from "./test-helpers/xterm-mocks";
 
 // Make Jasmine globally available for compatibility
 declare global {
@@ -119,8 +150,7 @@ if (getTestBed().platform) {
   }
 }
 
-// Setup XTerm mocks for testing
-setupXTermMocks();
+// XTerm mocks are now set up at the top of this file
 
 // Mock Web APIs that might not be available in happy-dom
 Object.defineProperty(window, "ResizeObserver", {

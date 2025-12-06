@@ -26,8 +26,11 @@ import {
   fakeAsync,
   tick,
 } from "@angular/core/testing";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
-import { injectService } from "../../../test-helpers/angular-test-helpers";
+import {
+  configureComponentTestingModule,
+  injectService,
+  createComponentWithStrategies,
+} from "../../../test-helpers/angular-test-helpers";
 import { TcrRoleComponent } from "./tcr-role.component";
 import { Observable, of } from "rxjs";
 import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
@@ -82,7 +85,12 @@ describe("TcrRoleComponent", () => {
     serviceFake = TestBed.inject(
       TcrRolesService,
     ) as unknown as FakeTcrRolesService;
-    fixture = TestBed.createComponent(TcrRoleComponent);
+
+    // Use multi-strategy component creation to handle DI issues
+    const dependencies = {
+      rolesService: serviceFake,
+    };
+    fixture = createComponentWithStrategies(TcrRoleComponent, dependencies);
     component = fixture.componentInstance;
     changeDetectorRef = fixture.changeDetectorRef;
   });
@@ -279,10 +287,9 @@ describe("TcrRoleComponent", () => {
         };
 
         // Spy on the service method
-        const activateRoleSpy = spyOn(
-          serviceFake,
-          "activateRole",
-        ).and.callThrough();
+        const activateRoleSpy = vi
+          .spyOn(serviceFake, "activateRole")
+          .mockImplementation(serviceFake.activateRole.bind(serviceFake));
 
         // Initialize view
         fixture.detectChanges();

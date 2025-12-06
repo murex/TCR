@@ -30,6 +30,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": "/src",
+      "@xterm/xterm": "/src/test-helpers/xterm-terminal-mock.ts",
+      "@xterm/addon-web-links": "/src/test-helpers/xterm-weblinks-mock.ts",
+      "@xterm/addon-unicode11": "/src/test-helpers/xterm-unicode11-mock.ts",
     },
   },
   assetsInclude: ["**/*.html", "**/*.css"],
@@ -58,6 +61,15 @@ export default defineConfig({
     reporters: ["default", "junit"],
     outputFile: {
       junit: "_test_results/output.xml",
+    },
+    server: {
+      deps: {
+        inline: [
+          "@xterm/xterm",
+          "@xterm/addon-web-links",
+          "@xterm/addon-unicode11",
+        ],
+      },
     },
     coverage: {
       provider: "v8",
@@ -98,6 +110,11 @@ export default defineConfig({
   },
   define: {
     "import.meta.vitest": undefined,
+  },
+  server: {
+    fs: {
+      allow: [".."],
+    },
   },
   ssr: {
     noExternal: [

@@ -14,29 +14,23 @@ copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+AUTHORS OR COPYRIGHT FOR LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/**
- * XTerm Module Mocks for Vitest Testing
- *
- * This file provides mock implementations for XTerm components
- * to resolve CommonJS module import issues in the Vitest environment.
- */
-
 import { vi } from "vitest";
 
-// Mock Terminal class
-export class MockTerminal {
+/**
+ * Mock Terminal class for @xterm/xterm module
+ */
+export class Terminal {
   private _element: HTMLElement | null = null;
   private _rows = 24;
   private _cols = 80;
 
   constructor(options?: ITerminalOptions) {
-    // Mock terminal options
     if (options?.rows) this._rows = options.rows;
     if (options?.cols) this._cols = options.cols;
   }
@@ -164,111 +158,6 @@ export class MockTerminal {
   }
 }
 
-// Mock WebLinksAddon
-export class MockWebLinksAddon {
-  constructor(_handler?: (event: MouseEvent, uri: string) => void) {
-    // Mock web links addon
-  }
-
-  activate = vi.fn((_terminal: unknown) => {
-    // Mock activation
-  });
-
-  dispose = vi.fn(() => {
-    // Mock disposal
-  });
-}
-
-// Mock Unicode11Addon
-export class MockUnicode11Addon {
-  constructor() {
-    // Mock unicode addon
-  }
-
-  activate = vi.fn((_terminal: unknown) => {
-    // Mock activation
-  });
-
-  dispose = vi.fn(() => {
-    // Mock disposal
-  });
-}
-
-// Mock FitAddon (if used)
-export class MockFitAddon {
-  constructor() {
-    // Mock fit addon
-  }
-
-  fit = vi.fn(() => {
-    // Mock fitting terminal to container
-  });
-
-  proposeDimensions = vi.fn(() => ({
-    cols: 80,
-    rows: 24,
-  }));
-
-  activate = vi.fn((_terminal: unknown) => {
-    // Mock activation
-  });
-
-  dispose = vi.fn(() => {
-    // Mock disposal
-  });
-}
-
-// Mock the entire @xterm/xterm module
-export const mockXtermModule = {
-  Terminal: MockTerminal,
-};
-
-// Mock the addon modules
-export const mockWebLinksModule = {
-  WebLinksAddon: MockWebLinksAddon,
-};
-
-export const mockUnicode11Module = {
-  Unicode11Addon: MockUnicode11Addon,
-};
-
-export const mockFitModule = {
-  FitAddon: MockFitAddon,
-};
-
-// Helper function to setup XTerm mocks in tests
-export function setupXTermMocks() {
-  // Mock the XTerm modules at the global level
-  vi.mock("@xterm/xterm", () => mockXtermModule);
-  vi.mock("@xterm/addon-web-links", () => mockWebLinksModule);
-  vi.mock("@xterm/addon-unicode11", () => mockUnicode11Module);
-  vi.mock("@xterm/addon-fit", () => mockFitModule);
-}
-
-// Helper to create a mock terminal instance for tests
-export function createMockTerminal(options?: ITerminalOptions): MockTerminal {
-  return new MockTerminal(options);
-}
-
-// Helper to create mock terminal with common setup
-export function createTestTerminal(): {
-  terminal: MockTerminal;
-  element: HTMLElement;
-  cleanup: () => void;
-} {
-  const terminal = new MockTerminal();
-  const element = document.createElement("div");
-
-  terminal.open(element);
-
-  const cleanup = () => {
-    terminal.dispose();
-    element.remove();
-  };
-
-  return { terminal, element, cleanup };
-}
-
 // Export types for TypeScript support
 export interface ITerminalOptions {
   rows?: number;
@@ -281,28 +170,5 @@ export interface ITerminalOptions {
   scrollback?: number;
 }
 
-export interface IDisposable {
-  dispose(): void;
-}
-
-// Export both named and default exports to match CommonJS/ESM patterns
-
-// For @xterm/xterm module
-export const Terminal = MockTerminal;
-const xtermDefault = { Terminal: MockTerminal };
-
-// For @xterm/addon-web-links module
-export const WebLinksAddon = MockWebLinksAddon;
-const webLinksDefault = { WebLinksAddon: MockWebLinksAddon };
-
-// For @xterm/addon-unicode11 module
-export const Unicode11Addon = MockUnicode11Addon;
-const unicode11Default = { Unicode11Addon: MockUnicode11Addon };
-
-// Default export that includes all classes - this will be used for CommonJS compatibility
-export default xtermDefault;
-
-// Also export module-specific defaults for direct aliasing
-export { xtermDefault as xtermModule };
-export { webLinksDefault as webLinksModule };
-export { unicode11Default as unicode11Module };
+// Default export for CommonJS compatibility
+export default { Terminal };

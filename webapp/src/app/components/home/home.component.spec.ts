@@ -20,8 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
+import { ComponentFixture } from "@angular/core/testing";
+import {
+  configureComponentTestingModule,
+  createComponentWithStrategies,
+} from "../../../test-helpers/angular-test-helpers";
 import { injectService } from "../../../test-helpers/angular-test-helpers";
 
 import { HomeComponent } from "./home.component";
@@ -61,7 +64,13 @@ describe("HomeComponent", () => {
 
   beforeEach(() => {
     router = injectService(Router);
-    fixture = TestBed.createComponent(HomeComponent);
+
+    // Create component with proper dependency mapping
+    const dependencies = {
+      router: router,
+    };
+
+    fixture = createComponentWithStrategies(HomeComponent, dependencies);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -95,7 +104,7 @@ describe("HomeComponent", () => {
     });
 
     it("should alert the user on invalid path", async () => {
-      spyOn(window, "alert");
+      vi.spyOn(window, "alert").mockImplementation(() => {});
       router.navigateByUrl = () => Promise.resolve(false);
       await component.navigateTo("/invalid-path");
       expect(window.alert).toHaveBeenCalled();

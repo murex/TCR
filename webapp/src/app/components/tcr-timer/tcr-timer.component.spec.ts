@@ -20,9 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
-import { injectService } from "../../../test-helpers/angular-test-helpers";
+import { ComponentFixture } from "@angular/core/testing";
+import {
+  configureComponentTestingModule,
+  createComponentWithStrategies,
+  injectService,
+} from "../../../test-helpers/angular-test-helpers";
 
 import { TcrTimerComponent } from "./tcr-timer.component";
 import { Observable, of } from "rxjs";
@@ -68,7 +71,13 @@ describe("TcrTimerComponent", () => {
 
   beforeEach(() => {
     serviceFake = injectService(TcrTimerService);
-    fixture = TestBed.createComponent(TcrTimerComponent);
+
+    // Create component with proper dependency mapping
+    const dependencies = {
+      timerService: serviceFake,
+    };
+
+    fixture = createComponentWithStrategies(TcrTimerComponent, dependencies);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -154,7 +163,16 @@ describe("TcrTimerComponent", () => {
 
         // Have the service fake's getTimer method return the timer data
         serviceFake.getTimer = () => of(timer);
-        fixture = TestBed.createComponent(TcrTimerComponent);
+
+        // Create component with proper dependency mapping
+        const dependencies = {
+          timerService: serviceFake,
+        };
+
+        fixture = createComponentWithStrategies(
+          TcrTimerComponent,
+          dependencies,
+        );
         component = fixture.componentInstance;
         fixture.detectChanges();
 

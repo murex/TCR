@@ -21,8 +21,11 @@ SOFTWARE.
 */
 
 import { Observable, of } from "rxjs";
-import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
-import { injectService } from "../../../test-helpers/angular-test-helpers";
+import {
+  configureComponentTestingModule,
+  injectService,
+  createComponentWithStrategies,
+} from "../../../test-helpers/angular-test-helpers";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
 import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
@@ -70,7 +73,19 @@ describe("TcrSessionInfoComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TcrSessionInfoComponent);
+    // Use multi-strategy component creation to handle DI issues
+    const serviceFake = TestBed.inject(
+      TcrSessionInfoService,
+    ) as unknown as FakeTcrSessionInfoService;
+
+    const dependencies = {
+      sessionInfoService: serviceFake,
+    };
+
+    fixture = createComponentWithStrategies(
+      TcrSessionInfoComponent,
+      dependencies,
+    );
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
