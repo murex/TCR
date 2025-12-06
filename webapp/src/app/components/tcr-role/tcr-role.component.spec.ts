@@ -26,6 +26,8 @@ import {
   fakeAsync,
   tick,
 } from "@angular/core/testing";
+import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
+import { injectService } from "../../../test-helpers/angular-test-helpers";
 import { TcrRoleComponent } from "./tcr-role.component";
 import { Observable, of } from "rxjs";
 import { TcrMessage, TcrMessageType } from "../../interfaces/tcr-message";
@@ -62,16 +64,17 @@ describe("TcrRoleComponent", () => {
   let changeDetectorRef: ChangeDetectorRef;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TcrRoleComponent],
-      providers: [
+    await configureComponentTestingModule(
+      TcrRoleComponent,
+      [],
+      [
         { provide: TcrRolesService, useClass: FakeTcrRolesService },
         FaIconLibrary,
       ],
-    }).compileComponents();
+    );
 
     // Register FontAwesome icons
-    const library = TestBed.inject(FaIconLibrary);
+    const library = injectService(FaIconLibrary);
     registerFontAwesomeIcons(library);
   });
 

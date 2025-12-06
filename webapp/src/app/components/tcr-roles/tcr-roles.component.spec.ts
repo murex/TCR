@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
 import { TcrRolesComponent } from "./tcr-roles.component";
 import { Component, Input } from "@angular/core";
 import { By } from "@angular/platform-browser";
@@ -66,17 +67,19 @@ describe("TcrRolesComponent", () => {
   let fixture: ComponentFixture<TcrRolesComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TcrRolesComponent],
-      providers: [{ provide: TcrRolesService, useClass: FakeTcrRolesService }],
-    })
-      .overrideComponent(TcrRolesComponent, {
-        remove: {
-          imports: [TcrRoleComponent],
-        },
-        add: {
-          imports: [MockTcrRoleComponent],
-          template: `
+    await configureComponentTestingModule(
+      TcrRolesComponent,
+      [],
+      [{ provide: TcrRolesService, useClass: FakeTcrRolesService }],
+    );
+
+    TestBed.overrideComponent(TcrRolesComponent, {
+      remove: {
+        imports: [TcrRoleComponent],
+      },
+      add: {
+        imports: [MockTcrRoleComponent],
+        template: `
             <section>
               <div class="container">
                 <div class="row mbr-justify-content-center">
@@ -89,9 +92,8 @@ describe("TcrRolesComponent", () => {
               </div>
             </section>
           `,
-        },
-      })
-      .compileComponents();
+      },
+    }).compileComponents();
   });
 
   beforeEach(() => {

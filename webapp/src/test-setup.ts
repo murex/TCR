@@ -29,13 +29,16 @@ import {
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { registerFontAwesomeIcons } from "./app/shared/font-awesome-icons";
 
-// Global test configuration
+// Global test configuration for Vitest
 
 // Initialize the Angular testing environment
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting(),
 );
+
+// Vitest global setup
+// import { vi } from "vitest";
 
 // Global error handler for uncaught promise rejections
 window.addEventListener("unhandledrejection", (event) => {

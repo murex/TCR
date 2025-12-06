@@ -20,66 +20,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {TestBed} from '@angular/core/testing';
-
-import {TcrControlsService} from './tcr-controls.service';
 import {
-  HttpTestingController, provideHttpClientTesting
-} from "@angular/common/http/testing";
-import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
+  injectService,
+  configureServiceTestingModule,
+  cleanupAngularTest,
+} from "../../test-helpers/angular-test-helpers";
+import { TcrControlsService } from "./tcr-controls.service";
+import { HttpTestingController } from "@angular/common/http/testing";
 
-describe('TcrControlsService', () => {
+describe("TcrControlsService", () => {
   let service: TcrControlsService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [],
-      providers: [
-        TcrControlsService,
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    });
-    service = TestBed.inject(TcrControlsService);
-    httpMock = TestBed.inject(HttpTestingController);
+    configureServiceTestingModule(TcrControlsService);
+    service = injectService(TcrControlsService);
+    httpMock = injectService(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    cleanupAngularTest(httpMock);
   });
 
-  describe('service instance', () => {
-    it('should be created', () => {
+  describe("service instance", () => {
+    it("should be created", () => {
       expect(service).toBeTruthy();
     });
   });
 
-  describe('abortCommand() function', () => {
+  describe("abortCommand() function", () => {
     it(`should send an HTTP POST abort-command request`, () => {
       service.abortCommand().subscribe();
 
       const req = httpMock.expectOne(`/api/controls/abort-command`);
-      expect(req.request.method).toBe('POST');
-      req.flush({}, {
-        status: 200,
-        statusText: ''
-      });
-      expect(req.request.responseType).toEqual('json');
+      expect(req.request.method).toBe("POST");
+      req.flush(
+        {},
+        {
+          status: 200,
+          statusText: "",
+        },
+      );
+      expect(req.request.responseType).toEqual("json");
     });
 
-    it('should return undefined when receiving an error response', () => {
+    it("should return undefined when receiving an error response", () => {
       let actual: unknown | undefined;
-      service.abortCommand().subscribe(other => {
+      service.abortCommand().subscribe((other) => {
         actual = other;
       });
 
       const req = httpMock.expectOne(`/api/controls/abort-command`);
-      expect(req.request.method).toBe('POST');
-      req.flush({message: 'Bad Request'}, {
-        status: 400,
-        statusText: 'Bad Request'
-      });
+      expect(req.request.method).toBe("POST");
+      req.flush(
+        { message: "Bad Request" },
+        {
+          status: 400,
+          statusText: "Bad Request",
+        },
+      );
       expect(actual).toBeUndefined();
     });
   });

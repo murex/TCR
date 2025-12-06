@@ -20,23 +20,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
+import { HttpTestingController } from "@angular/common/http/testing";
+import {
+  configureServiceTestingModule,
+  cleanupAngularTest,
+  createServiceInInjectionContext,
+} from "../../test-helpers/angular-test-helpers";
 import { TcrTimerService } from "./tcr-timer.service";
 import { TcrTimer } from "../interfaces/tcr-timer";
 import { WebsocketService } from "./websocket.service";
-import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
 import { Subject } from "rxjs";
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from "@angular/common/http";
+import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
+import { DestroyRef } from "@angular/core";
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
+}
+
+// Mock DestroyRef for takeUntilDestroyed
+class MockDestroyRef {
+  onDestroy(_fn: () => void) {
+    // Mock implementation - does nothing for tests
+  }
 }
 
 describe("TcrTimerService", () => {
@@ -45,23 +51,23 @@ describe("TcrTimerService", () => {
   let wsServiceFake: WebsocketService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [],
-      providers: [
-        TcrTimerService,
-        { provide: WebsocketService, useClass: FakeWebsocketService },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-    });
+    configureServiceTestingModule(TcrTimerService, [
+      { provide: WebsocketService, useClass: FakeWebsocketService },
+      { provide: DestroyRef, useClass: MockDestroyRef },
+    ]);
 
-    service = TestBed.inject(TcrTimerService);
+    // Create service using injection context helper to handle takeUntilDestroyed
+    service = createServiceInInjectionContext<TcrTimerService>(
+      TcrTimerService,
+      [{ provide: WebsocketService, useClass: FakeWebsocketService }],
+    );
+
     httpMock = TestBed.inject(HttpTestingController);
     wsServiceFake = TestBed.inject(WebsocketService);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    cleanupAngularTest(httpMock);
   });
 
   describe("service instance", () => {
@@ -111,29 +117,39 @@ describe("TcrTimerService", () => {
   });
 
   describe("websocket message handler", () => {
-    it("should forward timer messages", (done) => {
+    it("should forward timer messages", async () => {
       const sampleMessage = { type: TcrMessageType.TIMER } as TcrMessage;
-      service.message$.subscribe((msg) => {
-        expect(msg).toEqual(sampleMessage);
-        done();
+
+      const messagePromise = new Promise<TcrMessage>((resolve) => {
+        service.message$.subscribe((msg) => {
+          resolve(msg);
+        });
       });
+
       wsServiceFake.webSocket$.next(sampleMessage);
+
+      const receivedMessage = await messagePromise;
+      expect(receivedMessage).toEqual(sampleMessage);
     });
 
-    it("should drop non-timer messages", (done) => {
+    it("should drop non-timer messages", async () => {
       const timerMessage = { type: TcrMessageType.TIMER } as TcrMessage;
       const infoMessage = { type: TcrMessageType.INFO } as TcrMessage;
 
-      service.message$.subscribe((msg) => {
-        // Should only receive timer messages
-        expect(msg.type).toEqual(TcrMessageType.TIMER);
-        done();
+      const messagePromise = new Promise<TcrMessage>((resolve) => {
+        service.message$.subscribe((msg) => {
+          // Should only receive timer messages
+          resolve(msg);
+        });
       });
 
       // Send non-timer message first (should be filtered out)
       wsServiceFake.webSocket$.next(infoMessage);
       // Send timer message (should be received)
       wsServiceFake.webSocket$.next(timerMessage);
+
+      const receivedMessage = await messagePromise;
+      expect(receivedMessage.type).toEqual(TcrMessageType.TIMER);
     });
   });
 });

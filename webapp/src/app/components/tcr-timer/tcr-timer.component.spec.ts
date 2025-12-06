@@ -21,6 +21,8 @@ SOFTWARE.
 */
 
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
+import { injectService } from "../../../test-helpers/angular-test-helpers";
 
 import { TcrTimerComponent } from "./tcr-timer.component";
 import { Observable, of } from "rxjs";
@@ -50,21 +52,22 @@ describe("TcrTimerComponent", () => {
   let serviceFake: TcrTimerService;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TcrTimerComponent],
-      providers: [
+    await configureComponentTestingModule(
+      TcrTimerComponent,
+      [],
+      [
         { provide: TcrTimerService, useClass: FakeTcrTimerService },
         FaIconLibrary,
       ],
-    }).compileComponents();
+    );
 
     // Register FontAwesome icons
-    const library = TestBed.inject(FaIconLibrary);
+    const library = injectService(FaIconLibrary);
     registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
-    serviceFake = TestBed.inject(TcrTimerService);
+    serviceFake = injectService(TcrTimerService);
     fixture = TestBed.createComponent(TcrTimerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

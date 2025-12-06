@@ -20,41 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {TestBed} from '@angular/core/testing';
-import {WebsocketService} from './websocket.service';
-import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
-import {Subject} from "rxjs";
-import {TcrMessageService} from "./tcr-message.service";
+import {
+  injectService,
+  configureServiceTestingModule,
+} from "../../test-helpers/angular-test-helpers";
+import { WebsocketService } from "./websocket.service";
+import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
+import { Subject } from "rxjs";
+import { TcrMessageService } from "./tcr-message.service";
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
 }
 
-describe('TcrMessageService', () => {
+describe("TcrMessageService", () => {
   let service: TcrMessageService;
   let wsServiceFake: WebsocketService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [],
-      providers: [
-        TcrMessageService,
-        {provide: WebsocketService, useClass: FakeWebsocketService},
-      ]
-    });
+    configureServiceTestingModule(TcrMessageService, [
+      { provide: WebsocketService, useClass: FakeWebsocketService },
+    ]);
 
-    service = TestBed.inject(TcrMessageService);
-    wsServiceFake = TestBed.inject(WebsocketService);
+    service = injectService(TcrMessageService);
+    wsServiceFake = injectService(WebsocketService);
   });
 
-  describe('service instance', () => {
-    it('should be created', () => {
+  describe("service instance", () => {
+    it("should be created", () => {
       expect(service).toBeTruthy();
     });
   });
 
-  describe('websocket message handler', () => {
-    Object.values(TcrMessageType).forEach(type => {
+  describe("websocket message handler", () => {
+    Object.values(TcrMessageType).forEach((type) => {
       it(`should forward ${type} messages`, (done) => {
         const sampleMessage: TcrMessage = {
           type: type,

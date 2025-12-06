@@ -21,6 +21,8 @@ SOFTWARE.
 */
 
 import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
+import { injectService } from "../../../test-helpers/angular-test-helpers";
 
 import { HomeComponent } from "./home.component";
 import { NavigationBehaviorOptions, Router, UrlTree } from "@angular/router";
@@ -46,18 +48,19 @@ describe("HomeComponent", () => {
   let router: Router;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [HomeComponent],
-      providers: [{ provide: Router, useClass: FakeRouter }, FaIconLibrary],
-    }).compileComponents();
+    await configureComponentTestingModule(
+      HomeComponent,
+      [],
+      [{ provide: Router, useClass: FakeRouter }, FaIconLibrary],
+    );
 
     // Register FontAwesome icons
-    const library = TestBed.inject(FaIconLibrary);
+    const library = injectService(FaIconLibrary);
     registerFontAwesomeIcons(library);
   });
 
   beforeEach(() => {
-    router = TestBed.inject(Router);
+    router = injectService(Router);
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

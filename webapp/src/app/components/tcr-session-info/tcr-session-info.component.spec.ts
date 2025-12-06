@@ -21,6 +21,8 @@ SOFTWARE.
 */
 
 import { Observable, of } from "rxjs";
+import { configureComponentTestingModule } from "../../../test-helpers/angular-test-helpers";
+import { injectService } from "../../../test-helpers/angular-test-helpers";
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
 import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
@@ -53,16 +55,17 @@ describe("TcrSessionInfoComponent", () => {
   let fixture: ComponentFixture<TcrSessionInfoComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TcrSessionInfoComponent],
-      providers: [
+    await configureComponentTestingModule(
+      TcrSessionInfoComponent,
+      [],
+      [
         { provide: TcrSessionInfoService, useClass: FakeTcrSessionInfoService },
         FaIconLibrary,
       ],
-    }).compileComponents();
+    );
 
     // Register FontAwesome icons
-    const library = TestBed.inject(FaIconLibrary);
+    const library = injectService(FaIconLibrary);
     registerFontAwesomeIcons(library);
   });
 
