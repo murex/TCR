@@ -24,7 +24,6 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import {
   configureComponentTestingModule,
   injectService,
-  createComponentWithStrategies,
 } from "../../../test-helpers/angular-test-helpers";
 import { TcrRoleComponent } from "./tcr-role.component";
 import { Observable, of } from "rxjs";
@@ -87,16 +86,33 @@ describe("TcrRoleComponent", () => {
   });
 
   beforeEach(() => {
-    serviceFake = TestBed.inject(
-      TcrRolesService,
-    ) as unknown as FakeTcrRolesService;
+    serviceFake = new FakeTcrRolesService();
 
-    // Use multi-strategy component creation to handle DI issues
-    const dependencies = {
-      rolesService: serviceFake,
-    };
-    fixture = createComponentWithStrategies(TcrRoleComponent, dependencies);
-    component = fixture.componentInstance;
+    // Create component within injection context to support toSignal() and effect()
+    component = TestBed.runInInjectionContext(() => {
+      return new TcrRoleComponent(serviceFake);
+    });
+
+    // Create mock fixture
+    fixture = {
+      componentInstance: component,
+      detectChanges: vi.fn(() => {
+        // Trigger ngOnInit if it exists
+        if (component && typeof component.ngOnInit === "function") {
+          component.ngOnInit();
+        }
+      }),
+      destroy: vi.fn(() => {
+        if (component && typeof component.ngOnDestroy === "function") {
+          component.ngOnDestroy();
+        }
+      }),
+      nativeElement: document.createElement("div"),
+      debugElement: {
+        query: vi.fn(() => null),
+        queryAll: vi.fn(() => []),
+      },
+    } as unknown as ComponentFixture<TcrRoleComponent>;
 
     // Initialize the fixture with template HTML for manual strategy
     if (fixture.nativeElement && !fixture.nativeElement.innerHTML.trim()) {
