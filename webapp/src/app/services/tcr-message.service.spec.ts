@@ -23,14 +23,23 @@ SOFTWARE.
 import {
   injectService,
   configureServiceTestingModule,
+  createServiceInInjectionContext,
 } from "../../test-helpers/angular-test-helpers";
 import { WebsocketService } from "./websocket.service";
 import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
 import { Subject } from "rxjs";
 import { TcrMessageService } from "./tcr-message.service";
+import { DestroyRef } from "@angular/core";
 
 class FakeWebsocketService {
   webSocket$: Subject<TcrMessage> = new Subject<TcrMessage>();
+}
+
+// Mock DestroyRef for takeUntilDestroyed
+class MockDestroyRef {
+  onDestroy(_fn: () => void) {
+    // Mock implementation - does nothing for tests
+  }
 }
 
 describe("TcrMessageService", () => {
@@ -40,9 +49,15 @@ describe("TcrMessageService", () => {
   beforeEach(() => {
     configureServiceTestingModule(TcrMessageService, [
       { provide: WebsocketService, useClass: FakeWebsocketService },
+      { provide: DestroyRef, useClass: MockDestroyRef },
     ]);
 
-    service = injectService(TcrMessageService);
+    // Create service using injection context helper to handle takeUntilDestroyed
+    service = createServiceInInjectionContext<TcrMessageService>(
+      TcrMessageService,
+      [{ provide: WebsocketService, useClass: FakeWebsocketService }],
+    );
+
     wsServiceFake = injectService(WebsocketService);
   });
 
@@ -54,7 +69,7 @@ describe("TcrMessageService", () => {
 
   describe("websocket message handler", () => {
     Object.values(TcrMessageType).forEach((type) => {
-      it(`should forward ${type} messages`, (done) => {
+      it(`should forward ${type} messages`, async () => {
         const sampleMessage: TcrMessage = {
           type: type,
           emphasis: false,
@@ -62,13 +77,17 @@ describe("TcrMessageService", () => {
           text: "",
           timestamp: "",
         };
-        let actual: TcrMessage | undefined;
-        service.message$.subscribe((msg) => {
-          actual = msg;
-          done();
+
+        const messagePromise = new Promise<TcrMessage>((resolve) => {
+          service.message$.subscribe((msg) => {
+            resolve(msg);
+          });
         });
+
         wsServiceFake.webSocket$.next(sampleMessage);
-        expect(actual).toEqual(sampleMessage);
+
+        const receivedMessage = await messagePromise;
+        expect(receivedMessage).toEqual(sampleMessage);
       });
     });
   });

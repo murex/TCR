@@ -62,6 +62,20 @@ export function createServiceInInjectionContext<T>(
         return new serviceClass(httpClient, wsService);
       }
 
+      case "TcrMessageService": {
+        // Only needs WebSocket service, no HttpClient
+        const wsService = TestBed.inject(
+          additionalProviders.find(
+            (
+              p: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+            ) =>
+              p.provide?.name === "WebsocketService" ||
+              p.useClass?.name === "FakeWebsocketService",
+          )?.provide || Object,
+        );
+        return new serviceClass(wsService);
+      }
+
       case "TcrBuildInfoService":
       case "TcrSessionInfoService":
       case "TcrControlsService":

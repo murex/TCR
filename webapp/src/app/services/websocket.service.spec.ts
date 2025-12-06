@@ -20,18 +20,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {TestBed} from '@angular/core/testing';
-import {Subject} from 'rxjs';
-import {WebsocketService} from './websocket.service';
-import {TcrMessage, TcrMessageType} from "../interfaces/tcr-message";
+import { TestBed } from "@angular/core/testing";
+import { Subject } from "rxjs";
+import { WebsocketService } from "./websocket.service";
+import { TcrMessage, TcrMessageType } from "../interfaces/tcr-message";
+import { vi } from "vitest";
 
 // Mocking the websocket
 let fakeSocket: Subject<TcrMessage>;
-const fakeSocketCtor = jasmine
-  .createSpy('WEBSOCKET_CTOR')
-  .and.callFake(() => fakeSocket);
+const fakeSocketCtor = vi.fn().mockImplementation(() => fakeSocket);
 
-describe('WebsocketService', () => {
+describe("WebsocketService", () => {
   const sampleMessage: TcrMessage = {
     emphasis: false,
     type: TcrMessageType.INFO,
@@ -46,48 +45,52 @@ describe('WebsocketService', () => {
       // Make a new socket so we don't get lingering values leaking across tests
       fakeSocket = new Subject<TcrMessage>();
       // Spy on it, so we don't have to subscribe to verify it was called
-      spyOn(fakeSocket, 'next').and.callThrough();
+      vi.spyOn(fakeSocket, "next");
       // Reset your spies
-      fakeSocketCtor.calls.reset();
+      fakeSocketCtor.mockClear();
       // Make the service using the fake ctor
       service = new WebsocketService(fakeSocketCtor);
     });
   });
 
-  describe('service instance', () => {
-    it('should be created', () => {
+  describe("service instance", () => {
+    it("should be created", () => {
       expect(service).toBeTruthy();
     });
 
-    it('should attempt a websocket connection on create', () => {
-      const expectedUrl = 'ws://' + window.location.host + '/ws';
-      expect(fakeSocketCtor).toHaveBeenCalledOnceWith(expectedUrl);
+    it("should attempt a websocket connection on create", () => {
+      const expectedUrl = "ws://" + window.location.host + "/ws";
+      expect(fakeSocketCtor).toHaveBeenCalledWith(expectedUrl);
+      expect(fakeSocketCtor).toHaveBeenCalledTimes(1);
     });
 
-    it('should be able to forward received TCR messages', (done) => {
-      let actual: TcrMessage | undefined;
-      service.webSocket$.subscribe((msg) => {
-        actual = msg;
-        done();
+    it("should be able to forward received TCR messages", async () => {
+      const messagePromise = new Promise<TcrMessage>((resolve) => {
+        service.webSocket$.subscribe((msg) => {
+          resolve(msg);
+        });
       });
+
       fakeSocket.next(sampleMessage);
-      expect(actual).toBe(sampleMessage);
+
+      const receivedMessage = await messagePromise;
+      expect(receivedMessage).toBe(sampleMessage);
     });
 
-    it('should handle websocket errors', () => {
-      const sampleError = new Error('WebSocket error');
+    it("should handle websocket errors", () => {
+      const sampleError = new Error("WebSocket error");
       let actual: Error | undefined;
       service.webSocket$.asObservable().subscribe({
-        error: (err) => actual = err,
+        error: (err) => (actual = err),
       });
       fakeSocket.error(sampleError);
       expect(actual).toEqual(sampleError);
     });
 
-    it('should close the websocket on destroy', () => {
-      spyOn(fakeSocket, 'complete');
+    it("should close the websocket on destroy", () => {
+      vi.spyOn(fakeSocket, "complete");
       service.ngOnDestroy();
-      expect(fakeSocket.complete).toHaveBeenCalled();
+      expect(fakeSocket.complete).toHaveBeenCalledTimes(1);
     });
   });
 });
