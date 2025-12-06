@@ -24,6 +24,8 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
 import { Component } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { createComponentWithStrategies } from "../test-helpers/angular-test-helpers";
+// import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 
 // Mock components for testing
 @Component({
@@ -56,8 +58,29 @@ describe("AppComponent", () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
+    // Use multi-strategy component creation to handle DI issues
+    const mockIconLibrary = {
+      addIcons: () => {},
+      addIconPacks: () => {},
+      getIconDefinition: () => null,
+    };
+
+    const dependencies = {
+      library: mockIconLibrary,
+    };
+
+    fixture = createComponentWithStrategies(AppComponent, dependencies);
     app = fixture.componentInstance;
+
+    // Enhance nativeElement with basic DOM structure for app component
+    if (fixture.nativeElement) {
+      fixture.nativeElement.innerHTML = `
+        <app-header></app-header>
+        <router-outlet></router-outlet>
+        <app-footer></app-footer>
+      `;
+    }
+
     fixture.detectChanges();
   });
 

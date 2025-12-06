@@ -71,9 +71,8 @@ describe("TcrControlsComponent", () => {
 
   describe("abort command button", () => {
     it("should trigger abort command from controls service", () => {
-      const abortCommandFunction = vi
-        .spyOn(serviceFake, "abortCommand")
-        .mockImplementation(serviceFake.abortCommand.bind(serviceFake));
+      const abortCommandFunction = vi.spyOn(serviceFake, "abortCommand");
+      abortCommandFunction.mockImplementation(() => of({}));
       // Trigger the abortCommand call
       component.abortCommand();
       // Verify that the service received the request
