@@ -108,11 +108,13 @@ describe("TcrSessionInfoComponent", () => {
   });
 
   describe("component initialization", () => {
-    it("should fetch TCR session info on init", (done) => {
-      component.sessionInfo$.subscribe((sessionInfo) => {
-        expect(sessionInfo).toEqual(sample);
-        done();
+    it("should fetch TCR session info on init", async () => {
+      const sessionInfo = await new Promise<TcrSessionInfo>((resolve) => {
+        component.sessionInfo$.subscribe((sessionInfo) => {
+          resolve(sessionInfo);
+        });
       });
+      expect(sessionInfo).toEqual(sample);
     });
   });
 });

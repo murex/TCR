@@ -106,10 +106,12 @@ describe("TcrAboutComponent", () => {
     expect(component.title).toEqual("About TCR");
   });
 
-  it("should fetch TCR build info on init", (done) => {
-    component.buildInfo$.subscribe((buildInfo) => {
-      expect(buildInfo).toEqual(sample);
-      done();
+  it("should fetch TCR build info on init", async () => {
+    const buildInfo = await new Promise<TcrBuildInfo>((resolve) => {
+      component.buildInfo$.subscribe((buildInfo) => {
+        resolve(buildInfo);
+      });
     });
+    expect(buildInfo).toEqual(sample);
   });
 });
