@@ -31,7 +31,11 @@ import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
 import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
 import { TcrSessionInfoComponent } from "./tcr-session-info.component";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
-import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
+import {
+  FONT_AWESOME_TEST_PROVIDERS,
+  setupFontAwesomeTestingModule,
+} from "../../../testing/font-awesome-test-setup";
+import { Injectable } from "@angular/core";
 
 const sample: TcrSessionInfo = {
   baseDir: "/my/base/dir",
@@ -45,6 +49,9 @@ const sample: TcrSessionInfo = {
   workDir: "/my/work/dir",
 };
 
+@Injectable({
+  providedIn: "root",
+})
 class FakeTcrSessionInfoService {
   sessionInfo: TcrSessionInfo = sample;
 
@@ -63,17 +70,17 @@ describe("TcrSessionInfoComponent", () => {
       [],
       [
         { provide: TcrSessionInfoService, useClass: FakeTcrSessionInfoService },
-        FaIconLibrary,
+        ...FONT_AWESOME_TEST_PROVIDERS,
       ],
     );
 
     // Register FontAwesome icons
     const library = injectService(FaIconLibrary);
-    registerFontAwesomeIcons(library);
+    setupFontAwesomeTestingModule(library);
   });
 
   beforeEach(() => {
-    // Use multi-strategy component creation to handle DI issues
+    // Use the multi-strategy approach to handle DI issues gracefully
     const serviceFake = TestBed.inject(
       TcrSessionInfoService,
     ) as unknown as FakeTcrSessionInfoService;

@@ -36,7 +36,11 @@ import {
   withInterceptorsFromDi,
 } from "@angular/common/http";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
-import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
+import {
+  FONT_AWESOME_TEST_PROVIDERS,
+  setupFontAwesomeTestingModule,
+} from "../../../testing/font-awesome-test-setup";
+import { Injectable } from "@angular/core";
 
 const sample: TcrBuildInfo = {
   version: "1.0.0",
@@ -47,6 +51,9 @@ const sample: TcrBuildInfo = {
   author: "some-author",
 };
 
+@Injectable({
+  providedIn: "root",
+})
 class FakeTcrBuildInfoService {
   buildInfo: TcrBuildInfo = sample;
 
@@ -65,7 +72,7 @@ describe("TcrAboutComponent", () => {
       [],
       [
         { provide: TcrBuildInfoService, useClass: FakeTcrBuildInfoService },
-        FaIconLibrary,
+        ...FONT_AWESOME_TEST_PROVIDERS,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
@@ -73,11 +80,11 @@ describe("TcrAboutComponent", () => {
 
     // Register FontAwesome icons
     const library = injectService(FaIconLibrary);
-    registerFontAwesomeIcons(library);
+    setupFontAwesomeTestingModule(library);
   });
 
   beforeEach(() => {
-    // Use multi-strategy component creation to handle DI issues
+    // Use the multi-strategy approach to handle DI issues gracefully
     const serviceFake = TestBed.inject(
       TcrBuildInfoService,
     ) as unknown as FakeTcrBuildInfoService;

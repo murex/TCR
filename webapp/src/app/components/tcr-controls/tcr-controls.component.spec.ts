@@ -30,7 +30,11 @@ import {
 import { TcrControlsComponent } from "./tcr-controls.component";
 import { TcrControlsService } from "../../services/tcr-controls.service";
 import { Observable, of } from "rxjs";
+import { Injectable } from "@angular/core";
 
+@Injectable({
+  providedIn: "root",
+})
 class FakeTcrControlsService {
   abortCommand(): Observable<unknown> {
     return of({});
@@ -53,7 +57,7 @@ describe("TcrControlsComponent", () => {
   beforeEach(() => {
     serviceFake = injectService(TcrControlsService);
 
-    // Use multi-strategy component creation to handle DI issues
+    // Use the multi-strategy approach to handle DI issues gracefully
     const dependencies = {
       controlsService: serviceFake,
     };

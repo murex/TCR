@@ -22,10 +22,10 @@ SOFTWARE.
 
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { AppComponent } from "./app.component";
-import { Component } from "@angular/core";
+import { Component, Injectable } from "@angular/core";
 import { RouterModule } from "@angular/router";
+import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { createComponentWithStrategies } from "../test-helpers/angular-test-helpers";
-// import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 
 // Mock components for testing
 @Component({
@@ -42,6 +42,27 @@ class MockHeaderComponent {}
 })
 class MockFooterComponent {}
 
+@Injectable({
+  providedIn: "root",
+})
+class MockFaIconLibrary {
+  addIcons(..._icons: unknown[]): void {
+    // Mock implementation
+  }
+
+  addIconPacks(..._packs: unknown[]): void {
+    // Mock implementation
+  }
+
+  getIconDefinition(_name: string, _prefix?: string): unknown {
+    return {
+      prefix: "fas",
+      iconName: "test",
+      icon: [16, 16, [], "", ""],
+    };
+  }
+}
+
 describe("AppComponent", () => {
   let app: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
@@ -54,22 +75,18 @@ describe("AppComponent", () => {
         MockFooterComponent,
         RouterModule.forRoot([]),
       ],
+      providers: [{ provide: FaIconLibrary, useClass: MockFaIconLibrary }],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    // Use multi-strategy component creation to handle DI issues
-    const mockIconLibrary = {
-      addIcons: () => {},
-      addIconPacks: () => {},
-      getIconDefinition: () => null,
-    };
+    // The DI system in Vitest has issues with FontAwesome types
+    // Use the multi-strategy approach to handle this gracefully
+    const mockLibrary = new MockFaIconLibrary();
 
-    const dependencies = {
-      library: mockIconLibrary,
-    };
-
-    fixture = createComponentWithStrategies(AppComponent, dependencies);
+    fixture = createComponentWithStrategies(AppComponent, {
+      library: mockLibrary,
+    });
     app = fixture.componentInstance;
 
     // Enhance nativeElement with basic DOM structure for app component

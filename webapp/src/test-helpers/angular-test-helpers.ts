@@ -108,9 +108,7 @@ export function injectServiceSafely<T>(
         "not compatible with Angular Dependency Injection",
       )
     ) {
-      console.warn(
-        `DI compatibility issue for ${serviceClass.name}, using injection context creation`,
-      );
+      // DI compatibility issue with Vitest - using injection context fallback
       return createServiceInInjectionContext<T>(
         serviceClass,
         additionalProviders,
@@ -255,9 +253,7 @@ export function createComponentSafely<T>(
         "not compatible with Angular Dependency Injection",
       )
     ) {
-      console.warn(
-        `Component DI compatibility issue for ${componentClass.name}, using multi-strategy approach`,
-      );
+      // DI compatibility issue with Vitest - using multi-strategy fallback
 
       // Convert additional providers to dependency map
       const dependencies: Record<string, unknown> = {};
@@ -503,47 +499,29 @@ export function createComponentWithStrategies<T>(
   componentClass: Type<T>,
   dependencies: Record<string, unknown> = {},
 ): ComponentFixture<T> {
-  console.log(`Attempting to create component: ${componentClass.name}`);
-
   // Strategy 1: Try normal TestBed creation
   try {
     const fixture = TestBed.createComponent(componentClass);
-    console.log(
-      `Strategy 1 (TestBed.createComponent) succeeded for ${componentClass.name}`,
-    );
     return fixture;
-  } catch (error) {
-    console.log(
-      `Strategy 1 failed for ${componentClass.name}: ${(error as Error).message}`,
-    );
+  } catch (_error) {
+    // DI compatibility issue with Vitest - try fallback strategies
   }
 
   // Strategy 2: Try injection context creation
   try {
     const fixture = createComponentInInjectionContext(componentClass);
-    console.log(
-      `Strategy 2 (injection context) succeeded for ${componentClass.name}`,
-    );
     return fixture;
-  } catch (error) {
-    console.log(
-      `Strategy 2 failed for ${componentClass.name}: ${(error as Error).message}`,
-    );
+  } catch (_error) {
+    // Injection context also failed - try manual creation
   }
 
   // Strategy 3: Try manual component creation
   try {
     const { fixture } = createComponentManually(componentClass, dependencies);
-    console.log(
-      `Strategy 3 (manual creation) succeeded for ${componentClass.name}`,
-    );
     return fixture;
   } catch (error) {
-    console.log(
-      `Strategy 3 failed for ${componentClass.name}: ${(error as Error).message}`,
-    );
     throw new Error(
-      `All component creation strategies failed for ${componentClass.name}`,
+      `All component creation strategies failed for ${componentClass.name}: ${(error as Error).message}`,
     );
   }
 }

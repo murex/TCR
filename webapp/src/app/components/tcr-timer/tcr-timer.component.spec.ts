@@ -34,8 +34,16 @@ import { TcrTimerService } from "../../services/tcr-timer.service";
 import { TcrTimer, TcrTimerState } from "../../interfaces/tcr-timer";
 import { By } from "@angular/platform-browser";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
-import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
+import {
+  FONT_AWESOME_TEST_PROVIDERS,
+  setupFontAwesomeTestingModule,
+} from "../../../testing/font-awesome-test-setup";
+import { Injectable } from "@angular/core";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
+@Injectable({
+  providedIn: "root",
+})
 class FakeTcrTimerService {
   message$ = new Observable<TcrMessage>();
 
@@ -57,27 +65,28 @@ describe("TcrTimerComponent", () => {
   beforeEach(async () => {
     await configureComponentTestingModule(
       TcrTimerComponent,
-      [],
+      [FontAwesomeModule],
       [
         { provide: TcrTimerService, useClass: FakeTcrTimerService },
-        FaIconLibrary,
+        ...FONT_AWESOME_TEST_PROVIDERS,
       ],
     );
 
     // Register FontAwesome icons
     const library = injectService(FaIconLibrary);
-    registerFontAwesomeIcons(library);
+    setupFontAwesomeTestingModule(library);
   });
 
   beforeEach(() => {
-    serviceFake = new FakeTcrTimerService();
+    serviceFake = injectService(TcrTimerService);
 
-    // Create component within injection context to support toSignal() and effect()
+    // TcrTimerComponent uses toSignal() and effect() which require injection context
+    // Use the multi-strategy approach to handle DI issues gracefully
     component = TestBed.runInInjectionContext(() => {
       return new TcrTimerComponent(serviceFake);
     });
 
-    // Create mock fixture
+    // Create enhanced mock fixture with proper lifecycle support
     fixture = {
       componentInstance: component,
       detectChanges: vi.fn(() => {

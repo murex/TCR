@@ -31,8 +31,15 @@ import { HomeComponent } from "./home.component";
 import { NavigationBehaviorOptions, Router, UrlTree } from "@angular/router";
 import { By } from "@angular/platform-browser";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
-import { registerFontAwesomeIcons } from "../../shared/font-awesome-icons";
+import {
+  FONT_AWESOME_TEST_PROVIDERS,
+  setupFontAwesomeTestingModule,
+} from "../../../testing/font-awesome-test-setup";
+import { Injectable } from "@angular/core";
 
+@Injectable({
+  providedIn: "root",
+})
 class FakeRouter {
   url: string = "";
 
@@ -54,18 +61,21 @@ describe("HomeComponent", () => {
     await configureComponentTestingModule(
       HomeComponent,
       [],
-      [{ provide: Router, useClass: FakeRouter }, FaIconLibrary],
+      [
+        { provide: Router, useClass: FakeRouter },
+        ...FONT_AWESOME_TEST_PROVIDERS,
+      ],
     );
 
     // Register FontAwesome icons
     const library = injectService(FaIconLibrary);
-    registerFontAwesomeIcons(library);
+    setupFontAwesomeTestingModule(library);
   });
 
   beforeEach(() => {
     router = injectService(Router);
 
-    // Create component with proper dependency mapping
+    // Use the multi-strategy approach to handle DI issues gracefully
     const dependencies = {
       router: router,
     };
