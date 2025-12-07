@@ -90,7 +90,8 @@ describe("TcrRoleComponent", () => {
 
     // Create component within injection context to support toSignal() and effect()
     component = TestBed.runInInjectionContext(() => {
-      return new TcrRoleComponent(serviceFake);
+      const mockCdr = { markForCheck: vi.fn(), detectChanges: vi.fn() } as any;
+      return new TcrRoleComponent(serviceFake, mockCdr);
     });
 
     // Create mock fixture

@@ -108,8 +108,11 @@ describe("TcrSessionInfoComponent", () => {
   });
 
   describe("component initialization", () => {
-    it("should fetch TCR session info on init", () => {
-      expect(component.sessionInfo).toEqual(sample);
+    it("should fetch TCR session info on init", (done) => {
+      component.sessionInfo$.subscribe((sessionInfo) => {
+        expect(sessionInfo).toEqual(sample);
+        done();
+      });
     });
   });
 });

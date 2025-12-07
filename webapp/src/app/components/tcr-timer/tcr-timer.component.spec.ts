@@ -83,7 +83,8 @@ describe("TcrTimerComponent", () => {
     // TcrTimerComponent uses toSignal() and effect() which require injection context
     // Use the multi-strategy approach to handle DI issues gracefully
     component = TestBed.runInInjectionContext(() => {
-      return new TcrTimerComponent(serviceFake);
+      const mockCdr = { markForCheck: vi.fn(), detectChanges: vi.fn() } as any;
+      return new TcrTimerComponent(serviceFake, mockCdr);
     });
 
     // Create enhanced mock fixture with proper lifecycle support

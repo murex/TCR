@@ -70,11 +70,14 @@ describe("FooterComponent", () => {
       componentInstance: componentInstance,
       nativeElement: nativeElement,
       detectChanges: () => {
-        componentInstance.ngOnInit();
-        // Update the DOM with current buildInfo after component initialization
+        // Component now uses async pipe, no ngOnInit to call
+        // Update the DOM with current buildInfo for testing
         const copyrightEl = nativeElement.querySelector(".footer-copyright");
-        if (copyrightEl && componentInstance.buildInfo) {
-          copyrightEl.textContent = `TCR version ${componentInstance.buildInfo.version} (${new DatePipe("en-US").transform(componentInstance.buildInfo.date, "MMM yyyy")})`;
+        if (copyrightEl) {
+          // Subscribe to the observable to get the value
+          componentInstance.buildInfo$.subscribe((buildInfo) => {
+            copyrightEl.textContent = `TCR version ${buildInfo.version} (${new DatePipe("en-US").transform(buildInfo.date, "MMM yyyy")})`;
+          });
         }
       },
       debugElement: null,
@@ -105,7 +108,10 @@ describe("FooterComponent", () => {
     expect(element.textContent).toContain(expected);
   });
 
-  it("should fetch TCR build info on init", () => {
-    expect(component.buildInfo).toEqual(sample);
+  it("should fetch TCR build info on init", (done) => {
+    component.buildInfo$.subscribe((buildInfo) => {
+      expect(buildInfo).toEqual(sample);
+      done();
+    });
   });
 });
