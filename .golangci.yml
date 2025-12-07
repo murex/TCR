@@ -288,6 +288,8 @@ linters:
         path: (.+)_test(_.+)?\.go
       - path: (.+)\.go$
         text: parameter .* always receives
+      - path: src/http/
+        text: "var-naming: avoid package names that conflict with Go standard library package names"
     paths:
       - .*generated.*
       - testdata
