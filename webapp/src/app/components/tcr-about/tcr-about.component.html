@@ -1,5 +1,5 @@
 <section>
-  @if (buildInfo) {
+  @if (buildInfo$ | async; as buildInfo) {
     <div class="container">
       <div class="row mb-3 mbr-justify-content-center">
         <h1 class="mbr-fonts-style mbr-bold mbr-section-title1 display-4">{{ title }}</h1>

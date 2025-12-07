@@ -22,6 +22,7 @@ SOFTWARE.
 
 .wrap {
   display: flex;
+  align-items: center;
   border-radius: 0.5rem;
   box-shadow: 7px 7px 30px -5px rgba(0, 0, 0, 0.1);
 }
@@ -41,7 +42,7 @@ h2 {
 
 .display-5 {
   text-align: center;
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 1.8rem;
 }
 

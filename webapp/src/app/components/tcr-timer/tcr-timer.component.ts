@@ -22,6 +22,7 @@ SOFTWARE.
 
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   effect,
   OnInit,
@@ -53,7 +54,10 @@ export class TcrTimerComponent implements OnInit, AfterViewInit, OnDestroy {
   private SYNC_INTERVAL: number = 10;
   private intervalId?: number;
 
-  constructor(private timerService: TcrTimerService) {
+  constructor(
+    private timerService: TcrTimerService,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.timerMessage = toSignal(this.timerService.message$);
 
     effect(() => {
@@ -93,6 +97,7 @@ export class TcrTimerComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.remaining = this.remaining - 1;
       this.updateColor();
+      this.cdr.markForCheck();
     }
   }
 
@@ -101,13 +106,16 @@ export class TcrTimerComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getTimer(): void {
-    this.timerService.getTimer().subscribe((t) => {
-      if (t) {
-        this.timer = t;
-        this.timeout = parseInt(t.timeout, 10);
-        this.remaining = parseInt(t.remaining, 10);
-        this.updateColor();
-      }
+    this.timerService.getTimer().subscribe({
+      next: (t) => {
+        if (t) {
+          this.timer = t;
+          this.timeout = parseInt(t.timeout, 10);
+          this.remaining = parseInt(t.remaining, 10);
+          this.updateColor();
+          this.cdr.markForCheck();
+        }
+      },
     });
   }
 

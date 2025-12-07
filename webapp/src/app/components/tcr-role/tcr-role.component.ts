@@ -20,7 +20,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Component, effect, Input, OnInit, Signal } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  effect,
+  Input,
+  OnInit,
+  Signal,
+} from "@angular/core";
 import { TcrRole } from "../../interfaces/tcr-role";
 import { TcrRolesService } from "../../services/trc-roles.service";
 import { TcrMessage } from "../../interfaces/tcr-message";
@@ -39,7 +46,10 @@ export class TcrRoleComponent implements OnInit {
   role?: TcrRole;
   roleMessage: Signal<TcrMessage | undefined>;
 
-  constructor(private rolesService: TcrRolesService) {
+  constructor(
+    private rolesService: TcrRolesService,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.roleMessage = toSignal(this.rolesService.message$);
 
     effect(() => {
@@ -65,6 +75,7 @@ export class TcrRoleComponent implements OnInit {
   private getRole(): void {
     this.rolesService.getRole(this.name).subscribe((r) => {
       this.role = r;
+      this.cdr.markForCheck();
     });
   }
 

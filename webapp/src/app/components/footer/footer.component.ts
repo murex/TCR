@@ -20,29 +20,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Component, Input, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { TcrBuildInfo } from "../../interfaces/tcr-build-info";
 import { TcrBuildInfoService } from "../../services/tcr-build-info.service";
-import { DatePipe } from "@angular/common";
+import { AsyncPipe, DatePipe } from "@angular/common";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-footer",
-  imports: [DatePipe],
+  imports: [AsyncPipe, DatePipe],
   templateUrl: "./footer.component.html",
   styleUrl: "./footer.component.css",
 })
-export class FooterComponent implements OnInit {
-  @Input() buildInfo?: TcrBuildInfo;
+export class FooterComponent {
+  buildInfo$: Observable<TcrBuildInfo>;
 
-  constructor(private buildInfoService: TcrBuildInfoService) {}
-
-  ngOnInit(): void {
-    this.getBuildInfo();
-  }
-
-  private getBuildInfo(): void {
-    this.buildInfoService
-      .getBuildInfo()
-      .subscribe((buildInfo) => (this.buildInfo = buildInfo));
+  constructor(private buildInfoService: TcrBuildInfoService) {
+    this.buildInfo$ = this.buildInfoService.getBuildInfo();
   }
 }

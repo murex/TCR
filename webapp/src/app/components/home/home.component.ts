@@ -35,7 +35,7 @@ export class HomeComponent {
 
   constructor(private router: Router) {}
 
-  async navigateTo(url: string): Promise<void> {
+  navigateTo(url: string): void {
     this.router.navigateByUrl(url).then((r) => {
       if (!r) window.alert(`Page not found: ${url}`);
     });

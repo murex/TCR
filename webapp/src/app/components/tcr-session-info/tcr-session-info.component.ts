@@ -20,18 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Component, Input, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { TcrSessionInfo } from "../../interfaces/tcr-session-info";
 import { TcrSessionInfoService } from "../../services/tcr-session-info.service";
-import { NgOptimizedImage } from "@angular/common";
+import { AsyncPipe, NgOptimizedImage } from "@angular/common";
 import { OnOffPipe } from "../../pipes/on-off.pipe";
 import { VariantDescriptionPipe } from "../../pipes/variant-description.pipe";
 import { VariantImagePathPipe } from "../../pipes/variant-image-path.pipe";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-tcr-session-info",
   imports: [
+    AsyncPipe,
     OnOffPipe,
     NgOptimizedImage,
     VariantDescriptionPipe,
@@ -41,19 +43,11 @@ import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
   templateUrl: "./tcr-session-info.component.html",
   styleUrl: "./tcr-session-info.component.css",
 })
-export class TcrSessionInfoComponent implements OnInit {
+export class TcrSessionInfoComponent {
   title: string = "TCR Session Information";
-  @Input() sessionInfo?: TcrSessionInfo;
+  sessionInfo$: Observable<TcrSessionInfo>;
 
-  constructor(private sessionInfoService: TcrSessionInfoService) {}
-
-  ngOnInit(): void {
-    this.getSessionInfo();
-  }
-
-  private getSessionInfo(): void {
-    this.sessionInfoService
-      .getSessionInfo()
-      .subscribe((sessionInfo) => (this.sessionInfo = sessionInfo));
+  constructor(private sessionInfoService: TcrSessionInfoService) {
+    this.sessionInfo$ = this.sessionInfoService.getSessionInfo();
   }
 }
