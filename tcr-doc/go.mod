@@ -28,7 +28,7 @@ require (
 	github.com/esiqveland/notify v0.13.3 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.11 // indirect
-	github.com/gen2brain/beeep v0.11.1 // indirect
+	github.com/gen2brain/beeep v0.11.2 // indirect
 	github.com/gin-contrib/cors v1.7.6 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/gin-contrib/static v1.1.5 // indirect
