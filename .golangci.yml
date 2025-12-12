@@ -290,6 +290,9 @@ linters:
         text: parameter .* always receives
       - path: src/http/
         text: "var-naming: avoid package names that conflict with Go standard library package names"
+      - linters:
+          - revive
+        text: "var-naming: avoid meaningless package names"
     paths:
       - .*generated.*
       - testdata
