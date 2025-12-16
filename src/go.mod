@@ -86,8 +86,8 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pjbgf/sha1cd v0.5.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/quic-go/qpack v0.5.1 // indirect
-	github.com/quic-go/quic-go v0.56.0 // indirect
+	github.com/quic-go/qpack v0.6.0 // indirect
+	github.com/quic-go/quic-go v0.57.1 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/sergeymakinen/go-bmp v1.0.0 // indirect
 	github.com/sergeymakinen/go-ico v1.0.0 // indirect
@@ -111,12 +111,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
-
-// github.com/quic-go/qpack v0.6.0 crashes golangci-lint
-exclude github.com/quic-go/qpack v0.6.0
-
-// github.com/quic-go/quic-go v0.57.0 crashes golangci-lint
-exclude github.com/quic-go/quic-go v0.57.0
-
-// github.com/quic-go/quic-go v0.57.1 crashes golangci-lint
-exclude github.com/quic-go/quic-go v0.57.1
