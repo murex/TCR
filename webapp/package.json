@@ -62,7 +62,7 @@
     "@eslint/object-schema": "^3.0.0",
     "@types/jasmine": "~5.1.13",
     "@typescript-eslint/eslint-plugin": "8.49.0",
-    "@typescript-eslint/parser": "8.49.0",
+    "@typescript-eslint/parser": "8.50.0",
     "@vitest/coverage-v8": "^4.0.15",
     "@vitest/ui": "^4.0.15",
     "eslint": "^9.39.2",
