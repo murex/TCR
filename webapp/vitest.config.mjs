@@ -94,11 +94,7 @@ export default defineConfig({
       },
     },
     pool: "forks",
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
+    singleFork: true,
     testTimeout: 120000,
     hookTimeout: 120000,
     teardownTimeout: 120000,

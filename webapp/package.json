@@ -63,14 +63,14 @@
     "@types/jasmine": "~5.1.13",
     "@typescript-eslint/eslint-plugin": "8.50.0",
     "@typescript-eslint/parser": "8.50.0",
-    "@vitest/coverage-v8": "^4.0.15",
-    "@vitest/ui": "^4.0.15",
+    "@vitest/coverage-v8": "^4.0.16",
+    "@vitest/ui": "^4.0.16",
     "eslint": "^9.39.2",
     "jsdom": "^27.3.0",
     "jasmine": "^5.13.0",
     "ng-mocks": "^14.14.0",
     "typescript": "~5.9.3",
     "vite": "^7.3.0",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.16"
   }
 }
