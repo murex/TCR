@@ -55,7 +55,7 @@
     "@angular-eslint/eslint-plugin-template": "^21.1.0",
     "@angular-eslint/schematics": "^21.1.0",
     "@angular-eslint/template-parser": "^21.1.0",
-    "@angular/cli": "^21.0.3",
+    "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.6",
     "@angular/localize": "^21.0.6",
     "@eslint/config-array": "^0.23.0",
