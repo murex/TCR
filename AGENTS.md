@@ -26,7 +26,7 @@ The project is organized as a multi-module monorepo with dependencies:
   - Reporting: `report/`, `xunit/`, `stats/` directories
 
 - **webapp/** - Angular-based web interface (experimental)
-  - Angular 20+ TypeScript frontend
+  - Angular 21+ TypeScript frontend
   - Real-time communication via WebSocket
   - Displays TCR cycle status, timer, and role management
   - Built output embedded in Go binary via static assets
@@ -81,7 +81,7 @@ cd webapp
 make setup          # Install npm dependencies
 make build          # Build for production (output to Go's static assets)
 make run            # Start development server
-make test           # Run Karma/Jasmine unit tests
+make test           # Run Vitest unit tests
 make lint           # Run ESLint
 make cov            # Run tests with coverage
 make clean          # Clean build artifacts
@@ -106,9 +106,9 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 
 ### Frontend (Angular)
 - **Node.js 22** (for development)
-- **Angular 20+**
+- **Angular 21+**
 - **TypeScript**
-- **Karma/Jasmine** - Testing
+- **Vitest** - Testing
 
 ### Build Tools
 - **GoReleaser** - Release automation
@@ -126,7 +126,7 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 - Test data in `src/testdata/`
 
 ### Angular Tests
-- Karma/Jasmine for unit tests
+- Vitest for unit tests
 - Run with `npm test` or `make test` in webapp/
 - ESLint for code quality
 - Coverage reporting
