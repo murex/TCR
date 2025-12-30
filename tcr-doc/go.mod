@@ -43,7 +43,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.1 // indirect
-	github.com/godbus/dbus/v5 v5.2.1 // indirect
+	github.com/godbus/dbus/v5 v5.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/imkira/go-observer v1.0.3 // indirect
