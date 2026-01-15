@@ -57,7 +57,7 @@
     "@angular-eslint/template-parser": "^21.1.0",
     "@angular/cli": "^21.0.5",
     "@angular/compiler-cli": "^21.0.8",
-    "@angular/localize": "^21.0.8",
+    "@angular/localize": "^21.1.0",
     "@eslint/config-array": "^0.23.0",
     "@eslint/object-schema": "^3.0.0",
     "@types/jasmine": "~5.1.15",
