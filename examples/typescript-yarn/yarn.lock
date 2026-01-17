@@ -409,6 +409,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@epic-web/invariant@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@epic-web/invariant@npm:1.0.0"
+  checksum: 10c0/72dbeb026e4e4eb3bc9c65739b91408ca77ab7d603a2494fa2eff3790ec22892c4caba751cffdf30f5ccf0e7ba79c1e9c96cf0a357404b9432bf1365baac23ca
+  languageName: node
+  linkType: hard
+
 "@isaacs/balanced-match@npm:^4.0.1":
   version: 4.0.1
   resolution: "@isaacs/balanced-match@npm:4.0.1"
@@ -942,12 +949,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^25.0.6":
+"@types/node@npm:*":
   version: 25.0.6
   resolution: "@types/node@npm:25.0.6"
   dependencies:
     undici-types: "npm:~7.16.0"
   checksum: 10c0/4ee3b6b606bc28f6840c04d58769e1e75dd8085149908956c874c85f8f8c890990701bcbe783fc2d14017817861dc07fcf23de6fc2805fe491f84eae717b5705
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^25.0.9":
+  version: 25.0.9
+  resolution: "@types/node@npm:25.0.9"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/a757efafe303d9c8833eb53c2e9a0981cd5ac725cdc04c5612a71db86468c938778d4fa328be4231b68fffc68258638764df7b9c69e86cf55f0bb67105eb056f
   languageName: node
   linkType: hard
 
@@ -1502,6 +1518,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-env@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "cross-env@npm:10.1.0"
+  dependencies:
+    "@epic-web/invariant": "npm:^1.0.0"
+    cross-spawn: "npm:^7.0.6"
+  bin:
+    cross-env: dist/bin/cross-env.js
+    cross-env-shell: dist/bin/cross-env-shell.js
+  checksum: 10c0/834a862db456ba1fedf6c6da43436b123ae38f514fa286d6f0937c14fa83f13469f77f70f2812db041ae2d84f82bac627040b8686030aca27fbdf113dfa38b63
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^7.0.3, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
@@ -1886,7 +1915,8 @@ __metadata:
   dependencies:
     "@tsconfig/node22": "npm:^22.0.5"
     "@types/jest": "npm:^30.0.0"
-    "@types/node": "npm:^25.0.6"
+    "@types/node": "npm:^25.0.9"
+    cross-env: "npm:^10.1.0"
     jest: "npm:^30.2.0"
     jest-junit: "npm:^16.0.0"
     jest-util: "npm:^30.2.0"
