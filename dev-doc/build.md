@@ -29,6 +29,23 @@ Please ensure that `make` is installed on your machine before proceeding.
   ```
 - **Windows**: use WSL or install GNU Make using tools such as Chocolatey
 
+## CGO configuration - Optional
+
+If you do not have a C compiler (such as gcc) installed on your machine, you may need to disable CGO to avoid build or test errors.
+
+You can do this by setting the following environment variable:
+
+```
+export CGO_ENABLED=0
+```
+
+On Windows (PowerShell):
+```
+setx CGO_ENABLED 0
+```
+
+This configuration is sufficient for building and testing TCR in environments where gcc is not available.
+
 ## Install additional Go tools and utility packages
 
 ### Install development dependencies - `Required for testing`
@@ -45,6 +62,24 @@ make install-tools
 
 You can check this [link](https://www.tabnine.com/blog/top-7-golang-ides-for-go-developers/)
 for a list of recommended IDEs supporting Go language.
+
+### Go test build tags configuration - Required for testing in IDEs
+
+Some TCR tests rely on the Go build tag test_helper.
+
+When running tests from an IDE, make sure this build tag is enabled; otherwise some tests may fail or not be detected correctly.
+
+Examples:
+
+- **VS Code:** Add the following setting in your workspace or user settings:
+```
+"go.testTags": "test_helper"
+```
+
+- **GoLand**: Go to Run / Debug Configurations → Go Test → Go tool arguments and add:
+```
+-tags=test_helper
+```
 
 ### Cobra library and tools - `Optional`
 
