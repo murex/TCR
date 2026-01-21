@@ -16,7 +16,30 @@ TCR is written in Go. This implies having Go compiler and tools installed on you
 
 Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.25** or higher.
 
+## Install build tools - `Required`
+
+TCR uses GNU Make to build, test, and run various development tasks.
+
+Please ensure that `make` is installed on your machine before proceeding.
+
+- **Linux**: usually preinstalled or available via your package manager
+- **macOS**:
+  ```bash
+  brew install make
+  ```
+- **Windows**: use WSL or install GNU Make using tools such as Chocolatey
+
 ## Install additional Go tools and utility packages
+
+### Install development dependencies - `Required for testing`
+
+Before running tests, required Go tools must be installed.
+
+From the repository root directory, run:
+
+```
+make install-tools
+```
 
 ### Go IDE - `Optional`
 
@@ -76,7 +99,7 @@ readability of test results.
 Refer to [gotestsum's Install section](https://github.com/gotestyourself/gotestsum#install)
 for installation.
 
-Once gotestsum is installed, you can run make's test target from the root directory:
+Once gotestsum is installed and development dependencies are installed, you can run make's test target from the root directory:
 
 - For running all tests:
 
