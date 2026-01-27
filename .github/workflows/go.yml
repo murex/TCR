@@ -48,7 +48,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version: '21'
           check-latest: true
 
       - name: Test tcr module
