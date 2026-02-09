@@ -65,7 +65,7 @@
     "@typescript-eslint/parser": "8.54.0",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.0",
     "jsdom": "^28.0.0",
     "jasmine": "^6.0.0",
     "ng-mocks": "^14.15.1",
