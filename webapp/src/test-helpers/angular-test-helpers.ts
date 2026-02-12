@@ -522,6 +522,7 @@ export function createComponentWithStrategies<T>(
   } catch (error) {
     throw new Error(
       `All component creation strategies failed for ${componentClass.name}: ${(error as Error).message}`,
+      { cause: error },
     );
   }
 }

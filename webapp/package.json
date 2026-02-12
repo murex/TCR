@@ -59,7 +59,7 @@
     "@angular/compiler-cli": "^21.1.4",
     "@angular/localize": "^21.1.4",
     "@eslint/config-array": "^0.23.1",
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@eslint/object-schema": "^3.0.1",
     "@types/jasmine": "~6.0.0",
     "@typescript-eslint/eslint-plugin": "8.55.0",
