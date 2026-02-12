@@ -95,7 +95,7 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 ## Key Technologies & Dependencies
 
 ### Backend (Go)
-- **Go 1.25+** (required)
+- **Go 1.26+** (required)
 - **Cobra** - CLI framework
 - **Viper** - Configuration management
 - **Gin** - Web framework for HTTP API
@@ -353,7 +353,7 @@ make lint && make test
 
 ## Development Tools Required
 
-- Go 1.25+
+- Go 1.26+
 - Node.js 22 (for webapp)
 - golangci-lint (for linting)
 - gotestsum (optional, better test output)

@@ -1,6 +1,6 @@
 module example/go-gotestsum
 
-go 1.25
+go 1.26
 
 tool gotest.tools/gotestsum
 
