@@ -8,7 +8,7 @@ tool (
 )
 
 require (
-	github.com/ProtonMail/go-crypto v1.3.0 // indirect
+	github.com/ProtonMail/go-crypto v1.4.0 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20250509230738-c29da582b0f5
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gen2brain/beeep v0.11.2
@@ -35,7 +35,7 @@ require (
 require (
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/static v1.1.5
-	github.com/gin-gonic/gin v1.11.0
+	github.com/gin-gonic/gin v1.12.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 )
@@ -99,7 +99,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	go.uber.org/mock v0.6.0 // indirect
+	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.24.0 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
