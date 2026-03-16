@@ -119,7 +119,7 @@ export default defineConfig({
       "ng-terminal",
     ],
   },
-  esbuild: {
-    target: "es2020",
+  oxc: {
+    target: "es2022",
   },
 });
