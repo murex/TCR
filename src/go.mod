@@ -8,7 +8,7 @@ tool (
 )
 
 require (
-	github.com/ProtonMail/go-crypto v1.4.0 // indirect
+	github.com/ProtonMail/go-crypto v1.4.1 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20250509230738-c29da582b0f5
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gen2brain/beeep v0.11.2
