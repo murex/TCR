@@ -55,7 +55,7 @@
     "@angular-eslint/eslint-plugin-template": "^21.3.1",
     "@angular-eslint/schematics": "^21.3.1",
     "@angular-eslint/template-parser": "^21.3.1",
-    "@angular/cli": "^21.2.3",
+    "@angular/cli": "^21.2.4",
     "@angular/compiler-cli": "^21.2.6",
     "@angular/localize": "^21.2.6",
     "@eslint/js": "^10.0.1",
@@ -72,6 +72,6 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.57.2",
     "vite": "^8.0.3",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.2"
   }
 }
