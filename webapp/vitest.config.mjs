@@ -50,6 +50,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    silent: true,
     environment: "happy-dom",
     setupFiles: ["src/vitest-setup.ts"],
     isolate: false,
