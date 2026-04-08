@@ -26,12 +26,12 @@
   "dependencies": {
     "@angular/animations": "^21.2.8",
     "@angular/common": "^21.2.8",
-    "@angular/compiler": "^21.2.7",
-    "@angular/core": "^21.2.7",
+    "@angular/compiler": "^21.2.8",
+    "@angular/core": "^21.2.8",
     "@angular/forms": "^21.2.8",
-    "@angular/platform-browser": "^21.2.7",
-    "@angular/platform-browser-dynamic": "^21.2.7",
-    "@angular/router": "^21.2.7",
+    "@angular/platform-browser": "^21.2.8",
+    "@angular/platform-browser-dynamic": "^21.2.8",
+    "@angular/router": "^21.2.8",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
@@ -55,8 +55,8 @@
     "@angular-eslint/eslint-plugin-template": "^21.3.1",
     "@angular-eslint/schematics": "^21.3.1",
     "@angular-eslint/template-parser": "^21.3.1",
-    "@angular/cli": "^21.2.6",
-    "@angular/compiler-cli": "^21.2.7",
+    "@angular/cli": "^21.2.7",
+    "@angular/compiler-cli": "^21.2.8",
     "@angular/localize": "^21.2.8",
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
@@ -71,7 +71,7 @@
     "ng-mocks": "^14.15.2",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.1",
-    "vite": "^8.0.7",
+    "vite": "^8.0.8",
     "vitest": "^4.1.3"
   }
 }
