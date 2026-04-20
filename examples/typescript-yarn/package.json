@@ -13,7 +13,7 @@
     "jest-junit": "^16.0.0",
     "jest-util": "^30.3.0",
     "ts-jest": "^29.4.9",
-    "typescript": "^6.0.2",
+    "typescript": "^6.0.3",
     "yarn-upgrade-all": "^0.7.5"
   },
   "scripts": {
