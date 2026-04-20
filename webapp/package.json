@@ -65,13 +65,13 @@
     "@vitest/coverage-v8": "^4.1.4",
     "@vitest/ui": "^4.1.4",
     "angular-eslint": "^21.3.1",
-    "eslint": "^10.2.0",
+    "eslint": "^10.2.1",
     "jasmine": "^6.2.0",
     "happy-dom": "^20.9.0",
     "ng-mocks": "^14.15.2",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.8",
+    "vite": "^8.0.9",
     "vitest": "^4.1.4"
   }
 }
