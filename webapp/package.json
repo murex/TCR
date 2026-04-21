@@ -60,7 +60,7 @@
     "@angular/localize": "^21.2.9",
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
-    "@typescript-eslint/eslint-plugin": "8.58.2",
+    "@typescript-eslint/eslint-plugin": "8.59.0",
     "@typescript-eslint/parser": "8.59.0",
     "@vitest/coverage-v8": "^4.1.4",
     "@vitest/ui": "^4.1.4",
