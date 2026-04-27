@@ -10,7 +10,7 @@
     "cross-env": "^10.1.0",
     "jest": "^30.3.0",
     "jest-junit": "^16.0.0",
-    "yarn-upgrade-all": "^0.7.5"
+    "yarn-upgrade-all": "^0.8.1"
   },
   "scripts": {
     "test": "cross-env NODE_OPTIONS='--no-experimental-webstorage' jest --watchAll",
