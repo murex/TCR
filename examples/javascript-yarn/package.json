@@ -8,7 +8,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.2",
     "cross-env": "^10.1.0",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "jest-junit": "^17.0.0",
     "yarn-upgrade-all": "^0.8.1"
   },
