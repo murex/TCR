@@ -61,7 +61,7 @@
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
     "@typescript-eslint/eslint-plugin": "8.60.0",
-    "@typescript-eslint/parser": "8.60.0",
+    "@typescript-eslint/parser": "8.60.1",
     "@vitest/coverage-v8": "^4.1.7",
     "@vitest/ui": "^4.1.7",
     "angular-eslint": "^21.4.0",
