@@ -70,7 +70,7 @@
     "happy-dom": "^20.9.0",
     "ng-mocks": "^14.15.3",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.60.0",
+    "typescript-eslint": "^8.60.1",
     "vite": "^8.0.15",
     "vitest": "^4.1.8"
   }
