@@ -19,6 +19,9 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     defaults:
       run:
         shell: bash
@@ -30,9 +33,6 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - name: Skip duplicate actions
-        uses: fkirc/skip-duplicate-actions@v5.3.1
 
       - name: Setup node.js version ${{ matrix.node-version }}
         uses: actions/setup-node@v6
