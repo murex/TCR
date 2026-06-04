@@ -105,7 +105,7 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 - **testify** - Testing framework
 
 ### Frontend (Angular)
-- **Node.js 22** (for development)
+- **Node.js 24** (for development)
 - **Angular 21+**
 - **TypeScript**
 - **Vitest** - Testing
@@ -354,7 +354,7 @@ make lint && make test
 ## Development Tools Required
 
 - Go 1.26+
-- Node.js 22 (for webapp)
+- Node.js 24 (for webapp)
 - golangci-lint (for linting)
 - gotestsum (optional, better test output)
 - GoReleaser (for releases)
