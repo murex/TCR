@@ -67,7 +67,7 @@
     "angular-eslint": "^22.0.0",
     "eslint": "^10.5.0",
     "jasmine": "^6.3.0",
-    "happy-dom": "^20.10.2",
+    "happy-dom": "^20.10.3",
     "ng-mocks": "^14.15.3",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.61.0",
