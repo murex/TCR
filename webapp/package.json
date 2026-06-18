@@ -24,12 +24,11 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "@angular/common": "^22.0.1",
-    "@angular/compiler": "^22.0.1",
-    "@angular/core": "^22.0.1",
-    "@angular/forms": "^22.0.1",
-    "@angular/platform-browser": "^22.0.1",
-    "@angular/platform-browser-dynamic": "^22.0.2",
+    "@angular/common": "^22.0.2",
+    "@angular/compiler": "^22.0.2",
+    "@angular/core": "^22.0.2",
+    "@angular/forms": "^22.0.2",
+    "@angular/platform-browser": "^22.0.2",
     "@angular/router": "^22.0.2",
     "@fortawesome/angular-fontawesome": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
@@ -48,15 +47,15 @@
     "zone.js": "^0.16.2"
   },
   "devDependencies": {
-    "@angular/build": "^22.0.1",
+    "@angular/build": "^22.0.2",
     "@angular-eslint/builder": "^22.0.0",
     "@angular-eslint/eslint-plugin": "^22.0.0",
     "@angular-eslint/eslint-plugin-template": "^22.0.0",
     "@angular-eslint/schematics": "^22.0.0",
     "@angular-eslint/template-parser": "^22.0.0",
     "@angular/cli": "^22.0.2",
-    "@angular/compiler-cli": "^22.0.1",
-    "@angular/localize": "^22.0.1",
+    "@angular/compiler-cli": "^22.0.2",
+    "@angular/localize": "^22.0.2",
     "@eslint/js": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "8.61.1",
     "@typescript-eslint/parser": "8.61.1",
@@ -73,10 +72,10 @@
   },
   "allowScripts": {
     "esbuild@0.27.7": true,
-    "esbuild@0.28.0": true,
     "@parcel/watcher@2.5.6": true,
     "fsevents@2.3.3": true,
     "lmdb@3.5.4": true,
-    "msgpackr-extract@3.0.4": true
+    "msgpackr-extract@3.0.4": true,
+    "esbuild@0.28.1": true
   }
 }
