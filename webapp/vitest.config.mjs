@@ -37,7 +37,6 @@ export default defineConfig({
       "@angular/common",
       "@angular/common/http",
       "@angular/platform-browser",
-      "@angular/platform-browser-dynamic",
       "@angular/core/testing",
       "@angular/common/testing",
       "@angular/common/http/testing",

@@ -146,9 +146,9 @@ import "zone.js/testing";
 
 import { getTestBed } from "@angular/core/testing";
 import {
-  BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting,
-} from "@angular/platform-browser-dynamic/testing";
+  BrowserTestingModule,
+  platformBrowserTesting,
+} from "@angular/platform-browser/testing";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { registerFontAwesomeIcons } from "./app/shared/font-awesome-icons";
 import {
@@ -221,8 +221,8 @@ if (typeof globalThis.jasmine === "undefined") {
 // Initialize the Angular testing environment only once
 if (!getTestBed().platform) {
   getTestBed().initTestEnvironment(
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting(),
+    BrowserTestingModule,
+    platformBrowserTesting(),
     {
       teardown: { destroyAfterEach: false },
     },
