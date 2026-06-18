@@ -22,6 +22,7 @@ SOFTWARE.
 
 import { Component } from "@angular/core";
 import { NgTerminal } from "ng-terminal";
+import { vi } from "vitest";
 
 /**
  * Mock NgTerminal component for testing
@@ -88,8 +89,8 @@ export class MockTerminalUnderlying {
   private _core: {
     viewport: {
       dimensions: { cols: number; rows: number } | undefined;
-      syncScrollArea: jasmine.Spy;
-      _innerRefresh: jasmine.Spy;
+      syncScrollArea: ReturnType<typeof vi.fn>;
+      _innerRefresh: ReturnType<typeof vi.fn>;
     };
   };
 
@@ -98,14 +99,14 @@ export class MockTerminalUnderlying {
     this._core = {
       viewport: {
         dimensions: { cols: 80, rows: 24 },
-        syncScrollArea: jasmine.createSpy("syncScrollArea"),
-        _innerRefresh: jasmine.createSpy("_innerRefresh"),
+        syncScrollArea: vi.fn(),
+        _innerRefresh: vi.fn(),
       },
     };
   }
 
-  reset = jasmine.createSpy("reset");
-  dispose = jasmine.createSpy("dispose").and.callFake(() => {
+  reset = vi.fn();
+  dispose = vi.fn().mockImplementation(() => {
     this.disposed = true;
     // Clear all timers
     this.timers.forEach((timer) => clearTimeout(timer));
@@ -115,7 +116,7 @@ export class MockTerminalUnderlying {
       this._core.viewport.dimensions = undefined;
     }
   });
-  loadAddon = jasmine.createSpy("loadAddon");
+  loadAddon = vi.fn();
 
   isDisposed(): boolean {
     return this.disposed;
@@ -213,36 +214,32 @@ export function setupTerminalTestEnvironment(): void {
 
   // Mock canvas context for xterm.js
   const mockCanvasContext = {
-    fillRect: jasmine.createSpy("fillRect"),
-    clearRect: jasmine.createSpy("clearRect"),
-    getImageData: jasmine
-      .createSpy("getImageData")
-      .and.returnValue({ data: new Uint8ClampedArray(4) }),
-    putImageData: jasmine.createSpy("putImageData"),
-    createImageData: jasmine
-      .createSpy("createImageData")
-      .and.returnValue({ data: new Uint8ClampedArray(4) }),
-    setTransform: jasmine.createSpy("setTransform"),
-    drawImage: jasmine.createSpy("drawImage"),
-    save: jasmine.createSpy("save"),
-    fillText: jasmine.createSpy("fillText"),
-    restore: jasmine.createSpy("restore"),
-    beginPath: jasmine.createSpy("beginPath"),
-    moveTo: jasmine.createSpy("moveTo"),
-    lineTo: jasmine.createSpy("lineTo"),
-    closePath: jasmine.createSpy("closePath"),
-    stroke: jasmine.createSpy("stroke"),
-    translate: jasmine.createSpy("translate"),
-    scale: jasmine.createSpy("scale"),
-    rotate: jasmine.createSpy("rotate"),
-    arc: jasmine.createSpy("arc"),
-    fill: jasmine.createSpy("fill"),
-    measureText: jasmine
-      .createSpy("measureText")
-      .and.returnValue({ width: 10 }),
-    transform: jasmine.createSpy("transform"),
-    rect: jasmine.createSpy("rect"),
-    clip: jasmine.createSpy("clip"),
+    fillRect: vi.fn(),
+    clearRect: vi.fn(),
+    getImageData: vi.fn().mockReturnValue({ data: new Uint8ClampedArray(4) }),
+    putImageData: vi.fn(),
+    createImageData: vi
+      .fn()
+      .mockReturnValue({ data: new Uint8ClampedArray(4) }),
+    setTransform: vi.fn(),
+    drawImage: vi.fn(),
+    save: vi.fn(),
+    fillText: vi.fn(),
+    restore: vi.fn(),
+    beginPath: vi.fn(),
+    moveTo: vi.fn(),
+    lineTo: vi.fn(),
+    closePath: vi.fn(),
+    stroke: vi.fn(),
+    translate: vi.fn(),
+    scale: vi.fn(),
+    rotate: vi.fn(),
+    arc: vi.fn(),
+    fill: vi.fn(),
+    measureText: vi.fn().mockReturnValue({ width: 10 }),
+    transform: vi.fn(),
+    rect: vi.fn(),
+    clip: vi.fn(),
   };
 
   if (typeof HTMLCanvasElement !== "undefined") {
@@ -253,19 +250,17 @@ export function setupTerminalTestEnvironment(): void {
 
   // Mock getBoundingClientRect for consistent dimensions
   if (typeof Element !== "undefined") {
-    Element.prototype.getBoundingClientRect = jasmine
-      .createSpy("getBoundingClientRect")
-      .and.returnValue({
-        x: 0,
-        y: 0,
-        width: 800,
-        height: 600,
-        top: 0,
-        right: 800,
-        bottom: 600,
-        left: 0,
-        toJSON: () => {},
-      });
+    Element.prototype.getBoundingClientRect = vi.fn().mockReturnValue({
+      x: 0,
+      y: 0,
+      width: 800,
+      height: 600,
+      top: 0,
+      right: 800,
+      bottom: 600,
+      left: 0,
+      toJSON: () => {},
+    }) as unknown as typeof Element.prototype.getBoundingClientRect;
   }
 }
 
@@ -274,25 +269,25 @@ export function setupTerminalTestEnvironment(): void {
  */
 export function createSafeXtermMock() {
   return {
-    loadAddon: jasmine.createSpy("loadAddon"),
-    open: jasmine.createSpy("open"),
-    write: jasmine.createSpy("write"),
-    dispose: jasmine.createSpy("dispose"),
-    reset: jasmine.createSpy("reset"),
-    focus: jasmine.createSpy("focus"),
-    blur: jasmine.createSpy("blur"),
-    select: jasmine.createSpy("select"),
-    selectAll: jasmine.createSpy("selectAll"),
-    selectLines: jasmine.createSpy("selectLines"),
-    clearSelection: jasmine.createSpy("clearSelection"),
-    getSelection: jasmine.createSpy("getSelection").and.returnValue(""),
-    getSelectionPosition: jasmine.createSpy("getSelectionPosition"),
-    scrollLines: jasmine.createSpy("scrollLines"),
-    scrollPages: jasmine.createSpy("scrollPages"),
-    scrollToTop: jasmine.createSpy("scrollToTop"),
-    scrollToBottom: jasmine.createSpy("scrollToBottom"),
-    scrollToLine: jasmine.createSpy("scrollToLine"),
-    clear: jasmine.createSpy("clear"),
+    loadAddon: vi.fn(),
+    open: vi.fn(),
+    write: vi.fn(),
+    dispose: vi.fn(),
+    reset: vi.fn(),
+    focus: vi.fn(),
+    blur: vi.fn(),
+    select: vi.fn(),
+    selectAll: vi.fn(),
+    selectLines: vi.fn(),
+    clearSelection: vi.fn(),
+    getSelection: vi.fn().mockReturnValue(""),
+    getSelectionPosition: vi.fn(),
+    scrollLines: vi.fn(),
+    scrollPages: vi.fn(),
+    scrollToTop: vi.fn(),
+    scrollToBottom: vi.fn(),
+    scrollToLine: vi.fn(),
+    clear: vi.fn(),
     unicode: { activeVersion: "11" },
     rows: 24,
     cols: 80,
@@ -301,12 +296,8 @@ export function createSafeXtermMock() {
     _core: {
       viewport: {
         dimensions: { cols: 80, rows: 24 },
-        syncScrollArea: jasmine
-          .createSpy("syncScrollArea")
-          .and.returnValue(undefined),
-        _innerRefresh: jasmine
-          .createSpy("_innerRefresh")
-          .and.returnValue(undefined),
+        syncScrollArea: vi.fn(),
+        _innerRefresh: vi.fn(),
         _refreshAnimationFrame: null,
         _coreBrowserService: null,
       },
@@ -319,14 +310,14 @@ export function createSafeXtermMock() {
         },
       },
     },
-    onData: jasmine.createSpy("onData"),
-    onKey: jasmine.createSpy("onKey"),
-    onLineFeed: jasmine.createSpy("onLineFeed"),
-    onScroll: jasmine.createSpy("onScroll"),
-    onSelectionChange: jasmine.createSpy("onSelectionChange"),
-    onRender: jasmine.createSpy("onRender"),
-    onResize: jasmine.createSpy("onResize"),
-    onTitleChange: jasmine.createSpy("onTitleChange"),
-    onBell: jasmine.createSpy("onBell"),
+    onData: vi.fn(),
+    onKey: vi.fn(),
+    onLineFeed: vi.fn(),
+    onScroll: vi.fn(),
+    onSelectionChange: vi.fn(),
+    onRender: vi.fn(),
+    onResize: vi.fn(),
+    onTitleChange: vi.fn(),
+    onBell: vi.fn(),
   };
 }
