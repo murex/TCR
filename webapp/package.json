@@ -57,7 +57,7 @@
     "@angular/compiler-cli": "^22.0.2",
     "@angular/localize": "^22.0.2",
     "@eslint/js": "^10.0.1",
-    "@typescript-eslint/eslint-plugin": "8.61.1",
+    "@typescript-eslint/eslint-plugin": "8.62.0",
     "@typescript-eslint/parser": "8.61.1",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/ui": "^4.1.9",
