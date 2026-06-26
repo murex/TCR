@@ -24,7 +24,7 @@
     "node": ">=24.0.0"
   },
   "dependencies": {
-    "@angular/common": "^22.0.2",
+    "@angular/common": "^22.0.3",
     "@angular/compiler": "^22.0.2",
     "@angular/core": "^22.0.2",
     "@angular/forms": "^22.0.2",
