@@ -28,7 +28,7 @@
     "@angular/compiler": "^22.0.2",
     "@angular/core": "^22.0.2",
     "@angular/forms": "^22.0.2",
-    "@angular/platform-browser": "^22.0.2",
+    "@angular/platform-browser": "^22.0.3",
     "@angular/router": "^22.0.2",
     "@fortawesome/angular-fontawesome": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
