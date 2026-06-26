@@ -33,7 +33,7 @@
     "@fortawesome/angular-fontawesome": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
-    "@fortawesome/free-solid-svg-icons": "^7.2.0",
+    "@fortawesome/free-solid-svg-icons": "^7.3.0",
     "@ng-bootstrap/ng-bootstrap": "^21.0.0",
     "@popperjs/core": "^2.11.8",
     "@xterm/addon-unicode11": "^0.9.0",
