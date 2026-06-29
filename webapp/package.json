@@ -29,7 +29,7 @@
     "@angular/core": "^22.0.3",
     "@angular/forms": "^22.0.3",
     "@angular/platform-browser": "^22.0.3",
-    "@angular/router": "^22.0.3",
+    "@angular/router": "^22.0.4",
     "@fortawesome/angular-fontawesome": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.0",
     "@fortawesome/free-brands-svg-icons": "^7.3.0",
