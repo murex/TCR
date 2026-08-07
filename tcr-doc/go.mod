@@ -17,7 +17,7 @@ require (
 	github.com/bytedance/gopkg v0.1.4 // indirect
 	github.com/bytedance/sonic v1.15.2 // indirect
 	github.com/bytedance/sonic/loader v0.5.2 // indirect
-	github.com/cloudflare/circl v1.6.4 // indirect
+	github.com/cloudflare/circl v1.6.5 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
 	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
 	github.com/codeskyblue/go-sh v0.0.0-20250509230738-c29da582b0f5 // indirect
@@ -80,7 +80,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tadvi/systray v0.0.0-20190226123456-11a2b8fa57af // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
-	github.com/ugorji/go/codec v1.3.1 // indirect
+	github.com/ugorji/go/codec v1.3.2 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.8.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
