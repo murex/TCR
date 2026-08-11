@@ -61,7 +61,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
     "angular-eslint": "^22.1.0",
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "happy-dom": "^20.11.1",
     "ng-mocks": "^14.16.1",
     "typescript": "~6.0.3",
