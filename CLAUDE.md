@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **📋 For complete project documentation, please refer to [AGENTS.md](AGENTS.md)**
 
 The AGENTS.md file contains comprehensive information about:
+
 - Project overview and architecture
 - Build commands and development workflows
 - Testing strategies

@@ -86,7 +86,7 @@ provided as built-in.
 #### Built-in languages and toolchains
 
 | Language   | Default Toolchain | Compatible Toolchains                                |
-|------------|-------------------|------------------------------------------------------|
+| ---------- | ----------------- | ---------------------------------------------------- |
 | cpp        | cmake             | cmake bazel make                                     |
 | csharp     | dotnet            | dotnet bazel make                                    |
 | elixir     | mix               | mix                                                  |
@@ -143,20 +143,20 @@ language/toolchain, TCR needs to know where it should save them. This is the pur
 <details>
   <summary>Configuration directory layout</summary>
 
-  ```text
-  <configuration directory>/
-  └── .tcr/
-      ├── config.yml             - contains all TCR configuration settings
-      ├── language/              - subdirectory containing all language configurations
-      │   ├── cpp.yml            - configuration for C++ language
-      │   ├── java.yml           - configuration for java language
-      │   └── etc.
-      └── toolchain/             - subdirectory containing all toolchain configurations
-          ├── cmake.yml          - configuration for cmake toolchain
-          ├── gradle.yml         - configuration for gradle toolchain
-          ├── gradle-wrapper.yml - configuration for gradle wrapper toolchain
-          └── etc.
-  ```
+```text
+<configuration directory>/
+└── .tcr/
+    ├── config.yml             - contains all TCR configuration settings
+    ├── language/              - subdirectory containing all language configurations
+    │   ├── cpp.yml            - configuration for C++ language
+    │   ├── java.yml           - configuration for java language
+    │   └── etc.
+    └── toolchain/             - subdirectory containing all toolchain configurations
+        ├── cmake.yml          - configuration for cmake toolchain
+        ├── gradle.yml         - configuration for gradle toolchain
+        ├── gradle-wrapper.yml - configuration for gradle wrapper toolchain
+        └── etc.
+```
 
 </details>
 
@@ -176,15 +176,15 @@ TCR for various language/toolchain combinations.
 
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
-    ```shell
-    tar zxf tcr_1.5.0_Darwin_x86_64.tar.gz
-    ```
+   ```shell
+   tar zxf tcr_1.5.0_Darwin_x86_64.tar.gz
+   ```
 
 3. Launch TCR
 
-    ```shell
-    ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
-    ```
+   ```shell
+   ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
+   ```
 
 </details>
 
@@ -195,15 +195,15 @@ TCR for various language/toolchain combinations.
 
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
-    ```shell
-    tar zxf tcr_1.5.0_Linux_x86_64.tar.gz
-    ```
+   ```shell
+   tar zxf tcr_1.5.0_Linux_x86_64.tar.gz
+   ```
 
 3. Launch TCR
 
-    ```shell
-    ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
-    ```
+   ```shell
+   ./tcr -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
+   ```
 
 </details>
 
@@ -214,15 +214,15 @@ TCR for various language/toolchain combinations.
 
 2. Extract TCR executable (replace with the appropriate version and architecture)
 
-    ```shell
-    tar zxf tcr_1.5.0_Windows_x86_64.tar.gz
-    ```
+   ```shell
+   tar zxf tcr_1.5.0_Windows_x86_64.tar.gz
+   ```
 
 3. Launch TCR
 
-    ```shell
-    ./tcr.exe -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
-    ```
+   ```shell
+   ./tcr.exe -b <base-directory> -w <work-directory> -l <language> -t <toolchain>
+   ```
 
 </details>
 
@@ -233,7 +233,7 @@ TCR for various language/toolchain combinations.
 
 TCR uses git by default. There is no need to specify anything particular to use git.
 
-> ***Note: TCR and git commits signing***
+> _**Note: TCR and git commits signing**_
 >
 > Some users prefer to set up their git configuration so that each of their commits is
 > signed and verified through a GPG passphrase as described
@@ -242,7 +242,7 @@ TCR uses git by default. There is no need to specify anything particular to use 
 > TCR automatically performs a significant number of commits.
 > It would become unusable if the user had to enter a passphrase at each commit.
 >
-> For this reason, ***TCR commits are deliberately not signed***.
+> For this reason, _**TCR commits are deliberately not signed**_.
 >
 > If signing every commit is important to you, you can still do it when you're done
 > working with TCR, when reworking git history and squashing TCR commits into meaningful ones.
@@ -307,27 +307,28 @@ All configuration settings are saved in YAML format. Thus you can edit them late
 
 - To save TCR configuration in your HOME directory (using the default settings):
 
-    ```shell
-    ./tcr config save -c $HOME
-    ```
+  ```shell
+  ./tcr config save -c $HOME
+  ```
+
 - To save TCR configuration in the current directory, setting the timer duration to 10m, the language to java and the
   toolchain to maven:
 
-    ```shell
-    ./tcr config save -d 10m -l java -t maven
-    ```
+  ```shell
+  ./tcr config save -d 10m -l java -t maven
+  ```
 
 - To show the current TCR configuration settings (previously saved in the current directory)
 
-    ```shell
-    ./tcr config show
-    ```
+  ```shell
+  ./tcr config show
+  ```
 
 - To reset TCR configuration settings to their default values (in the current directory)
 
-    ```shell
-    ./tcr config reset
-    ```
+  ```shell
+  ./tcr config reset
+  ```
 
 </details>
 
@@ -344,16 +345,16 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
 
 1. Create the TCR configuration directory structure (you can skip this step if you saved TCR configuration before)
 
-    ```shell
-    tcr config save -c $HOME
-    ```
+   ```shell
+   tcr config save -c $HOME
+   ```
 
 2. Create `yarn.yml` toolchain configuration file from an existing toolchain configuration
 
-    ```shell
-    cd $HOME/.tcr/toolchain
-    cp gradle.yml yarn.yml
-    ```
+   ```shell
+   cd $HOME/.tcr/toolchain
+   cp gradle.yml yarn.yml
+   ```
 
 3. Adjust `yarn.yml` contents
 
@@ -362,25 +363,25 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
    We're assuming here that yarn is installed and that `yarn build` and `yarn test`
    are set up so that they run respectively the build and test.
 
-    ```yaml
-    build:
-    - os: [darwin, linux, windows]
-      arch: ["386", amd64, arm64]
-      command: yarn
-      arguments: [build]
-    test:
-    - os: [darwin, linux, windows]
-      arch: ["386", amd64, arm64]
-      command: yarn
-      arguments: [test]
-    ```
+   ```yaml
+   build:
+     - os: [darwin, linux, windows]
+       arch: ["386", amd64, arm64]
+       command: yarn
+       arguments: [build]
+   test:
+     - os: [darwin, linux, windows]
+       arch: ["386", amd64, arm64]
+       command: yarn
+       arguments: [test]
+   ```
 
 4. Create `javascript.yml` language configuration file from an existing language configuration
 
-    ```shell
-    cd $HOME/.tcr/language
-    cp java.yml javascript.yml
-    ```
+   ```shell
+   cd $HOME/.tcr/language
+   cp java.yml javascript.yml
+   ```
 
 5. Adjust `javascript.yml` contents
 
@@ -390,19 +391,19 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
    are under `test` subdirectory and are named
    `*.test.js`.
 
-    ```yaml
-    toolchains:
-      default: yarn
-      compatible-with: [yarn]
-    source-files:
-      directories: [src]
-      patterns: ['(?i)^.*\.js$']
-    test-files:
-      directories: [test]
-      patterns: ['(?i)^.*\.test\.js$']
-    ```
+   ```yaml
+   toolchains:
+     default: yarn
+     compatible-with: [yarn]
+   source-files:
+     directories: [src]
+     patterns: ['(?i)^.*\.js$']
+   test-files:
+     directories: [test]
+     patterns: ['(?i)^.*\.test\.js$']
+   ```
 
-   > ***Regex on filenames***
+   > _**Regex on filenames**_
    >
    > TCR complies with [RE2](https://github.com/google/re2/wiki/Syntax)
    > for pattern matching on filenames.
@@ -429,7 +430,7 @@ Suppose you want to run TCR with Javascript language and yarn toolchain. Here is
    echo $?
    ```
 
-   > ***Language's Default Toolchain***
+   > _**Language's Default Toolchain**_
    >
    > Each language has a default toolchain, which is the one
    > that will be used with this language if no toolchain is specified on

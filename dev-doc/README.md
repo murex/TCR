@@ -6,4 +6,3 @@ This directory provides details related to TCR development activities.
 - [Debugging TCR](./debug.md)
 - [Releasing a new TCR version](./release.md)
 - [Browsing TCR Quality Metrics](./quality-metrics.md)
-

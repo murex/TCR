@@ -17,4 +17,3 @@ If you are using another IDE, use the following config:
 If you are using IntelliJ or GoLand, you can refer to
 [this page](https://www.jetbrains.com/help/go/attach-to-running-go-processes-with-debugger.html)
 for details on how to build and run a Go application and attach a debugger.
-
