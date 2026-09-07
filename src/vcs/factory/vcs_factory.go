@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package factory instantiates the concrete vcs.Interface implementation (git or Perforce)
+// matching a given VCS name, acting as the single entry point TCR uses to initialize its VCS backend.
 package factory
 
 import (

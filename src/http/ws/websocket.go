@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package ws implements the websocket endpoint of TCR's HTTP server, streaming
+// TCR report messages (text, role and timer events) to connected clients in real time.
 package ws
 
 import (

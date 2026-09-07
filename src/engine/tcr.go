@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package engine implements TCR's core Test && Commit || Revert cycle, orchestrating
+// the language, toolchain and version control system to run TCR sessions.
 package engine
 
 import (
@@ -191,8 +193,7 @@ func (tcr *TCREngine) SetVariant(name string) {
 	var err error
 	tcr.variant, err = variant.Select(name)
 	if err != nil {
-		var unsupportedVariantError *variant.UnsupportedVariantError
-		if errors.As(err, &unsupportedVariantError) {
+		if _, ok := errors.AsType[*variant.UnsupportedVariantError](err); ok {
 			tcr.handleError(err, true, status.ConfigError)
 		}
 	}

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package filesystem provides the abstraction TCR uses to access and monitor the
+// project's source tree, including watching for file changes and writing files to disk.
 package filesystem
 
 // SourceTree is the interface that any implementation must comply with in order to be used

@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package built_in_test_data provides shared test fixtures describing TCR's built-in
+// languages (file extensions, toolchains and file matchers), used by tests that need
+// to exercise built-in language support. It is only built when the test_helper build
+// tag is set.
 package built_in_test_data //nolint:revive
 
 import (

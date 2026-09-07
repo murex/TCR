@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package shell provides an abstraction for running and tracing external shell commands,
+// used by the git and p4 VCS implementations to invoke their respective command-line clients.
 package shell
 
 // Attributes contain shell-specific attributes allowing to tune behavior

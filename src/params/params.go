@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package params defines the Params structure that carries TCR's runtime
+// configuration values (language, toolchain, VCS, mode, etc.) between the CLI
+// and the TCR engine.
 package params
 
 import (

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package checker verifies that TCR's configuration, parameters and local environment
+// are valid and ready for use, reporting the results as checkpoints grouped by topic.
 package checker
 
 import (

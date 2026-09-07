@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package desktop provides access to the local desktop environment, such as
+// opening a browser and displaying system notifications.
 package desktop
 
 import (

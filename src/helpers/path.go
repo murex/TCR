@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package helpers provides small, standalone utility functions used across TCR,
+// covering path handling, YAML configuration I/O, and simple trace logging.
 package helpers
 
 import (

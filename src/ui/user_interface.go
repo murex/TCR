@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package ui defines the UserInterface abstraction used by the TCR engine to
+// interact with user interface implementations, and provides a multicaster to
+// broadcast messages to several of them at once.
 package ui
 
 import (

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package settings holds application-wide settings for TCR, including build
+// information, default values, and feature toggles.
 package settings
 
 import (

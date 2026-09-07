@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package role defines the Role interface and its concrete implementations
+// (driver and navigator) representing the roles a developer can take on
+// during a TCR session.
 package role
 
 import (

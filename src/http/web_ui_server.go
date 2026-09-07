@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package http implements TCR's web UI server, exposing the TCR engine over HTTP
+// (REST API, websocket and static frontend assets) so that HTTP clients can drive
+// and monitor a TCR session.
 package http
 
 import (

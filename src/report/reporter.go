@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package report provides the message reporting pipeline used to broadcast TCR
+// events (text, role and timer notifications) from the engine to any
+// subscribed listener, such as the CLI or web UI.
 package report
 
 import (

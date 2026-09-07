@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package timer provides a periodic reminder mechanism used to trigger timed
+// actions, such as mob-turn countdown notifications, at regular intervals.
 package timer
 
 import (

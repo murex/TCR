@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package timer_event defines the message type used to report timer-related
+// events, such as a countdown timer starting, ticking down, stopping or
+// timing out.
 package timer_event //nolint:revive
 
 import (

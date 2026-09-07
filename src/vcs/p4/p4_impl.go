@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package p4 provides the Perforce implementation of the vcs.Interface, allowing TCR
+// to add, submit, revert and sync changes against a Perforce depot through the p4 command-line client.
 package p4
 
 import (

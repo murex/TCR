@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package api implements the REST API handlers exposed by TCR's HTTP server,
+// allowing HTTP clients to query and control a running TCR session.
 package api
 
 import (

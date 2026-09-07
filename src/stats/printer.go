@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package stats prints a summary of TCR run statistics, such as commit counts,
+// test pass/fail ratios, and timing information, computed from recorded TCR events.
 package stats
 
 import (

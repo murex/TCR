@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package cmd defines TCR's command-line interface using Cobra, wiring up the
+// root command and its subcommands that drive the TCR engine.
 package cmd
 
 import (

@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package variant defines the supported TCR variants (relaxed, BTCR, introspective)
+// and provides a way to select one by name.
 package variant
 
 import (

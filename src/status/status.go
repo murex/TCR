@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package status tracks the current status of the TCR engine and provides the
+// corresponding process return code.
 package status
 
 // Status is used for describing the current TCR engine status

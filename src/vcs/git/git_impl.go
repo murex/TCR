@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package git provides the git implementation of the vcs.Interface, allowing TCR
+// to commit, revert, push and pull changes in a local git repository and its remote.
 package git
 
 import (

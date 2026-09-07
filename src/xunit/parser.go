@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package xunit parses xUnit-format test report files and aggregates their results
+// (passed, failed, skipped, in-error counts and duration) into statistics TCR can report on.
 package xunit
 
 import (

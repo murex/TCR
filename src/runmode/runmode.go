@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package runmode defines the RunMode interface and its implementations
+// (mob, solo, one-shot, check, log, stats and retro) representing the
+// different modes in which the TCR engine can operate.
 package runmode
 
 // RunMode is the interface that any run mode needs to satisfy to bee used by the TCR engine

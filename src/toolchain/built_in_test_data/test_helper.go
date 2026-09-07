@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package built_in_test_data provides test fixture data for TCR's built-in
+// toolchains, used by toolchain tests to verify build and test command configuration.
 package built_in_test_data //nolint:revive
 
 // BuiltInTestData provides test data for a built-in toolchain.

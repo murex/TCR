@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package cli implements TCR's command-line user interface, handling terminal
+// input and output, menus, and interaction with the TCR engine.
 package cli
 
 import (

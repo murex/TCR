@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package retro generates a markdown retrospective report summarizing the
+// commits and code churn recorded during a TCR session.
 package retro
 
 import (

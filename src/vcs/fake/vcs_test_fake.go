@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package fake provides a fake vcs.Interface implementation used by TCR's unit tests
+// to simulate VCS behavior, including configurable command failures, without touching a real repository.
 package fake
 
 import (

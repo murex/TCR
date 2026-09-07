@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package role_event defines the message type used to report role-related
+// events, such as a driver or navigator role starting or ending.
 package role_event //nolint:revive
 
 import (

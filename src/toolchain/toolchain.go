@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package toolchain defines and manages the build and test toolchains used by TCR
+// to compile code and run tests, including their configuration and registration.
 package toolchain
 
 import (

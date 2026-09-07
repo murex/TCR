@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package language defines and manages the programming languages supported by TCR,
+// including their toolchains and the file filters used to identify source and test files.
 package language
 
 import (

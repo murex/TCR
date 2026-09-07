@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package command defines OS- and architecture-specific commands that toolchains
+// run, and provides a runner to execute them and capture their result.
 package command
 
 import (

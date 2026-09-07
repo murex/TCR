@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package model defines the data types used to record and report the results of
+// TCR's environment checks, such as CheckPoint, CheckGroup and CheckStatus.
 package model
 
 import "github.com/murex/tcr/report"

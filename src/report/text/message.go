@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package text defines the plain text message payload type used by the
+// report package to convey simple textual messages.
 package text
 
 import "fmt"

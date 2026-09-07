@@ -20,6 +20,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package vcs defines the interface that TCR's engine uses to interact with a version
+// control system, along with the shared types (file diffs, log items) and settings
+// (auto-push, trace) common to all VCS implementations.
 package vcs
 
 const (

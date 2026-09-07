@@ -33,7 +33,7 @@ func Test_supported_vcs(t *testing.T) {
 	for _, name := range []string{"git", "p4"} {
 		t.Run(name, func(t *testing.T) {
 			_, err := initVCS(name, "", "")
-			assert.NotEqual(t, reflect.TypeOf(&UnsupportedVCSError{}), reflect.TypeOf(err))
+			assert.NotEqual(t, reflect.TypeFor[*UnsupportedVCSError](), reflect.TypeOf(err))
 		})
 	}
 }

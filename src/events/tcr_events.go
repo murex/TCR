@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Package events defines TCR event data types and utilities for recording,
+// aggregating and persisting the outcome of TCR cycles.
 package events
 
 import (
