@@ -13,6 +13,7 @@ The project includes both a CLI tool written in Go and an experimental Angular w
 ### Multi-Module Structure
 
 The project is organized as a multi-module monorepo with dependencies:
+
 - **src/** - Main Go application (depends on webapp)
   - Entry point: `main.go`
   - CLI commands: `cmd/` directory using Cobra framework
@@ -95,7 +96,8 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 ## Key Technologies & Dependencies
 
 ### Backend (Go)
-- **Go 1.26+** (required)
+
+- **Go 1.27+** (required)
 - **Cobra** - CLI framework
 - **Viper** - Configuration management
 - **Gin** - Web framework for HTTP API
@@ -105,12 +107,14 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 - **testify** - Testing framework
 
 ### Frontend (Angular)
+
 - **Node.js 24** (for development)
 - **Angular 21+**
 - **TypeScript**
 - **Vitest** - Testing
 
 ### Build Tools
+
 - **GoReleaser** - Release automation
 - **golangci-lint** - Go linting
 - **gotestsum** - Enhanced test output
@@ -118,6 +122,7 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 ## Testing
 
 ### Go Tests
+
 - Use testify framework for assertions
 - Tests tagged with `test_helper` build tag
 - Coverage reports in `src/_test_results/`
@@ -126,29 +131,34 @@ Use `./src/tcr-local` script to test locally built binary on example projects.
 - Test data in `src/testdata/`
 
 ### Angular Tests
+
 - Vitest for unit tests
 - Run with `npm test` or `make test` in webapp/
 - ESLint for code quality
 - Coverage reporting
 
 ### Test Data
+
 - Examples in `examples/` directory serve as integration tests
 - Go test fixtures in `src/testdata/`
 
 ## Configuration System
 
 TCR uses hierarchical YAML configuration:
+
 1. Built-in defaults (embedded in binary)
 2. Global config: `~/.tcr/config.yml`
 3. Repository config: `<repo>/.tcr/config.yml`
 4. Command-line flags (highest priority)
 
 ### Configuration Files
+
 - `.tcr/config.yml` - Main TCR settings
 - `.tcr/language/*.yml` - Language definitions (source/test file patterns)
 - `.tcr/toolchain/*.yml` - Toolchain definitions (build/test commands)
 
 Key configuration sections:
+
 - Language and toolchain detection
 - VCS integration (Git, Perforce)
 - Commit message templates
@@ -160,6 +170,7 @@ Key configuration sections:
 TCR supports multiple programming languages with multiple build tools:
 
 ### Built-in Languages
+
 - **C++**: cmake, bazel
 - **C#**: dotnet
 - **Elixir**: mix
@@ -175,6 +186,7 @@ TCR supports multiple programming languages with multiple build tools:
 - **TypeScript**: yarn
 
 ### Adding New Language
+
 1. Create `.tcr/language/<name>.yml` with:
    - `toolchains.default` - Default toolchain
    - `toolchains.compatible-with` - List of compatible toolchains
@@ -187,6 +199,7 @@ TCR supports multiple programming languages with multiple build tools:
 3. **EXECUTE**: `make lint && make test`
 
 ### Adding New Toolchain
+
 1. Create `.tcr/toolchain/<name>.yml` with build and test commands for each OS/arch
 2. Add toolchain implementation in `src/toolchain/` if needed
 3. **EXECUTE**: `make lint && make test`
@@ -194,12 +207,14 @@ TCR supports multiple programming languages with multiple build tools:
 ## CLI Commands
 
 ### Core Commands
+
 - `tcr solo` - Run TCR in solo mode
 - `tcr mob` - Run TCR in mob programming mode
 - `tcr one-shot` - Run TCR once and exit
 - `tcr web` - Start web interface
 
 ### Utility Commands
+
 - `tcr check` - Check TCR configuration and environment
 - `tcr config` - Manage TCR configuration
 - `tcr info` - Display TCR information
@@ -210,12 +225,14 @@ TCR supports multiple programming languages with multiple build tools:
 ## Version Control Integration
 
 ### Git (Default)
+
 - Automatic commits on test pass
 - Automatic reverts on test failure
 - Full support with automatic commit/revert
 - Note: TCR commits are deliberately unsigned (would be impractical with frequent auto-commits)
 
 ### Perforce
+
 - Use `--vcs=p4` flag
 - Requires P4 client configuration
 - Limited support: no auto-push, log, or stats support
@@ -224,6 +241,7 @@ TCR supports multiple programming languages with multiple build tools:
 ## Key Development Workflows
 
 ### Adding a New CLI Command
+
 1. Create `src/cmd/<command>.go`
 2. Define Cobra command with flags
 3. Wire up to root command in `src/cmd/root.go`
@@ -232,18 +250,21 @@ TCR supports multiple programming languages with multiple build tools:
 6. **EXECUTE**: `make lint && make test`
 
 ### Modifying TCR Engine
+
 1. Core logic in `src/engine/`
 2. Event-driven architecture via `src/events/`
 3. Update tests in corresponding `_test.go` files
 4. **EXECUTE**: `make lint && make test`
 
 ### Working on Web Interface
+
 1. Start Go backend: `cd src && ./tcr-local web -T=http`
 2. Start Angular dev: `cd webapp && npm start`
 3. Make changes in `webapp/src/`
 4. **EXECUTE**: `cd webapp && make lint && make test`
 
 ### Bug Fixes
+
 1. Reproduce issue with test case
 2. Fix in appropriate module
 3. Ensure tests pass on all platforms
@@ -251,6 +272,7 @@ TCR supports multiple programming languages with multiple build tools:
 5. **EXECUTE**: `make lint && make test`
 
 ### Feature Development
+
 1. Design with TCR principles in mind
 2. Add CLI command in `src/cmd/` if needed
 3. Implement core logic in appropriate module
@@ -284,7 +306,7 @@ TCR supports multiple programming languages with multiple build tools:
 # After any Go code changes
 cd src && make lint && make test-short  # or make test for full suite
 
-# After webapp changes  
+# After webapp changes
 cd webapp && make lint && make test
 
 # After project-wide changes
@@ -292,6 +314,7 @@ make lint && make test
 ```
 
 ### Examples of Changes Requiring Quality Gates:
+
 - Import organization/formatting (like `goimports`)
 - Code refactoring or restructuring
 - Adding/removing dependencies
@@ -300,6 +323,7 @@ make lint && make test
 - Any file modifications in `src/`, `webapp/`, or `examples/`
 
 ### Failure Handling:
+
 - If linter fails: Fix all issues before proceeding
 - If tests fail: Investigate and fix, don't ignore
 - If build fails: Resolve compilation errors immediately
@@ -322,22 +346,26 @@ make lint && make test
 ## Code Organization Patterns
 
 ### Event-Driven Communication
+
 - Events defined in `src/events/`
 - Publishers emit events via event bus
 - Subscribers listen for specific events
 - Used for engine → UI communication
 
 ### Role Management
+
 - `src/role/` handles driver/navigator roles
 - Synchronized across participants in mob mode
 - Timer in `src/timer/` for driver rotation
 
 ### Filesystem Watching
+
 - `src/filesystem/` uses fsnotify
 - Monitors source and test directories
 - Triggers TCR cycle on changes
 
 ### Report Generation
+
 - `src/report/` handles test output
 - `src/xunit/` parses xUnit XML format
 - `src/stats/` tracks commit/revert statistics
@@ -353,7 +381,7 @@ make lint && make test
 
 ## Development Tools Required
 
-- Go 1.26+
+- Go 1.27+
 - Node.js 24 (for webapp)
 - golangci-lint (for linting)
 - gotestsum (optional, better test output)
@@ -373,6 +401,7 @@ make lint && make test
 ## Working with Examples
 
 Examples in `examples/` demonstrate TCR usage with different language/toolchain combinations. Each example:
+
 - Has a complete project setup
 - Includes README with TCR usage
 - Serves as integration test

@@ -14,7 +14,7 @@ cd TCR
 
 TCR is written in Go. This implies having Go compiler and tools installed on your machine.
 
-Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.26** or higher.
+Simply follow the instructions provided [here](https://go.dev/). Make sure to install **Go version 1.27** or higher.
 
 ## Install build tools - `Required`
 
@@ -40,6 +40,7 @@ export CGO_ENABLED=0
 ```
 
 On Windows (PowerShell):
+
 ```
 setx CGO_ENABLED 0
 ```
@@ -72,11 +73,13 @@ When running tests from an IDE, make sure this build tag is enabled; otherwise s
 Examples:
 
 - **VS Code:** Add the following setting in your workspace or user settings:
+
 ```
 "go.testTags": "test_helper"
 ```
 
 - **GoLand**: Go to Run / Debug Configurations → Go Test → Go tool arguments and add:
+
 ```
 -tags=test_helper
 ```
@@ -141,6 +144,7 @@ Once gotestsum is installed and development dependencies are installed, you can 
   ```shell
   make test
   ```
+
 - For running short tests only:
 
   ```shell
