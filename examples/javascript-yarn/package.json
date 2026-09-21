@@ -6,9 +6,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "cross-env": "^10.1.0",
-    "jest": "^30.5.1",
+    "jest": "^30.5.2",
     "jest-junit": "^17.0.0",
     "yarn-upgrade-all": "^0.8.1"
   },
