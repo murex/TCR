@@ -11,8 +11,8 @@ require (
 	github.com/codeskyblue/go-sh v0.0.0-20250509230738-c29da582b0f5
 	github.com/fsnotify/fsnotify v1.10.1
 	github.com/gen2brain/beeep v0.11.2
-	github.com/gin-contrib/cors v1.7.8
-	github.com/gin-contrib/static v1.1.7
+	github.com/gin-contrib/cors v1.7.9
+	github.com/gin-contrib/static v1.1.8
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-git/go-billy/v5 v5.9.1
 	github.com/go-git/go-git/v5 v5.19.2
@@ -38,7 +38,7 @@ require (
 	dario.cat/mergo v1.0.2 // indirect
 	git.sr.ht/~jackmordaunt/go-toast v1.1.2 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/ProtonMail/go-crypto v1.4.1 // indirect
+	github.com/ProtonMail/go-crypto v1.5.1 // indirect
 	github.com/bitfield/gotestdox v0.2.3 // indirect
 	github.com/bytedance/gopkg v0.1.4 // indirect
 	github.com/bytedance/sonic v1.15.4 // indirect
@@ -81,7 +81,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/pjbgf/sha1cd v0.6.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.62.0 // indirect
+	github.com/quic-go/quic-go v0.63.0 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/sergeymakinen/go-bmp v1.0.0 // indirect
 	github.com/sergeymakinen/go-ico v1.0.0 // indirect
