@@ -46,13 +46,13 @@
     "zone.js": "^0.16.3"
   },
   "devDependencies": {
-    "@angular/build": "^22.2.5",
+    "@angular/build": "^22.2.6",
     "@angular-eslint/builder": "^22.6.0",
     "@angular-eslint/eslint-plugin": "^22.6.0",
     "@angular-eslint/eslint-plugin-template": "^22.6.0",
     "@angular-eslint/schematics": "^22.6.0",
     "@angular-eslint/template-parser": "^22.6.0",
-    "@angular/cli": "^22.2.5",
+    "@angular/cli": "^22.2.6",
     "@angular/compiler-cli": "^22.2.4",
     "@angular/localize": "^22.2.4",
     "@eslint/js": "^10.0.1",
@@ -66,14 +66,14 @@
     "ng-mocks": "^14.18.5",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.1",
-    "vite": "^8.3.5",
+    "vite": "^8.3.6",
     "vitest": "^5.1.0"
   },
   "allowScripts": {
     "fsevents@2.3.3": true,
-    "msgpackr-extract@3.0.4": true,
     "@parcel/watcher@2.6.0": true,
     "lmdb@3.5.6": true,
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "msgpackr-extract@3.0.7": true
   }
 }
