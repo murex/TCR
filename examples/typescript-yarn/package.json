@@ -5,7 +5,7 @@
   "author": "Murex",
   "license": "MIT",
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.6",
+    "@tsconfig/node22": "^22.0.7",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.6",
     "cross-env": "^10.1.0",
